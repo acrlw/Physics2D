@@ -15,7 +15,7 @@ namespace Physics2D
 			Edge,
 			Curve
 		};
-		inline Type type()const
+		inline Type type()
 		{
 			return m_type;
 		}
@@ -23,6 +23,9 @@ namespace Physics2D
 	protected:
 		Type m_type;
 	};
+	/// <summary>
+	/// Convex polygon, not concave!
+	/// </summary>
 	class Polygon: public Shape
 	{
 
@@ -34,6 +37,46 @@ namespace Physics2D
 		const std::vector<Vector2>& vertices() const
 		{
 			return m_vertices;
+		}
+		void append(const Vector2& vertex)
+		{
+			m_vertices.emplace_back(vertex);
+		}
+		static Vector2 triangleGravityPoint(const Vector2& a1, const Vector2& a2, const Vector2& a3)
+		{
+			return Vector2(a1 + a2 + a3) / 3;
+		}
+
+		static number triangleArea(const Vector2& a1, const Vector2& a2, const Vector2& a3)
+		{
+			return abs(Vector2::crossProduct(a1 - a2, a1 - a3)) / 2;
+		}
+		static Vector2 calculateCenter(const Polygon& polygon)
+		{
+			if (polygon.vertices().size() >= 4)
+			{
+				Vector2 pos;
+				number area = 0;
+				size_t p_a, p_b, p_c;
+				p_a = 0, p_b = 0, p_c = 0;
+				for (size_t i = 0; i < polygon.vertices().size() - 1; i++)
+				{
+					p_b = i + 1;
+					p_c = i + 2;
+					if (p_b == polygon.vertices().size() - 2)
+						break;
+					number a = triangleArea(polygon.vertices()[p_a], polygon.vertices()[p_b], polygon.vertices()[p_c]);
+					Vector2 p = triangleGravityPoint(polygon.vertices()[p_a], polygon.vertices()[p_b], polygon.vertices()[p_c]);
+					pos += p * a;
+					area += a;
+				}
+				pos /= area;
+				return pos;
+			}
+		}
+		Vector2 center()const
+		{
+			return calculateCenter(*this);
 		}
 	protected:
 		std::vector<Vector2> m_vertices;
@@ -89,6 +132,11 @@ namespace Physics2D
 		Ellipse()
 		{
 			m_type = Type::Ellipse;
+		}
+		void set(const number& width, const number& height)
+		{
+			m_width = width;
+			m_height = height;
 		}
 		number width()const
 		{

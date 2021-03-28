@@ -5,51 +5,39 @@
 namespace Physics2D
 {
 	//trigonometric function
-	static inline number sinx(const number& x)
+	inline number sinx(const number& x)
 	{
 		return sin(x);
 	}
-	static inline number cosx(const number& x)
+	inline number cosx(const number& x)
 	{
 		return cos(x);
 	}
-	static inline number tanx(const number& x)
+	inline number tanx(const number& x)
 	{
 		return tan(x);
 	}
-	static inline number arcsinx(const number& x)
+	inline number arcsinx(const number& x)
 	{
 		return asin(x);
 	}
-	static inline number arccosx(const number& x)
+	inline number arccosx(const number& x)
 	{
 		return acos(x);
 	}
-	static inline number arctanx(const number& x)
+	inline number arctanx(const number& x)
 	{
 		return atan(x);
 	}
 	//other trick
-	static inline number fastInverseSqrt(number x)
-	{
-		assert(x != 0, "Divisor cannot be zero.");
-		number xhalf = 0.5f * x;
-		int i = *(int*)&x; // get bits for floating VALUE
-		i = 0x5f375a86 - (i >> 1); // gives initial guess y0
-		x = *(number*)&i; // convert bits BACK to float
-		x = x * (1.5f - xhalf * x * x); // Newton step, repeating increases accuracy
-		x = x * (1.5f - xhalf * x * x); // Newton step, repeating increases accuracy
-		x = x * (1.5f - xhalf * x * x); // Newton step, repeating increases accuracy
-		return x;
-	}
 	//basic number utility
-	static inline void numberSwap(number& lhs, number& rhs)
+	inline void numberSwap(number& lhs, number& rhs)
 	{
 		const number temp = lhs;
 		lhs = rhs;
 		rhs = temp;
 	}
-	static inline bool numberEqual(const number& lhs, const number& rhs)
+	inline bool numberEqual(const number& lhs, const number& rhs)
 	{
 		return abs(lhs - rhs) < EPSILON;
 	}
@@ -150,12 +138,12 @@ namespace Physics2D
 			return *this;
 		}
 
-		bool operator==(const Vector2& rhs)
+		bool operator==(const Vector2& rhs)const
 		{
 			return x == rhs.x && y == rhs.y;
 		}
 
-		bool operator!=(const Vector2& rhs)
+		bool operator!=(const Vector2& rhs)const
 		{
 			return x != rhs.x || y != rhs.y;
 		}
@@ -207,7 +195,7 @@ namespace Physics2D
 
 		Vector2& normalize()
 		{
-			number length_inv = fastInverseSqrt(lengthSquare());
+			number length_inv = fastInverseSqrt<number>(lengthSquare());
 			x *= length_inv;
 			y *= length_inv;
 			return *this;
@@ -228,9 +216,13 @@ namespace Physics2D
 			return x * rhs.x + y * rhs.y;
 		}
 
-		number cross(const Vector2& rhs)
+		number cross(const Vector2& rhs)const
 		{
 			return x * rhs.y - y * rhs.x;
+		}
+		inline Vector2 perpendicular()const
+		{
+			return Vector2(-y, x);
 		}
 		static number dotProduct(const Vector2& lhs, const Vector2& rhs)
 		{
@@ -775,7 +767,7 @@ namespace Physics2D
 		{
 			m_angle = angle;
 			m_rotationMatrix.column1.set(cosx(angle), sinx(angle));
-			m_rotationMatrix.column1.set(sinx(angle) * -1, cosx(angle));
+			m_rotationMatrix.column2.set(sinx(angle) * -1, cosx(angle));
 		}
 
 		number angle()const

@@ -1,14 +1,63 @@
-#include "mainwindow.h"
 #include "include/math/math.h"
-#include <QApplication>
+#include "fmt/core.h"
+#include "include/collision/algorithm/gjk.h"
+#include "include/collision/contact.h"
 
+namespace fmt {
+	template <>
+	struct formatter<Physics2D::Vector2> {
+		template <typename ParseContext>
+		constexpr auto parse(ParseContext& ctx) {
+			return ctx.begin();
+		}
+
+		template <typename FormatContext>
+		auto format(const Physics2D::Vector2& p, FormatContext& ctx) {
+			return format_to(ctx.out(), "({:.4f}, {:.4f})", p.x, p.y);
+		}
+	};
+
+	template <>
+	struct formatter<Physics2D::Vector3> {
+		template <typename ParseContext>
+		constexpr auto parse(ParseContext& ctx) {
+			return ctx.begin();
+		}
+
+		template <typename FormatContext>
+		auto format(const Physics2D::Vector3& p, FormatContext& ctx) {
+			return format_to(ctx.out(), "({:.4f}, {:.4f}, {:.4f})", p.x, p.y, p.z);
+		}
+	};
+}
+using namespace Physics2D;
 int main(int argc, char *argv[])
 {
-    Physics2D::Matrix3x3 mat31(1, 2, 3, 4, 5, 6, 7, 8, 9);
-    Physics2D::Matrix3x3 mat32(10, 13, 12, 21, 14, 15, 16, 17, 18);
-    mat32.invert();
-    QApplication a(argc, argv);
-    MainWindow w;
-    w.show();
-    return a.exec();
+	Ellipse a;
+	
+	Polygon b;
+	//b.append({ 8, 4 });
+	//b.append({ 6, 6 });
+	//b.append({ 4, 5 });
+	//b.append({ 3, 4 });
+	//b.append({ 4, 3 });
+	//b.append({ 6, 2 });
+	//b.append({ 8, 3 });
+	//b.append({ 8, 4 });
+	b.append({ 9,6 });
+	b.append({ 7,8 });
+	b.append({ 5,7 });
+	b.append({ 4,6 });
+	b.append({ 5,5 });
+	b.append({ 7,4 });
+	b.append({ 9,5 });
+	b.append({ 9,6 });
+	ShapePrimitive spa, spb;
+	spa.shape = &a;
+	spb.shape = &b;
+	spb.position = b.center();
+	fmt::print("p: {}", b.center());
+	auto [isCollide, simplex] = GJK::gjk(spa, spb);
+	return 0;
+	
 }

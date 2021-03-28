@@ -10,23 +10,10 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
-
+find_package(fmt CONFIG REQUIRED)
 add_executable(physics-engine
-    albody.h
-    alcollision.h
-    almath.h
-    alworld.h
-    alrenderer.h
-    alsettings.h
-    albody.cpp
-    alcollision.cpp
-    almath.cpp
-    alrenderer.cpp
-    alworld.cpp
-    main.cpp
-    mainwindow.cpp
-    mainwindow.h
     mainwindow.ui
+    main.cpp
     "source/collision/algorithm/sat.cpp"
     "source/collision/algorithm/gjk.cpp"
     "source/collision/algorithm/mpr.cpp"
@@ -58,4 +45,4 @@ add_executable(physics-engine
     "include/profile/profiler.h"
     "include/render/renderer.h"
     )
-target_link_libraries(physics-engine PRIVATE Qt5::Widgets)
+target_link_libraries(physics-engine PRIVATE Qt5::Widgets fmt::fmt)

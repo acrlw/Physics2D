@@ -16,7 +16,7 @@ namespace Physics2D
 			ContactInfo result;
 			
 			if (body_A == nullptr || body_B == nullptr)
-				return;
+				return result;
 
 
 			ShapePrimitive shapeA, shapeB;
