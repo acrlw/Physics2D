@@ -29,6 +29,22 @@ namespace Physics2D
 	{
 		return atan(x);
 	}
+	inline number max(const number& a, const number& b)
+	{
+		return a > b ? a : b;
+	}
+	inline number min(const number& a, const number& b)
+	{
+		return a > b ? b : a;
+	}
+	inline number abs_max(const number& a, const number& b)
+	{
+		return abs(a) > abs(b) ? abs(a) : abs(b);
+	}
+	inline number abs_min(const number& a, const number& b)
+	{
+		return abs(a) > abs(b) ? abs(b) : abs(a);
+	}
 	//other trick
 	//basic number utility
 	inline void numberSwap(number& lhs, number& rhs)
@@ -49,15 +65,15 @@ namespace Physics2D
 			x = _x;
 			y = _y;
 		}
-		Vector2(const Vector2& _copy)
+		Vector2(const Vector2& copy)
 		{
-			x = _copy.x;
-			y = _copy.y;
+			x = copy.x;
+			y = copy.y;
 		}
-		Vector2& operator=(const Vector2& _copy)
+		Vector2& operator=(const Vector2& copy)
 		{
-			x = _copy.x;
-			y = _copy.y;
+			x = copy.x;
+			y = copy.y;
 			return *this;
 		}
 		Vector2(Vector2&& other) = default;
@@ -165,10 +181,10 @@ namespace Physics2D
 			return *this;
 		}
 
-		Vector2& set(const Vector2& _copy)
+		Vector2& set(const Vector2& copy)
 		{
-			x = _copy.x;
-			y = _copy.y;
+			x = copy.x;
+			y = copy.y;
 			return *this;
 		}
 
@@ -186,10 +202,10 @@ namespace Physics2D
 			return *this;
 		}
 
-		Vector2& swap(Vector2& _other) noexcept
+		Vector2& swap(Vector2& other) noexcept
 		{
-			numberSwap(x, _other.x);
-			numberSwap(y, _other.y);
+			numberSwap(x, other.x);
+			numberSwap(y, other.y);
 			return *this;
 		}
 
@@ -247,17 +263,17 @@ namespace Physics2D
 			y = _y;
 			z = _z;
 		}
-		Vector3(const Vector3& _copy)
+		Vector3(const Vector3& copy)
 		{
-			x = _copy.x;
-			y = _copy.y;
-			z = _copy.z;
+			x = copy.x;
+			y = copy.y;
+			z = copy.z;
 		}
-		Vector3& operator=(const Vector3& _copy)
+		Vector3& operator=(const Vector3& copy)
 		{
-			x = _copy.x;
-			y = _copy.y;
-			z = _copy.z;
+			x = copy.x;
+			y = copy.y;
+			z = copy.z;
 			return *this;
 		}
 		Vector3(Vector3&& other) = default;
@@ -267,9 +283,9 @@ namespace Physics2D
 			return Vector3(x + rhs.x, y + rhs.y, z + rhs.z);
 		}
 
-		Vector3 operator-(const Vector3& _other)const
+		Vector3 operator-(const Vector3& other)const
 		{
-			return Vector3(x - _other.x, y - _other.y, z - _other.z);
+			return Vector3(x - other.x, y - other.y, z - other.z);
 		}
 
 		Vector3 operator*(const number& factor)const
@@ -352,11 +368,11 @@ namespace Physics2D
 			return *this;
 		}
 
-		Vector3& set(const Vector3& _other)
+		Vector3& set(const Vector3& other)
 		{
-			x = _other.x;
-			y = _other.y;
-			z = _other.z;
+			x = other.x;
+			y = other.y;
+			z = other.z;
 			return *this;
 		}
 
@@ -405,11 +421,11 @@ namespace Physics2D
 			return numberEqual(x, rhs.x) && numberEqual(y, rhs.y) && numberEqual(z, rhs.z);
 		}
 
-		Vector3& swap(Vector3& _other)
+		Vector3& swap(Vector3& other)
 		{
-			numberSwap(x, _other.x);
-			numberSwap(y, _other.y);
-			numberSwap(z, _other.z);
+			numberSwap(x, other.x);
+			numberSwap(y, other.y);
+			numberSwap(z, other.z);
 			return *this;
 		}
 
@@ -441,10 +457,10 @@ namespace Physics2D
 	{
 		Matrix2x2() = default;
 		
-		Matrix2x2(const Vector2& _col1, const Vector2& _col2)
+		Matrix2x2(const Vector2& col1, const Vector2& col2)
 		{
-			column1 = _col1;
-			column2 = _col2;
+			column1 = col1;
+			column2 = col2;
 		}
 		Matrix2x2(const number& col1_x, const number& col1_y, const number& col2_x, const number& col2_y)
 		{
@@ -539,17 +555,17 @@ namespace Physics2D
 			column2.set(col2_x, col2_y);
 		}
 
-		Matrix2x2& set(const Vector2& _col1, const Vector2& _col2)
+		Matrix2x2& set(const Vector2& col1, const Vector2& col2)
 		{
-			column1 = _col1;
-			column2 = _col2;
+			column1 = col1;
+			column2 = col2;
 			return *this;
 		}
 
-		Matrix2x2& set(const Matrix2x2& _other)
+		Matrix2x2& set(const Matrix2x2& other)
 		{
-			column1 = _other.column1;
-			column2 = _other.column2;
+			column1 = other.column1;
+			column2 = other.column2;
 			return *this;
 		}
 		static Matrix2x2 identityMatrix()
@@ -588,11 +604,11 @@ namespace Physics2D
 	};
 	struct Matrix3x3
 	{
-		Matrix3x3(const Vector3& _col1, const Vector3& _col2, const Vector3& _col3)
+		Matrix3x3(const Vector3& col1, const Vector3& col2, const Vector3& col3)
 		{
-			column1 = _col1;
-			column2 = _col2;
-			column3 = _col3;
+			column1 = col1;
+			column2 = col2;
+			column3 = col3;
 		}
 		Matrix3x3(const number& col1_x, const number& col1_y, const number& col1_z,
 			const number& col2_x, const number& col2_y, const number& col2_z, 
@@ -681,19 +697,19 @@ namespace Physics2D
 			return *this;
 		}
 
-		Matrix3x3& set(const Vector3& _col1, const Vector3 _col2, const Vector3 _col3)
+		Matrix3x3& set(const Vector3& col1, const Vector3& col2, const Vector3& col3)
 		{
-			column1 = _col1;
-			column2 = _col2;
-			column3 = _col3;
+			column1 = col1;
+			column2 = col2;
+			column3 = col3;
 			return *this;
 		}
 
-		Matrix3x3& set(const Matrix3x3& _other)
+		Matrix3x3& set(const Matrix3x3& other)
 		{
-			column1 = _other.column1;
-			column2 = _other.column2;
-			column3 = _other.column3;
+			column1 = other.column1;
+			column2 = other.column2;
+			column3 = other.column3;
 			return *this;
 		}
 
@@ -792,4 +808,9 @@ namespace Physics2D
 	{
 
 	};
+
+	inline Vector2 operator*(const number& f, const Vector2& v)
+	{
+		return v * f;
+	}
 }

@@ -34,7 +34,7 @@ using namespace Physics2D;
 int main(int argc, char *argv[])
 {
 	Ellipse a;
-	
+	a.set(20, 16);
 	Polygon b;
 	//b.append({ 8, 4 });
 	//b.append({ 6, 6 });
@@ -56,8 +56,17 @@ int main(int argc, char *argv[])
 	spa.shape = &a;
 	spb.shape = &b;
 	spb.position = b.center();
-	fmt::print("p: {}", b.center());
+	fmt::print("p: {}\n", b.center());
+	
 	auto [isCollide, simplex] = GJK::gjk(spa, spb);
+	simplex = GJK::epa(spa, spb, simplex);
+	ContactInfo info = GJK::dumpInfo(spa, spb, simplex);
+	
+	auto result = Physics2D::lineSegmentIntersection({-4,2}, {-2,3}, {-2,0}, {-3,4});
+	if (result.has_value())
+		fmt::print("intersection point:{}\n", result.value());
+	else
+		fmt::print("no intersection\n");
 	return 0;
 	
 }

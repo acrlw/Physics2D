@@ -138,6 +138,14 @@ namespace Physics2D
 			m_width = width;
 			m_height = height;
 		}
+		void setWidth(const number& width)
+		{
+			m_width = width;
+		}
+		void setHeight(const number& height)
+		{
+			m_height = height;
+		}
 		number width()const
 		{
 			return m_width;
@@ -171,6 +179,11 @@ namespace Physics2D
 		Edge()
 		{
 			m_type = Type::Edge;
+		}
+		void set(const Vector2& _start, const Vector2& _end)
+		{
+			m_startPoint = _start;
+			m_endPoint = _end;
 		}
 		Vector2 startPoint()const
 		{

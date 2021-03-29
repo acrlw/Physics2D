@@ -10,7 +10,7 @@ namespace Physics2D
 	struct Minkowski
 	{
 		Minkowski() = default;
-		Minkowski(const Vector2& _pointA, const Vector2& _pointB) : pointA(_pointA), pointB(_pointB), result(pointA - pointB)
+		Minkowski(const Vector2& point_a, const Vector2& point_b) : pointA(point_a), pointB(point_b), result(pointA - pointB)
 		{
 
 		}
@@ -58,10 +58,9 @@ namespace Physics2D
             case 4:
 	            {
 					number a = 0, b = 0, c = 0;
-					Vector2 origin;
-					Vector2 oa = origin - simplex.vertices[0].result;
-					Vector2 ob = origin - simplex.vertices[1].result;
-					Vector2 oc = origin - simplex.vertices[2].result;
+					Vector2 oa = simplex.vertices[0].result * -1;
+					Vector2 ob = simplex.vertices[1].result * -1;
+					Vector2 oc = simplex.vertices[2].result * -1;
 
 					a = Vector2::crossProduct(a, ob);
 					b = Vector2::crossProduct(ob, oc);
@@ -74,9 +73,8 @@ namespace Physics2D
 	            }
             case 2:
 	            {
-					Vector2 origin;
-					Vector2 oa = origin - simplex.vertices[0].result;
-					Vector2 ob = origin - simplex.vertices[1].result;
+					Vector2 oa = simplex.vertices[0].result * -1;
+					Vector2 ob = simplex.vertices[1].result * -1;
 					return Vector2::crossProduct(oa, ob) == 0;
 	            }
 			case 1:
@@ -88,15 +86,13 @@ namespace Physics2D
                 return false;
 			}
 		}
-		inline bool insert(const Simplex& edge, const Minkowski& vertex)
+		inline void insert(const size_t& pos, const Minkowski& vertex)
 		{
-			size_t targetIndex = -1;
-			for (size_t i = 0; i < vertices.size() - 1; i++)
-				if (vertices[i].result == edge.vertices[0].result)
-					targetIndex = i;
-				
-			vertices.insert(vertices.begin() + targetIndex + 1, vertex);
-			return targetIndex == -1;
+			vertices.insert(vertices.begin() + pos + 1, vertex);
+		}
+		inline bool contains(const Minkowski& minkowski)
+		{
+			return std::find(std::begin(vertices), std::end(vertices), minkowski) != std::end(vertices);
 		}
 		Vector2 lastVertex()const
 		{
@@ -116,7 +112,7 @@ namespace Physics2D
 		{
 
 		}
-		static std::tuple<bool, Simplex> gjk(const ShapePrimitive& shape_A, const ShapePrimitive& shape_B)
+		static std::tuple<bool, Simplex> gjk(const ShapePrimitive& shape_A, const ShapePrimitive& shape_B, const size_t& _iteration = 50)
 		{
 			Simplex simplex;
 			bool found = false;
@@ -126,7 +122,7 @@ namespace Physics2D
 			direction.negate();
 			int iteration = 0;
 			std::vector<Minkowski> removed;
-			while(iteration <= GJKIteration)
+			while(iteration <= _iteration)
 			{
 				diff = support(shape_A, shape_B, direction);
 				simplex.vertices.emplace_back(diff);
@@ -169,78 +165,76 @@ namespace Physics2D
 
 			return std::make_tuple(found, simplex);
 		}
-		static ContactInfo epa(const ShapePrimitive& shape_A, const ShapePrimitive& shape_B, const Simplex& src)
+		static Simplex epa(const ShapePrimitive& shape_A, const ShapePrimitive& shape_B, const Simplex& src, const size_t& _iteration = 50, const number& epsilon = 0.0001)
 		{
-			ContactInfo result;
-			result.isCollide = true;
 			size_t iteration = 0;
 			Simplex edge;
 			Simplex simplex = src;
-			Vector2 normal, witness, mirror;
+			Vector2 normal;
 			number originToEdge;
 			Minkowski p;
-			Vector2 A_s1, A_s2, B_s1, B_s2;
-			while(iteration <= GJKIteration)
+			while(iteration <= _iteration)
 			{
-				//edge = findClosestEdge(simplex);
-				//normal = calculateDirectionByEdge(edge, false).normal();
-				originToEdge = abs(normal.dot(edge.vertices[0].result));
+				auto [index1, index2] = findEdgeClosestToOrigin(simplex);
+				normal = calculateDirectionByEdge(simplex.vertices[index1].result, simplex.vertices[index2].result, false).normal();
+				originToEdge = abs(normal.dot(simplex.vertices[index1].result));
+				//new minkowski point
 				p = support(shape_A, shape_B, normal);
 
-				number d = p.result.dot(normal);
-				number diff = abs(d - originToEdge);
+				if (simplex.contains(p))
+					break;
 				
-				bool isExisted = false;
-				for (const Minkowski& vertex : simplex.vertices)
-				{
-					if(vertex == p)
-					{
-						isExisted = true;
-						break;
-					}
-				}
-				if (isExisted || diff < EPAEPSILON)
-				{
-					result.penetrationVector = normal * originToEdge * -1;
-					A_s1 = edge.vertices[0].pointA;
-					A_s2 = edge.vertices[1].pointA;
-					B_s1 = edge.vertices[0].pointB;
-					B_s2 = edge.vertices[1].pointB;
-					int dir = 1;
+				const number d = p.result.dot(normal);
+				const number diff = abs(d - originToEdge);
+				//if distance of origin to edge is close enough to the distance of origin to edge point
+				if(diff < epsilon)
+					break;
 
-					if ((A_s1 - A_s2).lengthSquare() < (B_s1 - B_s2).lengthSquare())
-					{
-						witness = (A_s1 + A_s2) / 2;
-					}
-					else
-					{
-						witness = (B_s1 + B_s2) / 2;
-						dir = dir * -1;
-					}
-					A_s1 += shape_A.position;
-					A_s2 += shape_A.position;
-					B_s1 += shape_B.position;
-					B_s2 += shape_B.position;
-					witness += shape_A.position;
-					mirror = witness + result.penetrationVector * dir;
-					if (dir < 0)
-					{
-						Vector2 temp = witness;
-						witness = mirror;
-						mirror = temp;
-					}
-					result.contactA = mirror;
-					result.contactB = witness;
-				}
-				else
-					simplex.insert(edge, p);
+				simplex.insert(index1, p);
 				iteration++;
 			}
+			return simplex;
+		}
+		//dump penetration vector, contact point of two shape
+		static ContactInfo dumpInfo(const ShapePrimitive& shape_A, const ShapePrimitive& shape_B, const Simplex& simplex)
+		{
+			ContactInfo result;
+			auto [index1, index2] = findEdgeClosestToOrigin(simplex);
+			const Vector2 A_s1 = simplex.vertices[index1].pointA;
+			const Vector2 A_s2 = simplex.vertices[index2].pointA;
+			const Vector2 B_s1 = simplex.vertices[index1].pointB;
+			const Vector2 B_s2 = simplex.vertices[index2].pointB;
+			Vector2 normal, originToEdge, v_penetr;
+			Vector2 witness, mirror;
+			normal = calculateDirectionByEdge(simplex.vertices[index1].result, simplex.vertices[index2].result, false).normal();
+			originToEdge = abs(normal.dot(simplex.vertices[index1].result));
+			v_penetr = abs(normal.dot(simplex.vertices[index1].result)) * -1;
+			result.penetration = v_penetr;
+			
+			
+			int dir = 1;
+			if ((A_s1 - A_s2).lengthSquare() < (B_s1 - B_s2).lengthSquare())
+			{
+				witness = (A_s1 + A_s2) / 2;
+			}
+			else
+			{
+				witness = (B_s1 + B_s2) / 2;
+				dir = dir * -1;
+			}
+			mirror = witness + v_penetr * dir;
+			if (dir < 0)
+			{
+				Vector2 temp = witness;
+				witness = mirror;
+				mirror = temp;
+			}
+			result.contactA = witness;
+			result.contactB = mirror;
 			return result;
 		}
 		static Minkowski support(const ShapePrimitive& shape_A, const ShapePrimitive& shape_B, const Vector2& direction)
 		{
-			
 			Vector2 p1 = findFarthestPoint(shape_A, direction);
 			Vector2 p2 = findFarthestPoint(shape_B, direction * -1);
 			return Minkowski(p1, p2);
@@ -252,27 +246,26 @@ namespace Physics2D
 		/// </summary>
 		static std::tuple<size_t, size_t> findEdgeClosestToOrigin(const Simplex& simplex)
 		{
-			int min_dist = INT_MAX;
+			number min_dist = INT_MAX;
 			
 			size_t index1 = 0;
 			size_t index2 = 0;
 			
 			for(size_t i = 0;i < simplex.vertices.size() - 1;i++)
 			{
-				size_t j = i + 1;
 				Vector2 a = simplex.vertices[i].result;
-				Vector2 b = simplex.vertices[j].result;
+				Vector2 b = simplex.vertices[i + 1].result;
 				Vector2 ab = b - a;
 				Vector2 ao = a * -1;
 				Vector2 perpendicularOfAB = ab.perpendicular();
 				Vector2 e = perpendicularOfAB;
 				if (ao.dot(perpendicularOfAB) < 0)
 					e.negate();
-				number projection = ao.dot(e.normal());
+				const number projection = ao.dot(e.normal());
 				if(min_dist > projection)
 				{
 					index1 = i;
-					index2 = j;
+					index2 = i + 1;
 					min_dist = projection;
 				}
 			}
@@ -287,7 +280,7 @@ namespace Physics2D
 			{
 			case Shape::Type::Polygon:
 			{
-				auto polygon = dynamic_cast<const Polygon*>(shape.shape);
+				const auto* polygon = dynamic_cast<const Polygon*>(shape.shape);
 				Vector2 p0 = polygon->vertices()[0];
 				number max = 0;
 				target = polygon->vertices()[0];
@@ -305,15 +298,15 @@ namespace Physics2D
 			}
 			case Shape::Type::Circle:
 			{
-				auto circle = dynamic_cast<const Circle*>(shape.shape);
+				const auto* const circle = dynamic_cast<const Circle*>(shape.shape);
 				target = rot_dir.normalize() * circle->radius();
 				break;
 			}
 			case Shape::Type::Ellipse:
 			{
-				auto ellipse = dynamic_cast<const Ellipse*>(shape.shape);
-				number a = ellipse->A();
-				number b = ellipse->A();
+				const auto* const ellipse = dynamic_cast<const Ellipse*>(shape.shape);
+				const number a = ellipse->A();
+				const number b = ellipse->B();
 				if (rot_dir.x == 0.0f)
 				{
 					int sgn = direction.y < 0 ? -1 : 1;
@@ -345,10 +338,9 @@ namespace Physics2D
 			}
 			case Shape::Type::Edge:
 			{
-				auto edge = dynamic_cast<const Edge*>(shape.shape);
-				number dot1, dot2;
-				dot1 = Vector2::dotProduct(edge->startPoint(), direction);
-				dot2 = Vector2::dotProduct(edge->endPoint(), direction);
+				const auto* edge = dynamic_cast<const Edge*>(shape.shape);
+				number dot1 = Vector2::dotProduct(edge->startPoint(), direction);
+				number dot2 = Vector2::dotProduct(edge->endPoint(), direction);
 				target = dot1 > dot2 ? edge->startPoint() : edge->endPoint();
 				break;
 			}
@@ -357,6 +349,7 @@ namespace Physics2D
 			}
 			return target;
 		}
+		
 		static std::optional<Minkowski> adjustSimplex(Simplex& simplex, const size_t& closest_1, const size_t& closest_2)
 		{
 			switch (simplex.vertices.size())
@@ -373,7 +366,7 @@ namespace Physics2D
 
 					simplex.vertices.erase(simplex.vertices.begin() + index);
 					simplex.vertices.erase(simplex.vertices.begin() + simplex.vertices.size() - 1);
-					return target;
+					return std::optional<Minkowski>(target);
 				}
 				default:
 					return std::nullopt;
@@ -381,8 +374,8 @@ namespace Physics2D
 		}
 		static Vector2 calculateDirectionByEdge(const Vector2& p1, const Vector2& p2, bool pointToOrigin = true)
 		{
-			Vector2 ao = p1 * -1;
-			Vector2 ab = p2 - p1;
+			const Vector2 ao = p1 * -1;
+			const Vector2 ab = p2 - p1;
 			Vector2 perpendicularOfAB = ab.perpendicular();
 			if ((Vector2::dotProduct(ao,perpendicularOfAB) < 0 && pointToOrigin) || (Vector2::dotProduct(ao, perpendicularOfAB) > 0 && !pointToOrigin))
 				perpendicularOfAB.negate();
