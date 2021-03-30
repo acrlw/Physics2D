@@ -576,6 +576,7 @@ namespace Physics2D
 		{
 			return Vector2(lhs.column1.x * rhs.x + lhs.column2.x * rhs.y, lhs.column1.y * rhs.x + lhs.column2.y * rhs.y);
 		}
+		
 		static Matrix2x2 multiply(const Matrix2x2& lhs, const Matrix2x2& rhs)
 		{
 			return Matrix2x2(lhs.column1.x * rhs.column1.x + lhs.column2.x * rhs.column1.y,
@@ -782,8 +783,9 @@ namespace Physics2D
 		void setAngle(const number& angle)
 		{
 			m_angle = angle;
-			m_rotationMatrix.column1.set(cosx(angle), sinx(angle));
-			m_rotationMatrix.column2.set(sinx(angle) * -1, cosx(angle));
+			number arc = m_angle * PI / 180;
+			m_rotationMatrix.column1.set(cosx(arc), sinx(arc));
+			m_rotationMatrix.column2.set(-sinx(arc), cosx(arc));
 		}
 
 		number angle()const

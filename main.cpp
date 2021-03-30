@@ -44,18 +44,20 @@ int main(int argc, char *argv[])
 	//b.append({ 6, 2 });
 	//b.append({ 8, 3 });
 	//b.append({ 8, 4 });
-	b.append({ 9,6 });
-	b.append({ 7,8 });
-	b.append({ 5,7 });
-	b.append({ 4,6 });
-	b.append({ 5,5 });
-	b.append({ 7,4 });
-	b.append({ 9,5 });
-	b.append({ 9,6 });
+	b.append({ 0,4 });
+	b.append({ -4,2 });
+	b.append({ -2,-2 });
+	b.append({ 2,-4 });
+	b.append({ 4,0 });
+	b.append({ 0,4 });
 	ShapePrimitive spa, spb;
 	spa.shape = &a;
+	spa.translation.set(6, -2);
+	spa.rotation = 45;
+	
 	spb.shape = &b;
-	spb.position = b.center();
+	spb.rotation = -45;
+	spb.translation.set(6, 6);
 	fmt::print("p: {}\n", b.center());
 	
 	auto [isCollide, simplex] = GJK::gjk(spa, spb);

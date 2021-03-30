@@ -33,14 +33,14 @@ namespace Physics2D
 	struct ShapePrimitive
 	{
 		Shape * shape = nullptr;
-		Vector2 position;
-		number angle = 0;
+		Vector2 translation;
+		number rotation = 0;
 	};
 	/// <summary>
 	/// Simplex structure for gjk/epa test.
-	/// By convention, there are at least two points in simplex.
-	/// 2 points: p0 -> p0 , construct a single point
-	/// 3 points: p0 -> p1 -> p1, construct a segment
+	/// By convention:
+	/// 1 points: p0 , construct a single point
+	/// 2 points: p0 -> p1, construct a segment
 	/// 4 points: p0 -> p1 -> p2 -> p0, construct a triangle
 	/// </summary>
 	/// <returns></returns>
@@ -112,17 +112,17 @@ namespace Physics2D
 		{
 
 		}
-		static std::tuple<bool, Simplex> gjk(const ShapePrimitive& shape_A, const ShapePrimitive& shape_B, const size_t& _iteration = 50)
+		static std::tuple<bool, Simplex> gjk(const ShapePrimitive& shape_A, const ShapePrimitive& shape_B, const size_t& iteration = 50)
 		{
 			Simplex simplex;
 			bool found = false;
-			Vector2 direction = shape_B.position - shape_A.position;
+			Vector2 direction = shape_B.translation - shape_A.translation;
 			Minkowski diff = support(shape_A, shape_B, direction);
 			simplex.vertices.emplace_back(diff);
 			direction.negate();
-			int iteration = 0;
+			size_t iter = 0;
 			std::vector<Minkowski> removed;
-			while(iteration <= _iteration)
+			while(iter <= iteration)
 			{
 				diff = support(shape_A, shape_B, direction);
 				simplex.vertices.emplace_back(diff);
@@ -160,20 +160,20 @@ namespace Physics2D
 						}
 					}
 				}
-				iteration++;
+				iter++;
 			}
 
 			return std::make_tuple(found, simplex);
 		}
-		static Simplex epa(const ShapePrimitive& shape_A, const ShapePrimitive& shape_B, const Simplex& src, const size_t& _iteration = 50, const number& epsilon = 0.0001)
+		static Simplex epa(const ShapePrimitive& shape_A, const ShapePrimitive& shape_B, const Simplex& src, const size_t& iteration = 50, const number& epsilon = 0.0001)
 		{
-			size_t iteration = 0;
+			size_t iter = 0;
 			Simplex edge;
 			Simplex simplex = src;
 			Vector2 normal;
 			number originToEdge;
 			Minkowski p;
-			while(iteration <= _iteration)
+			while(iter <= iteration)
 			{
 				auto [index1, index2] = findEdgeClosestToOrigin(simplex);
 				normal = calculateDirectionByEdge(simplex.vertices[index1].result, simplex.vertices[index2].result, false).normal();
@@ -191,7 +191,7 @@ namespace Physics2D
 					break;
 
 				simplex.insert(index1, p);
-				iteration++;
+				iter++;
 			}
 			return simplex;
 		}
@@ -199,16 +199,17 @@ namespace Physics2D
 		static ContactInfo dumpInfo(const ShapePrimitive& shape_A, const ShapePrimitive& shape_B, const Simplex& simplex)
 		{
 			ContactInfo result;
+			
 			auto [index1, index2] = findEdgeClosestToOrigin(simplex);
 			const Vector2 A_s1 = simplex.vertices[index1].pointA;
 			const Vector2 A_s2 = simplex.vertices[index2].pointA;
 			const Vector2 B_s1 = simplex.vertices[index1].pointB;
 			const Vector2 B_s2 = simplex.vertices[index2].pointB;
-			Vector2 normal, originToEdge, v_penetr;
+			Vector2 normal, v_penetr;
 			Vector2 witness, mirror;
 			normal = calculateDirectionByEdge(simplex.vertices[index1].result, simplex.vertices[index2].result, false).normal();
-			originToEdge = abs(normal.dot(simplex.vertices[index1].result));
-			v_penetr = abs(normal.dot(simplex.vertices[index1].result)) * -1;
+			number originToEdge = abs(normal.dot(simplex.vertices[index1].result));
+			v_penetr = normal * originToEdge * -1;
 			result.penetration = v_penetr;
 			
 			
@@ -274,7 +275,7 @@ namespace Physics2D
 		static Vector2 findFarthestPoint(const ShapePrimitive& shape, const Vector2& direction)
 		{
 			Vector2 target;
-			Rotation2 rot = Rotation2(-1 * shape.angle);
+			Rotation2 rot = Rotation2(-1 * shape.rotation);
 			Vector2 rot_dir = rot.multiply(direction);
 			switch (shape.shape->type())
 			{
@@ -294,12 +295,13 @@ namespace Physics2D
 						target = vertex;
 					}
 				}
+
 				break;
 			}
 			case Shape::Type::Circle:
 			{
 				const auto* const circle = dynamic_cast<const Circle*>(shape.shape);
-				target = rot_dir.normalize() * circle->radius();
+				target = direction * circle->radius();
 				break;
 			}
 			case Shape::Type::Ellipse:
@@ -332,7 +334,6 @@ namespace Physics2D
 					y1 = (b2 * k2 * d) / (a2 + b2 * k2);
 					target.set(x1, y1);
 					//rotate the final vector
-					rot.setAngle(shape.angle);
 				}
 				break;
 			}
@@ -347,6 +348,9 @@ namespace Physics2D
 			default:
 				break;
 			}
+			rot.setAngle(shape.rotation);
+			target = rot.multiply(target);
+			target += shape.translation;
 			return target;
 		}
 		

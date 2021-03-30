@@ -18,16 +18,7 @@ namespace Physics2D
 			if (body_A == nullptr || body_B == nullptr)
 				return result;
 
-
-			ShapePrimitive shapeA, shapeB;
-			shapeA.angle = body_A->angle();
-			shapeA.shape = body_A->shape();
 			
-			shapeB.angle = body_B->angle();
-			shapeB.shape = body_B->shape();
-			shapeB.position = body_B->position() - body_A->position();
-
-			return GJK::test(shapeA, shapeB);
 		}
 	private:
 		
