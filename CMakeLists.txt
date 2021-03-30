@@ -42,6 +42,7 @@ add_executable(physics-engine
     "include/dynamics/world.h"
     "include/math/integrator.h"
     "include/math/math.h"
+    "include/math/algorithm/graphics/2d.h"
     "include/profile/profiler.h"
     "include/render/renderer.h"
     )

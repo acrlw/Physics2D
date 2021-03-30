@@ -2,7 +2,8 @@
 #include "fmt/core.h"
 #include "include/collision/algorithm/gjk.h"
 #include "include/collision/contact.h"
-
+#include "include/math/algorithm/graphics/2d.h"
+using namespace Physics2D;
 namespace fmt {
 	template <>
 	struct formatter<Physics2D::Vector2> {
@@ -64,11 +65,13 @@ int main(int argc, char *argv[])
 	simplex = GJK::epa(spa, spb, simplex);
 	ContactInfo info = GJK::dumpInfo(spa, spb, simplex);
 	
-	auto result = Physics2D::lineSegmentIntersection({-4,2}, {-2,3}, {-2,0}, {-3,4});
+	auto result = GraphicsAlgorithm2D::lineSegmentIntersection({-4,2}, {-2,3}, {-2,0}, {-3,4});
 	if (result.has_value())
 		fmt::print("intersection point:{}\n", result.value());
 	else
 		fmt::print("no intersection\n");
+	auto isOnSegment = GraphicsAlgorithm2D::isPointOnSegment({ 0, 4 }, { 4, 0 }, { 1, 3 });
+	fmt::print("is on segment:{} \n", isOnSegment);
 	return 0;
 	
 }
