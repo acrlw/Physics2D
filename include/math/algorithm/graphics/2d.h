@@ -117,7 +117,7 @@ namespace Physics2D
 			}
 		}
 		/// <summary>
-		/// Calculate shortest length between point p and ellipse ab,return the point on ellipse ab
+		/// Calculate shortest length between ellipse ab and a point p outside the ellipse ab ,return the point on ellipse ab
 		/// </summary>
 		/// <param name="a"></param>
 		/// <param name="b"></param>
@@ -175,6 +175,38 @@ namespace Physics2D
 					x_left = temp_x;
 				else
 					x_right = temp_x;			//obtuse angle
+			}
+		}
+		static Vector2 triangleGravityPoint(const Vector2& a1, const Vector2& a2, const Vector2& a3)
+		{
+			return Vector2(a1 + a2 + a3) / 3;
+		}
+
+		static number triangleArea(const Vector2& a1, const Vector2& a2, const Vector2& a3)
+		{
+			return abs(Vector2::crossProduct(a1 - a2, a1 - a3)) / 2;
+		}
+		static Vector2 calculateCenter(const std::vector<Vector2>& vertices)
+		{
+			if (vertices.size() >= 4)
+			{
+				Vector2 pos;
+				number area = 0;
+				size_t p_a, p_b, p_c;
+				p_a = 0, p_b = 0, p_c = 0;
+				for (size_t i = 0; i < vertices.size() - 1; i++)
+				{
+					p_b = i + 1;
+					p_c = i + 2;
+					if (p_b == vertices.size() - 2)
+						break;
+					number a = triangleArea(vertices[p_a], vertices[p_b], vertices[p_c]);
+					Vector2 p = triangleGravityPoint(vertices[p_a], vertices[p_b], vertices[p_c]);
+					pos += p * a;
+					area += a;
+				}
+				pos /= area;
+				return pos;
 			}
 		}
 	};

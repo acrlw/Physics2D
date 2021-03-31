@@ -13,7 +13,7 @@ find_package(Qt5 COMPONENTS Widgets REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 add_executable(physics-engine
     mainwindow.ui
-    main.cpp
+    
     "source/collision/algorithm/sat.cpp"
     "source/collision/algorithm/gjk.cpp"
     "source/collision/algorithm/mpr.cpp"
