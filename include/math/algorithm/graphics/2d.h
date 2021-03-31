@@ -93,6 +93,12 @@ namespace Physics2D
 		{
 			
 		}
+		/// <summary>
+		/// calculate the shortest distance from origin to line segment. return the point on line segment
+		/// </summary>
+		/// <param name="a"></param>
+		/// <param name="b"></param>
+		/// <returns></returns>
 		static Vector2 originToLineSegment(const Vector2& a, const Vector2& b)
 		{
 			//special cases
@@ -181,11 +187,22 @@ namespace Physics2D
 		{
 			return Vector2(a1 + a2 + a3) / 3;
 		}
-
+		/// <summary>
+		/// calculate the area of triangle use cross product
+		/// </summary>
+		/// <param name="a1"></param>
+		/// <param name="a2"></param>
+		/// <param name="a3"></param>
+		/// <returns></returns>
 		static number triangleArea(const Vector2& a1, const Vector2& a2, const Vector2& a3)
 		{
 			return abs(Vector2::crossProduct(a1 - a2, a1 - a3)) / 2;
 		}
+		/// <summary>
+		/// calculate mass center of 'convex' polygon
+		/// </summary>
+		/// <param name="vertices"></param>
+		/// <returns></returns>
 		static Vector2 calculateCenter(const std::vector<Vector2>& vertices)
 		{
 			if (vertices.size() >= 4)

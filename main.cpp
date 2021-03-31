@@ -3,6 +3,7 @@
 #include "include/collision/algorithm/gjk.h"
 #include "include/collision/contact.h"
 #include "include/math/algorithm/graphics/2d.h"
+#include "include/math/integrator.h"
 using namespace Physics2D;
 namespace fmt {
 	template <>
@@ -32,19 +33,11 @@ namespace fmt {
 	};
 }
 using namespace Physics2D;
-int main(int argc, char* argv[])
+void test1()
 {
 	Ellipse a;
 	a.set(20, 16);
 	Polygon b;
-	//b.append({ 8, 4 });
-	//b.append({ 6, 6 });
-	//b.append({ 4, 5 });
-	//b.append({ 3, 4 });
-	//b.append({ 4, 3 });
-	//b.append({ 6, 2 });
-	//b.append({ 8, 3 });
-	//b.append({ 8, 4 });
 	b.append({ 0,4 });
 	b.append({ -4,2 });
 	b.append({ -2,-2 });
@@ -61,27 +54,52 @@ int main(int argc, char* argv[])
 	spb.translation.set(6, 8);
 	fmt::print("p: {}\n", b.center());
 
-	//auto [isCollide, simplex] = GJK::gjk(spa, spb);
-	//simplex = GJK::epa(spa, spb, simplex);
-	//ContactInfo info = GJK::dumpInfo(spa, spb, simplex);
-	//
-	//auto result = GraphicsAlgorithm2D::lineSegmentIntersection({-4,2}, {-2,3}, {-2,0}, {-3,4});
-	//if (result.has_value())
-	//	fmt::print("intersection point:{}\n", result.value());
-	//else
-	//	fmt::print("no intersection\n");
-	//auto isOnSegment = GraphicsAlgorithm2D::isPointOnSegment({ 0, 4 }, { 4, 0 }, { 1, 3 });
-	//fmt::print("is on segment:{} \n", isOnSegment);
-	//auto p = GraphicsAlgorithm2D::originToLineSegment({-5, 0}, {3, 0});
-	//fmt::print("p: {}\n", p);
-	//p = GraphicsAlgorithm2D::originToLineSegment({0, -3}, {0, 6});
-	//fmt::print("p: {}\n", p); 
-	//p = GraphicsAlgorithm2D::originToLineSegment({1, 1}, {4, 5});
-	//fmt::print("p: {}\n", p);
-	//auto p = GraphicsAlgorithm2D::originToLineSegment({ -4, -2 }, { 2, 0 });
-	//fmt::print("p: {}\n", p);
-	auto p = GraphicsAlgorithm2D::shortestLengthPointOfEllipse(10, 8, { 16, -6 });
-	fmt::print("p:{}\n", p.value());
+	auto [isCollide, simplex] = GJK::gjk(spa, spb);
+	simplex = GJK::epa(spa, spb, simplex);
+	ContactInfo info = GJK::dumpInfo(spa, spb, simplex);
+
+	auto result = GraphicsAlgorithm2D::lineSegmentIntersection({ -4,2 }, { -2,3 }, { -2,0 }, { -3,4 });
+	if (result.has_value())
+		fmt::print("intersection point:{}\n", result.value());
+	else
+		fmt::print("no intersection\n");
+	auto isOnSegment = GraphicsAlgorithm2D::isPointOnSegment({ 0, 4 }, { 4, 0 }, { 1, 3 });
+	fmt::print("is on segment:{} \n", isOnSegment);
+	auto p = GraphicsAlgorithm2D::originToLineSegment({ -5, 0 }, { 3, 0 });
+	fmt::print("p: {}\n", p);
+	p = GraphicsAlgorithm2D::originToLineSegment({ 0, -3 }, { 0, 6 });
+	fmt::print("p: {}\n", p);
+	p = GraphicsAlgorithm2D::originToLineSegment({ 1, 1 }, { 4, 5 });
+	fmt::print("p: {}\n", p);
+	auto op = GraphicsAlgorithm2D::originToLineSegment({ -4, -2 }, { 2, 0 });
+	fmt::print("p: {}\n", op);
+	auto pl = GraphicsAlgorithm2D::shortestLengthPointOfEllipse(10, 8, { 16, -6 });
+	fmt::print("p:{}\n", pl.value());
+}
+int main(int argc, char* argv[])
+{
+	BodyState state;
+	state.position.set(0, 20);
+	state.acceleration.set(0, 9.8f);
+	state.angularVelocity = 20;
+	state.angle = 15;
+	state.deltaTime = 1.0f / 60.0f;
+	state.lastPosition.set(0, 20);
+	state.lastDeltaTime = 1.0f / 60.0f;
+	state.lastAngle = 15;
+	for(size_t i = 0;i < 100;i += 1)
+	{
+		state.acceleration.set(0, 9.8f);
+		state.angularAcceleration = -8;
+		//fmt::print("----step{}-----\n", i);
+		fmt::print("position:{}\n", state.position);
+		//fmt::print("velocity:{}\n", state.velocity);
+		//fmt::print("acceleration:{}\n", state.acceleration);
+		//fmt::print("angle:{}\n", state.angle);
+		//fmt::print("angularVelocity:{}\n", state.angularVelocity);
+		//fmt::print("--------------\n");
+		state = Verlet::integrateVelocity(state, 1.0f / 60.0f);
+	}
 	return 0;
 
 }

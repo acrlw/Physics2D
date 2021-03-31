@@ -353,7 +353,7 @@ namespace Physics2D
 		{
 			switch (simplex.vertices.size())
 			{
-				case 4: //triangle
+				case 4: //only adjust for triangle from gjk
 				{
 					size_t index = -1;
 						

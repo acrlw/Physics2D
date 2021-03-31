@@ -31,7 +31,7 @@ namespace Physics2D
 			result.velocity = last.velocity + last.acceleration * dt;
 			result.position = last.position + result.velocity * dt;
 			result.angularVelocity = last.angularVelocity + last.angularAcceleration * dt;
-			result.angle = last.angle + result.angularAcceleration * dt;
+			result.angle = last.angle + result.angularVelocity * dt;
 			result.deltaTime = dt;
 
 			result.lastDeltaTime = dt;
@@ -52,7 +52,7 @@ namespace Physics2D
 			Vector2 lastVelocity = state.position - state.lastPosition;
 			result.velocity = lastVelocity + state.acceleration * dt * dt;
 			result.position = state.position + result.velocity;
-			result.angularVelocity = (state.angle - state.lastAngle) + state.angularVelocity * dt * dt;
+			result.angularVelocity = (state.angle - state.lastAngle) + state.angularAcceleration * dt * dt;
 			result.angle = state.angle + result.angularVelocity;
 
 			result.lastDeltaTime = dt;
