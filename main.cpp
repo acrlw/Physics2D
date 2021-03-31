@@ -14,7 +14,7 @@ namespace fmt {
 
 		template <typename FormatContext>
 		auto format(const Physics2D::Vector2& p, FormatContext& ctx) {
-			return format_to(ctx.out(), "({:.4f}, {:.4f})", p.x, p.y);
+			return format_to(ctx.out(), "({:.8f}, {:.8f})", p.x, p.y);
 		}
 	};
 
@@ -27,7 +27,7 @@ namespace fmt {
 
 		template <typename FormatContext>
 		auto format(const Physics2D::Vector3& p, FormatContext& ctx) {
-			return format_to(ctx.out(), "({:.4f}, {:.4f}, {:.4f})", p.x, p.y, p.z);
+			return format_to(ctx.out(), "({:.8f}, {:.8f}, {:.8f})", p.x, p.y, p.z);
 		}
 	};
 }
@@ -53,25 +53,35 @@ int main(int argc, char *argv[])
 	b.append({ 0,4 });
 	ShapePrimitive spa, spb;
 	spa.shape = &a;
-	spa.translation.set(6, -2);
+	spa.translation.set(6, -8);
 	spa.rotation = 45;
 	
 	spb.shape = &b;
 	spb.rotation = -45;
-	spb.translation.set(6, 6);
+	spb.translation.set(6, 8);
 	fmt::print("p: {}\n", b.center());
 	
-	auto [isCollide, simplex] = GJK::gjk(spa, spb);
-	simplex = GJK::epa(spa, spb, simplex);
-	ContactInfo info = GJK::dumpInfo(spa, spb, simplex);
-	
-	auto result = GraphicsAlgorithm2D::lineSegmentIntersection({-4,2}, {-2,3}, {-2,0}, {-3,4});
-	if (result.has_value())
-		fmt::print("intersection point:{}\n", result.value());
-	else
-		fmt::print("no intersection\n");
-	auto isOnSegment = GraphicsAlgorithm2D::isPointOnSegment({ 0, 4 }, { 4, 0 }, { 1, 3 });
-	fmt::print("is on segment:{} \n", isOnSegment);
+	//auto [isCollide, simplex] = GJK::gjk(spa, spb);
+	//simplex = GJK::epa(spa, spb, simplex);
+	//ContactInfo info = GJK::dumpInfo(spa, spb, simplex);
+	//
+	//auto result = GraphicsAlgorithm2D::lineSegmentIntersection({-4,2}, {-2,3}, {-2,0}, {-3,4});
+	//if (result.has_value())
+	//	fmt::print("intersection point:{}\n", result.value());
+	//else
+	//	fmt::print("no intersection\n");
+	//auto isOnSegment = GraphicsAlgorithm2D::isPointOnSegment({ 0, 4 }, { 4, 0 }, { 1, 3 });
+	//fmt::print("is on segment:{} \n", isOnSegment);
+	//auto p = GraphicsAlgorithm2D::originToLineSegment({-5, 0}, {3, 0});
+	//fmt::print("p: {}\n", p);
+	//p = GraphicsAlgorithm2D::originToLineSegment({0, -3}, {0, 6});
+	//fmt::print("p: {}\n", p); 
+	//p = GraphicsAlgorithm2D::originToLineSegment({1, 1}, {4, 5});
+	//fmt::print("p: {}\n", p);
+	//auto p = GraphicsAlgorithm2D::originToLineSegment({ -4, -2 }, { 2, 0 });
+	//fmt::print("p: {}\n", p);
+	auto p = GraphicsAlgorithm2D::shortestLengthPointOfEllipse(10, 8, { 16, -6 });
+	fmt::print("p:{}\n", p.value());
 	return 0;
 	
 }

@@ -16,7 +16,7 @@ namespace Physics2D
 		static inline bool isCollinear(const Vector2& a, const Vector2& b, const Vector2& c)
 		{
 			//triangle area = 0 then collinear
-			return abs(Vector2::crossProduct(a - b, a - c)) == 0;
+			return numberEqual(abs(Vector2::crossProduct(a - b, a - c)), 0);
 		}
 		/// <summary>
 		/// Judge whether point c on line segment ab using line projection and set-union method
@@ -31,10 +31,8 @@ namespace Physics2D
 				return false;
 			else
 			{
-				number c_x = abs(c.x);
-				number c_y = abs(c.y);
-				return (c_x <= abs_max(a.x, b.x) && c_x >= abs_min(a.x, b.x) &&
-					c_y <= abs_max(a.y, b.y) && c_y >= abs_min(a.y, b.y));
+				return (c.x <= max(a.x, b.x) && c.x >= min(a.x, b.x) &&
+					c.y <= max(a.y, b.y) && c.y >= min(a.y, b.y));
 			}
 		}
 		/// <summary>
@@ -73,8 +71,8 @@ namespace Physics2D
 			number p_x = abs(p.x);
 			number p_y = abs(p.y);
 
-			if (p_x <= abs_max(a.x, b.x) && p_x >= abs_min(a.x, b.x) &&
-				p_y <= abs_max(a.y, b.y) && p_y >= abs_min(a.y, b.y))
+			if (p.x <= max(a.x, b.x) && p.x >= min(a.x, b.x) &&
+				p.y <= max(a.y, b.y) && p.y >= min(a.y, b.y))
 				return std::optional<Vector2>(p);
 			else
 				return std::nullopt;
@@ -95,6 +93,89 @@ namespace Physics2D
 		{
 			
 		}
-		
+		static Vector2 originToLineSegment(const Vector2& a, const Vector2& b)
+		{
+			//special cases
+			if (a == b)
+				return a;
+			
+			if((abs(a.x)  == 0 && abs(b.x) == 0)||(abs(a.y) == 0 && abs(b.y == 0)))
+				return a.lengthSquare() > b.lengthSquare() ? b : a;
+			else
+			{
+				Vector2 ab = b - a;
+				Vector2 ao = ab.normal().dot(a * -1) * ab.normal();
+				Vector2 op = a + ao;
+				
+				if((op.x <= max(a.x, b.x) && op.x >= min(a.x, b.x) &&
+					op.y <= max(a.y, b.y) && op.y >= min(a.y, b.y)))
+					return op;
+				else
+					return a.lengthSquare() > b.lengthSquare() ? b : a;
+				
+				
+			}
+		}
+		/// <summary>
+		/// Calculate shortest length between point p and ellipse ab,return the point on ellipse ab
+		/// </summary>
+		/// <param name="a"></param>
+		/// <param name="b"></param>
+		/// <param name="p"></param>
+		/// <returns></returns>
+		static std::optional<Vector2> shortestLengthPointOfEllipse(const number& a, const number& b, const Vector2& p, const number& epsilon = 0.000001f)
+		{
+			if (a == 0 || b == 0)
+				return std::nullopt;
+			
+			if(p.x == 0)
+			{
+				return p.y > 0 ? std::optional<Vector2>({ 0, b }) :
+					std::optional<Vector2>({ 0, -b });
+			}
+			if (p.y == 0)
+			{
+				return p.x > 0 ? std::optional<Vector2>({ a, 0 }) :
+					std::optional<Vector2>({ -a, 0 });
+			}
+			
+			number x_left, x_right;
+			number temp_x, temp_y;
+			number t1_x, t1_y;
+			Vector2 t0, t1;
+			int sgn = p.y > 0 ? 1 : -1;
+			if(p.x < 0)
+			{
+				x_left = -a;
+				x_right = 0;
+			}
+			else
+			{
+				x_left = 0;
+				x_right = a;
+			}
+			int iteration = 0;
+			while(++iteration)
+			{
+				temp_x = (x_left + x_right) / 2;
+				temp_y = sgn * sqrt(pow(b, 2) - pow(b / a, 2) * pow(temp_x, 2));
+				Vector2 t0(temp_x, temp_y);
+				t0.set(temp_x, temp_y);
+				t1_x = temp_x + 1;
+				t1_y = (pow(b, 2) - pow(b / a, 2) * t1_x * temp_x) / temp_y;
+				t1.set(t1_x, t1_y);
+				Vector2 t0t1 = t1 - t0;
+				Vector2 t0p = p - t0;
+				
+				number result = t0t1.dot(t0p);
+				if (abs(result) < epsilon)
+					return std::optional<Vector2>(t0);
+				
+				if(result > 0)					// acute angle
+					x_left = temp_x;
+				else
+					x_right = temp_x;			//obtuse angle
+			}
+		}
 	};
 }

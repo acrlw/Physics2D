@@ -4,6 +4,7 @@
 #include "include/common/common.h"
 #include "include/collision/contact.h"
 #include "include/dynamics/shape.h"
+#include "include/math/algorithm/graphics/2d.h"
 namespace Physics2D
 {
 
@@ -11,9 +12,7 @@ namespace Physics2D
 	{
 		Minkowski() = default;
 		Minkowski(const Vector2& point_a, const Vector2& point_b) : pointA(point_a), pointB(point_b), result(pointA - pointB)
-		{
-
-		}
+		{}
 		inline bool operator ==(const Minkowski& rhs)const
 		{
 			return pointA == rhs.pointA && pointB == rhs.pointB;
@@ -47,11 +46,13 @@ namespace Physics2D
 	struct Simplex
 	{
 		std::vector<Minkowski> vertices;
+		bool isContainOrigin = false;
 		inline bool containOrigin()
 		{
-			return isContainOrigin(*this);
+			isContainOrigin = calculateContainOrigin(*this);
+			return isContainOrigin;
 		}
-		static inline bool isContainOrigin(const Simplex& simplex)
+		static inline bool calculateContainOrigin(const Simplex& simplex)
 		{
 			switch (simplex.vertices.size())
 			{
@@ -108,10 +109,6 @@ namespace Physics2D
 	class GJK
 	{
 	public:
-		static ContactInfo test(const ShapePrimitive& shape_A, const ShapePrimitive& shape_B)
-		{
-
-		}
 		static std::tuple<bool, Simplex> gjk(const ShapePrimitive& shape_A, const ShapePrimitive& shape_B, const size_t& iteration = 50)
 		{
 			Simplex simplex;
@@ -195,11 +192,11 @@ namespace Physics2D
 			}
 			return simplex;
 		}
-		//dump penetration vector, contact point of two shape
+		//dump distance vector, contact point of two shape
 		static ContactInfo dumpInfo(const ShapePrimitive& shape_A, const ShapePrimitive& shape_B, const Simplex& simplex)
 		{
 			ContactInfo result;
-			
+			result.isCollide = simplex.isContainOrigin;
 			auto [index1, index2] = findEdgeClosestToOrigin(simplex);
 			const Vector2 A_s1 = simplex.vertices[index1].pointA;
 			const Vector2 A_s2 = simplex.vertices[index2].pointA;
@@ -256,13 +253,11 @@ namespace Physics2D
 			{
 				Vector2 a = simplex.vertices[i].result;
 				Vector2 b = simplex.vertices[i + 1].result;
-				Vector2 ab = b - a;
-				Vector2 ao = a * -1;
-				Vector2 perpendicularOfAB = ab.perpendicular();
-				Vector2 e = perpendicularOfAB;
-				if (ao.dot(perpendicularOfAB) < 0)
-					e.negate();
-				const number projection = ao.dot(e.normal());
+				
+				const Vector2 p = GraphicsAlgorithm2D::originToLineSegment(a, b);
+				const number projection = p.length();
+
+				
 				if(min_dist > projection)
 				{
 					index1 = i;
