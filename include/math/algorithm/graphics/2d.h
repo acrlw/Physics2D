@@ -103,33 +103,26 @@ namespace Physics2D
 			
 		}
 		/// <summary>
-		/// calculate the shortest distance from origin to line segment. return the point on line segment
+		/// calculate the shortest distance from point to line segment. return the point on line segment
 		/// </summary>
 		/// <param name="a"></param>
 		/// <param name="b"></param>
 		/// <returns></returns>
-		static Vector2 originToLineSegment(const Vector2& a, const Vector2& b)
+		static Vector2 pointToLineSegment(const Vector2& a, const Vector2& b, const Vector2& p)
 		{
 			//special cases
 			if (a == b)
-				return a;
+				return {};
 			
-			if((abs(a.x)  == 0 && abs(b.x) == 0)||(abs(a.y) == 0 && abs(b.y == 0)))
-				return a.lengthSquare() > b.lengthSquare() ? b : a;
+			Vector2 ap = p - a;
+			Vector2 ab_normal = (b - a).normal();
+			Vector2 ap_proj = ab_normal.dot(ap) * ab_normal;
+			Vector2 op_proj = a + ap_proj;
+			
+			if(fuzzyIsPointOnSegment(a, b, op_proj))
+				return op_proj;
 			else
-			{
-				Vector2 ab = b - a;
-				Vector2 ao = ab.normal().dot(a * -1) * ab.normal();
-				Vector2 op = a + ao;
-
-				
-				if(fuzzyIsPointOnSegment(a, b, op))
-					return op;
-				else
-					return a.lengthSquare() > b.lengthSquare() ? b : a;
-				
-				
-			}
+				return (p - a).lengthSquare() > (p - b).lengthSquare() ? b : a;
 		}
 		/// <summary>
 		/// Calculate shortest length between ellipse ab and a point p outside the ellipse ab ,return the point on ellipse ab

@@ -254,7 +254,7 @@ namespace Physics2D
 				Vector2 a = simplex.vertices[i].result;
 				Vector2 b = simplex.vertices[i + 1].result;
 				
-				const Vector2 p = GraphicsAlgorithm2D::originToLineSegment(a, b);
+				const Vector2 p = GraphicsAlgorithm2D::pointToLineSegment(a, b, {0, 0});
 				const number projection = p.length();
 
 				

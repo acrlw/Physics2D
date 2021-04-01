@@ -65,14 +65,6 @@ void test1()
 		fmt::print("no intersection\n");
 	auto isOnSegment = GraphicsAlgorithm2D::isPointOnSegment({ 0, 4 }, { 4, 0 }, { 1, 3 });
 	fmt::print("is on segment:{} \n", isOnSegment);
-	auto p = GraphicsAlgorithm2D::originToLineSegment({ -5, 0 }, { 3, 0 });
-	fmt::print("p: {}\n", p);
-	p = GraphicsAlgorithm2D::originToLineSegment({ 0, -3 }, { 0, 6 });
-	fmt::print("p: {}\n", p);
-	p = GraphicsAlgorithm2D::originToLineSegment({ 1, 1 }, { 4, 5 });
-	fmt::print("p: {}\n", p);
-	auto op = GraphicsAlgorithm2D::originToLineSegment({ -4, -2 }, { 2, 0 });
-	fmt::print("p: {}\n", op);
 	auto pl = GraphicsAlgorithm2D::shortestLengthPointOfEllipse(10, 8, { 16, -6 });
 	fmt::print("p:{}\n", pl);
 }
@@ -101,10 +93,17 @@ void test2()
 		state = Verlet::integrateVelocity(state, 1.0f / 60.0f);
 	}
 }
+void test3()
+{
+	auto [p1, p2] = GraphicsAlgorithm2D::shortestLengthLineSegmentEllipse(10, 8, { 12, -8 }, { 20, 10 });
+	fmt::print("p1{} \np2{} \n", p1, p2);
+
+	auto vtr = GraphicsAlgorithm2D::pointToLineSegment({ 0, 5 }, { 25, -5 }, { 5, -1 });
+	fmt::print("point:{}\n", vtr);
+}
 int main(int argc, char* argv[])
 {
-	auto [p1, p2] = GraphicsAlgorithm2D::shortestLengthLineSegmentEllipse(10, 8, {12, -8}, {20, 10});
-	fmt::print("p1{} \np2{} \n", p1, p2);
+	test1();
 	return 0;
 
 }
