@@ -74,9 +74,9 @@ void test1()
 	auto op = GraphicsAlgorithm2D::originToLineSegment({ -4, -2 }, { 2, 0 });
 	fmt::print("p: {}\n", op);
 	auto pl = GraphicsAlgorithm2D::shortestLengthPointOfEllipse(10, 8, { 16, -6 });
-	fmt::print("p:{}\n", pl.value());
+	fmt::print("p:{}\n", pl);
 }
-int main(int argc, char* argv[])
+void test2()
 {
 	BodyState state;
 	state.position.set(0, 20);
@@ -87,7 +87,7 @@ int main(int argc, char* argv[])
 	state.lastPosition.set(0, 20);
 	state.lastDeltaTime = 1.0f / 60.0f;
 	state.lastAngle = 15;
-	for(size_t i = 0;i < 100;i += 1)
+	for (size_t i = 0; i < 100; i += 1)
 	{
 		state.acceleration.set(0, 9.8f);
 		state.angularAcceleration = -8;
@@ -100,6 +100,11 @@ int main(int argc, char* argv[])
 		//fmt::print("--------------\n");
 		state = Verlet::integrateVelocity(state, 1.0f / 60.0f);
 	}
+}
+int main(int argc, char* argv[])
+{
+	auto [p1, p2] = GraphicsAlgorithm2D::shortestLengthLineSegmentEllipse(10, 8, {12, -8}, {20, 10});
+	fmt::print("p1{} \np2{} \n", p1, p2);
 	return 0;
 
 }

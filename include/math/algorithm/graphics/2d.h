@@ -19,7 +19,7 @@ namespace Physics2D
 			return numberEqual(abs(Vector2::crossProduct(a - b, a - c)), 0);
 		}
 		/// <summary>
-		/// Judge whether point c on line segment ab using line projection and set-union method
+		/// Judge whether point c is on line segment ab using line projection and set-union method
 		/// </summary>
 		/// <param name="a"></param>
 		/// <param name="b"></param>
@@ -31,9 +31,20 @@ namespace Physics2D
 				return false;
 			else
 			{
-				return (c.x <= max(a.x, b.x) && c.x >= min(a.x, b.x) &&
-					c.y <= max(a.y, b.y) && c.y >= min(a.y, b.y));
+				return fuzzyIsPointOnSegment(a, b, c);
 			}
+		}
+		/// <summary>
+		/// Judge whether point c is on line segment ab, given a,b,c is already collinear by calculating cross product
+		/// </summary>
+		/// <param name="a"></param>
+		/// <param name="b"></param>
+		/// <param name="c"></param>
+		/// <returns></returns>
+		static inline bool fuzzyIsPointOnSegment(const Vector2& a, const Vector2& b, const Vector2& c)
+		{
+			return (c.x <= max(a.x, b.x) && c.x >= min(a.x, b.x) &&
+				c.y <= max(a.y, b.y) && c.y >= min(a.y, b.y));
 		}
 		/// <summary>
 		/// Calculate intersection point between line ab and line cd.
@@ -71,11 +82,9 @@ namespace Physics2D
 			number p_x = abs(p.x);
 			number p_y = abs(p.y);
 
-			if (p.x <= max(a.x, b.x) && p.x >= min(a.x, b.x) &&
-				p.y <= max(a.y, b.y) && p.y >= min(a.y, b.y))
-				return std::optional<Vector2>(p);
-			else
-				return std::nullopt;
+			return fuzzyIsPointOnSegment(a, b, p) ? std::optional<Vector2>(p)
+				: std::nullopt;
+
 		}
 		static std::tuple<Vector2, number> calculateCircumcircle(const Vector2& a, const Vector2& b, const Vector2& c)
 		{
@@ -112,9 +121,9 @@ namespace Physics2D
 				Vector2 ab = b - a;
 				Vector2 ao = ab.normal().dot(a * -1) * ab.normal();
 				Vector2 op = a + ao;
+
 				
-				if((op.x <= max(a.x, b.x) && op.x >= min(a.x, b.x) &&
-					op.y <= max(a.y, b.y) && op.y >= min(a.y, b.y)))
+				if(fuzzyIsPointOnSegment(a, b, op))
 					return op;
 				else
 					return a.lengthSquare() > b.lengthSquare() ? b : a;
@@ -129,20 +138,20 @@ namespace Physics2D
 		/// <param name="b"></param>
 		/// <param name="p"></param>
 		/// <returns></returns>
-		static std::optional<Vector2> shortestLengthPointOfEllipse(const number& a, const number& b, const Vector2& p, const number& epsilon = 0.000001f)
+		static Vector2 shortestLengthPointOfEllipse(const number& a, const number& b, const Vector2& p, const number& epsilon = 0.00000001f)
 		{
 			if (a == 0 || b == 0)
-				return std::nullopt;
+				return {};
 			
 			if(p.x == 0)
 			{
-				return p.y > 0 ? std::optional<Vector2>({ 0, b }) :
-					std::optional<Vector2>({ 0, -b });
+				return p.y > 0 ? Vector2{ 0, b }
+					: Vector2{ 0, -b };
 			}
 			if (p.y == 0)
 			{
-				return p.x > 0 ? std::optional<Vector2>({ a, 0 }) :
-					std::optional<Vector2>({ -a, 0 });
+				return p.x > 0 ? Vector2{ a, 0 }
+				: Vector2{ -a, 0 };
 			}
 			
 			number x_left, x_right;
@@ -175,7 +184,7 @@ namespace Physics2D
 				
 				number result = t0t1.dot(t0p);
 				if (abs(result) < epsilon)
-					return std::optional<Vector2>(t0);
+					return t0;
 				
 				if(result > 0)					// acute angle
 					x_left = temp_x;
@@ -225,6 +234,104 @@ namespace Physics2D
 				pos /= area;
 				return pos;
 			}
+		}
+		/// <summary>
+		/// calculate the shortest length between line segment and ellipse, return two point, on line segment or ellipse
+		/// </summary>
+		/// <param name="a"></param>
+		/// <param name="b"></param>
+		/// <param name="p1"></param>
+		/// <param name="p2"></param>
+		/// <returns></returns>
+		static std::tuple<Vector2, Vector2> shortestLengthLineSegmentEllipse(const number& a, const number& b, const Vector2& p1, const Vector2& p2)
+		{
+			Vector2 p_line;
+			Vector2 p_ellipse;
+			if(numberEqual(p1.y, p2.y))
+			{
+				if(!((p1.x > 0 && p2.x > 0)||(p1.x < 0 && p2.x < 0))) // different quadrant
+				{
+					p_ellipse.set(0, p1.y > 0 ? b : -b);
+					p_line.set(0, p1.y);
+				}
+				else
+				{
+					p_line.set(abs(p1.x) > abs(p2.x) ? p2.x : p1.x, p1.y);
+					p_ellipse = shortestLengthPointOfEllipse(a, b, p_line);
+				}
+			}
+			else if (numberEqual(p1.x, p2.x))
+			{
+				if (!((p1.y > 0 && p2.y > 0) || (p1.y < 0 && p2.y < 0))) // different quadrant
+				{
+					p_ellipse.set(p1.x > 0 ? a : -a, 0);
+					p_line.set(p1.x, 0);
+				}
+				else
+				{
+					p_line.set(p1.x, abs(p1.y) > abs(p2.y) ? p2.y : p1.y);
+					p_ellipse = shortestLengthPointOfEllipse(a, b, p_line);
+				}
+			}
+			else
+			{
+				
+				number k = (p2.y - p1.y) / (p2.x - p1.x);
+				number k2 = k * k;
+				number a2 = a * a;
+				number b2 = b * b;
+				int sgn = k > 0 ? 1 : -1;
+				number f_x2 = (k2 * a2 * a2 / b2) / (1 + a2 * k2 / b2);
+				number f_y2 = b2 - b2 * f_x2 / a2;
+				number f_x = sqrt(f_x2);
+				number f_y = sqrt(f_y2);
+				Vector2 f;
+				Vector2 p1p2 = (p2 - p1).normal();
+				
+				{
+					Vector2 f_arr[4];
+					f_arr[0].set(f_x, f_y);
+					f_arr[1].set(-f_x, f_y);
+					f_arr[2].set(-f_x, -f_y);
+					f_arr[3].set(f_x, -f_y);
+					number min = Vector2::crossProduct(p1p2, f_arr[0] - p1);
+					for (int i = 1; i < 4; i++)
+					{
+						number value = Vector2::crossProduct(p1p2, f_arr[i] - p1);
+						if(min > value)
+						{
+							f = f_arr[i];
+							min = value;
+						}
+					}
+				}
+
+				Vector2 p1f = f - p1;
+				Vector2 p1_fp = p1p2 * p1p2.dot(p1f);
+				Vector2 f_proj = p1 + p1_fp;
+
+				if(fuzzyIsPointOnSegment(a, b, f_proj))
+				{
+					p_ellipse = f;
+					p_line = f_proj;
+				}
+				else
+				{
+					Vector2 p1_p = shortestLengthPointOfEllipse(a, b, p1);
+					Vector2 p2_p = shortestLengthPointOfEllipse(a, b, p2);
+					if((p1 - p1_p).lengthSquare() > (p2 - p2_p).lengthSquare())
+					{
+						p_ellipse = p2_p;
+						p_line = p2;
+					}
+					else
+					{
+						p_ellipse = p1_p;
+						p_line = p1;
+					}
+				}
+			}
+			return std::make_tuple(p_ellipse, p_line);
 		}
 	};
 }
