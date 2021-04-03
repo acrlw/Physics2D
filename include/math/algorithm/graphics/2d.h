@@ -48,7 +48,7 @@ namespace Physics2D
 		}
 		/// <summary>
 		/// Calculate intersection point between line ab and line cd.
-		/// Return if there is a actual point
+		/// Return if there is a actual intersected point
 		/// </summary>
 		/// <param name="a"></param>
 		/// <param name="b"></param>
@@ -68,14 +68,18 @@ namespace Physics2D
 			if (numberEqual(ab_length, 0.0f))
 				return std::nullopt;
 
-			number cc_proj = ab.cross(ac) / ab_length;
-			number dd_proj = ba.cross(bd) / ab_length;
-			number ad_proj = ad.dot(ab.normal());
-			number bc_proj = bc.dot(ba.normal());
-			number cproj_dproj = ab_length - ad_proj - bc_proj;
-			number cp = cproj_dproj / (1 + (dd_proj / cc_proj));
-			Vector2 bp = ba.normalize() * (bc_proj + cp);
-			if (bp.length() == 0)
+			const number cc_proj = ab.cross(ac) / ab_length;
+			const number dd_proj = ba.cross(bd) / ab_length;
+			const number ad_proj = ad.dot(ab.normal());
+			const number bc_proj = bc.dot(ba.normal());
+			const number cproj_dproj = ab_length - ad_proj - bc_proj;
+			const number denominator = (1 + (dd_proj / cc_proj));
+			if (numberEqual(denominator, 0.0f))
+				return std::nullopt;
+
+			const number cp = cproj_dproj / denominator;
+			const Vector2 bp = ba.normalize() * (bc_proj + cp);
+			if (numberEqual(bp.length(), 0))
 				return std::nullopt;
 
 			Vector2 p = bp + b;
@@ -103,7 +107,7 @@ namespace Physics2D
 			
 		}
 		/// <summary>
-		/// calculate the shortest distance from point to line segment. return the point on line segment
+		/// calculate point on line segment ab that is the shortest length to point p
 		/// </summary>
 		/// <param name="a"></param>
 		/// <param name="b"></param>
@@ -125,7 +129,7 @@ namespace Physics2D
 				return (p - a).lengthSquare() > (p - b).lengthSquare() ? b : a;
 		}
 		/// <summary>
-		/// Calculate shortest length between ellipse ab and a point p outside the ellipse ab ,return the point on ellipse ab
+		/// Calculate point on ellipse that is the shortest length to point p.
 		/// </summary>
 		/// <param name="a"></param>
 		/// <param name="b"></param>
@@ -229,12 +233,12 @@ namespace Physics2D
 			}
 		}
 		/// <summary>
-		/// calculate the shortest length between line segment and ellipse, return two point, on line segment or ellipse
+		/// calculate two points on line segment and ellipse respectively. The length of two points is the shortest distance of line segment and ellipse
 		/// </summary>
-		/// <param name="a"></param>
-		/// <param name="b"></param>
-		/// <param name="p1"></param>
-		/// <param name="p2"></param>
+		/// <param name="a">major axis a</param>
+		/// <param name="b">minor axis b</param>
+		/// <param name="p1">line segment point 1</param>
+		/// <param name="p2">line segment point 2</param>
 		/// <returns></returns>
 		static std::tuple<Vector2, Vector2> shortestLengthLineSegmentEllipse(const number& a, const number& b, const Vector2& p1, const Vector2& p2)
 		{
@@ -325,6 +329,30 @@ namespace Physics2D
 				}
 			}
 			return std::make_tuple(p_ellipse, p_line);
+		}
+		/// <summary>
+		/// Calculate point on line segment ab, if point 'p' can cast ray in 'dir' direction on line segment ab
+		/// </summary>
+		/// <param name="p">ray start point</param>
+		/// <param name="dir">ray direction</param>
+		/// <param name="a">line segment point a</param>
+		/// <param name="b">line segment point b</param>
+		/// <returns></returns>
+		static std::optional<Vector2> raycast(const Vector2& p, const Vector2& dir, const Vector2& a, const Vector2& b)
+		{
+			const number denominator = (p.x - dir.x) * (a.y - b.y) - (p.y - dir.y) * (a.x - b.x);
+			
+			if (numberEqual(denominator, 0))
+				return std::nullopt;
+
+			const number t = ((p.x - a.x) * (a.y - b.y) - (p.y - a.y) * (a.x - b.x)) / denominator;
+			const number u = ((dir.x - p.x) * (p.y - a.y) - (dir.y - p.y) * (p.x - a.x)) / denominator;
+			if (t >= 0 && u <= 1.0 && u >= 0)
+			{
+				return std::optional<Vector2>({p.x + t * (dir.x - p.x), p.y + t * (dir.y - p.y) });
+			}
+			else
+				return std::nullopt;
 		}
 	};
 }

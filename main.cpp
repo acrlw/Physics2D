@@ -1,37 +1,6 @@
-#include "include/math/math.h"
-#include "fmt/core.h"
-#include "include/collision/algorithm/gjk.h"
-#include "include/collision/contact.h"
-#include "include/math/algorithm/graphics/2d.h"
-#include "include/math/integrator.h"
-using namespace Physics2D;
-namespace fmt {
-	template <>
-	struct formatter<Physics2D::Vector2> {
-		template <typename ParseContext>
-		constexpr auto parse(ParseContext& ctx) {
-			return ctx.begin();
-		}
-
-		template <typename FormatContext>
-		auto format(const Physics2D::Vector2& p, FormatContext& ctx) {
-			return format_to(ctx.out(), "({:.8f}, {:.8f})", p.x, p.y);
-		}
-	};
-
-	template <>
-	struct formatter<Physics2D::Vector3> {
-		template <typename ParseContext>
-		constexpr auto parse(ParseContext& ctx) {
-			return ctx.begin();
-		}
-
-		template <typename FormatContext>
-		auto format(const Physics2D::Vector3& p, FormatContext& ctx) {
-			return format_to(ctx.out(), "({:.8f}, {:.8f}, {:.8f})", p.x, p.y, p.z);
-		}
-	};
-}
+#include "include/physics2d.h"
+#include "tests/test_math.h"
+#include "tests/test_geomentry.h"
 using namespace Physics2D;
 void test1()
 {
@@ -103,7 +72,10 @@ void test3()
 }
 int main(int argc, char* argv[])
 {
-	test1();
+	//TestMath testMath;
+	//testMath.test();
+	TestGeometryAlgorithm test;
+	test.test();
 	return 0;
 
 }

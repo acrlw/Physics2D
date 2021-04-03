@@ -44,5 +44,10 @@ add_executable(physics-engine
     "include/math/algorithm/graphics/2d.h"
     "include/profile/profiler.h"
     "include/render/renderer.h"
-    )
+    "tests/test.h"
+    "tests/test_math.h"
+    "tests/test_integrator.h"
+    "tests/test_gjk.h"
+    "include/physics2d.h"
+     "tests/test_geomentry.h")
 target_link_libraries(physics-engine PRIVATE Qt5::Widgets fmt::fmt)

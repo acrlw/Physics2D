@@ -5,46 +5,51 @@
 namespace Physics2D
 {
 	//trigonometric function
-	inline number sinx(const number& x)
+	static number sinx(const number& x)
 	{
 		return sin(x);
 	}
-	inline number cosx(const number& x)
+	static number cosx(const number& x)
 	{
 		return cos(x);
 	}
-	inline number tanx(const number& x)
+	static number tanx(const number& x)
 	{
 		return tan(x);
 	}
-	inline number arcsinx(const number& x)
+	static number arcsinx(const number& x)
 	{
 		return asin(x);
 	}
-	inline number arccosx(const number& x)
+	static number arccosx(const number& x)
 	{
 		return acos(x);
 	}
-	inline number arctanx(const number& x)
+	static number arctanx(const number& x)
 	{
 		return atan(x);
 	}
-	inline number max(const number& a, const number& b)
+	static number max(const number& a, const number& b)
 	{
 		return a > b ? a : b;
 	}
-	inline number min(const number& a, const number& b)
+	static number min(const number& a, const number& b)
 	{
 		return a > b ? b : a;
 	}
-	inline number abs_max(const number& a, const number& b)
+	static number abs_max(const number& a, const number& b)
 	{
 		return abs(a) > abs(b) ? abs(a) : abs(b);
 	}
-	inline number abs_min(const number& a, const number& b)
+	static number abs_min(const number& a, const number& b)
 	{
 		return abs(a) > abs(b) ? abs(b) : abs(a);
 	}
+	static int sign(const number& num)
+	{
+		return num > 0 ? 1 : -1;
+	}
+	
 	//other trick
 	//basic number utility
 	inline void numberSwap(number& lhs, number& rhs)
@@ -211,7 +216,7 @@ namespace Physics2D
 
 		Vector2& normalize()
 		{
-			number length_inv = fastInverseSqrt<number>(lengthSquare());
+			const number length_inv = fastInverseSqrt<number>(lengthSquare());
 			x *= length_inv;
 			y *= length_inv;
 			return *this;
@@ -236,7 +241,8 @@ namespace Physics2D
 		{
 			return x * rhs.y - y * rhs.x;
 		}
-		inline Vector2 perpendicular()const
+
+		Vector2 perpendicular()const
 		{
 			return Vector2(-y, x);
 		}
@@ -251,6 +257,14 @@ namespace Physics2D
 		static number crossProduct(const number& x1, const number& y1, const number& x2, const number& y2)
 		{
 			return x1 * y2 - x2 * y1;
+		}
+		static Vector2 crossProduct(const number& lhs, const Vector2& rhs)
+		{
+			return Vector2(-lhs * rhs.y, lhs * rhs.x);
+		}
+		static Vector2 crossProduct(const Vector2& lhs, const number& rhs)
+		{
+			return Vector2(rhs * lhs.y, -rhs * lhs.x);
 		}
 		number x;
 		number y;
@@ -404,7 +418,7 @@ namespace Physics2D
 
 		Vector3& normalize()
 		{
-			number length_inv = fastInverseSqrt(lengthSquare());
+			const number length_inv = fastInverseSqrt<number>(lengthSquare());
 			x *= length_inv;
 			y *= length_inv;
 			z *= length_inv;
@@ -456,7 +470,15 @@ namespace Physics2D
 	struct Matrix2x2
 	{
 		Matrix2x2() = default;
-		
+		Matrix2x2(const number& angle)
+		{
+			setAngle(angle);
+		}
+		Matrix2x2(const Matrix2x2& mat)
+		{
+			column1 = mat.column1;
+			column2 = mat.column2;
+		}
 		Matrix2x2(const Vector2& col1, const Vector2& col2)
 		{
 			column1 = col1;
@@ -504,16 +526,23 @@ namespace Physics2D
 			return *this;
 		}
 
-		Matrix2x2 operator+(const Matrix2x2& rhs)
+		Matrix2x2 operator+(const Matrix2x2& rhs)const
 		{
 			return Matrix2x2(column1 + rhs.column1, column2 + rhs.column2);
 		}
 
-		Matrix2x2 operator-(const Matrix2x2& rhs)
+		Matrix2x2 operator-(const Matrix2x2& rhs)const
 		{
 			return Matrix2x2(column1 - rhs.column1, column2 - rhs.column2);
 		}
-
+		Vector2 row1()const
+		{
+			return Vector2(column1.x, column2.x);
+		}
+		Vector2 row2()const
+		{
+			return Vector2(column1.y, column2.y);
+		}
 		number determinant()const
 		{
 			return Matrix2x2::determinant(*this);
@@ -553,6 +582,7 @@ namespace Physics2D
 		{
 			column1.set(col1_x, col1_y);
 			column2.set(col2_x, col2_y);
+			return *this;
 		}
 
 		Matrix2x2& set(const Vector2& col1, const Vector2& col2)
@@ -566,6 +596,16 @@ namespace Physics2D
 		{
 			column1 = other.column1;
 			column2 = other.column2;
+			return *this;
+		}
+
+		Matrix2x2& setAngle(const number& angle)
+		{
+			const number arc = angle * PI / 180;
+			const number cosarc = cosx(arc);
+			const number sinarc = sinx(arc);
+			column1.set(cosarc, sinarc);
+			column2.set(-sinarc, cosarc);
 			return *this;
 		}
 		static Matrix2x2 identityMatrix()
@@ -605,6 +645,13 @@ namespace Physics2D
 	};
 	struct Matrix3x3
 	{
+		Matrix3x3() = default;
+		Matrix3x3(const Matrix3x3& mat)
+		{
+			column1 = mat.column1;
+			column2 = mat.column2;
+			column3 = mat.column3;
+		}
 		Matrix3x3(const Vector3& col1, const Vector3& col2, const Vector3& col3)
 		{
 			column1 = col1;
@@ -660,8 +707,19 @@ namespace Physics2D
 			column3 /= factor;
 			return *this;
 		}
-
-		number determinant()
+		Vector3 row1()const
+		{
+			return Vector3(column1.x, column2.x, column3.x);
+		}
+		Vector3 row2()const
+		{
+			return Vector3(column1.y, column2.y, column3.y);
+		}
+		Vector3 row3()const
+		{
+			return Vector3(column1.z, column2.z, column3.z);
+		}
+		number determinant()const
 		{
 			return Matrix3x3::determinant(*this);
 		}
@@ -714,7 +772,7 @@ namespace Physics2D
 			return *this;
 		}
 
-		Vector3 multiply(const Vector3& rhs)
+		Vector3 multiply(const Vector3& rhs)const
 		{
 			return Matrix3x3::multiply(*this, rhs);
 		}
@@ -723,6 +781,13 @@ namespace Physics2D
 		{
 			*this = Matrix3x3::multiply(*this, rhs);
 			return *this;
+		}
+		static Matrix3x3 skewSymmetricMatrix(const Vector3& v)
+		{
+			return Matrix3x3(
+				0, v.z, -v.y,
+				-v.z, 0, v.x,
+				v.y, -v.x, 0);
 		}
 		static Matrix3x3 identityMatrix()
 		{
@@ -772,46 +837,12 @@ namespace Physics2D
 		Vector3 column2;
 		Vector3 column3;
 	};
-	struct Rotation2
-	{
-	public:
-		Rotation2(const number& angle = 0.0f)
-		{
-			setAngle(angle);
-		}
-
-		void setAngle(const number& angle)
-		{
-			m_angle = angle;
-			number arc = m_angle * PI / 180;
-			m_rotationMatrix.column1.set(cosx(arc), sinx(arc));
-			m_rotationMatrix.column2.set(-sinx(arc), cosx(arc));
-		}
-
-		number angle()const
-		{
-			return m_angle;
-		}
-
-		Vector2 multiply(const Vector2& rhs)
-		{
-			return m_rotationMatrix.multiply(rhs);
-		}
-
-		Vector2 operator*(const Vector2& rhs)
-		{
-			return m_rotationMatrix.multiply(rhs);
-		}
-	private:
-		number m_angle;
-		Matrix2x2 m_rotationMatrix;
-	};
-	struct Rotation3
-	{
-
-	};
 
 	inline Vector2 operator*(const number& f, const Vector2& v)
+	{
+		return v * f;
+	}
+	inline Vector3 operator*(const number& f, const Vector3& v)
 	{
 		return v * f;
 	}

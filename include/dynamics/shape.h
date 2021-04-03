@@ -10,6 +10,7 @@ namespace Physics2D
 	public:
 		enum class Type
 		{
+			Point,
 			Polygon,
 			Circle,
 			Ellipse,
@@ -23,6 +24,27 @@ namespace Physics2D
 		virtual ~Shape() {};
 	protected:
 		Type m_type;
+	};
+	class Point: public Shape
+	{
+	public:
+		
+		Point()
+		{
+			m_type = Type::Point;
+		}
+
+		Vector2 position() const
+		{
+			return m_position;
+		}
+
+		void setPosition(const Vector2& pos)
+		{
+			m_position = pos;
+		}
+	private:
+		Vector2 m_position;
 	};
 	/// <summary>
 	/// Convex polygon, not concave!

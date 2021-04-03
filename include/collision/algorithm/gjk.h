@@ -63,7 +63,7 @@ namespace Physics2D
 					Vector2 ob = simplex.vertices[1].result * -1;
 					Vector2 oc = simplex.vertices[2].result * -1;
 
-					a = Vector2::crossProduct(a, ob);
+					a = Vector2::crossProduct(oa, ob);
 					b = Vector2::crossProduct(ob, oc);
 					c = Vector2::crossProduct(oc, oa);
 
@@ -270,7 +270,7 @@ namespace Physics2D
 		static Vector2 findFarthestPoint(const ShapePrimitive& shape, const Vector2& direction)
 		{
 			Vector2 target;
-			Rotation2 rot = Rotation2(-1 * shape.rotation);
+			Matrix2x2 rot(-1 * shape.rotation);
 			Vector2 rot_dir = rot.multiply(direction);
 			switch (shape.shape->type())
 			{
@@ -338,6 +338,11 @@ namespace Physics2D
 				number dot1 = Vector2::dotProduct(edge->startPoint(), direction);
 				number dot2 = Vector2::dotProduct(edge->endPoint(), direction);
 				target = dot1 > dot2 ? edge->startPoint() : edge->endPoint();
+				break;
+			}
+			case Shape::Type::Point:
+			{
+				return dynamic_cast<const Point*>(shape.shape)->position();
 				break;
 			}
 			default:
