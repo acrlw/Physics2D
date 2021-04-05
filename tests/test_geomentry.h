@@ -41,7 +41,26 @@ namespace Physics2D
 			}
 			Vector2 rot_p = GraphicsAlgorithm2D::rotate({ 2, 5 }, { 5, 4 }, -45);
 			fmt::print("(2, 5) rotate around (5, 4) ,rotate 45 degree {}\n", rot_p);
-			
+			auto value = GraphicsAlgorithm2D::calculateInscribedCircle({6, 6}, {2, -4}, {-4, 4});
+			if(value.has_value())
+			{
+				auto [point, radius] = value.value();
+				fmt::print("point at {}, radius: {}\n", point, radius);
+			}
+			else
+			{
+				fmt::print("no inscribed circle.\n");
+			}
+			auto circum = GraphicsAlgorithm2D::calculateCircumcircle({ 6, 6 }, { 2, -4 }, { -4, 4 });
+			if(circum.has_value())
+			{
+				auto [point, radius] = circum.value();
+				fmt::print("point at {}, radius: {}\n", point, radius);
+			}
+			else
+			{
+				fmt::print("Failed to calculate circum-circle.\n");
+			}
 		}
 	};
 }

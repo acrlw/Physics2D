@@ -9,9 +9,9 @@ namespace Physics2D
 		/// <summary>
 		/// Judge point a,b,c collinear using triangle area method
 		/// </summary>
-		/// <param name="a"></param>
-		/// <param name="b"></param>
-		/// <param name="c"></param>
+		/// <param name="a">point a</param>
+		/// <param name="b">point b</param>
+		/// <param name="c">point c</param>
 		/// <returns></returns>
 		static inline bool isCollinear(const Vector2& a, const Vector2& b, const Vector2& c)
 		{
@@ -21,9 +21,9 @@ namespace Physics2D
 		/// <summary>
 		/// Judge whether point c is on line segment ab using line projection and set-union method
 		/// </summary>
-		/// <param name="a"></param>
-		/// <param name="b"></param>
-		/// <param name="c"></param>
+		/// <param name="a">end of segment a</param>
+		/// <param name="b">end of segment b</param>
+		/// <param name="c">point c</param>
 		/// <returns></returns>
 		static inline bool isPointOnSegment(const Vector2& a, const Vector2& b, const Vector2& c)
 		{
@@ -90,13 +90,77 @@ namespace Physics2D
 				: std::nullopt;
 
 		}
-		static std::tuple<Vector2, number> calculateCircumcircle(const Vector2& a, const Vector2& b, const Vector2& c)
+		/// <summary>
+		/// Calculate the center of circum-circle from triangle abc
+		/// </summary>
+		/// <param name="a"></param>
+		/// <param name="b"></param>
+		/// <param name="c"></param>
+		/// <returns></returns>
+		static std::optional<Vector2> triangleCircumcenter(const Vector2& a, const Vector2& b, const Vector2& c)
 		{
+			if (triangleArea(a, b, c) == 0)
+				return std::nullopt;
+			
+			//2 * (x2 - x1) * x + 2 * (y2 - y1) y = x2 ^ 2 + y2 ^ 2 - x1 ^ 2 - y1 ^ 2;
+			//2 * (x3 - x2) * x + 2 * (y3 - y2) y = x3 ^ 2 + y3 ^ 2 - x2 ^ 2 - y2 ^ 2;
+			Matrix2x2 coef_mat{ 2 * (b.x - a.x), 2 * (c.x - b.x), 2 * (b.y - a.y), 2 * (c.y - b.y) };
+			Vector2 constant{ b.lengthSquare() - a.lengthSquare(), c.lengthSquare() - b.lengthSquare() };
+			return std::optional<Vector2>(coef_mat.invert().multiply(constant));
 			
 		}
-		static std::tuple<Vector2, number> calculateInscribedCircle(const Vector2& a, const Vector2& b, const Vector2& c)
+		/// <summary>
+		/// Calculate the center of inscribed-circle from triangle abc
+		/// </summary>
+		/// <param name="a"></param>
+		/// <param name="b"></param>
+		/// <param name="c"></param>
+		/// <returns></returns>
+		static std::optional<Vector2> triangleIncenter(const Vector2& a, const Vector2& b, const Vector2& c)
 		{
-			
+			if (triangleArea(a, b, c) == 0)
+				return std::nullopt;
+
+			number ab = (b - a).length();
+			number bc = (c - b).length();
+			number ca = (a - c).length();
+			Vector2 p = (ab * c + bc * a + ca * b) / (ab + bc + ca);
+			return std::optional<Vector2>(p);
+		}
+		/// <summary>
+		/// Calculate circum-circle given three points that can form a triangle
+		/// </summary>
+		/// <param name="a"></param>
+		/// <param name="b"></param>
+		/// <param name="c"></param>
+		/// <returns></returns>
+		static std::optional<std::tuple<Vector2, number>> calculateCircumcircle(const Vector2& a, const Vector2& b, const Vector2& c)
+		{
+			if (triangleArea(a, b, c) == 0)
+				return std::nullopt;
+			auto point = triangleCircumcenter(a, b, c);
+			number radius = (point.value() - a).length();
+			return std::make_tuple(point.value(), radius);
+		}
+		/// <summary>
+		/// Calculate inscribed circle given three points that can form a triangle
+		/// </summary>
+		/// <param name="a"></param>
+		/// <param name="b"></param>
+		/// <param name="c"></param>
+		/// <returns></returns>
+		static std::optional<std::tuple<Vector2, number>> calculateInscribedCircle(const Vector2& a, const Vector2& b, const Vector2& c)
+		{
+			number area = triangleArea(a, b, c);
+			if (area == 0)
+				return std::nullopt;
+
+			number ab = (b - a).length();
+			number bc = (c - b).length();
+			number ca = (a - c).length();
+			Vector2 p = (ab * c + bc * a + ca * b) / (ab + bc + ca);
+			number radius = 2 * area / (ab + bc + ca);
+			return std::make_tuple(p, radius);
 		}
 		/// <summary>
 		/// Judge whether polygon is convex
@@ -204,7 +268,7 @@ namespace Physics2D
 					x_right = temp_x;			//obtuse angle
 			}
 		}
-		static Vector2 triangleGravityPoint(const Vector2& a1, const Vector2& a2, const Vector2& a3)
+		static Vector2 triangleCentroid(const Vector2& a1, const Vector2& a2, const Vector2& a3)
 		{
 			return Vector2(a1 + a2 + a3) / 3;
 		}
@@ -239,7 +303,7 @@ namespace Physics2D
 					if (p_b == vertices.size() - 2)
 						break;
 					number a = triangleArea(vertices[p_a], vertices[p_b], vertices[p_c]);
-					Vector2 p = triangleGravityPoint(vertices[p_a], vertices[p_b], vertices[p_c]);
+					Vector2 p = triangleCentroid(vertices[p_a], vertices[p_b], vertices[p_c]);
 					pos += p * a;
 					area += a;
 				}
@@ -379,10 +443,7 @@ namespace Physics2D
 		/// <returns></returns>
 		static Vector2 rotate(const Vector2& p, const Vector2& center, const number& angle)
 		{
-			Vector2 pp = p - center;
-			Matrix2x2 mat(angle);
-			pp = mat.multiply(pp);
-			return pp + center;
+			return Matrix2x2(angle).multiply(p - center) + center;
 		}
 	};
 }
