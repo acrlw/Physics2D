@@ -13,7 +13,7 @@ namespace Physics2D
 		/// <param name="b">point b</param>
 		/// <param name="c">point c</param>
 		/// <returns></returns>
-		static inline bool isCollinear(const Vector2& a, const Vector2& b, const Vector2& c)
+		static bool isCollinear(const Vector2& a, const Vector2& b, const Vector2& c)
 		{
 			//triangle area = 0 then collinear
 			return numberEqual(abs(Vector2::crossProduct(a - b, a - c)), 0);
@@ -25,14 +25,9 @@ namespace Physics2D
 		/// <param name="b">end of segment b</param>
 		/// <param name="c">point c</param>
 		/// <returns></returns>
-		static inline bool isPointOnSegment(const Vector2& a, const Vector2& b, const Vector2& c)
+		static bool isPointOnSegment(const Vector2& a, const Vector2& b, const Vector2& c)
 		{
-			if (!isCollinear(a, b, c))
-				return false;
-			else
-			{
-				return fuzzyIsPointOnSegment(a, b, c);
-			}
+			return !isCollinear(a, b, c) ? false : fuzzyIsPointOnSegment(a, b, c);
 		}
 		/// <summary>
 		/// Judge whether point c is on line segment ab, given a,b,c is already collinear by calculating cross product
@@ -41,7 +36,7 @@ namespace Physics2D
 		/// <param name="b"></param>
 		/// <param name="c"></param>
 		/// <returns></returns>
-		static inline bool fuzzyIsPointOnSegment(const Vector2& a, const Vector2& b, const Vector2& c)
+		static bool fuzzyIsPointOnSegment(const Vector2& a, const Vector2& b, const Vector2& c)
 		{
 			return (c.x <= max(a.x, b.x) && c.x >= min(a.x, b.x) &&
 				c.y <= max(a.y, b.y) && c.y >= min(a.y, b.y));
