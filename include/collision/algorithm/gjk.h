@@ -109,6 +109,13 @@ namespace Physics2D
 	class GJK
 	{
 	public:
+		/// <summary>
+		/// Gilbert¨CJohnson¨CKeerthi distance algorithm
+		/// </summary>
+		/// <param name="shape_A"></param>
+		/// <param name="shape_B"></param>
+		/// <param name="iteration"></param>
+		/// <returns>return initial simplex and whether collision exists</returns>
 		static std::tuple<bool, Simplex> gjk(const ShapePrimitive& shape_A, const ShapePrimitive& shape_B, const size_t& iteration = 50)
 		{
 			Simplex simplex;
@@ -162,6 +169,15 @@ namespace Physics2D
 
 			return std::make_tuple(found, simplex);
 		}
+		/// <summary>
+		/// Expanding Polygon Algorithm
+		/// </summary>
+		/// <param name="shape_A"></param>
+		/// <param name="shape_B"></param>
+		/// <param name="src">initial simplex</param>
+		/// <param name="iteration">iteration times</param>
+		/// <param name="epsilon">epsilon of iterated result</param>
+		/// <returns>return expanded simplex</returns>
 		static Simplex epa(const ShapePrimitive& shape_A, const ShapePrimitive& shape_B, const Simplex& src, const size_t& iteration = 50, const number& epsilon = 0.0001)
 		{
 			size_t iter = 0;
@@ -192,7 +208,13 @@ namespace Physics2D
 			}
 			return simplex;
 		}
-		//dump distance vector, contact point of two shape
+		/// <summary>
+		/// Dump collision information from simplex
+		/// </summary>
+		/// <param name="shape_A"></param>
+		/// <param name="shape_B"></param>
+		/// <param name="simplex"></param>
+		/// <returns></returns>
 		static ContactInfo dumpInfo(const ShapePrimitive& shape_A, const ShapePrimitive& shape_B, const Simplex& simplex)
 		{
 			ContactInfo result;
@@ -239,7 +261,6 @@ namespace Physics2D
 		}
 		/// <summary>
 		/// The edge closest to the origin
-		/// bool: find or not
 		/// size_t, size_t: the index of point of edge
 		/// </summary>
 		static std::tuple<size_t, size_t> findEdgeClosestToOrigin(const Simplex& simplex)

@@ -628,17 +628,18 @@ namespace Physics2D
 		{
 			return mat.column1.x * mat.column2.y - mat.column2.x * mat.column1.y;
 		}
-		static void invert(Matrix2x2& mat)
+		static bool invert(Matrix2x2& mat)
 		{
 			const number det = mat.determinant();
 			
 			if (numberEqual(det, 0.0f))
-				return;
+				return false;
 			
 			numberSwap(mat.column1.x, mat.column2.y);
 			mat.column1.y *= -1;
 			mat.column2.x *= -1;
 			mat /= det;
+			return true;
 		}
 		Vector2 column1;
 		Vector2 column2;
@@ -811,11 +812,11 @@ namespace Physics2D
 				mat.column2.x * Vector2::crossProduct(mat.column3.y, mat.column3.z, mat.column1.y, mat.column1.z) +
 				mat.column3.x * Vector2::crossProduct(mat.column1.y, mat.column1.z, mat.column2.y, mat.column2.z);
 		}
-		static void invert(Matrix3x3& mat)
+		static bool invert(Matrix3x3& mat)
 		{
 			const number det = mat.determinant();
 			if (numberEqual(det, 0.0f))
-				return;
+				return false;
 
 			const number det11 = Vector2::crossProduct(mat.column2.y, mat.column2.z, mat.column3.y, mat.column3.z);
 			const number det12 = Vector2::crossProduct(mat.column2.x, mat.column2.z, mat.column3.x, mat.column3.z) * -1;
@@ -832,6 +833,7 @@ namespace Physics2D
 			mat.set(det11, det12, det13, det21, det22, det23, det31, det32, det33);
 			mat.transpose();
 			mat /= det;
+			return true;
 		}
 		Vector3 column1;
 		Vector3 column2;

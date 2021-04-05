@@ -47,7 +47,7 @@ namespace Physics2D
 				c.y <= max(a.y, b.y) && c.y >= min(a.y, b.y));
 		}
 		/// <summary>
-		/// Calculate intersection point between line ab and line cd.
+		/// Calculate intersected point between line ab and line cd.
 		/// Return if there is a actual intersected point
 		/// </summary>
 		/// <param name="a"></param>
@@ -98,14 +98,29 @@ namespace Physics2D
 		{
 			
 		}
+		/// <summary>
+		/// Judge whether polygon is convex
+		/// </summary>
+		/// <param name="vertices"></param>
+		/// <returns></returns>
 		static bool isConvexPolygon(const std::vector<Vector2>& vertices)
 		{
-			
+			if (vertices.size() == 4)
+				return true;
+
+			Vector2 ab, c;
+			for(uint16_t i = 0;i < vertices.size() - 2; i++)
+			{
+				ab = vertices[i + 1] - vertices[i];
+				
+			}
 		}
-		static std::vector<Vector2> polygonConvexHull(const std::vector<Vector2>& vertices)
+		static std::vector<Vector2> grahamScan(const std::vector<Vector2>& vertices)
 		{
+			std::stack<Vector2> stack;
 			
 		}
+		
 		/// <summary>
 		/// calculate point on line segment ab that is the shortest length to point p
 		/// </summary>
@@ -331,7 +346,8 @@ namespace Physics2D
 			return std::make_tuple(p_ellipse, p_line);
 		}
 		/// <summary>
-		/// Calculate point on line segment ab, if point 'p' can cast ray in 'dir' direction on line segment ab
+		/// Calculate point on line segment ab, if point 'p' can cast ray in 'dir' direction on line segment ab.
+		/// Algorithm from wikipedia
 		/// </summary>
 		/// <param name="p">ray start point</param>
 		/// <param name="dir">ray direction</param>
@@ -353,6 +369,20 @@ namespace Physics2D
 			}
 			else
 				return std::nullopt;
+		}
+		/// <summary>
+		/// Rotate point 'p' around point 'center' by 'angle' degrees
+		/// </summary>
+		/// <param name="p">source point</param>
+		/// <param name="center">center point</param>
+		/// <param name="angle">rotate angle</param>
+		/// <returns></returns>
+		static Vector2 rotate(const Vector2& p, const Vector2& center, const number& angle)
+		{
+			Vector2 pp = p - center;
+			Matrix2x2 mat(angle);
+			pp = mat.multiply(pp);
+			return pp + center;
 		}
 	};
 }

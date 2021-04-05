@@ -7,6 +7,7 @@
 #include <vector>
 #include <tuple>
 #include <optional>
+#include <stack>
 namespace Physics2D
 {
 #ifdef SINGLE_PRECISION

@@ -39,7 +39,8 @@ namespace Physics2D
 			{
 				fmt::print("ray cast false\n");
 			}
-			
+			Vector2 rot_p = GraphicsAlgorithm2D::rotate({ 2, 5 }, { 5, 4 }, -45);
+			fmt::print("(2, 5) rotate around (5, 4) ,rotate 45 degree {}\n", rot_p);
 			
 		}
 	};
