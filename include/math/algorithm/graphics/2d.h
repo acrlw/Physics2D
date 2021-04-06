@@ -3,7 +3,7 @@
 #include "include/common/common.h"
 namespace Physics2D
 {
-	class GraphicsAlgorithm2D
+	class GeometryAlgorithm2D
 	{
 	public:
 		/// <summary>
@@ -177,10 +177,52 @@ namespace Physics2D
 			}
 			return true;
 		}
+		/// <summary>
+		/// Convex hull algorithm: Graham Scan. Given a series of points, find the convex polygon that can contains all of these points.
+		/// </summary>
+		/// <param name="vertices"></param>
+		/// <returns></returns>
 		static std::vector<Vector2> grahamScan(const std::vector<Vector2>& vertices)
 		{
-			std::stack<Vector2> stack;
+			std::vector<Vector2> sort = vertices;
+			std::vector<uint16_t> stack;
 			
+			std::sort(sort.begin(), sort.end(), [](const Vector2& a, const Vector2& b)
+				{
+					if (atan2f(a.y, a.x) != atan2f(b.y, b.x))
+						return atan2f(a.y, a.x) < atan2(b.y, b.x);
+					else
+						return a.x < b.x;
+				});
+
+			uint16_t i, j, k;
+			j = 1;
+			k = 2;
+			Vector2 ab, ac;
+			stack.emplace_back(0);
+			stack.emplace_back(1);
+			while(true)
+			{
+				i = stack[stack.size() - 2];
+				j = stack[stack.size() - 1];
+				if (j == 0)
+					break;
+				
+				if (k >= sort.size())
+					k = 0;
+				
+				ab = sort[j] - sort[i];
+				ac = sort[k] - sort[i];
+				if(ab.cross(ac) < 0)
+					stack.pop_back();
+				stack.emplace_back(k);
+				k++;
+			}
+			std::vector<Vector2> result;
+			for(auto index: stack)
+				result.emplace_back(sort[index]);
+			
+			return result;
 		}
 		
 		/// <summary>
@@ -271,7 +313,7 @@ namespace Physics2D
 			return Vector2(a1 + a2 + a3) / 3;
 		}
 		/// <summary>
-		/// calculate the area of triangle use cross product
+		/// Calculate the area of triangle use cross product
 		/// </summary>
 		/// <param name="a1"></param>
 		/// <param name="a2"></param>
@@ -282,7 +324,7 @@ namespace Physics2D
 			return abs(Vector2::crossProduct(a1 - a2, a1 - a3)) / 2;
 		}
 		/// <summary>
-		/// calculate mass center of 'convex' polygon
+		/// Calculate mass center of 'convex' polygon
 		/// </summary>
 		/// <param name="vertices"></param>
 		/// <returns></returns>
@@ -310,7 +352,7 @@ namespace Physics2D
 			}
 		}
 		/// <summary>
-		/// calculate two points on line segment and ellipse respectively. The length of two points is the shortest distance of line segment and ellipse
+		/// Calculate two points on line segment and ellipse respectively. The length of two points is the shortest distance of line segment and ellipse
 		/// </summary>
 		/// <param name="a">major axis a</param>
 		/// <param name="b">minor axis b</param>
@@ -349,7 +391,7 @@ namespace Physics2D
 			}
 			else
 			{
-				
+				//calculate tangent line
 				number k = (p2.y - p1.y) / (p2.x - p1.x);
 				number k2 = k * k;
 				number a2 = a * a;
@@ -361,7 +403,8 @@ namespace Physics2D
 				number f_y = sqrt(f_y2);
 				Vector2 f;
 				Vector2 p1p2 = (p2 - p1).normal();
-				
+
+				//Judge which quadrant does nearest point stay
 				{
 					Vector2 f_arr[4];
 					f_arr[0].set(f_x, f_y);
@@ -409,7 +452,7 @@ namespace Physics2D
 		}
 		/// <summary>
 		/// Calculate point on line segment ab, if point 'p' can cast ray in 'dir' direction on line segment ab.
-		/// Algorithm from wikipedia
+		/// Algorithm from wikipedia 'Line-line intersection'
 		/// </summary>
 		/// <param name="p">ray start point</param>
 		/// <param name="dir">ray direction</param>

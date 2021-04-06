@@ -68,7 +68,7 @@ namespace Physics2D
 
 		Vector2 center()const
 		{
-			return GraphicsAlgorithm2D::calculateCenter(this->vertices());
+			return GeometryAlgorithm2D::calculateCenter(this->vertices());
 		}
 	protected:
 		std::vector<Vector2> m_vertices;
