@@ -22,7 +22,7 @@ namespace Physics2D
 		/// Judge whether point c is on line segment ab using line projection and set-union method
 		/// </summary>
 		/// <param name="a">end of segment a</param>
-		/// <param name="b">end of se¡£gment b</param>
+		/// <param name="b">end of segment b</param>
 		/// <param name="c">point c</param>
 		/// <returns></returns>
 		static bool isPointOnSegment(const Vector2& a, const Vector2& b, const Vector2& c)
