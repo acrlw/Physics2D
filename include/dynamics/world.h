@@ -7,7 +7,7 @@
 
 namespace Physics2D
 {
-	class PhysicsWorld
+	class World
 	{
 		
 	private:

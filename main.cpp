@@ -27,14 +27,14 @@ void test1()
 	simplex = GJK::epa(spa, spb, simplex);
 	ContactInfo info = GJK::dumpInfo(spa, spb, simplex);
 
-	auto result = GraphicsAlgorithm2D::lineSegmentIntersection({ -4,2 }, { -2,3 }, { -2,0 }, { -3,4 });
+	auto result = GeometryAlgorithm2D::lineSegmentIntersection({ -4,2 }, { -2,3 }, { -2,0 }, { -3,4 });
 	if (result.has_value())
 		fmt::print("intersection point:{}\n", result.value());
 	else
 		fmt::print("no intersection\n");
-	auto isOnSegment = GraphicsAlgorithm2D::isPointOnSegment({ 0, 4 }, { 4, 0 }, { 1, 3 });
+	auto isOnSegment = GeometryAlgorithm2D::isPointOnSegment({ 0, 4 }, { 4, 0 }, { 1, 3 });
 	fmt::print("is on segment:{} \n", isOnSegment);
-	auto pl = GraphicsAlgorithm2D::shortestLengthPointOfEllipse(10, 8, { 16, -6 });
+	auto pl = GeometryAlgorithm2D::shortestLengthPointOfEllipse(10, 8, { 16, -6 });
 	fmt::print("p:{}\n", pl);
 }
 void test2()
@@ -64,10 +64,10 @@ void test2()
 }
 void test3()
 {
-	auto [p1, p2] = GraphicsAlgorithm2D::shortestLengthLineSegmentEllipse(10, 8, { 12, -8 }, { 20, 10 });
+	auto [p1, p2] = GeometryAlgorithm2D::shortestLengthLineSegmentEllipse(10, 8, { 12, -8 }, { 20, 10 });
 	fmt::print("p1{} \np2{} \n", p1, p2);
 
-	auto vtr = GraphicsAlgorithm2D::pointToLineSegment({ 0, 5 }, { 25, -5 }, { 5, -1 });
+	auto vtr = GeometryAlgorithm2D::pointToLineSegment({ 0, 5 }, { 25, -5 }, { 5, -1 });
 	fmt::print("point:{}\n", vtr);
 }
 int main(int argc, char* argv[])

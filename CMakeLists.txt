@@ -26,6 +26,7 @@ add_executable(physics-engine
     "source/dynamics/world.cpp"
     "source/math/integrator.cpp"
     "source/math/math.cpp"
+    "source/math/algorithm/graphics/2d.cpp"
     "source/profile/profiler.cpp"
     "source/render/renderer.cpp"
     "include/collision/algorithm/gjk.h"
