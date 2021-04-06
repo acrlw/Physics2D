@@ -22,7 +22,7 @@ namespace Physics2D
 		/// Judge whether point c is on line segment ab using line projection and set-union method
 		/// </summary>
 		/// <param name="a">end of segment a</param>
-		/// <param name="b">end of segment b</param>
+		/// <param name="b">end of se¡£gment b</param>
 		/// <param name="c">point c</param>
 		/// <returns></returns>
 		static bool isPointOnSegment(const Vector2& a, const Vector2& b, const Vector2& c)
@@ -167,12 +167,15 @@ namespace Physics2D
 			if (vertices.size() == 4)
 				return true;
 
-			Vector2 ab, c;
-			for(uint16_t i = 0;i < vertices.size() - 2; i++)
+			Vector2 ab, ac;
+			for(uint16_t i = 0;i < vertices.size() - 1; i++)
 			{
 				ab = vertices[i + 1] - vertices[i];
-				
+				ac = i + 2 != vertices.size() ? vertices[i + 2] - vertices[i] : vertices[1] - vertices[i];
+				if (Vector2::crossProduct(ab, ac) < 0)
+					return false;
 			}
+			return true;
 		}
 		static std::vector<Vector2> grahamScan(const std::vector<Vector2>& vertices)
 		{
