@@ -1,10 +1,8 @@
-#include "include/physics2d.h"
-#include "tests/test_math.h"
-#include "tests/test_geomentry.h"
-using namespace Physics2D;
+#include "testbed/testbed.h"
 
 int main(int argc, char* argv[])
 {
-	
+	Physics2D::TestBedApplication app(argc, argv);
+	app.exec();
 	return 0;
 }

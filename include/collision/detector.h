@@ -5,14 +5,14 @@
 #include "include/collision/contact.h"
 #include "include/math/math.h"
 #include "include/dynamics/shape.h"
-#include "include/dynamics/rigidbody.h"
+#include "include/dynamics/body.h"
 
 namespace Physics2D
 {
 	class Detector
 	{
 	public:
-		static ContactInfo detect(RigidBody* body_A, RigidBody* body_B)
+		static ContactInfo detect(Body* body_A, Body* body_B)
 		{
 			ContactInfo result;
 			

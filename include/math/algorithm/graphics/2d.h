@@ -1,7 +1,7 @@
 #ifndef PHYSICS2D_ALGORITHM_GRAPHICS_2D
 #define PHYSICS2D_ALGORITHM_GRAPHICS_2D
 
-#include "include/math/math.h"
+#include "include/math/linear/linear.h"
 #include "include/common/common.h"
 namespace Physics2D
 {

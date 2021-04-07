@@ -1,6 +1,6 @@
 #ifndef PHYSICS2D_CONTACT_H
 #define PHYSICS2D_CONTACT_H
-#include "include/math/math.h"
+#include "include/math/linear/linear.h"
 namespace Physics2D
 {
 	struct ContactInfo

@@ -21,7 +21,7 @@ add_executable(physics-engine
     "source/collision/detector.cpp"
     "source/collision/contact.cpp"
     "source/common/common.cpp"
-    "source/dynamics/rigidbody.cpp"
+    "source/dynamics/body.cpp"
     "source/dynamics/shape.cpp"
     "source/dynamics/world.cpp"
     "source/math/integrator.cpp"
@@ -37,7 +37,7 @@ add_executable(physics-engine
     "include/collision/contact.h"
     "include/collision/detector.h"
     "include/common/common.h"
-    "include/dynamics/rigidbody.h"
+    "include/dynamics/body.h"
     "include/dynamics/shape.h"
     "include/dynamics/world.h"
     "include/math/integrator.h"
@@ -50,5 +50,12 @@ add_executable(physics-engine
     "tests/test_integrator.h"
     "tests/test_gjk.h"
     "include/physics2d.h"
-     "tests/test_geomentry.h")
+    "tests/test_geomentry.h" 
+    "testbed/testbed.h" 
+    "testbed/testbed.cpp" 
+    "include/math/linear/vector2.h" 
+    "include/math/linear/vector3.h" 
+    "include/math/linear/matrix2x2.h"
+    "include/math/linear/linear.h"
+     )
 target_link_libraries(physics-engine PRIVATE Qt5::Widgets fmt::fmt)

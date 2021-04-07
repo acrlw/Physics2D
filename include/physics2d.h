@@ -8,10 +8,10 @@
 #include "include/collision/collider.h"
 #include "include/common/common.h"
 #include "include/dynamics/shape.h"
-#include "include/dynamics/rigidbody.h"
+#include "include/dynamics/body.h"
 #include "include/math/algorithm/graphics/2d.h"
 #include "include/math/math.h"
-
+#include "include/math/linear/linear.h"
 #include "fmt/core.h"
 #include "fmt/format.h"
 
