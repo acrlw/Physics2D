@@ -1,4 +1,6 @@
-#pragma once
+#ifndef PHYSICS2D_GJK_H
+#define PHYSICS2D_GJK_H
+
 
 #include "include/math/math.h"
 #include "include/common/common.h"
@@ -150,3 +152,6 @@ namespace Physics2D
 		static Vector2 calculateDirectionByEdge(const Vector2& p1, const Vector2& p2, bool pointToOrigin = true);
 	};
 }
+
+
+#endif

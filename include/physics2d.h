@@ -1,4 +1,5 @@
-#pragma once
+#ifndef PHYSICS2D_H
+#define PHYSICS2D_H
 #include "include/math/integrator.h"
 #include "include/collision/algorithm/sat.h"
 #include "include/collision/algorithm/gjk.h"
@@ -69,3 +70,4 @@ namespace fmt {
 		}
 	};
 }
+#endif

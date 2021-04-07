@@ -1,5 +1,5 @@
-#pragma once
-
+#ifndef PHYSICS2D_MATH_H
+#define PHYSICS2D_MATH_H
 #include "include/common/common.h"
 
 namespace Physics2D
@@ -849,3 +849,4 @@ namespace Physics2D
 		return v * f;
 	}
 }
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef PHYSICS2D_CONTACT_H
+#define PHYSICS2D_CONTACT_H
 #include "include/math/math.h"
 namespace Physics2D
 {
@@ -10,3 +11,4 @@ namespace Physics2D
 		Vector2 penetration;
 	};
 }
+#endif

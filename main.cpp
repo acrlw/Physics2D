@@ -74,8 +74,7 @@ int main(int argc, char* argv[])
 {
 	//TestMath testMath;
 	//testMath.test();
-	TestGeometryAlgorithm test;
-	test.test();
+	fmt::print("{}", GeometryAlgorithm2D::fuzzyIsPointOnSegment({ 0, 3 }, { 0, 6 }, { 0, 5 }));
 	return 0;
 
 }

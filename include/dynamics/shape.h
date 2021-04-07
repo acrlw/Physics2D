@@ -1,4 +1,5 @@
-#pragma once
+#ifndef PHYSICS2D_SHAPE_H
+#define PHYSICS2D_SHAPE_H
 #include "include/math/math.h"
 #include "include/common/common.h"
 #include "include/math/algorithm/graphics/2d.h"
@@ -204,3 +205,4 @@ namespace Physics2D
 		Vector2 m_endPoint;
 	};
 }
+#endif

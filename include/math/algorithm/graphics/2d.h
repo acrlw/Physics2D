@@ -1,4 +1,6 @@
-#pragma once
+#ifndef PHYSICS2D_ALGORITHM_GRAPHICS_2D
+#define PHYSICS2D_ALGORITHM_GRAPHICS_2D
+
 #include "include/math/math.h"
 #include "include/common/common.h"
 namespace Physics2D
@@ -32,7 +34,8 @@ namespace Physics2D
 		static bool fuzzyIsPointOnSegment(const Vector2& a, const Vector2& b, const Vector2& c);
 		/// <summary>
 		/// Calculate intersected point between line ab and line cd.
-		/// Return if there is a actual intersected point
+		/// Return if there is a actual intersected point.
+		/// Notices: overlapping is NOT considered as a kind of intersection situation in this function
 		/// </summary>
 		/// <param name="a"></param>
 		/// <param name="b"></param>
@@ -50,6 +53,7 @@ namespace Physics2D
 		static std::optional<Vector2> triangleCircumcenter(const Vector2& a, const Vector2& b, const Vector2& c);
 		/// <summary>
 		/// Calculate the center of inscribed-circle from triangle abc
+		/// If a,b,c can not form a triangle, return nothing
 		/// </summary>
 		/// <param name="a"></param>
 		/// <param name="b"></param>
@@ -58,6 +62,7 @@ namespace Physics2D
 		static std::optional<Vector2> triangleIncenter(const Vector2& a, const Vector2& b, const Vector2& c);
 		/// <summary>
 		/// Calculate circum-circle given three points that can form a triangle
+		/// If a,b,c can not form a triangle, return nothing
 		/// </summary>
 		/// <param name="a"></param>
 		/// <param name="b"></param>
@@ -66,6 +71,7 @@ namespace Physics2D
 		static std::optional<std::tuple<Vector2, number>> calculateCircumcircle(const Vector2& a, const Vector2& b, const Vector2& c);
 		/// <summary>
 		/// Calculate inscribed circle given three points that can form a triangle
+		/// If a,b,c can not form a triangle, return nothing
 		/// </summary>
 		/// <param name="a"></param>
 		/// <param name="b"></param>
@@ -151,3 +157,4 @@ namespace Physics2D
 		static Vector2 rotate(const Vector2& p, const Vector2& center, const number& angle);
 	};
 }
+#endif

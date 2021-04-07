@@ -1,4 +1,5 @@
-#pragma once
+#ifndef PHYSICS2D_RIGIDBODY_H
+#define PHYSICS2D_RIGIDBODY_H
 #include "include/math/math.h"
 #include "include/common/common.h"
 #include "include/dynamics/shape.h"
@@ -31,3 +32,4 @@ namespace Physics2D
 		Shape* m_shape = nullptr;
 	};
 }
+#endif

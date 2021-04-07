@@ -1,5 +1,5 @@
-#ifndef COMMON_H
-#define COMMON_H
+#ifndef PHYSICS2D_COMMON_H
+#define PHYSICS2D_COMMON_H
 
 #include "cassert"
 #include <cmath>

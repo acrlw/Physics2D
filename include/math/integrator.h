@@ -1,4 +1,5 @@
-#pragma once
+#ifndef PHYSICS2D_INTEGRATOR_H
+#define PHYSICS2D_INTEGRATOR_H
 #include "include/common/common.h"
 #include "include/math/math.h"
 namespace Physics2D
@@ -89,3 +90,4 @@ namespace Physics2D
 		
 	};
 }
+#endif

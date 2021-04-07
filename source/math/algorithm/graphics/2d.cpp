@@ -31,13 +31,21 @@ namespace Physics2D
 			number ab_length = ab.length();
 
 			if (numberEqual(ab_length, 0.0f))
+			{
+				if (fuzzyIsPointOnSegment(c, d, a))
+					return std::optional<Vector2>(a);
 				return std::nullopt;
+			}
 
 			const number cc_proj = ab.cross(ac) / ab_length;
 			const number dd_proj = ba.cross(bd) / ab_length;
 			const number ad_proj = ad.dot(ab.normal());
 			const number bc_proj = bc.dot(ba.normal());
 			const number cproj_dproj = ab_length - ad_proj - bc_proj;
+
+			if (numberEqual(cc_proj, 0.0f))
+				return std::nullopt;
+			
 			const number denominator = (1 + (dd_proj / cc_proj));
 			if (numberEqual(denominator, 0.0f))
 				return std::nullopt;
@@ -48,10 +56,8 @@ namespace Physics2D
 				return std::nullopt;
 
 			Vector2 p = bp + b;
-			number p_x = abs(p.x);
-			number p_y = abs(p.y);
 
-			return fuzzyIsPointOnSegment(a, b, p) ? std::optional<Vector2>(p)
+			return (fuzzyIsPointOnSegment(a, b, p) && fuzzyIsPointOnSegment(d, c, p)) ? std::optional<Vector2>(p)
 				: std::nullopt;
 
 		}
@@ -129,8 +135,7 @@ namespace Physics2D
 				{
 					if (atan2f(a.y, a.x) != atan2f(b.y, b.x))
 						return atan2f(a.y, a.x) < atan2(b.y, b.x);
-					else
-						return a.x < b.x;
+					return a.x < b.x;
 				});
 
 			uint16_t i, j, k;
@@ -177,8 +182,7 @@ namespace Physics2D
 
 			if (fuzzyIsPointOnSegment(a, b, op_proj))
 				return op_proj;
-			else
-				return (p - a).lengthSquare() > (p - b).lengthSquare() ? b : a;
+			return (p - a).lengthSquare() > (p - b).lengthSquare() ? b : a;
 		}
 
 		Vector2 GeometryAlgorithm2D::shortestLengthPointOfEllipse(const number& a, const number& b, const Vector2& p, const number& epsilon)
@@ -374,8 +378,7 @@ namespace Physics2D
 			{
 				return std::optional<Vector2>({ p.x + t * (dir.x - p.x), p.y + t * (dir.y - p.y) });
 			}
-			else
-				return std::nullopt;
+			return std::nullopt;
 		}
 	
 	    Vector2 GeometryAlgorithm2D::rotate(const Vector2& p, const Vector2& center, const number& angle)

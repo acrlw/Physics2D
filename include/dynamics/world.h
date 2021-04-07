@@ -1,4 +1,5 @@
-#pragma once
+#ifndef PHYSICS2D_WORLD_H
+#define PHYSICS2D_WORLD_H
 #include "include/common/common.h"
 #include "include/dynamics/rigidbody.h"
 #include "include/math/math.h"
@@ -14,3 +15,4 @@ namespace Physics2D
 		
 	};
 }
+#endif
