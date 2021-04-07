@@ -49,7 +49,15 @@ namespace Physics2D
 	{
 		return num > 0 ? 1 : -1;
 	}
-	
+	static number clamp(const number& num, const number& low, const number& high)
+	{
+		if (num > high)
+			return high;
+		else if (num < low)
+			return low;
+		else
+			return num;
+	}
 	//other trick
 	//basic number utility
 	inline void numberSwap(number& lhs, number& rhs)
@@ -607,6 +615,10 @@ namespace Physics2D
 			column1.set(cosarc, sinarc);
 			column2.set(-sinarc, cosarc);
 			return *this;
+		}
+		static Matrix2x2 skewSymmetricMatrix(const Vector2& r)
+		{
+			return Matrix2x2(0, -r.y, r.x, 0);
 		}
 		static Matrix2x2 identityMatrix()
 		{
