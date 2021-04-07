@@ -3,12 +3,12 @@
 #include "include/math/linear/linear.h"
 namespace Physics2D
 {
-	struct ContactInfo
-	{
-		Vector2 contactA;
-		Vector2 contactB;
-		bool isCollide = false;
-		Vector2 penetration;
-	};
+    struct ContactInfo
+    {
+            Vector2 contactA;
+            Vector2 contactB;
+            bool isCollide = false;
+            Vector2 penetration;
+    };
 }
 #endif

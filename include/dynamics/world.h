@@ -8,11 +8,11 @@
 
 namespace Physics2D
 {
-	class World
-	{
-		
-	private:
-		
-	};
+    class World
+    {
+
+        private:
+
+    };
 }
 #endif

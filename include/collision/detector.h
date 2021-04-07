@@ -9,20 +9,20 @@
 
 namespace Physics2D
 {
-	class Detector
-	{
-	public:
-		static ContactInfo detect(Body* body_A, Body* body_B)
-		{
-			ContactInfo result;
-			
-			if (body_A == nullptr || body_B == nullptr)
-				return result;
+    class Detector
+    {
+        public:
+            static ContactInfo detect(Body* body_A, Body* body_B)
+            {
+                ContactInfo result;
 
-			
-		}
-	private:
-		
-	};
+                if (body_A == nullptr || body_B == nullptr)
+                    return result;
+
+
+            }
+        private:
+
+    };
 }
 #endif	
