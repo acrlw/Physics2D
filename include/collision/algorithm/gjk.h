@@ -28,16 +28,6 @@ namespace Physics2D
             Vector2 result;
     };
     /// <summary>
-    /// Shape Collision Test Primitive.
-    /// Including shape type, position, angle
-    /// </summary>
-    struct ShapePrimitive
-    {
-            Shape * shape = nullptr;
-            Vector2 translation;
-            number rotation = 0;
-    };
-    /// <summary>
     /// Simplex structure for gjk/epa test.
     /// By convention:
     /// 1 points: p0 , construct a single point

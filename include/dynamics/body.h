@@ -1,5 +1,6 @@
 #ifndef PHYSICS2D_BODY_H
 #define PHYSICS2D_BODY_H
+#include "include/collision/broadphase/aabb.h"
 #include "include/math/math.h"
 #include "include/common/common.h"
 #include "include/dynamics/shape.h"
@@ -112,7 +113,7 @@ namespace Physics2D
                 return m_inertia;
             }
 
-            std::tuple<Vector2, Vector2> aabb()const
+            AABB aabb()const
             {
 
             }

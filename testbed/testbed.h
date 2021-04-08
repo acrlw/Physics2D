@@ -1,7 +1,9 @@
 #ifndef PHYSICS2D_TESTBED_H
 #define PHYSICS2D_TESTBED_H
 #include "include/physics2d.h"
-
+#include "QApplication"
+#include "QWidget"
+#include "QPainter"
 namespace Physics2D
 {
 	class TestBedApplication
@@ -9,12 +11,13 @@ namespace Physics2D
 	public:
 		TestBedApplication(int argc, char* argv[])
 		{
-			
+			exec(argc, argv);
 		}
-		int exec()
+		int exec(int argc, char* argv[])
 		{
+			QApplication app(argc, argv);
 			
-			return 0;
+			return app.exec();
 		}
 	private:
 	};

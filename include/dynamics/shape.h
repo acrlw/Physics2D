@@ -26,6 +26,17 @@ namespace Physics2D
         protected:
             Type m_type;
     };
+
+    /// <summary>
+    /// Shape Collision Test Primitive.
+    /// Including shape type, position, angle
+    /// </summary>
+    struct ShapePrimitive
+    {
+        Shape* shape = nullptr;
+        Vector2 transform;
+        number rotation = 0;
+    };
     class Point: public Shape
     {
         public:
@@ -82,9 +93,27 @@ namespace Physics2D
                 m_type = Type::Polygon;
                 this->set(width, height);
             }
-            inline void set(const number& width, const number& height)
+            void set(const number& width, const number& height)
             {
                 m_width = width;
+                m_height = height;
+                calcVertices();
+            }
+			number width()const
+            {
+                return m_width;
+            }
+            number height()const
+            {
+                return m_height;
+            }
+			void setWidth(const number& width)
+            {
+                m_width = width;
+                calcVertices();
+            }
+            void setHeight(const number& height)
+            {
                 m_height = height;
                 calcVertices();
             }
@@ -197,6 +226,46 @@ namespace Physics2D
             {
                 m_type = Type::Curve;
             }
+            Vector2 startPoint() const
+            {
+                return m_startPoint;
+            }
+
+            void setStartPoint(const Vector2 &startPoint)
+            {
+                m_startPoint = startPoint;
+            }
+
+            Vector2 control1() const
+            {
+                return m_control1;
+            }
+
+            void setControl1(const Vector2 &control1)
+            {
+                m_control1 = control1;
+            }
+
+            Vector2 control2() const
+            {
+                return m_control2;
+            }
+
+            void setControl2(const Vector2 &control2)
+            {
+                m_control2 = control2;
+            }
+
+            Vector2 endPoint() const
+            {
+                return m_endPoint;
+            }
+
+            void setEndPoint(const Vector2 &endPoint)
+            {
+                m_endPoint = endPoint;
+            }
+
         private:
             Vector2 m_startPoint;
             Vector2 m_control1;
