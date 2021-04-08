@@ -2,21 +2,20 @@
 #define PHYSICS2D_TESTBED_H
 #include "include/physics2d.h"
 #include "QApplication"
-#include "QWidget"
-#include "QPainter"
+#include "testbed/window.h"
 namespace Physics2D
 {
+	
 	class TestBedApplication
 	{
 	public:
-		TestBedApplication(int argc, char* argv[])
-		{
-			exec(argc, argv);
-		}
-		int exec(int argc, char* argv[])
+		TestBedApplication()
+		{}
+		static int exec(int argc, char* argv[])
 		{
 			QApplication app(argc, argv);
-			
+			Window window;
+			window.show();
 			return app.exec();
 		}
 	private:

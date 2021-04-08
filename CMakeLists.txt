@@ -58,5 +58,10 @@ add_executable(physics-engine
     "source/profile/profiler.cpp"
     "source/render/renderer.cpp"
     "include/collision/broadphase/dbvh.h"
-    "include/collision/broadphase/aabb.h" "include/render/impl/renderer_qt.h")
+    "include/collision/broadphase/aabb.h"
+    "source/collision/broadphase/dbvh.cpp"
+    "source/collision/broadphase/aabb.cpp"
+    "include/render/impl/renderer_qt.h"
+    "testbed/window.h"
+    "testbed/window.cpp")
 target_link_libraries(physics-engine PRIVATE Qt5::Widgets fmt::fmt)

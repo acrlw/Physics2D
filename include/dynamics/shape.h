@@ -22,6 +22,7 @@ namespace Physics2D
             {
                 return m_type;
             }
+            virtual void scale(const number& factor) = 0;
             virtual ~Shape() {};
         protected:
             Type m_type;
@@ -50,7 +51,10 @@ namespace Physics2D
             {
                 return m_position;
             }
-
+            void scale(const number& factor) override
+            {
+            	
+            }
             void setPosition(const Vector2& pos)
             {
                 m_position = pos;
@@ -73,6 +77,11 @@ namespace Physics2D
             {
                 return m_vertices;
             }
+    		void append(const std::initializer_list<Vector2>& vertices)
+            {
+	            for(const Vector2& vertex: vertices)
+                    m_vertices.emplace_back(vertex);
+            }
             void append(const Vector2& vertex)
             {
                 m_vertices.emplace_back(vertex);
@@ -80,6 +89,12 @@ namespace Physics2D
             Vector2 center()const
             {
                 return GeometryAlgorithm2D::calculateCenter(this->vertices());
+            }
+            void scale(const number& factor) override
+            {
+                assert(m_vertices.size() != 0);
+                for (Vector2& vertex : m_vertices)
+                    vertex *= factor;
             }
         protected:
             std::vector<Vector2> m_vertices;
@@ -143,6 +158,14 @@ namespace Physics2D
             {
                 return m_radius;
             }
+			void setRadius(const number& radius)
+            {
+                m_radius = radius;
+            }
+            void scale(const number& factor) override
+            {
+                m_radius *= factor;
+            }
         private:
             number m_radius;
     };
@@ -153,6 +176,11 @@ namespace Physics2D
             Ellipse()
             {
                 m_type = Type::Ellipse;
+            }
+    		void set(const Vector2& leftTop, const Vector2& rightBottom)
+            {
+                m_width = rightBottom.x - leftTop.x;
+                m_height = rightBottom.y - leftTop.y;
             }
             void set(const number& width, const number& height)
             {
@@ -166,6 +194,12 @@ namespace Physics2D
             void setHeight(const number& height)
             {
                 m_height = height;
+            }
+
+            void scale(const number& factor) override
+            {
+                m_width *= factor;
+                m_height *= factor;
             }
             number width()const
             {
@@ -201,10 +235,19 @@ namespace Physics2D
             {
                 m_type = Type::Edge;
             }
-            void set(const Vector2& _start, const Vector2& _end)
+    	
+            void set(const Vector2& start, const Vector2& end)
             {
-                m_startPoint = _start;
-                m_endPoint = _end;
+                m_startPoint = start;
+                m_endPoint = end;
+            }
+    		void setStartPoint(const Vector2& start)
+            {
+                m_startPoint = start;
+            }
+            void setEndPoint(const Vector2& end)
+            {
+                m_endPoint = end;
             }
             Vector2 startPoint()const
             {
@@ -213,6 +256,11 @@ namespace Physics2D
             Vector2 endPoint()const
             {
                 return m_endPoint;
+            }
+            void scale(const number& factor) override
+            {
+                m_startPoint *= factor;
+                m_endPoint *= factor;
             }
         private:
             Vector2 m_startPoint;
@@ -225,6 +273,13 @@ namespace Physics2D
             Curve()
             {
                 m_type = Type::Curve;
+            }
+    		void set(const Vector2& start, const Vector2& control1, const Vector2& control2, const Vector2& end)
+            {
+                m_startPoint = start;
+                m_control1 = control1;
+                m_control2 = control2;
+                m_endPoint = end;
             }
             Vector2 startPoint() const
             {
@@ -266,6 +321,13 @@ namespace Physics2D
                 m_endPoint = endPoint;
             }
 
+            void scale(const number& factor) override
+            {
+                m_startPoint *= factor;
+                m_control1 *= factor;
+                m_control2 *= factor;
+                m_endPoint *= factor;
+            }
         private:
             Vector2 m_startPoint;
             Vector2 m_control1;
