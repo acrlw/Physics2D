@@ -18,6 +18,8 @@ namespace Physics2D
             Vector2 screenToWorld(const Vector2& pos)const;
             Vector2 worldToScreen(const Vector2& pos)const;
             void step(const number& dt);
+
+            void setGeometry(const Vector2& leftTop, const Vector2& rightBottom);
             Vector2 leftTop() const;
             void setLeftTop(const Vector2 &leftTop);
 

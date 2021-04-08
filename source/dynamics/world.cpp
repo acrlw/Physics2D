@@ -17,6 +17,12 @@ namespace Physics2D {
 
     }
 
+    void World::setGeometry(const Vector2& leftTop, const Vector2& rightBottom)
+    {
+        m_leftTop = leftTop;
+        m_rightBottom = rightBottom;
+    }
+
     Vector2 World::worldToScreen(const Vector2 &leftTop, const Vector2 &rightBottom, const Vector2 &pos)
     {
         number origin_y = rightBottom.y;

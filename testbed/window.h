@@ -35,7 +35,7 @@ namespace Physics2D
 	private:
 		void testShape(QPainter* painter);
 		
-		World* m_world;
+		World m_world;
 		Rectangle m_rectShape;
 		Polygon m_polygon;
 		Circle m_circle;

@@ -2,6 +2,43 @@
 
 namespace Physics2D
 {
+	
+	bool Simplex::calculateContainOrigin(const Simplex& simplex)
+	{
+		switch (simplex.vertices.size())
+		{
+		case 4:
+		{
+			number a = 0, b = 0, c = 0;
+			Vector2 oa = simplex.vertices[0].result * -1;
+			Vector2 ob = simplex.vertices[1].result * -1;
+			Vector2 oc = simplex.vertices[2].result * -1;
+
+			a = Vector2::crossProduct(oa, ob);
+			b = Vector2::crossProduct(ob, oc);
+			c = Vector2::crossProduct(oc, oa);
+
+			if ((a <= 0 && b <= 0 && c <= 0) ||
+				(a >= 0 && b >= 0 && c >= 0))
+				return true;
+			return false;
+		}
+		case 2:
+		{
+			Vector2 oa = simplex.vertices[0].result * -1;
+			Vector2 ob = simplex.vertices[1].result * -1;
+			return Vector2::crossProduct(oa, ob) == 0;
+		}
+		case 1:
+		{
+			return simplex.vertices[0].result.length() == 0;
+			break;
+		}
+		default:
+			return false;
+		}
+	}
+
 	std::tuple<bool, Simplex> GJK::gjk(const ShapePrimitive& shape_A, const ShapePrimitive& shape_B,
 	                                   const size_t& iteration)
 	{
