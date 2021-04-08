@@ -57,5 +57,5 @@ add_executable(physics-engine
     "source/math/algorithm/graphics/2d.cpp"
     "source/profile/profiler.cpp"
     "source/render/renderer.cpp"
-     )
+      "include/collision/broadphase/dbvt.h")
 target_link_libraries(physics-engine PRIVATE Qt5::Widgets fmt::fmt)

@@ -137,18 +137,42 @@ namespace Physics2D
             /// <param name="simplex"></param>
             /// <returns></returns>
             static ContactInfo dumpInfo(const ShapePrimitive& shape_A, const ShapePrimitive& shape_B, const Simplex& simplex);
-
+            /// <summary>
+            /// Support function.
+            /// </summary>
+            /// <param name="shape_A"></param>
+            /// <param name="shape_B"></param>
+            /// <param name="direction"></param>
+            /// <returns></returns>
             static Minkowski support(const ShapePrimitive& shape_A, const ShapePrimitive& shape_B, const Vector2& direction);
             /// <summary>
-            /// The edge closest to the origin
-            /// size_t, size_t: the index of point of edge
+            /// Find two points that can form an edge closest to origin of simplex
             /// </summary>
+            /// <param name="simplex"></param>
+            /// <returns></returns>
             static std::tuple<size_t, size_t> findEdgeClosestToOrigin(const Simplex& simplex);
-
+            /// <summary>
+            /// Find farthest projection point in given direction
+            /// </summary>
+            /// <param name="shape"></param>
+            /// <param name="direction"></param>
+            /// <returns></returns>
             static Vector2 findFarthestPoint(const ShapePrimitive& shape, const Vector2& direction);
-
+            /// <summary>
+            /// Adjust triangle simplex, remove the point that can not form a triangle that contains origin
+            /// </summary>
+            /// <param name="simplex"></param>
+            /// <param name="closest_1"></param>
+            /// <param name="closest_2"></param>
+            /// <returns></returns>
             static std::optional<Minkowski> adjustSimplex(Simplex& simplex, const size_t& closest_1, const size_t& closest_2);
-
+            /// <summary>
+            /// Given two points, calculate the perpendicular vector and the orientation is user-defined.
+            /// </summary>
+            /// <param name="p1"></param>
+            /// <param name="p2"></param>
+            /// <param name="pointToOrigin"></param>
+            /// <returns></returns>
             static Vector2 calculateDirectionByEdge(const Vector2& p1, const Vector2& p2, bool pointToOrigin = true);
     };
 }

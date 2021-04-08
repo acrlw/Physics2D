@@ -8,5 +8,33 @@ namespace Physics2D
 	{
 		
 	};
+	class ShapeRenderer
+	{
+		
+	};
+	class PolygonRenderer
+	{
+		
+	};
+	class RectangleRenderer
+	{
+		
+	};
+	class EllipseRenderer
+	{
+		
+	};
+	class CircleRenderer
+	{
+		
+	};
+	class EdgeRenderer
+	{
+		
+	};
+	class StateRenderer
+	{
+		
+	};
 }
 #endif
