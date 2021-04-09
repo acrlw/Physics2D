@@ -38,6 +38,7 @@ namespace Physics2D
 		World m_world;
 		Rectangle rectangle;
 		number m_angle = 45;
+		const Body* m_lastBody = nullptr;
 	};
 }
 #endif

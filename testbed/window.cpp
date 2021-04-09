@@ -7,10 +7,12 @@ namespace Physics2D
         this->setParent(parent);
         this->setWindowTitle("Testbed");
         this->resize(1920, 1080);
+        this->setMouseTracking(true);
         m_world.setGeometry({ 0,0 }, { 1920,1080 });
 
-        rectangle.set(50, 50);
+        rectangle.set(25, 25);
         rectangle.scale(2);
+        createStackBox();
     }
 
     Window::~Window()
@@ -27,7 +29,18 @@ namespace Physics2D
 		QPen origin(Qt::green, 10, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
         RendererQtImpl::renderPoint(&painter, &m_world, Vector2(0, 0), origin);
 
-    	
+        QPen pen(Qt::green, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+        Renderer::render(&painter, &m_world, pen);
+
+    	if(m_lastBody != nullptr)
+    	{
+            ShapePrimitive shape;
+            shape.shape = m_lastBody->shape();
+            shape.rotation = m_lastBody->angle();
+            shape.transform = m_lastBody->position();
+            QPen contact(Qt::red, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+            RendererQtImpl::renderPolygon(&painter, &m_world, shape, contact);
+    	}
     }
 
     void Window::resizeEvent(QResizeEvent *e)
@@ -48,7 +61,27 @@ namespace Physics2D
      
     void Window::mouseMoveEvent(QMouseEvent *e)
     {
+        m_lastBody = nullptr;
+        Vector2 screen_pos(static_cast<number>(e->pos().x()), static_cast<number>(e->pos().y()));
+        Vector2 world_pos = m_world.screenToWorld(screen_pos);
+        Point point;
+        point.setPosition(world_pos);
+        ShapePrimitive primitive, shape;
+        primitive.shape = &point;
+    	for(const Body* body: m_world.bodyList())
+    	{
+            shape.transform = body->position();
+            shape.rotation = body->angle();
+            shape.shape = body->shape();
+            auto [isCollide, simplex] = GJK::gjk(shape, primitive);
+    		if(isCollide)
+    		{
+                m_lastBody = body;
+    		}
+    	}
 
+        repaint();
+    	
     }
 
     void Window::keyPressEvent(QKeyEvent *event)
@@ -178,16 +211,14 @@ namespace Physics2D
 
     void Window::createStackBox()
     {
-    	for(uint16_t j = 10;j >= 0;j--)
+    	for(int j = 10;j >= 0;j--)
     	{
-            uint16_t i = 2 * j + 1;
-    		for(uint16_t i = 0;i < 2 * j + 1;i++)
+    		for(int i = 0;i < 2 * (10 - j) + 1;i++)
     		{
-
                 Body* body = new Body;
+                //body->setAngle(j * j + 12);
                 body->setShape(&rectangle);
-                body->setPosition({});
-    			
+                body->setPosition({static_cast<number>(-55 * (10 - j) + i * 55),static_cast<number>(j * 65 + 65)});
                 m_world.addBody(body);
     		}
     	}

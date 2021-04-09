@@ -17,7 +17,7 @@ namespace Physics2D
 			assert(painter != nullptr && world != nullptr);
 			Vector2 screen_p = world->worldToScreen(point);
 			QPen p = pen;
-			p.setWidth(8);
+			p.setWidth(6);
 			painter->setPen(p);
 			painter->drawPoint(QPointF(screen_p.x, screen_p.y));
 		}

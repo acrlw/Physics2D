@@ -2,10 +2,10 @@
 #define PHYSICS2D_SHAPE_H
 #include "include/math/math.h"
 #include "include/common/common.h"
+#include "include/collision/broadphase/aabb.h"
 #include "include/math/algorithm/graphics/2d.h"
 namespace Physics2D
 {
-    using Point2 = Vector2;
     class Shape
     {
         public:
@@ -23,6 +23,7 @@ namespace Physics2D
                 return m_type;
             }
             virtual void scale(const number& factor) = 0;
+            virtual AABB aabb(const number& factor = 1) = 0;
             virtual ~Shape() {};
         protected:
             Type m_type;
@@ -53,7 +54,7 @@ namespace Physics2D
             }
             void scale(const number& factor) override
             {
-            	
+
             }
             void setPosition(const Vector2& pos)
             {
@@ -92,7 +93,7 @@ namespace Physics2D
             }
             void scale(const number& factor) override
             {
-                assert(m_vertices.size() != 0);
+                assert(!m_vertices.empty());
                 for (Vector2& vertex : m_vertices)
                     vertex *= factor;
             }
@@ -133,7 +134,7 @@ namespace Physics2D
                 calcVertices();
             }
         private:
-            inline void calcVertices()
+            void calcVertices()
             {
                 m_vertices.clear();
                 m_vertices.emplace_back(Vector2(-m_width / 2.0f, m_height / 2.0f));

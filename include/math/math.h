@@ -65,7 +65,14 @@ namespace Physics2D
 	{
 		return abs(lhs - rhs) < EPSILON;
 	}
-
+	inline number angleToRadian(const number& angle)
+	{
+		return angle * (180.0f / PI);
+	}
+	inline number radianToAngle(const number& radian)
+	{
+		return radian * (PI / 180.0f);
+	}
 	template <typename T, size_t iterations = 2> inline T fastInverseSqrt(T x) {
 		typedef typename std::conditional<sizeof(T) == 8, std::int64_t, std::int32_t>::type Tint;
 		T y = x;

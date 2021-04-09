@@ -38,24 +38,56 @@ namespace Physics2D {
     {
         number origin_y = rightBottom.y;
         number origin_x = (leftTop.x + rightBottom.x) / 2;
-        return pos - Vector2(origin_x, origin_y);
+        Vector2 result = pos - Vector2(origin_x, origin_y);
+        result.y = -result.y;
+        return result;
     }
 
     std::vector<Body*> World::bodyList() const
     {
         return m_bodyList;
     }
-
+    
+    number World::bias() const
+    {
+        return m_bias;
+    }
+    
+    void World::setBias(const number &bias)
+    {
+        m_bias = bias;
+    }
+    
+    number World::velocityIteration() const
+    {
+        return m_velocityIteration;
+    }
+    
+    void World::setVelocityIteration(const number &velocityIteration)
+    {
+        m_velocityIteration = velocityIteration;
+    }
+    
+    number World::positionIteration() const
+    {
+        return m_positionIteration;
+    }
+    
+    void World::setPositionIteration(const number &positionIteration)
+    {
+        m_positionIteration = positionIteration;
+    }
+    
     Vector2 World::leftTop() const
     {
         return m_leftTop;
     }
-
+    
     void World::setLeftTop(const Vector2 &leftTop)
     {
         m_leftTop = leftTop;
     }
-
+    
     Vector2 World::rightBottom() const
     {
         return m_rightBottom;
