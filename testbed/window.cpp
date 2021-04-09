@@ -13,6 +13,17 @@ namespace Physics2D
     	
         rectangle.set(25, 25);
         rectangle.scale(2);
+
+        
+        polygon.append({ {-4, 1},{-3, -5}, {5, -6}, {7, 4}, {0, 6}, {-4, 1} });
+        polygon.scale(15);
+        ellipse.set({ -20, 15 }, { 20, -15 });
+        ellipse.scale(5);
+        circle.setRadius(6);
+        circle.scale(12);
+        edge.set({ -250, 40 }, { 350, 180 });
+        curve.set({ -600, 200 }, { -50, 20 }, { 0, 40 }, { 600, 150 });
+    	
         //createStackBox();
     }
 
@@ -33,6 +44,16 @@ namespace Physics2D
         QPen pen(Qt::green, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
         Renderer::render(&painter, &m_world, pen);
 
+        ShapePrimitive primitive;
+        primitive.shape = &polygon;
+        primitive.rotation = m_angle;
+        primitive.transform.set(0, 200);
+        RendererQtImpl::renderShape(&painter, &m_world, primitive, pen);
+        AABB aabb = AABB::fromShape(primitive);
+        pen.setWidth(1);
+    	RendererQtImpl::renderAABB(&painter, &m_world, aabb, pen);
+
+    	
     	if(m_lastBody != nullptr)
     	{
             ShapePrimitive shape;

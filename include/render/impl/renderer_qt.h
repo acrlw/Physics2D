@@ -181,6 +181,16 @@ namespace Physics2D
                     break;
             }
 		}
+		static void renderAABB(QPainter *painter, World* world, const AABB& aabb, const QPen& pen)
+		{
+			assert(painter != nullptr && world != nullptr);
+			painter->setPen(pen);
+			Vector2 topLeft;
+			topLeft.set(-aabb.width / 2, aabb.height / 2);
+			topLeft += aabb.position;
+			topLeft = world->worldToScreen(topLeft);
+			painter->drawRect(QRectF(topLeft.x, topLeft.y, aabb.width, aabb.height));
+		}
 		static void renderShape(QPainter *painter, World *world, const ShapePrimitive& shape, const QPen& pen)
 		{
 			assert(painter != nullptr && world != nullptr);

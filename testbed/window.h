@@ -38,7 +38,12 @@ namespace Physics2D
 		void createStackBox();
 		World m_world;
 		Rectangle rectangle;
-		number m_angle = 45;
+		Ellipse ellipse;
+		Edge edge;
+		Curve curve;
+		Polygon polygon;
+		Circle circle;
+		number m_angle = 0;
 		const Body* m_lastBody = nullptr;
 	};
 }
