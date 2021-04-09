@@ -34,9 +34,12 @@ namespace Physics2D
 			assert(painter != nullptr && world != nullptr);
 			assert(shape.shape->type() == Shape::Type::Polygon);
 			Vector2 position = world->worldToScreen(shape.transform);
+			renderPoint(painter, world, shape.transform, pen);
+			QPen center(Qt::gray, 8, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+			renderPoint(painter, world, Matrix2x2(shape.rotation).multiply(dynamic_cast<Polygon*>(shape.shape)->center()) + shape.transform, center);
 			QPolygonF polygon;
 			QColor color = pen.color();
-			color.setAlphaF(0.12f);
+			color.setAlphaF(0.15f);
 			QBrush brush(color);
 
 			for(const Vector2& point: dynamic_cast<Polygon*>(shape.shape)->vertices())
@@ -64,6 +67,7 @@ namespace Physics2D
 		{
 			assert(painter != nullptr && world != nullptr);
 			assert(shape.shape->type() == Shape::Type::Polygon);
+			renderPoint(painter, world, shape.transform, pen);
 			
 			Vector2 position = world->worldToScreen(shape.transform);
 			QPolygonF polygon;
@@ -76,7 +80,7 @@ namespace Physics2D
 			}
 
 			QColor color = pen.color();
-			color.setAlphaF(0.12f);
+			color.setAlphaF(0.15f);
 			QBrush brush(color);
 			QPainterPath path;
 			path.addPolygon(polygon);
@@ -90,42 +94,44 @@ namespace Physics2D
 			assert(shape.shape->type() == Shape::Type::Circle);
 			const Circle* circle = dynamic_cast<Circle*>(shape.shape);
 			const Vector2 screen_p = world->worldToScreen(shape.transform);
+			renderPoint(painter, world, shape.transform, pen);
 
 			QColor color = pen.color();
-			color.setAlphaF(0.12f);
+			color.setAlphaF(0.15f);
 			QBrush brush(color);
 			QPainterPath path;
 			path.addEllipse(QRectF(-circle->radius(), -circle->radius(), 2 * circle->radius(), 2 * circle->radius()));
-
-			painter->rotate(shape.rotation);
+			//QPainter default rotation orientation is clockwise
 			painter->translate(screen_p.x, screen_p.y);
+			painter->rotate(-shape.rotation);
 			painter->setPen(pen);
 			painter->drawPath(path);
 			painter->fillPath(path, brush);
+			painter->rotate(shape.rotation);
 			painter->translate(-screen_p.x, -screen_p.y);
-			painter->rotate(-shape.rotation);
 			
 		}
 		static void renderEllipse(QPainter* painter, World* world, const ShapePrimitive& shape, const QPen& pen)
 		{
 			assert(painter != nullptr && world != nullptr);
 			assert(shape.shape->type() == Shape::Type::Ellipse);
+			renderPoint(painter, world, shape.transform, pen);
 			const Ellipse* ellipse = dynamic_cast<Ellipse*>(shape.shape);
 			const Vector2 screen_p = world->worldToScreen(shape.transform);
 			number A = ellipse->A();
 			number B = ellipse->B();
 			
 			QColor color = pen.color();
-			color.setAlphaF(0.12f);
+			color.setAlphaF(0.15f);
 			QBrush brush(color);
 			QPainterPath path;
 			painter->translate(screen_p.x, screen_p.y);
-			painter->rotate(shape.rotation);
+			painter->rotate(-shape.rotation);
 			path.addEllipse(QRectF(-A, -B, ellipse->width(), ellipse->height()));
 			painter->setPen(pen);
 			painter->drawPath(path);
 			painter->fillPath(path, brush);
-			painter->rotate(-shape.rotation);
+			painter->rotate(shape.rotation);
 			painter->translate(-screen_p.x, -screen_p.y);
 			
 		}
@@ -143,14 +149,14 @@ namespace Physics2D
             const Vector2 screen_control1 = world->worldToScreen(curve->control1() + shape.transform);
             const Vector2 screen_control2 = world->worldToScreen(curve->control2() + shape.transform);
 			
-			painter->rotate(shape.rotation);
+			painter->rotate(-shape.rotation);
             QPainterPath path;
             path.moveTo(QPointF(screen_start.x, screen_start.y));
             path.cubicTo(QPointF(screen_control1.x, screen_control1.y), QPointF(screen_control2.x, screen_control2.y),
                          QPointF(screen_end.x, screen_end.y));
             painter->setPen(pen);
             painter->drawPath(path);
-			painter->rotate(-shape.rotation);
+			painter->rotate(shape.rotation);
 		}
 		static void renderAngleLine(QPainter* painter, World* world, const ShapePrimitive& shape, const QPen& pen)
 		{

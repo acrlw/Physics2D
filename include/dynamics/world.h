@@ -15,6 +15,7 @@ namespace Physics2D
             {}
             World(const Vector2& leftTop, const Vector2& rightBottom) : m_leftTop(leftTop), m_rightBottom(rightBottom)
             {}
+            ~World();
             Vector2 screenToWorld(const Vector2& pos)const;
             Vector2 worldToScreen(const Vector2& pos)const;
             void step(const number& dt);
@@ -52,7 +53,9 @@ namespace Physics2D
     	
             static Vector2 worldToScreen(const Vector2& leftTop, const Vector2& rightBottom, const Vector2& pos);
             static Vector2 screenToWorld(const Vector2& leftTop, const Vector2& rightBottom, const Vector2& pos);
-        private:
+
+            std::vector<Body*> bodyList()const;
+		private:
             Vector2 m_leftTop;
             Vector2 m_rightBottom;
     	

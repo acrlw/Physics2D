@@ -1,7 +1,11 @@
 #include "include/dynamics/world.h"
 
 namespace Physics2D {
-
+    World::~World()
+    {
+    	for(Body * body: m_bodyList)
+            delete body;
+    }
     Vector2 World::screenToWorld(const Vector2 &pos) const
     {
         return screenToWorld(m_leftTop, m_rightBottom, pos);
@@ -35,6 +39,11 @@ namespace Physics2D {
         number origin_y = rightBottom.y;
         number origin_x = (leftTop.x + rightBottom.x) / 2;
         return pos - Vector2(origin_x, origin_y);
+    }
+
+    std::vector<Body*> World::bodyList() const
+    {
+        return m_bodyList;
     }
 
     Vector2 World::leftTop() const
@@ -119,12 +128,13 @@ namespace Physics2D {
 
     void World::addBody(Body *body)
     {
-
+        m_bodyList.emplace_back(body);
     }
 
     void World::removeBody(Body *body)
     {
-
+        std::remove(m_bodyList.begin(), m_bodyList.end(), body);
+        delete body;
     }
 
     number World::width()

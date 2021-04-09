@@ -1,5 +1,7 @@
 #include "include/collision/algorithm/gjk.h"
 
+
+
 namespace Physics2D
 {
 	
@@ -137,6 +139,7 @@ namespace Physics2D
 		const Vector2 A_s2 = simplex.vertices[index2].pointA;
 		const Vector2 B_s1 = simplex.vertices[index1].pointB;
 		const Vector2 B_s2 = simplex.vertices[index2].pointB;
+
 		Vector2 normal, v_penetr;
 		Vector2 witness, mirror;
 		normal = calculateDirectionByEdge(simplex.vertices[index1].result, simplex.vertices[index2].result, false).
@@ -204,7 +207,7 @@ namespace Physics2D
 	Vector2 GJK::findFarthestPoint(const ShapePrimitive& shape, const Vector2& direction)
 	{
 		Vector2 target;
-		Matrix2x2 rot(-1 * shape.rotation);
+		Matrix2x2 rot(-shape.rotation);
 		Vector2 rot_dir = rot.multiply(direction);
 		switch (shape.shape->type())
 		{
@@ -230,7 +233,7 @@ namespace Physics2D
 		case Shape::Type::Circle:
 			{
 				const auto* const circle = dynamic_cast<const Circle*>(shape.shape);
-				target = direction * circle->radius();
+				target = direction.normal() * circle->radius();
 				break;
 			}
 		case Shape::Type::Ellipse:
@@ -277,7 +280,6 @@ namespace Physics2D
 		case Shape::Type::Point:
 			{
 				return dynamic_cast<const Point*>(shape.shape)->position();
-				break;
 			}
 		default:
 			break;

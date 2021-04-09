@@ -58,7 +58,7 @@ namespace Physics2D
 
 		Matrix2x2& operator/=(const number& factor)
 		{
-			assert(numberEqual(factor, 0));
+			assert(!numberEqual(factor, 0));
 			column1 /= factor;
 			column2 /= factor;
 			return *this;

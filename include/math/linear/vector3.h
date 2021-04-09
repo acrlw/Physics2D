@@ -50,13 +50,13 @@ namespace Physics2D
 
 		Vector3 operator/(const number& factor)const
 		{
-			assert(numberEqual(factor, 0));
+			assert(!numberEqual(factor, 0));
 			return Vector3(x / factor, y / factor, z / factor);
 		}
 
 		Vector3 operator/(const int& factor)const
 		{
-			assert(numberEqual(factor, 0));
+			assert(!numberEqual(factor, 0));
 			return Vector3(x / factor, y / factor, z / factor);
 		}
 
@@ -94,7 +94,7 @@ namespace Physics2D
 
 		Vector3& operator/=(const number& factor)
 		{
-			assert(numberEqual(factor, 0));
+			assert(!numberEqual(factor, 0));
 			x /= factor;
 			y /= factor;
 			z /= factor;
@@ -103,7 +103,7 @@ namespace Physics2D
 
 		Vector3& operator/=(const int& factor)
 		{
-			assert(numberEqual(factor, 0));
+			assert(!numberEqual(factor, 0));
 			x /= factor;
 			y /= factor;
 			z /= factor;

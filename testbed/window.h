@@ -34,14 +34,10 @@ namespace Physics2D
 	
 	private:
 		void testShape(QPainter* painter);
-		
+		void createStackBox();
 		World m_world;
-		Rectangle m_rectShape;
-		Polygon m_polygon;
-		Circle m_circle;
-		Ellipse m_ellipse;
-		Edge m_edge;
-		Curve m_curve;
+		Rectangle rectangle;
+		number m_angle = 45;
 	};
 }
 #endif
