@@ -115,7 +115,11 @@ namespace Physics2D
 
             AABB aabb()const
             {
-
+                ShapePrimitive primitive;
+                primitive.transform = m_position;
+                primitive.rotation = m_angle;
+            	primitive.shape = m_shape;
+                return AABB::fromShape(primitive);
             }
 
 

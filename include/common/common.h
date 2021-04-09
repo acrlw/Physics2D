@@ -7,7 +7,6 @@
 #include <vector>
 #include <tuple>
 #include <optional>
-#include <stack>
 #include <algorithm>
 #include <functional>
 
@@ -15,7 +14,7 @@ namespace Physics2D
 {
 #ifdef SINGLE_PRECISION
 	using number = float;
-	const float epsilon = FLT_EPSILON;
+	const float EPSILON = FLT_EPSILON;
 	const float  PI = 3.14159265358979f;
 
 #else

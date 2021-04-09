@@ -181,7 +181,39 @@ namespace Physics2D
                     break;
             }
 		}
-	
+		static void renderShape(QPainter *painter, World *world, const ShapePrimitive& shape, const QPen& pen)
+		{
+			assert(painter != nullptr && world != nullptr);
+			switch (shape.shape->type())
+			{
+			case Shape::Type::Polygon:
+			{
+				renderPolygon(painter, world, shape, pen);
+				break;
+			}
+			case Shape::Type::Ellipse:
+			{
+				renderEllipse(painter, world, shape, pen);
+				break;
+			}
+			case Shape::Type::Circle:
+			{
+				renderCircle(painter, world, shape, pen);
+				break;
+			}
+			case Shape::Type::Curve:
+			{
+				renderCurve(painter, world, shape, pen);
+				break;
+			}
+			case Shape::Type::Edge:
+			{
+				renderEdge(painter, world, shape, pen);
+				break;
+			}
+			default: break;
+			}
+		}
 	private:
 		
 	};

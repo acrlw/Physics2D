@@ -2,7 +2,6 @@
 #define PHYSICS2D_SHAPE_H
 #include "include/math/math.h"
 #include "include/common/common.h"
-#include "include/collision/broadphase/aabb.h"
 #include "include/math/algorithm/graphics/2d.h"
 namespace Physics2D
 {
@@ -23,15 +22,14 @@ namespace Physics2D
                 return m_type;
             }
             virtual void scale(const number& factor) = 0;
-            virtual AABB aabb(const number& factor = 1) = 0;
             virtual ~Shape() {};
         protected:
             Type m_type;
     };
 
     /// <summary>
-    /// Shape Collision Test Primitive.
-    /// Including shape type, position, angle
+    /// Basic Shape Description Primitive.
+    /// Including vertices/position/angle of shape
     /// </summary>
     struct ShapePrimitive
     {
@@ -54,7 +52,7 @@ namespace Physics2D
             }
             void scale(const number& factor) override
             {
-
+                m_position *= factor;
             }
             void setPosition(const Vector2& pos)
             {

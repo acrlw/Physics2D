@@ -34,6 +34,7 @@ namespace Physics2D
 	
 	private:
 		void testShape(QPainter* painter);
+		void testHit(const QPoint& pos);
 		void createStackBox();
 		World m_world;
 		Rectangle rectangle;

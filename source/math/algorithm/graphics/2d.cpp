@@ -385,4 +385,34 @@ namespace Physics2D
     {
         return Matrix2x2(angle).multiply(p - center) + center;
     }
+    Vector2 GeometryAlgorithm2D::calculateEllipseProjectionPoint(const number& a, const number& b, const Vector2& direction)
+    {
+        Vector2 target;
+        if (numberEqual(direction.x, 0))
+        {
+            int sgn = direction.y < 0 ? -1 : 1;
+            target.set(0, sgn * b);
+        }
+        else if (numberEqual(direction.y, 0))
+        {
+            int sgn = direction.x < 0 ? -1 : 1;
+            target.set(sgn * a, 0);
+        }
+        else
+        {
+            number k = direction.y / direction.x;
+            //line offset constant d
+            number a2 = pow(a, 2);
+            number b2 = pow(b, 2);
+            number k2 = pow(k, 2);
+            number d = sqrt((a2 + b2 * k2) / k2);
+            number x1, y1;
+            if (Vector2::dotProduct(Vector2(0, d), direction) < 0)
+                d = d * -1;
+            x1 = k * d - (b2 * k2 * k * d) / (a2 + b2 * k2);
+            y1 = (b2 * k2 * d) / (a2 + b2 * k2);
+            target.set(x1, y1);
+        }
+        return target;
+    }
 }

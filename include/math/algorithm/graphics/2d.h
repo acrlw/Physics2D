@@ -155,6 +155,15 @@ namespace Physics2D
 		/// <param name="angle">rotate angle</param>
 		/// <returns></returns>
 		static Vector2 rotate(const Vector2& p, const Vector2& center, const number& angle);
+		/// <summary>
+		/// Calculate the projection axis of ellipse in user-define direction.
+		/// Return the maximum point in ellipse
+		/// </summary>
+		/// <param name="a"></param>
+		/// <param name="b"></param>
+		/// <param name="direction"></param>
+		/// <returns></returns>
+		static Vector2 calculateEllipseProjectionPoint(const number& a, const number& b, const Vector2& direction);
 	};
 }
 #endif

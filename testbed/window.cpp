@@ -10,9 +10,10 @@ namespace Physics2D
         this->setMouseTracking(true);
         m_world.setGeometry({ 0,0 }, { 1920,1080 });
 
+    	
         rectangle.set(25, 25);
         rectangle.scale(2);
-        createStackBox();
+        //createStackBox();
     }
 
     Window::~Window()
@@ -39,7 +40,7 @@ namespace Physics2D
             shape.rotation = m_lastBody->angle();
             shape.transform = m_lastBody->position();
             QPen contact(Qt::red, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-            RendererQtImpl::renderPolygon(&painter, &m_world, shape, contact);
+            RendererQtImpl::renderShape(&painter, &m_world, shape, contact);
     	}
     }
 
@@ -51,7 +52,6 @@ namespace Physics2D
 
     void Window::mousePressEvent(QMouseEvent *)
     {
-
     }
 
     void Window::mouseReleaseEvent(QMouseEvent *e)
@@ -61,25 +61,9 @@ namespace Physics2D
      
     void Window::mouseMoveEvent(QMouseEvent *e)
     {
-        m_lastBody = nullptr;
-        Vector2 screen_pos(static_cast<number>(e->pos().x()), static_cast<number>(e->pos().y()));
-        Vector2 world_pos = m_world.screenToWorld(screen_pos);
-        Point point;
-        point.setPosition(world_pos);
-        ShapePrimitive primitive, shape;
-        primitive.shape = &point;
-    	for(const Body* body: m_world.bodyList())
-    	{
-            shape.transform = body->position();
-            shape.rotation = body->angle();
-            shape.shape = body->shape();
-            auto [isCollide, simplex] = GJK::gjk(shape, primitive);
-    		if(isCollide)
-    		{
-                m_lastBody = body;
-    		}
-    	}
 
+        //testHit(e->pos());
+        
         repaint();
     	
     }
@@ -156,7 +140,27 @@ namespace Physics2D
         }
         repaint();
     }
-
+    void Window::testHit(const QPoint& pos)
+    {
+        m_lastBody = nullptr;
+        Vector2 screen_pos(static_cast<number>(pos.x()), static_cast<number>(pos.y()));
+        Vector2 world_pos = m_world.screenToWorld(screen_pos);
+        Point point;
+        point.setPosition(world_pos);
+        ShapePrimitive primitive, shape;
+        primitive.shape = &point;
+        for (const Body* body : m_world.bodyList())
+        {
+            shape.transform = body->position();
+            shape.rotation = body->angle();
+            shape.shape = body->shape();
+            auto [isCollide, simplex] = GJK::gjk(shape, primitive);
+            if (isCollide)
+            {
+                m_lastBody = body;
+            }
+        }
+    }
     void Window::testShape(QPainter* painter)
     {
         Rectangle m_rectShape;

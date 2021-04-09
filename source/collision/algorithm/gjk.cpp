@@ -213,7 +213,7 @@ namespace Physics2D
 		{
 		case Shape::Type::Polygon:
 			{
-				const auto* polygon = dynamic_cast<const Polygon*>(shape.shape);
+				const Polygon* polygon = dynamic_cast<const Polygon*>(shape.shape);
 				Vector2 p0 = polygon->vertices()[0];
 				number max = 0;
 				target = polygon->vertices()[0];
@@ -232,46 +232,19 @@ namespace Physics2D
 			}
 		case Shape::Type::Circle:
 			{
-				const auto* const circle = dynamic_cast<const Circle*>(shape.shape);
+				const Circle* circle = dynamic_cast<const Circle*>(shape.shape);
 				target = direction.normal() * circle->radius();
 				break;
 			}
 		case Shape::Type::Ellipse:
 			{
-				const auto* const ellipse = dynamic_cast<const Ellipse*>(shape.shape);
-				const number a = ellipse->A();
-				const number b = ellipse->B();
-				if (rot_dir.x == 0.0f)
-				{
-					int sgn = direction.y < 0 ? -1 : 1;
-					target.set(0, sgn * b);
-				}
-				else if (rot_dir.y == 0.0f)
-				{
-					int sgn = direction.x < 0 ? -1 : 1;
-					target.set(sgn * a, 0);
-				}
-				else
-				{
-					float k = rot_dir.y / rot_dir.x;
-					//line offset constant d
-					float a2 = pow(a, 2);
-					float b2 = pow(b, 2);
-					float k2 = pow(k, 2);
-					float d = sqrt((a2 + b2 * k2) / k2);
-					float x1, y1;
-					if (Vector2::dotProduct(Vector2(0, d), rot_dir) < 0)
-						d = d * -1;
-					x1 = k * d - (b2 * k2 * k * d) / (a2 + b2 * k2);
-					y1 = (b2 * k2 * d) / (a2 + b2 * k2);
-					target.set(x1, y1);
-					//rotate the final vector
-				}
+				const Ellipse* ellipse = dynamic_cast<const Ellipse*>(shape.shape);
+				target = GeometryAlgorithm2D::calculateEllipseProjectionPoint(ellipse->A(), ellipse->B(), rot_dir);
 				break;
 			}
 		case Shape::Type::Edge:
 			{
-				const auto* edge = dynamic_cast<const Edge*>(shape.shape);
+				const Edge* edge = dynamic_cast<const Edge*>(shape.shape);
 				number dot1 = Vector2::dotProduct(edge->startPoint(), direction);
 				number dot2 = Vector2::dotProduct(edge->endPoint(), direction);
 				target = dot1 > dot2 ? edge->startPoint() : edge->endPoint();
