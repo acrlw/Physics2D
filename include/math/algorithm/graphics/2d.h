@@ -9,7 +9,7 @@ namespace Physics2D
 	{
 	public:
 		/// <summary>
-		/// Judge point a,b,c collinear using triangle area method
+		/// Check point a,b,c collinear using triangle area method
 		/// </summary>
 		/// <param name="a">point a</param>
 		/// <param name="b">point b</param>
@@ -17,7 +17,7 @@ namespace Physics2D
 		/// <returns></returns>
 		static bool isCollinear(const Vector2& a, const Vector2& b, const Vector2& c);
 		/// <summary>
-		/// Judge whether point c is on line segment ab using line projection and set-union method
+		/// Check whether point c is on line segment ab using line projection and set-union method
 		/// </summary>
 		/// <param name="a">end of segment a</param>
 		/// <param name="b">end of segment b</param>
@@ -25,7 +25,7 @@ namespace Physics2D
 		/// <returns></returns>
 		static bool isPointOnSegment(const Vector2& a, const Vector2& b, const Vector2& c);
 		/// <summary>
-		/// Judge whether point c is on line segment ab, given a,b,c is already collinear by calculating cross product
+		/// Check whether point c is on line segment ab, given a,b,c is already collinear by calculating cross product
 		/// </summary>
 		/// <param name="a"></param>
 		/// <param name="b"></param>
@@ -79,7 +79,7 @@ namespace Physics2D
 		/// <returns></returns>
 		static std::optional<std::tuple<Vector2, real>> calculateInscribedCircle(const Vector2& a, const Vector2& b, const Vector2& c);
 		/// <summary>
-		/// Judge whether polygon is convex
+		/// Check whether polygon is convex
 		/// </summary>
 		/// <param name="vertices"></param>
 		/// <returns></returns>

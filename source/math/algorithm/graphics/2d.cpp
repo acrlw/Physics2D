@@ -314,7 +314,7 @@ namespace Physics2D
             Vector2 f;
             const Vector2 p1p2 = (p2 - p1).normal();
 
-            //Judge which quadrant does nearest point stay
+            //Check which quadrant does nearest point fall in
             {
                 Vector2 f_arr[4];
                 f_arr[0].set(f_x, f_y);
@@ -371,9 +371,7 @@ namespace Physics2D
         const real t = ((p.x - a.x) * (a.y - b.y) - (p.y - a.y) * (a.x - b.x)) / denominator;
         const real u = ((dir.x - p.x) * (p.y - a.y) - (dir.y - p.y) * (p.x - a.x)) / denominator;
         if (t >= 0 && u <= 1.0 && u >= 0)
-        {
             return std::optional<Vector2>({ p.x + t * (dir.x - p.x), p.y + t * (dir.y - p.y) });
-        }
         return std::nullopt;
     }
 
