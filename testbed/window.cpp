@@ -49,13 +49,26 @@ namespace Physics2D
         primitive.rotation = m_angle;
         primitive.transform.set(0, 200);
         RendererQtImpl::renderShape(&painter, &m_world, primitive, pen);
-        AABB aabb = AABB::fromShape(primitive, 1);
-        AABB aabb_skin = AABB::fromShape(primitive, 1.2);
+        AABB aabb = AABB::fromShape(primitive, 1.2);
         pen.setWidth(1);
     	RendererQtImpl::renderAABB(&painter, &m_world, aabb, pen);
-        RendererQtImpl::renderAABB(&painter, &m_world, aabb_skin, pen);
 
-    	
+        ShapePrimitive primitive2;
+        primitive2.shape = &polygon;
+        primitive2.rotation = m_angle;
+        primitive2.transform.set(150, 150);
+        pen.setWidth(2);
+        RendererQtImpl::renderShape(&painter, &m_world, primitive2, pen);
+        AABB aabb_ell = AABB::fromShape(primitive2, 1.2);
+        pen.setWidth(1);
+        RendererQtImpl::renderAABB(&painter, &m_world, aabb_ell, pen);
+        
+        AABB uni = aabb.unite(aabb_ell);
+        pen.setWidth(1);
+    	if(aabb.collide(aabb_ell))
+			pen.setColor(Qt::red);
+        RendererQtImpl::renderAABB(&painter, &m_world, uni, pen);
+    		
     	if(m_lastBody != nullptr)
     	{
             ShapePrimitive shape;

@@ -13,6 +13,7 @@ namespace Physics2D
 		Vector2 position;
 		bool collide(const AABB& other) const;
 		void scale(const real& factor);
+		AABB unite(const AABB& other)const;
 		/// <summary>
 		/// Create tight AABB from shape.
 		/// </summary>

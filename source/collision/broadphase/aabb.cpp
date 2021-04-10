@@ -12,6 +12,11 @@ namespace Physics2D
 		scale(*this, factor);
 	}
 
+	AABB AABB::unite(const AABB& other)const
+	{
+		return AABB::unite(*this, other);
+	}
+
 	AABB AABB::fromShape(const ShapePrimitive& shape, const real& factor)
 	{
 		AABB aabb;
@@ -36,8 +41,8 @@ namespace Physics2D
 					if (min_y > vertex.y)
 						min_y = vertex.y;
 				}
-				aabb.width = max_x - min_x;
-				aabb.height = max_y - min_y;
+				aabb.width = abs(max_x - min_x);
+				aabb.height = abs(max_y - min_y);
 				aabb.position.set((max_x + min_x) / 2, (max_y + min_y) / 2);
 				break;
 			}
@@ -65,8 +70,8 @@ namespace Physics2D
 				bottom = Matrix2x2(shape.rotation).multiply(bottom);
 				right = Matrix2x2(shape.rotation).multiply(right);
 					
-				aabb.height = top.y - bottom.y;
-				aabb.width = right.x - left.x;
+				aabb.height = abs(top.y - bottom.y);
+				aabb.width = abs(right.x - left.x);
 				break;
 			}
 			case Shape::Type::Circle:

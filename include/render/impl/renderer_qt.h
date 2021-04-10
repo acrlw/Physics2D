@@ -188,7 +188,7 @@ namespace Physics2D
                 }
                 case Shape::Type::Polygon:
                 {
-					Vector2 start = shape.transform + dynamic_cast<Polygon*>(shape.shape)->center();
+					Vector2 start = shape.transform + Matrix2x2(shape.rotation).multiply(dynamic_cast<Polygon*>(shape.shape)->center());
 					Vector2 end = dynamic_cast<Polygon*>(shape.shape)->vertices()[0];
 					end = Matrix2x2(shape.rotation).multiply(end);
 					end += shape.transform;
@@ -247,7 +247,8 @@ namespace Physics2D
 				renderEdge(painter, world, shape, pen);
 				break;
 			}
-			default: break;
+			default: 
+				break;
 			}
 		}
 	private:
