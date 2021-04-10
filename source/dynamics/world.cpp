@@ -165,7 +165,8 @@ namespace Physics2D {
 
     void World::removeBody(Body *body)
     {
-        std::remove(m_bodyList.begin(), m_bodyList.end(), body);
+        m_bodyList.erase(std::remove(m_bodyList.begin(), m_bodyList.end(), body),
+            m_bodyList.end());
         delete body;
     }
 

@@ -133,8 +133,8 @@ namespace Physics2D
 
         std::sort(sort.begin(), sort.end(), [](const Vector2& a, const Vector2& b)
         {
-            if (atan2f(a.y, a.x) != atan2f(b.y, b.x))
-                return atan2f(a.y, a.x) < atan2(b.y, b.x);
+            if (atan2l(a.y, a.x) != atan2l(b.y, b.x))
+                return atan2l(a.y, a.x) < atan2l(b.y, b.x);
             return a.x < b.x;
         });
 
@@ -231,13 +231,14 @@ namespace Physics2D
 
             real result = t0t1.dot(t0p);
             if (abs(result) < epsilon)
-                return t0;
+                break;
 
             if (result > 0)					// acute angle
                 x_left = temp_x;
             else
                 x_right = temp_x;			//obtuse angle
         }
+        return t0;
     }
     Vector2 GeometryAlgorithm2D::triangleCentroid(const Vector2& a1, const Vector2& a2, const Vector2& a3)
     {
@@ -271,6 +272,8 @@ namespace Physics2D
             pos /= area;
             return pos;
         }
+        else
+            return Vector2();
     }
 
     std::tuple<Vector2, Vector2> GeometryAlgorithm2D::shortestLengthLineSegmentEllipse(const real& a, const real& b, const Vector2& p1, const Vector2& p2)

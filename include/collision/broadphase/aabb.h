@@ -8,8 +8,8 @@ namespace Physics2D
 	struct AABB
 	{
 		AABB() = default;
-		real width;
-		real height;
+		real width = 0;
+		real height = 0;
 		Vector2 position;
 		bool collide(const AABB& other) const;
 		void scale(const real& factor);

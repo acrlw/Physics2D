@@ -148,7 +148,7 @@ namespace Physics2D
     {
 
         public:
-            Circle()
+            Circle() : m_radius(0)
             {
                 m_type = Type::Circle;
             }
@@ -172,9 +172,10 @@ namespace Physics2D
     {
 
         public:
-            Ellipse()
+            Ellipse(const real& width = 0, const real& height = 0)
             {
                 m_type = Type::Ellipse;
+                this->set(0, 0);
             }
     		void set(const Vector2& leftTop, const Vector2& rightBottom)
             {
