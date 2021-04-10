@@ -4,7 +4,7 @@
 namespace Physics2D
 {
 	
-	class BVH
+	class DBVH
 	{
 		public:
 		private:

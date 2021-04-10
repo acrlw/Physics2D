@@ -5,9 +5,8 @@
 #include "include/common/common.h"
 namespace Physics2D
 {
-	class GeometryAlgorithm2D
+	namespace GeometryAlgorithm2D
 	{
-	public:
 		/// <summary>
 		/// Check point a,b,c collinear using triangle area method
 		/// </summary>
@@ -15,7 +14,7 @@ namespace Physics2D
 		/// <param name="b">point b</param>
 		/// <param name="c">point c</param>
 		/// <returns></returns>
-		static bool isCollinear(const Vector2& a, const Vector2& b, const Vector2& c);
+		bool isCollinear(const Vector2& a, const Vector2& b, const Vector2& c);
 		/// <summary>
 		/// Check whether point c is on line segment ab using line projection and set-union method
 		/// </summary>
@@ -23,7 +22,7 @@ namespace Physics2D
 		/// <param name="b">end of segment b</param>
 		/// <param name="c">point c</param>
 		/// <returns></returns>
-		static bool isPointOnSegment(const Vector2& a, const Vector2& b, const Vector2& c);
+		bool isPointOnSegment(const Vector2& a, const Vector2& b, const Vector2& c);
 		/// <summary>
 		/// Check whether point c is on line segment ab, given a,b,c is already collinear by calculating cross product
 		/// </summary>
@@ -31,7 +30,7 @@ namespace Physics2D
 		/// <param name="b"></param>
 		/// <param name="c"></param>
 		/// <returns></returns>
-		static bool fuzzyIsPointOnSegment(const Vector2& a, const Vector2& b, const Vector2& c);
+		bool fuzzyIsPointOnSegment(const Vector2& a, const Vector2& b, const Vector2& c);
 		/// <summary>
 		/// Calculate intersected point between line ab and line cd.
 		/// Return if there is a actual intersected point.
@@ -42,7 +41,7 @@ namespace Physics2D
 		/// <param name="c"></param>
 		/// <param name="d"></param>
 		/// <returns></returns>
-		static std::optional<Vector2> lineSegmentIntersection(const Vector2& a, const Vector2& b, const Vector2& c, const Vector2& d);
+		std::optional<Vector2> lineSegmentIntersection(const Vector2& a, const Vector2& b, const Vector2& c, const Vector2& d);
 		/// <summary>
 		/// Calculate the center of circum-circle from triangle abc
 		/// </summary>
@@ -50,7 +49,7 @@ namespace Physics2D
 		/// <param name="b"></param>
 		/// <param name="c"></param>
 		/// <returns></returns>
-		static std::optional<Vector2> triangleCircumcenter(const Vector2& a, const Vector2& b, const Vector2& c);
+		std::optional<Vector2> triangleCircumcenter(const Vector2& a, const Vector2& b, const Vector2& c);
 		/// <summary>
 		/// Calculate the center of inscribed-circle from triangle abc
 		/// If a,b,c can not form a triangle, return nothing
@@ -59,7 +58,7 @@ namespace Physics2D
 		/// <param name="b"></param>
 		/// <param name="c"></param>
 		/// <returns></returns>
-		static std::optional<Vector2> triangleIncenter(const Vector2& a, const Vector2& b, const Vector2& c);
+		std::optional<Vector2> triangleIncenter(const Vector2& a, const Vector2& b, const Vector2& c);
 		/// <summary>
 		/// Calculate circum-circle given three points that can form a triangle
 		/// If a,b,c can not form a triangle, return nothing
@@ -68,7 +67,7 @@ namespace Physics2D
 		/// <param name="b"></param>
 		/// <param name="c"></param>
 		/// <returns></returns>
-		static std::optional<std::tuple<Vector2, real>> calculateCircumcircle(const Vector2& a, const Vector2& b, const Vector2& c);
+		std::optional<std::tuple<Vector2, real>> calculateCircumcircle(const Vector2& a, const Vector2& b, const Vector2& c);
 		/// <summary>
 		/// Calculate inscribed circle given three points that can form a triangle
 		/// If a,b,c can not form a triangle, return nothing
@@ -77,19 +76,19 @@ namespace Physics2D
 		/// <param name="b"></param>
 		/// <param name="c"></param>
 		/// <returns></returns>
-		static std::optional<std::tuple<Vector2, real>> calculateInscribedCircle(const Vector2& a, const Vector2& b, const Vector2& c);
+		std::optional<std::tuple<Vector2, real>> calculateInscribedCircle(const Vector2& a, const Vector2& b, const Vector2& c);
 		/// <summary>
 		/// Check whether polygon is convex
 		/// </summary>
 		/// <param name="vertices"></param>
 		/// <returns></returns>
-		static bool isConvexPolygon(const std::vector<Vector2>& vertices);
+		bool isConvexPolygon(const std::vector<Vector2>& vertices);
 		/// <summary>
 		/// Convex hull algorithm: Graham Scan. Given a series of points, find the convex polygon that can contains all of these points.
 		/// </summary>
 		/// <param name="vertices"></param>
 		/// <returns></returns>
-		static std::vector<Vector2> grahamScan(const std::vector<Vector2>& vertices);
+		std::vector<Vector2> grahamScan(const std::vector<Vector2>& vertices);
 		
 		/// <summary>
 		/// calculate point on line segment ab that is the shortest length to point p
@@ -97,7 +96,7 @@ namespace Physics2D
 		/// <param name="a"></param>
 		/// <param name="b"></param>
 		/// <returns></returns>
-		static Vector2 pointToLineSegment(const Vector2& a, const Vector2& b, const Vector2& p);
+		Vector2 pointToLineSegment(const Vector2& a, const Vector2& b, const Vector2& p);
 		/// <summary>
 		/// Calculate point on ellipse that is the shortest length to point p.
 		/// </summary>
@@ -105,7 +104,7 @@ namespace Physics2D
 		/// <param name="b"></param>
 		/// <param name="p"></param>
 		/// <returns></returns>
-		static Vector2 shortestLengthPointOfEllipse(const real& a, const real& b, const Vector2& p, const real& epsilon = 0.00000001f);
+		Vector2 shortestLengthPointOfEllipse(const real& a, const real& b, const Vector2& p, const real& epsilon = 0.00000001f);
 		/// <summary>
 		/// Calculate the centroid of triangle.
 		/// </summary>
@@ -113,7 +112,7 @@ namespace Physics2D
 		/// <param name="a2"></param>
 		/// <param name="a3"></param>
 		/// <returns></returns>
-		static Vector2 triangleCentroid(const Vector2& a1, const Vector2& a2, const Vector2& a3);
+		Vector2 triangleCentroid(const Vector2& a1, const Vector2& a2, const Vector2& a3);
 		/// <summary>
 		/// Calculate the area of triangle use cross product
 		/// </summary>
@@ -121,13 +120,13 @@ namespace Physics2D
 		/// <param name="a2"></param>
 		/// <param name="a3"></param>
 		/// <returns></returns>
-		static real triangleArea(const Vector2& a1, const Vector2& a2, const Vector2& a3);
+		real triangleArea(const Vector2& a1, const Vector2& a2, const Vector2& a3);
 		/// <summary>
 		/// Calculate mass center of 'convex' polygon
 		/// </summary>
 		/// <param name="vertices"></param>
 		/// <returns></returns>
-		static Vector2 calculateCenter(const std::vector<Vector2>& vertices);
+		Vector2 calculateCenter(const std::vector<Vector2>& vertices);
 		/// <summary>
 		/// Calculate two points on line segment and ellipse respectively. The length of two points is the shortest distance of line segment and ellipse
 		/// </summary>
@@ -136,7 +135,7 @@ namespace Physics2D
 		/// <param name="p1">line segment point 1</param>
 		/// <param name="p2">line segment point 2</param>
 		/// <returns></returns>
-		static std::tuple<Vector2, Vector2> shortestLengthLineSegmentEllipse(const real& a, const real& b, const Vector2& p1, const Vector2& p2);
+		std::tuple<Vector2, Vector2> shortestLengthLineSegmentEllipse(const real& a, const real& b, const Vector2& p1, const Vector2& p2);
 		/// <summary>
 		/// Calculate point on line segment ab, if point 'p' can cast ray in 'dir' direction on line segment ab.
 		/// Algorithm from wikipedia 'Line-line intersection'
@@ -146,7 +145,7 @@ namespace Physics2D
 		/// <param name="a">line segment point a</param>
 		/// <param name="b">line segment point b</param>
 		/// <returns></returns>
-		static std::optional<Vector2> raycast(const Vector2& p, const Vector2& dir, const Vector2& a, const Vector2& b);
+		std::optional<Vector2> raycast(const Vector2& p, const Vector2& dir, const Vector2& a, const Vector2& b);
 		/// <summary>
 		/// Rotate point 'p' around point 'center' by 'angle' degrees
 		/// </summary>
@@ -154,7 +153,7 @@ namespace Physics2D
 		/// <param name="center">center point</param>
 		/// <param name="angle">rotate angle</param>
 		/// <returns></returns>
-		static Vector2 rotate(const Vector2& p, const Vector2& center, const real& angle);
+		Vector2 rotate(const Vector2& p, const Vector2& center, const real& angle);
 		/// <summary>
 		/// Calculate the projection axis of ellipse in user-define direction.
 		/// Return the maximum point in ellipse
@@ -163,7 +162,7 @@ namespace Physics2D
 		/// <param name="b"></param>
 		/// <param name="direction"></param>
 		/// <returns></returns>
-		static Vector2 calculateEllipseProjectionPoint(const real& a, const real& b, const Vector2& direction);
+		Vector2 calculateEllipseProjectionPoint(const real& a, const real& b, const Vector2& direction);
 	};
 }
 #endif

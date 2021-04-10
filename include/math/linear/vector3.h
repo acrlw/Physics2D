@@ -154,7 +154,7 @@ namespace Physics2D
 
 		Vector3& normalize()
 		{
-			const real length_inv = fastInverseSqrt<real>(lengthSquare());
+			const real length_inv = Math::fastInverseSqrt<real>(lengthSquare());
 			x *= length_inv;
 			y *= length_inv;
 			z *= length_inv;

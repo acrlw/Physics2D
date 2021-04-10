@@ -2,7 +2,6 @@
 
 namespace Physics2D
 {
-
     bool GeometryAlgorithm2D::isCollinear(const Vector2& a, const Vector2& b, const Vector2& c)
     {
         //triangle area = 0 then collinear
@@ -16,8 +15,8 @@ namespace Physics2D
 
     bool GeometryAlgorithm2D::fuzzyIsPointOnSegment(const Vector2& a, const Vector2& b, const Vector2& c)
     {
-        return (c.x <= max(a.x, b.x) && c.x >= min(a.x, b.x) &&
-                c.y <= max(a.y, b.y) && c.y >= min(a.y, b.y));
+        return (c.x <= Math::max(a.x, b.x) && c.x >= Math::min(a.x, b.x) &&
+                c.y <= Math::max(a.y, b.y) && c.y >= Math::min(a.y, b.y));
     }
 
     std::optional<Vector2> GeometryAlgorithm2D::lineSegmentIntersection(const Vector2& a, const Vector2& b, const Vector2& c, const Vector2& d)

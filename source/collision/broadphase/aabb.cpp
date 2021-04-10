@@ -14,7 +14,7 @@ namespace Physics2D
 
 	AABB AABB::unite(const AABB& other)const
 	{
-		return AABB::unite(*this, other);
+		return unite(*this, other);
 	}
 
 	AABB AABB::fromShape(const ShapePrimitive& shape, const real& factor)
@@ -147,11 +147,11 @@ namespace Physics2D
 		const real target_low_y = (-target.height / 2) + target.position.y;
 		const real target_high_y = (target.height / 2) + target.position.y;
 
-		const real low_x = min(src_low_x, target_low_x);
-		const real high_x = max(src_high_x, target_high_x);
+		const real low_x = Math::min(src_low_x, target_low_x);
+		const real high_x = Math::max(src_high_x, target_high_x);
 		
-		const real low_y = min(src_low_y, target_low_y);
-		const real high_y = max(src_high_y, target_high_y);
+		const real low_y = Math::min(src_low_y, target_low_y);
+		const real high_y = Math::max(src_high_y, target_high_y);
 
 		AABB aabb;
 		aabb.position.set((low_x + high_x) / 2, (low_y + high_y) / 2);
