@@ -21,7 +21,7 @@ namespace Physics2D
             {
                 return m_type;
             }
-            virtual void scale(const number& factor) = 0;
+            virtual void scale(const real& factor) = 0;
             virtual ~Shape() {};
         protected:
             Type m_type;
@@ -35,7 +35,7 @@ namespace Physics2D
     {
         Shape* shape = nullptr;
         Vector2 transform;
-        number rotation = 0;
+        real rotation = 0;
     };
     class Point: public Shape
     {
@@ -50,7 +50,7 @@ namespace Physics2D
             {
                 return m_position;
             }
-            void scale(const number& factor) override
+            void scale(const real& factor) override
             {
                 m_position *= factor;
             }
@@ -89,7 +89,7 @@ namespace Physics2D
             {
                 return GeometryAlgorithm2D::calculateCenter(this->vertices());
             }
-            void scale(const number& factor) override
+            void scale(const real& factor) override
             {
                 assert(!m_vertices.empty());
                 for (Vector2& vertex : m_vertices)
@@ -102,31 +102,31 @@ namespace Physics2D
     {
 
         public:
-            Rectangle(const number& width = 0.0f, const number& height = 0.0f)
+            Rectangle(const real& width = 0.0f, const real& height = 0.0f)
             {
                 m_type = Type::Polygon;
                 this->set(width, height);
             }
-            void set(const number& width, const number& height)
+            void set(const real& width, const real& height)
             {
                 m_width = width;
                 m_height = height;
                 calcVertices();
             }
-			number width()const
+			real width()const
             {
                 return m_width;
             }
-            number height()const
+            real height()const
             {
                 return m_height;
             }
-			void setWidth(const number& width)
+			void setWidth(const real& width)
             {
                 m_width = width;
                 calcVertices();
             }
-            void setHeight(const number& height)
+            void setHeight(const real& height)
             {
                 m_height = height;
                 calcVertices();
@@ -141,8 +141,8 @@ namespace Physics2D
                 m_vertices.emplace_back(Vector2(m_width / 2.0f, m_height / 2.0f));
                 m_vertices.emplace_back(Vector2(-m_width / 2.0f, m_height / 2.0f));
             }
-            number m_width;
-            number m_height;
+            real m_width;
+            real m_height;
     };
     class Circle : public Shape
     {
@@ -153,20 +153,20 @@ namespace Physics2D
                 m_type = Type::Circle;
             }
 
-            number radius() const
+            real radius() const
             {
                 return m_radius;
             }
-			void setRadius(const number& radius)
+			void setRadius(const real& radius)
             {
                 m_radius = radius;
             }
-            void scale(const number& factor) override
+            void scale(const real& factor) override
             {
                 m_radius *= factor;
             }
         private:
-            number m_radius;
+            real m_radius;
     };
     class Ellipse : public Shape
     {
@@ -181,50 +181,50 @@ namespace Physics2D
                 m_width = rightBottom.x - leftTop.x;
                 m_height = rightBottom.y - leftTop.y;
             }
-            void set(const number& width, const number& height)
+            void set(const real& width, const real& height)
             {
                 m_width = width;
                 m_height = height;
             }
-            void setWidth(const number& width)
+            void setWidth(const real& width)
             {
                 m_width = width;
             }
-            void setHeight(const number& height)
+            void setHeight(const real& height)
             {
                 m_height = height;
             }
 
-            void scale(const number& factor) override
+            void scale(const real& factor) override
             {
                 m_width *= factor;
                 m_height *= factor;
             }
-            number width()const
+            real width()const
             {
                 return m_width;
             }
-            number height()const
+            real height()const
             {
                 return m_height;
             }
-            number A()const
+            real A()const
             {
                 return m_width / 2;
             }
-            number B()const
+            real B()const
             {
                 return m_height / 2;
             }
-            number C()const
+            real C()const
             {
-                number a = A();
-                number b = B();
+                real a = A();
+                real b = B();
                 return sqrt(a * a - b * b);
             }
         private:
-            number m_width;
-            number m_height;
+            real m_width;
+            real m_height;
     };
     class Edge : public Shape
     {
@@ -256,7 +256,7 @@ namespace Physics2D
             {
                 return m_endPoint;
             }
-            void scale(const number& factor) override
+            void scale(const real& factor) override
             {
                 m_startPoint *= factor;
                 m_endPoint *= factor;
@@ -320,7 +320,7 @@ namespace Physics2D
                 m_endPoint = endPoint;
             }
 
-            void scale(const number& factor) override
+            void scale(const real& factor) override
             {
                 m_startPoint *= factor;
                 m_control1 *= factor;

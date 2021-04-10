@@ -43,7 +43,7 @@ namespace Physics2D
 		Curve curve;
 		Polygon polygon;
 		Circle circle;
-		number m_angle = 0;
+		real m_angle = 0;
 		const Body* m_lastBody = nullptr;
 	};
 }

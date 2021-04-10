@@ -10,23 +10,23 @@ namespace Physics2D
 		//last
 		Vector2 lastPosition;
 		Vector2 lastVelocity;
-		number lastAngle = 0;
-		number lastAngularVelocity = 0;
-		number lastDeltaTime = 0;
+		real lastAngle = 0;
+		real lastAngularVelocity = 0;
+		real lastDeltaTime = 0;
 		//now
 		Vector2 position;
 		Vector2 velocity;
 		Vector2 acceleration;
-		number angle = 0;
-		number angularVelocity = 0;
-		number angularAcceleration = 0;
-		number deltaTime = 0;
+		real angle = 0;
+		real angularVelocity = 0;
+		real angularAcceleration = 0;
+		real deltaTime = 0;
 	};
 	
 	class SemiImplicitEuler
 	{
 	public:
-		static BodyState integrate(BodyState& last, const number& dt)
+		static BodyState integrate(BodyState& last, const real& dt)
 		{
 			BodyState result;
 			result.velocity = last.velocity + last.acceleration * dt;
@@ -47,7 +47,7 @@ namespace Physics2D
 	{
 	public:
 
-		static BodyState integrateVelocity(BodyState& state, const number& dt)
+		static BodyState integrateVelocity(BodyState& state, const real& dt)
 		{
 			BodyState result;
 			Vector2 lastVelocity = state.position - state.lastPosition;
@@ -64,7 +64,7 @@ namespace Physics2D
 			
 			return result;
 		}
-		static BodyState integratePosition(BodyState& state, const number& dt)
+		static BodyState integratePosition(BodyState& state, const real& dt)
 		{
 			BodyState result;
 			result.position = state.position + ((state.position - state.lastPosition) * dt / state.lastDeltaTime) +

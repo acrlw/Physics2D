@@ -37,22 +37,22 @@ namespace Physics2D
                 m_velocity = velocity;
             }
 
-            number angle() const
+            real angle() const
             {
                 return m_angle;
             }
 
-            void setAngle(const number &angle)
+            void setAngle(const real &angle)
             {
                 m_angle = angle;
             }
 
-            number angularVelocity() const
+            real angularVelocity() const
             {
                 return m_angularVelocity;
             }
 
-            void setAngularVelocity(const number &angularVelocity)
+            void setAngularVelocity(const real &angularVelocity)
             {
                 m_angularVelocity = angularVelocity;
             }
@@ -67,12 +67,12 @@ namespace Physics2D
                 m_forces = forces;
             }
 
-            number torques() const
+            real torques() const
             {
                 return m_torques;
             }
 
-            void setTorques(const number &torques)
+            void setTorques(const real &torques)
             {
                 m_torques = torques;
             }
@@ -98,17 +98,17 @@ namespace Physics2D
                 m_type = type;
             }
 
-            number mass() const
+            real mass() const
             {
                 return m_mass;
             }
 
-            void setMass(const number &mass)
+            void setMass(const real &mass)
             {
                 m_mass = mass;
             }
 
-            number inertia() const
+            real inertia() const
             {
                 return m_inertia;
             }
@@ -123,12 +123,12 @@ namespace Physics2D
             }
 
 
-            number damping() const
+            real damping() const
             {
                 return m_damping;
             }
 
-            void setDamping(const number &damping)
+            void setDamping(const real &damping)
             {
                 m_damping = damping;
             }
@@ -150,18 +150,18 @@ namespace Physics2D
         private:
             void calcInertia();
 
-            number m_mass = 1;
-            number m_inertia = 0;
+            real m_mass = 1;
+            real m_inertia = 0;
             Vector2 m_position;
             Vector2 m_velocity;
-            number m_angle = 0;
-            number m_angularVelocity = 0;
+            real m_angle = 0;
+            real m_angularVelocity = 0;
             Vector2 m_forces;
-            number m_torques = 0;
+            real m_torques = 0;
             Shape *m_shape = nullptr;
             BodyType m_type = BodyType::Static;
             bool m_sleep = true;
-            number m_damping = 0.5f;
+            real m_damping = 0.5f;
     };
 }
 #endif

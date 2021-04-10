@@ -11,7 +11,7 @@ namespace Physics2D
 		{
 		case 4:
 		{
-			number a = 0, b = 0, c = 0;
+			real a = 0, b = 0, c = 0;
 			Vector2 oa = simplex.vertices[0].result * -1;
 			Vector2 ob = simplex.vertices[1].result * -1;
 			Vector2 oc = simplex.vertices[2].result * -1;
@@ -98,13 +98,13 @@ namespace Physics2D
 	}
 
 	Simplex GJK::epa(const ShapePrimitive& shape_A, const ShapePrimitive& shape_B, const Simplex& src,
-	                 const size_t& iteration, const number& epsilon)
+	                 const size_t& iteration, const real& epsilon)
 	{
 		size_t iter = 0;
 		Simplex edge;
 		Simplex simplex = src;
 		Vector2 normal;
-		number originToEdge;
+		real originToEdge;
 		Minkowski p;
 		while (iter <= iteration)
 		{
@@ -118,8 +118,8 @@ namespace Physics2D
 			if (simplex.contains(p))
 				break;
 
-			const number d = p.result.dot(normal);
-			const number diff = abs(d - originToEdge);
+			const real d = p.result.dot(normal);
+			const real diff = abs(d - originToEdge);
 			//if distance of origin to edge is close enough to the distance of origin to edge point
 			if (diff < epsilon)
 				break;
@@ -144,7 +144,7 @@ namespace Physics2D
 		Vector2 witness, mirror;
 		normal = calculateDirectionByEdge(simplex.vertices[index1].result, simplex.vertices[index2].result, false).
 			normal();
-		number originToEdge = abs(normal.dot(simplex.vertices[index1].result));
+		real originToEdge = abs(normal.dot(simplex.vertices[index1].result));
 		v_penetr = normal * originToEdge * -1;
 		result.penetration = v_penetr;
 
@@ -180,7 +180,7 @@ namespace Physics2D
 
 	std::tuple<size_t, size_t> GJK::findEdgeClosestToOrigin(const Simplex& simplex)
 	{
-		number min_dist = INT_MAX;
+		real min_dist = INT_MAX;
 
 		size_t index1 = 0;
 		size_t index2 = 0;
@@ -191,7 +191,7 @@ namespace Physics2D
 			Vector2 b = simplex.vertices[i + 1].result;
 
 			const Vector2 p = GeometryAlgorithm2D::pointToLineSegment(a, b, {0, 0});
-			const number projection = p.length();
+			const real projection = p.length();
 
 
 			if (min_dist > projection)
@@ -215,11 +215,11 @@ namespace Physics2D
 			{
 				const Polygon* polygon = dynamic_cast<const Polygon*>(shape.shape);
 				Vector2 p0 = polygon->vertices()[0];
-				number max = 0;
+				real max = 0;
 				target = polygon->vertices()[0];
 				for (const Vector2& vertex : polygon->vertices())
 				{
-					number result = Vector2::dotProduct(vertex - p0, rot_dir);
+					real result = Vector2::dotProduct(vertex - p0, rot_dir);
 
 					if (max < result)
 					{
@@ -245,8 +245,8 @@ namespace Physics2D
 		case Shape::Type::Edge:
 			{
 				const Edge* edge = dynamic_cast<const Edge*>(shape.shape);
-				number dot1 = Vector2::dotProduct(edge->startPoint(), direction);
-				number dot2 = Vector2::dotProduct(edge->endPoint(), direction);
+				real dot1 = Vector2::dotProduct(edge->startPoint(), direction);
+				real dot2 = Vector2::dotProduct(edge->endPoint(), direction);
 				target = dot1 > dot2 ? edge->startPoint() : edge->endPoint();
 				break;
 			}

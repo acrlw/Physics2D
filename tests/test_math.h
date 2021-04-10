@@ -133,7 +133,7 @@ namespace Physics2D
 		{
 			fmt::print("-----other test-----\n");
 			fmt::print("system method: 1/sqrt(23) = {}\n", 1.0f / sqrt(23));
-			fmt::print("fast inverse sqrt method: 1/sqrt(23) = {}\n", fastInverseSqrt<number>(23));
+			fmt::print("fast inverse sqrt method: 1/sqrt(23) = {}\n", fastInverseSqrt<real>(23));
 		}
 		void testGeometryAlgorithm()
 		{

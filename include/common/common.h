@@ -13,17 +13,17 @@
 namespace Physics2D
 {
 #ifdef SINGLE_PRECISION
-	using number = float;
+	using real = float;
 	const float EPSILON = FLT_EPSILON;
 	const float  PI = 3.14159265358979f;
 
 #else
-	using number = double;
+	using real = double;
 	const float EPSILON = DBL_EPSILON;
     const double PI = 3.141592653589793238463;
 #endif
 	const unsigned int GJKIteration = 50;
-	const number EPAEPSILON = 0.0001;
+	const real EPAEPSILON = 0.0001;
 
 
 }

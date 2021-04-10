@@ -7,7 +7,7 @@ namespace Physics2D
 
 	struct Vector3
 	{
-		Vector3(const number& _x = 0.0f, const number& _y = 0.0f, const number& _z = 0.0f)
+		Vector3(const real& _x = 0.0f, const real& _y = 0.0f, const real& _z = 0.0f)
 		{
 			x = _x;
 			y = _y;
@@ -38,7 +38,7 @@ namespace Physics2D
 			return Vector3(x - other.x, y - other.y, z - other.z);
 		}
 
-		Vector3 operator*(const number& factor)const
+		Vector3 operator*(const real& factor)const
 		{
 			return Vector3(x * factor, y * factor, z * factor);
 		}
@@ -48,15 +48,15 @@ namespace Physics2D
 			return Vector3(x * factor, y * factor, z * factor);
 		}
 
-		Vector3 operator/(const number& factor)const
+		Vector3 operator/(const real& factor)const
 		{
-			assert(!numberEqual(factor, 0));
+			assert(!realEqual(factor, 0));
 			return Vector3(x / factor, y / factor, z / factor);
 		}
 
 		Vector3 operator/(const int& factor)const
 		{
-			assert(!numberEqual(factor, 0));
+			assert(!realEqual(factor, 0));
 			return Vector3(x / factor, y / factor, z / factor);
 		}
 
@@ -76,7 +76,7 @@ namespace Physics2D
 			return *this;
 		}
 
-		Vector3& operator*=(const number& factor)
+		Vector3& operator*=(const real& factor)
 		{
 			x *= factor;
 			y *= factor;
@@ -92,9 +92,9 @@ namespace Physics2D
 			return *this;
 		}
 
-		Vector3& operator/=(const number& factor)
+		Vector3& operator/=(const real& factor)
 		{
-			assert(!numberEqual(factor, 0));
+			assert(!realEqual(factor, 0));
 			x /= factor;
 			y /= factor;
 			z /= factor;
@@ -103,14 +103,14 @@ namespace Physics2D
 
 		Vector3& operator/=(const int& factor)
 		{
-			assert(!numberEqual(factor, 0));
+			assert(!realEqual(factor, 0));
 			x /= factor;
 			y /= factor;
 			z /= factor;
 			return *this;
 		}
 
-		Vector3& set(const number& _x, const number& _y, const number& _z)
+		Vector3& set(const real& _x, const real& _y, const real& _z)
 		{
 			x = _x;
 			y = _y;
@@ -142,19 +142,19 @@ namespace Physics2D
 			return *this;
 		}
 
-		number lengthSquare()const
+		real lengthSquare()const
 		{
 			return x * x + y * y + z * z;
 		}
 
-		number length()const
+		real length()const
 		{
 			return sqrt(lengthSquare());
 		}
 
 		Vector3& normalize()
 		{
-			const number length_inv = fastInverseSqrt<number>(lengthSquare());
+			const real length_inv = fastInverseSqrt<real>(lengthSquare());
 			x *= length_inv;
 			y *= length_inv;
 			z *= length_inv;
@@ -168,18 +168,18 @@ namespace Physics2D
 
 		bool equal(const Vector3& rhs)const
 		{
-			return numberEqual(x, rhs.x) && numberEqual(y, rhs.y) && numberEqual(z, rhs.z);
+			return realEqual(x, rhs.x) && realEqual(y, rhs.y) && realEqual(z, rhs.z);
 		}
 
 		Vector3& swap(Vector3& other)
 		{
-			numberSwap(x, other.x);
-			numberSwap(y, other.y);
-			numberSwap(z, other.z);
+			realSwap(x, other.x);
+			realSwap(y, other.y);
+			realSwap(z, other.z);
 			return *this;
 		}
 
-		number dot(const Vector3& rhs)const
+		real dot(const Vector3& rhs)const
 		{
 			return x * rhs.x + y * rhs.y + z * rhs.z;
 		}
@@ -191,7 +191,7 @@ namespace Physics2D
 			z = x * rhs.y - y * rhs.x;
 			return *this;
 		}
-		static number dotProduct(const Vector3& lhs, const Vector3& rhs)
+		static real dotProduct(const Vector3& lhs, const Vector3& rhs)
 		{
 			return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z;
 		}
@@ -199,9 +199,9 @@ namespace Physics2D
 		{
 			return Vector3(lhs.y * rhs.z - rhs.y * lhs.z, rhs.x * lhs.z - lhs.x * rhs.z, lhs.x * rhs.y - lhs.y * rhs.x);
 		}
-		number x;
-		number y;
-		number z;
+		real x;
+		real y;
+		real z;
 	};
 }
 #endif

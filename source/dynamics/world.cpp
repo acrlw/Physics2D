@@ -16,7 +16,7 @@ namespace Physics2D {
         return worldToScreen(m_leftTop, m_rightBottom, pos);
     }
 
-    void World::step(const number &dt)
+    void World::step(const real &dt)
     {
 
     }
@@ -29,15 +29,15 @@ namespace Physics2D {
 
     Vector2 World::worldToScreen(const Vector2 &leftTop, const Vector2 &rightBottom, const Vector2 &pos)
     {
-        number origin_y = rightBottom.y;
-        number origin_x = (leftTop.x + rightBottom.x) / 2;
+        real origin_y = rightBottom.y;
+        real origin_x = (leftTop.x + rightBottom.x) / 2;
         return Vector2(origin_x + pos.x, origin_y - pos.y);
     }
 
     Vector2 World::screenToWorld(const Vector2 &leftTop, const Vector2 &rightBottom, const Vector2 &pos)
     {
-        number origin_y = rightBottom.y;
-        number origin_x = (leftTop.x + rightBottom.x) / 2;
+        real origin_y = rightBottom.y;
+        real origin_x = (leftTop.x + rightBottom.x) / 2;
         Vector2 result = pos - Vector2(origin_x, origin_y);
         result.y = -result.y;
         return result;
@@ -48,32 +48,32 @@ namespace Physics2D {
         return m_bodyList;
     }
     
-    number World::bias() const
+    real World::bias() const
     {
         return m_bias;
     }
     
-    void World::setBias(const number &bias)
+    void World::setBias(const real &bias)
     {
         m_bias = bias;
     }
     
-    number World::velocityIteration() const
+    real World::velocityIteration() const
     {
         return m_velocityIteration;
     }
     
-    void World::setVelocityIteration(const number &velocityIteration)
+    void World::setVelocityIteration(const real &velocityIteration)
     {
         m_velocityIteration = velocityIteration;
     }
     
-    number World::positionIteration() const
+    real World::positionIteration() const
     {
         return m_positionIteration;
     }
     
-    void World::setPositionIteration(const number &positionIteration)
+    void World::setPositionIteration(const real &positionIteration)
     {
         m_positionIteration = positionIteration;
     }
@@ -118,12 +118,12 @@ namespace Physics2D {
         m_linearVelocityDamping = linearVelocityDamping;
     }
 
-    number World::angularVelocityDamping() const
+    real World::angularVelocityDamping() const
     {
         return m_angularVelocityDamping;
     }
 
-    void World::setAngularVelocityDamping(const number &angularVelocityDamping)
+    void World::setAngularVelocityDamping(const real &angularVelocityDamping)
     {
         m_angularVelocityDamping = angularVelocityDamping;
     }
@@ -138,12 +138,12 @@ namespace Physics2D {
         m_linearVelocityThreshold = linearVelocityThreshold;
     }
 
-    number World::angularVelocityThreshold() const
+    real World::angularVelocityThreshold() const
     {
         return m_angularVelocityThreshold;
     }
 
-    void World::setAngularVelocityThreshold(const number &angularVelocityThreshold)
+    void World::setAngularVelocityThreshold(const real &angularVelocityThreshold)
     {
         m_angularVelocityThreshold = angularVelocityThreshold;
     }
@@ -169,12 +169,12 @@ namespace Physics2D {
         delete body;
     }
 
-    number World::width()
+    real World::width()
     {
         return m_rightBottom.x - m_leftTop.x;
     }
 
-    number World::height()
+    real World::height()
     {
         return m_rightBottom.y - m_leftTop.y;
     }

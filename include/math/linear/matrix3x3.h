@@ -22,9 +22,9 @@ namespace Physics2D
 			column2 = col2;
 			column3 = col3;
 		}
-		Matrix3x3(const number& col1_x, const number& col1_y, const number& col1_z,
-			const number& col2_x, const number& col2_y, const number& col2_z,
-			const number& col3_x, const number& col3_y, const number& col3_z)
+		Matrix3x3(const real& col1_x, const real& col1_y, const real& col1_z,
+			const real& col2_x, const real& col2_y, const real& col2_z,
+			const real& col3_x, const real& col3_y, const real& col3_z)
 		{
 			column1.set(col1_x, col1_y, col1_z);
 			column2.set(col2_x, col2_y, col2_z);
@@ -55,7 +55,7 @@ namespace Physics2D
 			return *this;
 		}
 
-		Matrix3x3& operator*=(const number& factor)
+		Matrix3x3& operator*=(const real& factor)
 		{
 			column1 *= factor;
 			column2 *= factor;
@@ -63,9 +63,9 @@ namespace Physics2D
 			return *this;
 		}
 
-		Matrix3x3& operator/=(const number& factor)
+		Matrix3x3& operator/=(const real& factor)
 		{
-			assert(!numberEqual(factor, 0));
+			assert(!realEqual(factor, 0));
 			column1 /= factor;
 			column2 /= factor;
 			column3 /= factor;
@@ -83,16 +83,16 @@ namespace Physics2D
 		{
 			return Vector3(column1.z, column2.z, column3.z);
 		}
-		number determinant()const
+		real determinant()const
 		{
 			return Matrix3x3::determinant(*this);
 		}
 
 		Matrix3x3& transpose()
 		{
-			numberSwap(column1.y, column2.x);
-			numberSwap(column1.z, column3.x);
-			numberSwap(column2.z, column3.y);
+			realSwap(column1.y, column2.x);
+			realSwap(column1.z, column3.x);
+			realSwap(column2.z, column3.y);
 			return *this;
 		}
 
@@ -110,9 +110,9 @@ namespace Physics2D
 			return *this;
 		}
 
-		Matrix3x3& set(const number& col1_x, const number& col1_y, const number& col1_z,
-			const number& col2_x, const number& col2_y, const number& col2_z,
-			const number& col3_x, const number& col3_y, const number& col3_z)
+		Matrix3x3& set(const real& col1_x, const real& col1_y, const real& col1_z,
+			const real& col2_x, const real& col2_y, const real& col2_z,
+			const real& col3_x, const real& col3_y, const real& col3_z)
 		{
 			column1.set(col1_x, col1_y, col1_z);
 			column2.set(col2_x, col2_y, col2_z);
@@ -169,7 +169,7 @@ namespace Physics2D
 				lhs.column1.y * rhs.x + lhs.column2.y * rhs.y + lhs.column3.y * rhs.z,
 				lhs.column1.z * rhs.x + lhs.column2.z * rhs.y + lhs.column3.z * rhs.z);
 		}
-		static number determinant(const Matrix3x3& mat)
+		static real determinant(const Matrix3x3& mat)
 		{
 			return mat.column1.x * Vector2::crossProduct(mat.column2.y, mat.column2.z, mat.column3.y, mat.column3.z) +
 				mat.column2.x * Vector2::crossProduct(mat.column3.y, mat.column3.z, mat.column1.y, mat.column1.z) +
@@ -177,21 +177,21 @@ namespace Physics2D
 		}
 		static bool invert(Matrix3x3& mat)
 		{
-			const number det = mat.determinant();
-			if (numberEqual(det, 0.0f))
+			const real det = mat.determinant();
+			if (realEqual(det, 0.0f))
 				return false;
 
-			const number det11 = Vector2::crossProduct(mat.column2.y, mat.column2.z, mat.column3.y, mat.column3.z);
-			const number det12 = Vector2::crossProduct(mat.column2.x, mat.column2.z, mat.column3.x, mat.column3.z) * -1;
-			const number det13 = Vector2::crossProduct(mat.column2.x, mat.column2.y, mat.column3.x, mat.column3.y);
+			const real det11 = Vector2::crossProduct(mat.column2.y, mat.column2.z, mat.column3.y, mat.column3.z);
+			const real det12 = Vector2::crossProduct(mat.column2.x, mat.column2.z, mat.column3.x, mat.column3.z) * -1;
+			const real det13 = Vector2::crossProduct(mat.column2.x, mat.column2.y, mat.column3.x, mat.column3.y);
 
-			const number det21 = Vector2::crossProduct(mat.column1.y, mat.column1.z, mat.column3.y, mat.column3.z) * -1;
-			const number det22 = Vector2::crossProduct(mat.column1.x, mat.column1.z, mat.column3.x, mat.column3.z);
-			const number det23 = Vector2::crossProduct(mat.column1.x, mat.column1.y, mat.column3.x, mat.column3.y) * -1;
+			const real det21 = Vector2::crossProduct(mat.column1.y, mat.column1.z, mat.column3.y, mat.column3.z) * -1;
+			const real det22 = Vector2::crossProduct(mat.column1.x, mat.column1.z, mat.column3.x, mat.column3.z);
+			const real det23 = Vector2::crossProduct(mat.column1.x, mat.column1.y, mat.column3.x, mat.column3.y) * -1;
 
-			const number det31 = Vector2::crossProduct(mat.column1.y, mat.column1.z, mat.column2.y, mat.column2.z);
-			const number det32 = Vector2::crossProduct(mat.column1.x, mat.column1.z, mat.column2.x, mat.column2.z) * -1;
-			const number det33 = Vector2::crossProduct(mat.column1.x, mat.column1.y, mat.column2.x, mat.column2.y);
+			const real det31 = Vector2::crossProduct(mat.column1.y, mat.column1.z, mat.column2.y, mat.column2.z);
+			const real det32 = Vector2::crossProduct(mat.column1.x, mat.column1.z, mat.column2.x, mat.column2.z) * -1;
+			const real det33 = Vector2::crossProduct(mat.column1.x, mat.column1.y, mat.column2.x, mat.column2.y);
 
 			mat.set(det11, det12, det13, det21, det22, det23, det31, det32, det33);
 			mat.transpose();

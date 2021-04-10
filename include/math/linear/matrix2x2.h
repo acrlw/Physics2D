@@ -8,7 +8,7 @@ namespace Physics2D
 	struct Matrix2x2
 	{
 		Matrix2x2() = default;
-		Matrix2x2(const number& angle)
+		Matrix2x2(const real& angle)
 		{
 			setAngle(angle);
 		}
@@ -22,7 +22,7 @@ namespace Physics2D
 			column1 = col1;
 			column2 = col2;
 		}
-		Matrix2x2(const number& col1_x, const number& col1_y, const number& col2_x, const number& col2_y)
+		Matrix2x2(const real& col1_x, const real& col1_y, const real& col2_x, const real& col2_y)
 		{
 			column1.set(col1_x, col1_y);
 			column2.set(col2_x, col2_y);
@@ -49,16 +49,16 @@ namespace Physics2D
 			return *this;
 		}
 
-		Matrix2x2& operator*=(const number& factor)
+		Matrix2x2& operator*=(const real& factor)
 		{
 			column1 *= factor;
 			column2 *= factor;
 			return *this;
 		}
 
-		Matrix2x2& operator/=(const number& factor)
+		Matrix2x2& operator/=(const real& factor)
 		{
-			assert(!numberEqual(factor, 0));
+			assert(!realEqual(factor, 0));
 			column1 /= factor;
 			column2 /= factor;
 			return *this;
@@ -81,14 +81,14 @@ namespace Physics2D
 		{
 			return Vector2(column1.y, column2.y);
 		}
-		number determinant()const
+		real determinant()const
 		{
 			return Matrix2x2::determinant(*this);
 		}
 
 		Matrix2x2& transpose()
 		{
-			numberSwap(column1.y, column2.x);
+			realSwap(column1.y, column2.x);
 			return *this;
 		}
 
@@ -116,7 +116,7 @@ namespace Physics2D
 			return *this;
 		}
 
-		Matrix2x2& set(const number& col1_x, const number& col1_y, const number& col2_x, const number& col2_y)
+		Matrix2x2& set(const real& col1_x, const real& col1_y, const real& col2_x, const real& col2_y)
 		{
 			column1.set(col1_x, col1_y);
 			column2.set(col2_x, col2_y);
@@ -137,11 +137,11 @@ namespace Physics2D
 			return *this;
 		}
 
-		Matrix2x2& setAngle(const number& angle)
+		Matrix2x2& setAngle(const real& angle)
 		{
-			const number arc = angle * PI / 180;
-			const number cosarc = cosx(arc);
-			const number sinarc = sinx(arc);
+			const real arc = angle * PI / 180;
+			const real cosarc = cosx(arc);
+			const real sinarc = sinx(arc);
 			column1.set(cosarc, sinarc);
 			column2.set(-sinarc, cosarc);
 			return *this;
@@ -166,18 +166,18 @@ namespace Physics2D
 				lhs.column1.x * rhs.column2.x + lhs.column2.x * rhs.column2.y,
 				lhs.column1.y * rhs.column2.x + lhs.column2.y * rhs.column2.y);
 		}
-		static number determinant(const Matrix2x2& mat)
+		static real determinant(const Matrix2x2& mat)
 		{
 			return mat.column1.x * mat.column2.y - mat.column2.x * mat.column1.y;
 		}
 		static bool invert(Matrix2x2& mat)
 		{
-			const number det = mat.determinant();
+			const real det = mat.determinant();
 
-			if (numberEqual(det, 0.0f))
+			if (realEqual(det, 0.0f))
 				return false;
 
-			numberSwap(mat.column1.x, mat.column2.y);
+			realSwap(mat.column1.x, mat.column2.y);
 			mat.column1.y *= -1;
 			mat.column2.x *= -1;
 			mat /= det;

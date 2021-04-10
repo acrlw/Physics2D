@@ -6,7 +6,7 @@ namespace Physics2D
     bool GeometryAlgorithm2D::isCollinear(const Vector2& a, const Vector2& b, const Vector2& c)
     {
         //triangle area = 0 then collinear
-        return numberEqual(abs(Vector2::crossProduct(a - b, a - c)), 0);
+        return realEqual(abs(Vector2::crossProduct(a - b, a - c)), 0);
     }
 
     bool GeometryAlgorithm2D::isPointOnSegment(const Vector2& a, const Vector2& b, const Vector2& c)
@@ -28,31 +28,31 @@ namespace Physics2D
         Vector2 bc = c - b;
         Vector2 ba = a - b;
         Vector2 bd = d - b;
-        number ab_length = ab.length();
+        real ab_length = ab.length();
 
-        if (numberEqual(ab_length, 0.0f))
+        if (realEqual(ab_length, 0.0f))
         {
             if (fuzzyIsPointOnSegment(c, d, a))
                 return std::optional<Vector2>(a);
             return std::nullopt;
         }
 
-        const number cc_proj = ab.cross(ac) / ab_length;
-        const number dd_proj = ba.cross(bd) / ab_length;
-        const number ad_proj = ad.dot(ab.normal());
-        const number bc_proj = bc.dot(ba.normal());
-        const number cproj_dproj = ab_length - ad_proj - bc_proj;
+        const real cc_proj = ab.cross(ac) / ab_length;
+        const real dd_proj = ba.cross(bd) / ab_length;
+        const real ad_proj = ad.dot(ab.normal());
+        const real bc_proj = bc.dot(ba.normal());
+        const real cproj_dproj = ab_length - ad_proj - bc_proj;
 
-        if (numberEqual(cc_proj, 0.0f))
+        if (realEqual(cc_proj, 0.0f))
             return std::nullopt;
 
-        const number denominator = (1 + (dd_proj / cc_proj));
-        if (numberEqual(denominator, 0.0f))
+        const real denominator = (1 + (dd_proj / cc_proj));
+        if (realEqual(denominator, 0.0f))
             return std::nullopt;
 
-        const number cp = cproj_dproj / denominator;
+        const real cp = cproj_dproj / denominator;
         const Vector2 bp = ba.normalize() * (bc_proj + cp);
-        if (numberEqual(bp.length(), 0))
+        if (realEqual(bp.length(), 0))
             return std::nullopt;
 
         Vector2 p = bp + b;
@@ -80,33 +80,33 @@ namespace Physics2D
         if (triangleArea(a, b, c) == 0)
             return std::nullopt;
 
-        number ab = (b - a).length();
-        number bc = (c - b).length();
-        number ca = (a - c).length();
+        real ab = (b - a).length();
+        real bc = (c - b).length();
+        real ca = (a - c).length();
         Vector2 p = (ab * c + bc * a + ca * b) / (ab + bc + ca);
         return std::optional<Vector2>(p);
     }
 
-    std::optional<std::tuple<Vector2, number>> GeometryAlgorithm2D::calculateCircumcircle(const Vector2& a, const Vector2& b, const Vector2& c)
+    std::optional<std::tuple<Vector2, real>> GeometryAlgorithm2D::calculateCircumcircle(const Vector2& a, const Vector2& b, const Vector2& c)
     {
         if (triangleArea(a, b, c) == 0)
             return std::nullopt;
         auto point = triangleCircumcenter(a, b, c);
-        number radius = (point.value() - a).length();
+        real radius = (point.value() - a).length();
         return std::make_tuple(point.value(), radius);
     }
 
-    std::optional<std::tuple<Vector2, number>> GeometryAlgorithm2D::calculateInscribedCircle(const Vector2& a, const Vector2& b, const Vector2& c)
+    std::optional<std::tuple<Vector2, real>> GeometryAlgorithm2D::calculateInscribedCircle(const Vector2& a, const Vector2& b, const Vector2& c)
     {
-        number area = triangleArea(a, b, c);
+        real area = triangleArea(a, b, c);
         if (area == 0)
             return std::nullopt;
 
-        number ab = (b - a).length();
-        number bc = (c - b).length();
-        number ca = (a - c).length();
+        real ab = (b - a).length();
+        real bc = (c - b).length();
+        real ca = (a - c).length();
         Vector2 p = (ab * c + bc * a + ca * b) / (ab + bc + ca);
-        number radius = 2 * area / (ab + bc + ca);
+        real radius = 2 * area / (ab + bc + ca);
         return std::make_tuple(p, radius);
     }
 
@@ -185,7 +185,7 @@ namespace Physics2D
         return (p - a).lengthSquare() > (p - b).lengthSquare() ? b : a;
     }
 
-    Vector2 GeometryAlgorithm2D::shortestLengthPointOfEllipse(const number& a, const number& b, const Vector2& p, const number& epsilon)
+    Vector2 GeometryAlgorithm2D::shortestLengthPointOfEllipse(const real& a, const real& b, const Vector2& p, const real& epsilon)
     {
         if (a == 0 || b == 0)
             return {};
@@ -201,9 +201,9 @@ namespace Physics2D
                            : Vector2{ -a, 0 };
         }
 
-        number x_left, x_right;
-        number temp_x, temp_y;
-        number t1_x, t1_y;
+        real x_left, x_right;
+        real temp_x, temp_y;
+        real t1_x, t1_y;
         Vector2 t0, t1;
         int sgn = p.y > 0 ? 1 : -1;
         if (p.x < 0)
@@ -229,7 +229,7 @@ namespace Physics2D
             Vector2 t0t1 = t1 - t0;
             Vector2 t0p = p - t0;
 
-            number result = t0t1.dot(t0p);
+            real result = t0t1.dot(t0p);
             if (abs(result) < epsilon)
                 return t0;
 
@@ -244,7 +244,7 @@ namespace Physics2D
         return Vector2(a1 + a2 + a3) / 3;
     }
 
-    number GeometryAlgorithm2D::triangleArea(const Vector2& a1, const Vector2& a2, const Vector2& a3)
+    real GeometryAlgorithm2D::triangleArea(const Vector2& a1, const Vector2& a2, const Vector2& a3)
     {
         return abs(Vector2::crossProduct(a1 - a2, a1 - a3)) / 2;
     }
@@ -254,7 +254,7 @@ namespace Physics2D
         if (vertices.size() >= 4)
         {
             Vector2 pos;
-            number area = 0;
+            real area = 0;
             size_t p_a, p_b, p_c;
             p_a = 0, p_b = 0, p_c = 0;
             for (size_t i = 0; i < vertices.size() - 1; i++)
@@ -263,7 +263,7 @@ namespace Physics2D
                 p_c = i + 2;
                 if (p_b == vertices.size() - 2)
                     break;
-                number a = triangleArea(vertices[p_a], vertices[p_b], vertices[p_c]);
+                real a = triangleArea(vertices[p_a], vertices[p_b], vertices[p_c]);
                 Vector2 p = triangleCentroid(vertices[p_a], vertices[p_b], vertices[p_c]);
                 pos += p * a;
                 area += a;
@@ -273,11 +273,11 @@ namespace Physics2D
         }
     }
 
-    std::tuple<Vector2, Vector2> GeometryAlgorithm2D::shortestLengthLineSegmentEllipse(const number& a, const number& b, const Vector2& p1, const Vector2& p2)
+    std::tuple<Vector2, Vector2> GeometryAlgorithm2D::shortestLengthLineSegmentEllipse(const real& a, const real& b, const Vector2& p1, const Vector2& p2)
     {
         Vector2 p_line;
         Vector2 p_ellipse;
-        if (numberEqual(p1.y, p2.y))
+        if (realEqual(p1.y, p2.y))
         {
             if (!((p1.x > 0 && p2.x > 0) || (p1.x < 0 && p2.x < 0))) // different quadrant
             {
@@ -290,7 +290,7 @@ namespace Physics2D
                 p_ellipse = shortestLengthPointOfEllipse(a, b, p_line);
             }
         }
-        else if (numberEqual(p1.x, p2.x))
+        else if (realEqual(p1.x, p2.x))
         {
             if (!((p1.y > 0 && p2.y > 0) || (p1.y < 0 && p2.y < 0))) // different quadrant
             {
@@ -306,15 +306,15 @@ namespace Physics2D
         else
         {
             //calculate tangent line
-            number k = (p2.y - p1.y) / (p2.x - p1.x);
-            number k2 = k * k;
-            number a2 = a * a;
-            number b2 = b * b;
+            real k = (p2.y - p1.y) / (p2.x - p1.x);
+            real k2 = k * k;
+            real a2 = a * a;
+            real b2 = b * b;
             int sgn = k > 0 ? 1 : -1;
-            number f_x2 = (k2 * a2 * a2 / b2) / (1 + a2 * k2 / b2);
-            number f_y2 = b2 - b2 * f_x2 / a2;
-            number f_x = sqrt(f_x2);
-            number f_y = sqrt(f_y2);
+            real f_x2 = (k2 * a2 * a2 / b2) / (1 + a2 * k2 / b2);
+            real f_y2 = b2 - b2 * f_x2 / a2;
+            real f_x = sqrt(f_x2);
+            real f_y = sqrt(f_y2);
             Vector2 f;
             Vector2 p1p2 = (p2 - p1).normal();
 
@@ -325,10 +325,10 @@ namespace Physics2D
                 f_arr[1].set(-f_x, f_y);
                 f_arr[2].set(-f_x, -f_y);
                 f_arr[3].set(f_x, -f_y);
-                number min = Vector2::crossProduct(p1p2, f_arr[0] - p1);
+                real min = Vector2::crossProduct(p1p2, f_arr[0] - p1);
                 for (int i = 1; i < 4; i++)
                 {
-                    number value = Vector2::crossProduct(p1p2, f_arr[i] - p1);
+                    real value = Vector2::crossProduct(p1p2, f_arr[i] - p1);
                     if (min > value)
                     {
                         f = f_arr[i];
@@ -367,13 +367,13 @@ namespace Physics2D
 
     std::optional<Vector2> GeometryAlgorithm2D::raycast(const Vector2& p, const Vector2& dir, const Vector2& a, const Vector2& b)
     {
-        const number denominator = (p.x - dir.x) * (a.y - b.y) - (p.y - dir.y) * (a.x - b.x);
+        const real denominator = (p.x - dir.x) * (a.y - b.y) - (p.y - dir.y) * (a.x - b.x);
 
-        if (numberEqual(denominator, 0))
+        if (realEqual(denominator, 0))
             return std::nullopt;
 
-        const number t = ((p.x - a.x) * (a.y - b.y) - (p.y - a.y) * (a.x - b.x)) / denominator;
-        const number u = ((dir.x - p.x) * (p.y - a.y) - (dir.y - p.y) * (p.x - a.x)) / denominator;
+        const real t = ((p.x - a.x) * (a.y - b.y) - (p.y - a.y) * (a.x - b.x)) / denominator;
+        const real u = ((dir.x - p.x) * (p.y - a.y) - (dir.y - p.y) * (p.x - a.x)) / denominator;
         if (t >= 0 && u <= 1.0 && u >= 0)
         {
             return std::optional<Vector2>({ p.x + t * (dir.x - p.x), p.y + t * (dir.y - p.y) });
@@ -381,32 +381,32 @@ namespace Physics2D
         return std::nullopt;
     }
 
-    Vector2 GeometryAlgorithm2D::rotate(const Vector2& p, const Vector2& center, const number& angle)
+    Vector2 GeometryAlgorithm2D::rotate(const Vector2& p, const Vector2& center, const real& angle)
     {
         return Matrix2x2(angle).multiply(p - center) + center;
     }
-    Vector2 GeometryAlgorithm2D::calculateEllipseProjectionPoint(const number& a, const number& b, const Vector2& direction)
+    Vector2 GeometryAlgorithm2D::calculateEllipseProjectionPoint(const real& a, const real& b, const Vector2& direction)
     {
         Vector2 target;
-        if (numberEqual(direction.x, 0))
+        if (realEqual(direction.x, 0))
         {
             int sgn = direction.y < 0 ? -1 : 1;
             target.set(0, sgn * b);
         }
-        else if (numberEqual(direction.y, 0))
+        else if (realEqual(direction.y, 0))
         {
             int sgn = direction.x < 0 ? -1 : 1;
             target.set(sgn * a, 0);
         }
         else
         {
-            number k = direction.y / direction.x;
+            real k = direction.y / direction.x;
             //line offset constant d
-            number a2 = pow(a, 2);
-            number b2 = pow(b, 2);
-            number k2 = pow(k, 2);
-            number d = sqrt((a2 + b2 * k2) / k2);
-            number x1, y1;
+            real a2 = pow(a, 2);
+            real b2 = pow(b, 2);
+            real k2 = pow(k, 2);
+            real d = sqrt((a2 + b2 * k2) / k2);
+            real x1, y1;
             if (Vector2::dotProduct(Vector2(0, d), direction) < 0)
                 d = d * -1;
             x1 = k * d - (b2 * k2 * k * d) / (a2 + b2 * k2);

@@ -118,8 +118,8 @@ namespace Physics2D
 			renderPoint(painter, world, shape.transform, pen);
 			const Ellipse* ellipse = dynamic_cast<Ellipse*>(shape.shape);
 			const Vector2 screen_p = world->worldToScreen(shape.transform);
-			number A = ellipse->A();
-			number B = ellipse->B();
+			real A = ellipse->A();
+			real B = ellipse->B();
 			
 			QColor color = pen.color();
 			color.setAlphaF(0.15f);

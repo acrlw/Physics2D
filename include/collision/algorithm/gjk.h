@@ -85,7 +85,7 @@ namespace Physics2D
             /// <param name="iteration">iteration times</param>
             /// <param name="epsilon">epsilon of iterated result</param>
             /// <returns>return expanded simplex</returns>
-            static Simplex epa(const ShapePrimitive& shape_A, const ShapePrimitive& shape_B, const Simplex& src, const size_t& iteration = 50, const number& epsilon = 0.0001);
+            static Simplex epa(const ShapePrimitive& shape_A, const ShapePrimitive& shape_B, const Simplex& src, const size_t& iteration = 50, const real& epsilon = 0.0001);
             /// <summary>
             /// Dump collision information from simplex
             /// </summary>

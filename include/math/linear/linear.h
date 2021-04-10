@@ -7,11 +7,11 @@
 
 namespace Physics2D
 {
-	inline Vector2 operator*(const number& f, const Vector2& v)
+	inline Vector2 operator*(const real& f, const Vector2& v)
 	{
 		return v * f;
 	}
-	inline Vector3 operator*(const number& f, const Vector3& v)
+	inline Vector3 operator*(const real& f, const Vector3& v)
 	{
 		return v * f;
 	}

@@ -5,71 +5,71 @@
 namespace Physics2D
 {
 	//trigonometric function
-	inline number sinx(const number& x)
+	inline real sinx(const real& x)
 	{
 		return std::sin(x);
 	}
-	inline number cosx(const number& x)
+	inline real cosx(const real& x)
 	{
 		return std::cos(x);
 	}
-	inline number tanx(const number& x)
+	inline real tanx(const real& x)
 	{
 		return std::tan(x);
 	}
-	inline number arcsinx(const number& x)
+	inline real arcsinx(const real& x)
 	{
 		return std::asin(x);
 	}
-	inline number arccosx(const number& x)
+	inline real arccosx(const real& x)
 	{
 		return std::acos(x);
 	}
-	inline number arctanx(const number& x)
+	inline real arctanx(const real& x)
 	{
 		return std::atan(x);
 	}
-	inline number max(const number& a, const number& b)
+	inline real max(const real& a, const real& b)
 	{
 		return std::max(a, b);
 	}
-	inline number min(const number& a, const number& b)
+	inline real min(const real& a, const real& b)
 	{
 		return std::min(a, b);
 	}
-	inline number abs_max(const number& a, const number& b)
+	inline real abs_max(const real& a, const real& b)
 	{
 		return std::max(std::fabs(a), std::fabs(b));
 	}
-	inline number abs_min(const number& a, const number& b)
+	inline real abs_min(const real& a, const real& b)
 	{
 		return std::min(std::fabs(a), std::fabs(b));
 	}
 	//other
-	inline int sign(const number& num)
+	inline int sign(const real& num)
 	{
 		return num > 0 ? 1 : -1;
 	}
-	inline number clamp(const number& num, const number& low, const number& high)
+	inline real clamp(const real& num, const real& low, const real& high)
 	{
 		return std::clamp(num, low, high);
 	}
-	//basic number utility
-	inline void numberSwap(number& lhs, number& rhs)
+	//basic real utility
+	inline void realSwap(real& lhs, real& rhs)
 	{
-		const number temp = lhs;
+		const real temp = lhs;
 		lhs = rhs;
 		rhs = temp;
 	}
-	inline bool numberEqual(const number& lhs, const number& rhs)
+	inline bool realEqual(const real& lhs, const real& rhs)
 	{
 		return abs(lhs - rhs) < EPSILON;
 	}
-	inline number angleToRadian(const number& angle)
+	inline real angleToRadian(const real& angle)
 	{
 		return angle * (180.0f / PI);
 	}
-	inline number radianToAngle(const number& radian)
+	inline real radianToAngle(const real& radian)
 	{
 		return radian * (PI / 180.0f);
 	}

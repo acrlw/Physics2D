@@ -23,7 +23,7 @@ namespace Physics2D
             ~World();
             Vector2 screenToWorld(const Vector2& pos)const;
             Vector2 worldToScreen(const Vector2& pos)const;
-            void step(const number& dt);
+            void step(const real& dt);
 
             void setGeometry(const Vector2& leftTop, const Vector2& rightBottom);
             Vector2 leftTop() const;
@@ -38,14 +38,14 @@ namespace Physics2D
             Vector2 linearVelocityDamping() const;
             void setLinearVelocityDamping(const Vector2 &linearVelocityDamping);
 
-            number angularVelocityDamping() const;
-            void setAngularVelocityDamping(const number &angularVelocityDamping);
+            real angularVelocityDamping() const;
+            void setAngularVelocityDamping(const real &angularVelocityDamping);
 
             Vector2 linearVelocityThreshold() const;
             void setLinearVelocityThreshold(const Vector2 &linearVelocityThreshold);
 
-            number angularVelocityThreshold() const;
-            void setAngularVelocityThreshold(const number &angularVelocityThreshold);
+            real angularVelocityThreshold() const;
+            void setAngularVelocityThreshold(const real &angularVelocityThreshold);
 
             bool enableGravity() const;
             void setEnableGravity(bool enableGravity);
@@ -53,22 +53,22 @@ namespace Physics2D
             void addBody(Body* body);
             void removeBody(Body* body);
 
-            number width();
-            number height();
+            real width();
+            real height();
     	
             static Vector2 worldToScreen(const Vector2& leftTop, const Vector2& rightBottom, const Vector2& pos);
             static Vector2 screenToWorld(const Vector2& leftTop, const Vector2& rightBottom, const Vector2& pos);
 
             std::vector<Body*> bodyList()const;
 
-            number bias() const;
-            void setBias(const number &bias);
+            real bias() const;
+            void setBias(const real &bias);
 
-            number velocityIteration() const;
-            void setVelocityIteration(const number &velocityIteration);
+            real velocityIteration() const;
+            void setVelocityIteration(const real &velocityIteration);
 
-            number positionIteration() const;
-            void setPositionIteration(const number &positionIteration);
+            real positionIteration() const;
+            void setPositionIteration(const real &positionIteration);
 
         private:
             Vector2 m_leftTop;
@@ -76,13 +76,13 @@ namespace Physics2D
 
             Vector2 m_gravity;
             Vector2 m_linearVelocityDamping;
-            number m_angularVelocityDamping;
+            real m_angularVelocityDamping;
             Vector2 m_linearVelocityThreshold;
-            number m_angularVelocityThreshold;
+            real m_angularVelocityThreshold;
 
-            number m_bias;
-            number m_velocityIteration;
-            number m_positionIteration;
+            real m_bias;
+            real m_velocityIteration;
+            real m_positionIteration;
     		
     		bool m_enableGravity;
             std::vector<Body*> m_bodyList;

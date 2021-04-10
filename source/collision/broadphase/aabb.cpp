@@ -7,12 +7,12 @@ namespace Physics2D
 		return collide(*this, other);
 	}
 
-	void AABB::scale(const number& factor)
+	void AABB::scale(const real& factor)
 	{
 		scale(*this, factor);
 	}
 
-	AABB AABB::fromShape(const ShapePrimitive& shape, const number& factor)
+	AABB AABB::fromShape(const ShapePrimitive& shape, const real& factor)
 	{
 		AABB aabb;
 		switch (shape.shape->type())
@@ -20,8 +20,7 @@ namespace Physics2D
 			case Shape::Type::Polygon:
 			{
 				const Polygon* polygon = dynamic_cast<Polygon*>(shape.shape);
-				aabb.position = Matrix2x2(shape.rotation).multiply(polygon->center());
-				number max_x = FLT_MIN, max_y = FLT_MIN, min_x = FLT_MAX, min_y = FLT_MAX;
+				real max_x = -FLT_MAX, max_y = -FLT_MAX, min_x = FLT_MAX, min_y = FLT_MAX;
 				for(const Vector2& v: polygon->vertices())
 				{
 					const Vector2 vertex = Matrix2x2(shape.rotation).multiply(v);
@@ -39,6 +38,7 @@ namespace Physics2D
 				}
 				aabb.width = max_x - min_x;
 				aabb.height = max_y - min_y;
+				aabb.position.set((max_x + min_x) / 2, (max_y + min_y) / 2);
 				break;
 			}
 			case Shape::Type::Ellipse:
@@ -115,7 +115,7 @@ namespace Physics2D
 	{
 		return AABB();
 	}
-	void AABB::scale(AABB& aabb, const number& factor)
+	void AABB::scale(AABB& aabb, const real& factor)
 	{
 		aabb.width *= factor;
 		aabb.height *= factor;

@@ -11,7 +11,7 @@ namespace Physics2D
         m_world.setGeometry({ 0,0 }, { 1920,1080 });
 
     	
-        rectangle.set(25, 25);
+        rectangle.set(50, 25);
         rectangle.scale(2);
 
         
@@ -37,7 +37,7 @@ namespace Physics2D
     	//prepare for background, origin and clipping boundary
         painter.setRenderHint(QPainter::Antialiasing);
         painter.setClipRect(m_world.leftTop().x, m_world.leftTop().y, m_world.width(), m_world.height());
-        painter.fillRect(QRectF(m_world.leftTop().x, m_world.leftTop().y, m_world.width(), m_world.height()), QBrush(QColor(51, 51, 51)));
+        painter.fillRect(QRectF(m_world.leftTop().x, m_world.leftTop().y, m_world.width(), m_world.height()), QBrush(QColor(52, 52, 52)));
 		QPen origin(Qt::green, 10, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
         RendererQtImpl::renderPoint(&painter, &m_world, Vector2(0, 0), origin);
 
@@ -49,9 +49,11 @@ namespace Physics2D
         primitive.rotation = m_angle;
         primitive.transform.set(0, 200);
         RendererQtImpl::renderShape(&painter, &m_world, primitive, pen);
-        AABB aabb = AABB::fromShape(primitive);
+        AABB aabb = AABB::fromShape(primitive, 1);
+        AABB aabb_skin = AABB::fromShape(primitive, 1.2);
         pen.setWidth(1);
     	RendererQtImpl::renderAABB(&painter, &m_world, aabb, pen);
+        RendererQtImpl::renderAABB(&painter, &m_world, aabb_skin, pen);
 
     	
     	if(m_lastBody != nullptr)
@@ -164,7 +166,7 @@ namespace Physics2D
     void Window::testHit(const QPoint& pos)
     {
         m_lastBody = nullptr;
-        Vector2 screen_pos(static_cast<number>(pos.x()), static_cast<number>(pos.y()));
+        Vector2 screen_pos(static_cast<real>(pos.x()), static_cast<real>(pos.y()));
         Vector2 world_pos = m_world.screenToWorld(screen_pos);
         Point point;
         point.setPosition(world_pos);
@@ -243,7 +245,7 @@ namespace Physics2D
                 Body* body = new Body;
                 //body->setAngle(j * j + 12);
                 body->setShape(&rectangle);
-                body->setPosition({static_cast<number>(-55 * (10 - j) + i * 55),static_cast<number>(j * 65 + 65)});
+                body->setPosition({static_cast<real>(-55 * (10 - j) + i * 55),static_cast<real>(j * 65 + 65)});
                 m_world.addBody(body);
     		}
     	}

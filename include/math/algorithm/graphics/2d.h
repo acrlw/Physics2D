@@ -68,7 +68,7 @@ namespace Physics2D
 		/// <param name="b"></param>
 		/// <param name="c"></param>
 		/// <returns></returns>
-		static std::optional<std::tuple<Vector2, number>> calculateCircumcircle(const Vector2& a, const Vector2& b, const Vector2& c);
+		static std::optional<std::tuple<Vector2, real>> calculateCircumcircle(const Vector2& a, const Vector2& b, const Vector2& c);
 		/// <summary>
 		/// Calculate inscribed circle given three points that can form a triangle
 		/// If a,b,c can not form a triangle, return nothing
@@ -77,7 +77,7 @@ namespace Physics2D
 		/// <param name="b"></param>
 		/// <param name="c"></param>
 		/// <returns></returns>
-		static std::optional<std::tuple<Vector2, number>> calculateInscribedCircle(const Vector2& a, const Vector2& b, const Vector2& c);
+		static std::optional<std::tuple<Vector2, real>> calculateInscribedCircle(const Vector2& a, const Vector2& b, const Vector2& c);
 		/// <summary>
 		/// Judge whether polygon is convex
 		/// </summary>
@@ -105,7 +105,7 @@ namespace Physics2D
 		/// <param name="b"></param>
 		/// <param name="p"></param>
 		/// <returns></returns>
-		static Vector2 shortestLengthPointOfEllipse(const number& a, const number& b, const Vector2& p, const number& epsilon = 0.00000001f);
+		static Vector2 shortestLengthPointOfEllipse(const real& a, const real& b, const Vector2& p, const real& epsilon = 0.00000001f);
 		/// <summary>
 		/// Calculate the centroid of triangle.
 		/// </summary>
@@ -121,7 +121,7 @@ namespace Physics2D
 		/// <param name="a2"></param>
 		/// <param name="a3"></param>
 		/// <returns></returns>
-		static number triangleArea(const Vector2& a1, const Vector2& a2, const Vector2& a3);
+		static real triangleArea(const Vector2& a1, const Vector2& a2, const Vector2& a3);
 		/// <summary>
 		/// Calculate mass center of 'convex' polygon
 		/// </summary>
@@ -136,7 +136,7 @@ namespace Physics2D
 		/// <param name="p1">line segment point 1</param>
 		/// <param name="p2">line segment point 2</param>
 		/// <returns></returns>
-		static std::tuple<Vector2, Vector2> shortestLengthLineSegmentEllipse(const number& a, const number& b, const Vector2& p1, const Vector2& p2);
+		static std::tuple<Vector2, Vector2> shortestLengthLineSegmentEllipse(const real& a, const real& b, const Vector2& p1, const Vector2& p2);
 		/// <summary>
 		/// Calculate point on line segment ab, if point 'p' can cast ray in 'dir' direction on line segment ab.
 		/// Algorithm from wikipedia 'Line-line intersection'
@@ -154,7 +154,7 @@ namespace Physics2D
 		/// <param name="center">center point</param>
 		/// <param name="angle">rotate angle</param>
 		/// <returns></returns>
-		static Vector2 rotate(const Vector2& p, const Vector2& center, const number& angle);
+		static Vector2 rotate(const Vector2& p, const Vector2& center, const real& angle);
 		/// <summary>
 		/// Calculate the projection axis of ellipse in user-define direction.
 		/// Return the maximum point in ellipse
@@ -163,7 +163,7 @@ namespace Physics2D
 		/// <param name="b"></param>
 		/// <param name="direction"></param>
 		/// <returns></returns>
-		static Vector2 calculateEllipseProjectionPoint(const number& a, const number& b, const Vector2& direction);
+		static Vector2 calculateEllipseProjectionPoint(const real& a, const real& b, const Vector2& direction);
 	};
 }
 #endif
