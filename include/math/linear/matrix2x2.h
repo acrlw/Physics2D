@@ -174,7 +174,7 @@ namespace Physics2D
 		{
 			const real det = mat.determinant();
 
-			if (realEqual(det, 0.0f))
+			if (realEqual(det, 0))
 				return false;
 
 			realSwap(mat.column1.x, mat.column2.y);

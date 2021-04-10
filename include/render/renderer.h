@@ -1,9 +1,11 @@
 #ifndef PHYSICS2D_RENDERER_H
 #define PHYSICS2D_RENDERER_H
-#include <qpen.h>
+
+#include <QPainter>
 
 #include "include/dynamics/shape.h"
 #include "include/dynamics/world.h"
+
 namespace Physics2D
 {
 	//class Renderer

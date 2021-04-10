@@ -53,6 +53,10 @@ namespace Physics2D
 			painter->setPen(pen);
 			painter->drawPath(path);
 			painter->fillPath(path, brush);
+
+			center.setColor(pen.color());
+			center.setWidth(2);
+			renderAngleLine(painter, world, shape, center);
 		}
 		static void renderEdge(QPainter* painter, World* world, const ShapePrimitive& shape, const QPen& pen)
 		{
@@ -87,6 +91,10 @@ namespace Physics2D
 			painter->setPen(pen);
 			painter->drawPath(path);
 			painter->fillPath(path, brush);
+			
+			QPen center = pen;
+			center.setWidth(2);
+			renderAngleLine(painter, world, shape, center);
 		}
 		static void renderCircle(QPainter* painter, World* world, const ShapePrimitive& shape, const QPen& pen)
 		{
@@ -109,7 +117,11 @@ namespace Physics2D
 			painter->fillPath(path, brush);
 			painter->rotate(shape.rotation);
 			painter->translate(-screen_p.x, -screen_p.y);
-			
+
+
+			QPen center = pen;
+			center.setWidth(2);
+			renderAngleLine(painter, world, shape, center);
 		}
 		static void renderEllipse(QPainter* painter, World* world, const ShapePrimitive& shape, const QPen& pen)
 		{
@@ -133,6 +145,11 @@ namespace Physics2D
 			painter->fillPath(path, brush);
 			painter->rotate(shape.rotation);
 			painter->translate(-screen_p.x, -screen_p.y);
+
+
+			QPen center = pen;
+			center.setWidth(2);
+			renderAngleLine(painter, world, shape, center);
 			
 		}
 		static void renderCurve(QPainter* painter, World* world, const ShapePrimitive& shape, const QPen& pen)
@@ -164,17 +181,26 @@ namespace Physics2D
             switch (shape.shape->type()) {
                 case Shape::Type::Circle:
                 {
-
+					Vector2 start = shape.transform;
+					Vector2 end = Matrix2x2(shape.rotation).multiply(Vector2(0, 1)) + start;
+					renderLine(painter, world, start, end, pen);
                     break;
                 }
                 case Shape::Type::Polygon:
                 {
-
+					Vector2 start = shape.transform + dynamic_cast<Polygon*>(shape.shape)->center();
+					Vector2 end = dynamic_cast<Polygon*>(shape.shape)->vertices()[0];
+					end = Matrix2x2(shape.rotation).multiply(end);
+					end += shape.transform;
+					renderLine(painter, world, start, end, pen);
                     break;
                 }
                 case Shape::Type::Ellipse:
                 {
-
+					const Ellipse* ellipse = dynamic_cast<Ellipse*>(shape.shape);
+					Vector2 start = shape.transform;
+					Vector2 end = Matrix2x2(shape.rotation).multiply(Vector2(ellipse->A(), 0)) + start;
+					renderLine(painter, world, start, end, pen);
                     break;
                 }
                 default:

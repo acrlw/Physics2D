@@ -45,7 +45,7 @@ namespace Physics2D
         Renderer::render(&painter, &m_world, pen);
 
         ShapePrimitive primitive;
-        primitive.shape = &polygon;
+        primitive.shape = &rectangle;
         primitive.rotation = m_angle;
         primitive.transform.set(0, 200);
         RendererQtImpl::renderShape(&painter, &m_world, primitive, pen);

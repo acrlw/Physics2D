@@ -1,7 +1,7 @@
 ﻿cmake_minimum_required(VERSION 3.5)
 
 project(physics-engine LANGUAGES CXX)
-
+add_compile_options(/W4)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 set(CMAKE_AUTOUIC ON)

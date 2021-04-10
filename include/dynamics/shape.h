@@ -175,7 +175,7 @@ namespace Physics2D
             Ellipse(const real& width = 0, const real& height = 0)
             {
                 m_type = Type::Ellipse;
-                this->set(0, 0);
+                this->set(width, height);
             }
     		void set(const Vector2& leftTop, const Vector2& rightBottom)
             {

@@ -22,13 +22,13 @@ namespace Physics2D
 
     std::optional<Vector2> GeometryAlgorithm2D::lineSegmentIntersection(const Vector2& a, const Vector2& b, const Vector2& c, const Vector2& d)
     {
-        Vector2 ab = b - a;
-        Vector2 ac = c - a;
-        Vector2 ad = d - a;
-        Vector2 bc = c - b;
+	    const Vector2 ab = b - a;
+	    const Vector2 ac = c - a;
+	    const Vector2 ad = d - a;
+	    const Vector2 bc = c - b;
         Vector2 ba = a - b;
-        Vector2 bd = d - b;
-        real ab_length = ab.length();
+	    const Vector2 bd = d - b;
+	    const real ab_length = ab.length();
 
         if (realEqual(ab_length, 0.0f))
         {
@@ -70,7 +70,7 @@ namespace Physics2D
         //2 * (x2 - x1) * x + 2 * (y2 - y1) y = x2 ^ 2 + y2 ^ 2 - x1 ^ 2 - y1 ^ 2;
         //2 * (x3 - x2) * x + 2 * (y3 - y2) y = x3 ^ 2 + y3 ^ 2 - x2 ^ 2 - y2 ^ 2;
         Matrix2x2 coef_mat{ 2 * (b.x - a.x), 2 * (c.x - b.x), 2 * (b.y - a.y), 2 * (c.y - b.y) };
-        Vector2 constant{ b.lengthSquare() - a.lengthSquare(), c.lengthSquare() - b.lengthSquare() };
+        const Vector2 constant{ b.lengthSquare() - a.lengthSquare(), c.lengthSquare() - b.lengthSquare() };
         return std::optional<Vector2>(coef_mat.invert().multiply(constant));
 
     }
@@ -80,9 +80,9 @@ namespace Physics2D
         if (triangleArea(a, b, c) == 0)
             return std::nullopt;
 
-        real ab = (b - a).length();
-        real bc = (c - b).length();
-        real ca = (a - c).length();
+        const real ab = (b - a).length();
+        const real bc = (c - b).length();
+        const real ca = (a - c).length();
         Vector2 p = (ab * c + bc * a + ca * b) / (ab + bc + ca);
         return std::optional<Vector2>(p);
     }
@@ -98,13 +98,13 @@ namespace Physics2D
 
     std::optional<std::tuple<Vector2, real>> GeometryAlgorithm2D::calculateInscribedCircle(const Vector2& a, const Vector2& b, const Vector2& c)
     {
-        real area = triangleArea(a, b, c);
+	    const real area = triangleArea(a, b, c);
         if (area == 0)
             return std::nullopt;
 
-        real ab = (b - a).length();
-        real bc = (c - b).length();
-        real ca = (a - c).length();
+	    const real ab = (b - a).length();
+	    const real bc = (c - b).length();
+	    const real ca = (a - c).length();
         Vector2 p = (ab * c + bc * a + ca * b) / (ab + bc + ca);
         real radius = 2 * area / (ab + bc + ca);
         return std::make_tuple(p, radius);
@@ -115,11 +115,10 @@ namespace Physics2D
         if (vertices.size() == 4)
             return true;
 
-        Vector2 ab, ac;
         for (uint16_t i = 0; i < vertices.size() - 1; i++)
         {
-            ab = vertices[i + 1] - vertices[i];
-            ac = i + 2 != vertices.size() ? vertices[i + 2] - vertices[i] : vertices[1] - vertices[i];
+            Vector2 ab = vertices[i + 1] - vertices[i];
+            Vector2 ac = i + 2 != vertices.size() ? vertices[i + 2] - vertices[i] : vertices[1] - vertices[i];
             if (Vector2::crossProduct(ab, ac) < 0)
                 return false;
         }
@@ -138,24 +137,21 @@ namespace Physics2D
             return a.x < b.x;
         });
 
-        uint16_t i, j, k;
-        j = 1;
-        k = 2;
-        Vector2 ab, ac;
+        uint16_t k = 2;
         stack.emplace_back(0);
         stack.emplace_back(1);
         while (true)
         {
-            i = stack[stack.size() - 2];
-            j = stack[stack.size() - 1];
+            uint16_t i = stack[stack.size() - 2];
+            uint16_t j = stack[stack.size() - 1];
             if (j == 0)
                 break;
 
             if (k >= sort.size())
                 k = 0;
 
-            ab = sort[j] - sort[i];
-            ac = sort[k] - sort[i];
+            Vector2 ab = sort[j] - sort[i];
+            Vector2 ac = sort[k] - sort[i];
             if (ab.cross(ac) < 0)
                 stack.pop_back();
             stack.emplace_back(k);
@@ -175,9 +171,9 @@ namespace Physics2D
         if (a == b)
             return {};
 
-        Vector2 ap = p - a;
-        Vector2 ab_normal = (b - a).normal();
-        Vector2 ap_proj = ab_normal.dot(ap) * ab_normal;
+        const Vector2 ap = p - a;
+        const Vector2 ab_normal = (b - a).normal();
+        const Vector2 ap_proj = ab_normal.dot(ap) * ab_normal;
         Vector2 op_proj = a + ap_proj;
 
         if (fuzzyIsPointOnSegment(a, b, op_proj))
@@ -202,10 +198,8 @@ namespace Physics2D
         }
 
         real x_left, x_right;
-        real temp_x, temp_y;
-        real t1_x, t1_y;
         Vector2 t0, t1;
-        int sgn = p.y > 0 ? 1 : -1;
+        const int sgn = p.y > 0 ? 1 : -1;
         if (p.x < 0)
         {
             x_left = -a;
@@ -219,17 +213,17 @@ namespace Physics2D
         int iteration = 0;
         while (++iteration)
         {
-            temp_x = (x_left + x_right) / 2;
-            temp_y = sgn * sqrt(pow(b, 2) - pow(b / a, 2) * pow(temp_x, 2));
+            real temp_x = (x_left + x_right) / 2;
+            real temp_y = sgn * sqrt(pow(b, 2) - pow(b / a, 2) * pow(temp_x, 2));
             Vector2 t0(temp_x, temp_y);
             t0.set(temp_x, temp_y);
-            t1_x = temp_x + 1;
-            t1_y = (pow(b, 2) - pow(b / a, 2) * t1_x * temp_x) / temp_y;
+            real t1_x = temp_x + 1;
+            real t1_y = (pow(b, 2) - pow(b / a, 2) * t1_x * temp_x) / temp_y;
             t1.set(t1_x, t1_y);
             Vector2 t0t1 = t1 - t0;
             Vector2 t0p = p - t0;
 
-            real result = t0t1.dot(t0p);
+            const real result = t0t1.dot(t0p);
             if (abs(result) < epsilon)
                 break;
 
@@ -309,17 +303,16 @@ namespace Physics2D
         else
         {
             //calculate tangent line
-            real k = (p2.y - p1.y) / (p2.x - p1.x);
-            real k2 = k * k;
-            real a2 = a * a;
-            real b2 = b * b;
-            int sgn = k > 0 ? 1 : -1;
-            real f_x2 = (k2 * a2 * a2 / b2) / (1 + a2 * k2 / b2);
-            real f_y2 = b2 - b2 * f_x2 / a2;
-            real f_x = sqrt(f_x2);
-            real f_y = sqrt(f_y2);
+            const real k = (p2.y - p1.y) / (p2.x - p1.x);
+            const real k2 = k * k;
+            const real a2 = a * a;
+            const real b2 = b * b;
+            const real f_x2 = (k2 * a2 * a2 / b2) / (1 + a2 * k2 / b2);
+            const real f_y2 = b2 - b2 * f_x2 / a2;
+            const real f_x = sqrt(f_x2);
+            const real f_y = sqrt(f_y2);
             Vector2 f;
-            Vector2 p1p2 = (p2 - p1).normal();
+            const Vector2 p1p2 = (p2 - p1).normal();
 
             //Judge which quadrant does nearest point stay
             {
@@ -331,7 +324,7 @@ namespace Physics2D
                 real min = Vector2::crossProduct(p1p2, f_arr[0] - p1);
                 for (int i = 1; i < 4; i++)
                 {
-                    real value = Vector2::crossProduct(p1p2, f_arr[i] - p1);
+	                const real value = Vector2::crossProduct(p1p2, f_arr[i] - p1);
                     if (min > value)
                     {
                         f = f_arr[i];
@@ -340,9 +333,9 @@ namespace Physics2D
                 }
             }
 
-            Vector2 p1f = f - p1;
-            Vector2 p1_fp = p1p2 * p1p2.dot(p1f);
-            Vector2 f_proj = p1 + p1_fp;
+            const Vector2 p1f = f - p1;
+            const Vector2 p1_fp = p1p2 * p1p2.dot(p1f);
+            const Vector2 f_proj = p1 + p1_fp;
 
             if (fuzzyIsPointOnSegment(a, b, f_proj))
             {
@@ -351,8 +344,8 @@ namespace Physics2D
             }
             else
             {
-                Vector2 p1_p = shortestLengthPointOfEllipse(a, b, p1);
-                Vector2 p2_p = shortestLengthPointOfEllipse(a, b, p2);
+	            const Vector2 p1_p = shortestLengthPointOfEllipse(a, b, p1);
+	            const Vector2 p2_p = shortestLengthPointOfEllipse(a, b, p2);
                 if ((p1 - p1_p).lengthSquare() > (p2 - p2_p).lengthSquare())
                 {
                     p_ellipse = p2_p;
@@ -393,27 +386,26 @@ namespace Physics2D
         Vector2 target;
         if (realEqual(direction.x, 0))
         {
-            int sgn = direction.y < 0 ? -1 : 1;
+	        const int sgn = direction.y < 0 ? -1 : 1;
             target.set(0, sgn * b);
         }
         else if (realEqual(direction.y, 0))
         {
-            int sgn = direction.x < 0 ? -1 : 1;
+	        const int sgn = direction.x < 0 ? -1 : 1;
             target.set(sgn * a, 0);
         }
         else
         {
-            real k = direction.y / direction.x;
+	        const real k = direction.y / direction.x;
             //line offset constant d
-            real a2 = pow(a, 2);
-            real b2 = pow(b, 2);
-            real k2 = pow(k, 2);
+	        const real a2 = pow(a, 2);
+	        const real b2 = pow(b, 2);
+	        const real k2 = pow(k, 2);
             real d = sqrt((a2 + b2 * k2) / k2);
-            real x1, y1;
-            if (Vector2::dotProduct(Vector2(0, d), direction) < 0)
+	        if (Vector2::dotProduct(Vector2(0, d), direction) < 0)
                 d = d * -1;
-            x1 = k * d - (b2 * k2 * k * d) / (a2 + b2 * k2);
-            y1 = (b2 * k2 * d) / (a2 + b2 * k2);
+            const real x1 = k * d - (b2 * k2 * k * d) / (a2 + b2 * k2);
+            const real y1 = (b2 * k2 * d) / (a2 + b2 * k2);
             target.set(x1, y1);
         }
         return target;

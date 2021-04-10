@@ -269,9 +269,9 @@ namespace Physics2D
 		{
 		case 4: //only adjust for triangle from gjk
 			{
-				size_t index = -1;
+				int32_t index = -1;
 
-				for (size_t i = 0; i < simplex.vertices.size() - 1; i++)
+				for (int32_t i = 0; i < simplex.vertices.size() - 1; i++)
 					if (i != closest_1 && i != closest_2)
 						index = i;
 

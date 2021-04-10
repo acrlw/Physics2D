@@ -80,7 +80,7 @@ namespace Physics2D
 		Tint i = *(Tint*)&y;
 		i = (sizeof(T) == 8 ? 0x5fe6eb50c7b537a9 : 0x5f3759df) - (i >> 1);
 		y = *(T*)&i;
-		for (size_t i = 0; i <= iterations; i++)
+		for (size_t k = 0; k <= iterations; k++)
 			y = y * (1.5 - (x2 * y * y));
 		return y;
 	}
