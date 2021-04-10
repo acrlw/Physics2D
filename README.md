@@ -6,5 +6,5 @@ cmake CMakeLists.txt
 # Requirement
 
 - vcpkg
-- - Qt
-- - fmt
+  - Qt
+  - fmt
