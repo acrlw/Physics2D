@@ -8,7 +8,7 @@ namespace Physics2D
 	namespace GeometryAlgorithm2D
 	{
 		/// <summary>
-		/// Check point a,b,c collinear using triangle area method
+		/// Check if point a,b,c are collinear using triangle area method
 		/// </summary>
 		/// <param name="a">point a</param>
 		/// <param name="b">point b</param>
@@ -16,7 +16,7 @@ namespace Physics2D
 		/// <returns></returns>
 		bool isCollinear(const Vector2& a, const Vector2& b, const Vector2& c);
 		/// <summary>
-		/// Check whether point c is on line segment ab using line projection and set-union method
+		/// Check if point c is on line segment ab using line projection and set-union method
 		/// </summary>
 		/// <param name="a">end of segment a</param>
 		/// <param name="b">end of segment b</param>
@@ -24,7 +24,7 @@ namespace Physics2D
 		/// <returns></returns>
 		bool isPointOnSegment(const Vector2& a, const Vector2& b, const Vector2& c);
 		/// <summary>
-		/// Check whether point c is on line segment ab, given a,b,c is already collinear by calculating cross product
+		/// Check if point c is on line segment ab, given a,b,c is already collinear by calculating cross product
 		/// </summary>
 		/// <param name="a"></param>
 		/// <param name="b"></param>
@@ -78,7 +78,7 @@ namespace Physics2D
 		/// <returns></returns>
 		std::optional<std::tuple<Vector2, real>> calculateInscribedCircle(const Vector2& a, const Vector2& b, const Vector2& c);
 		/// <summary>
-		/// Check whether polygon is convex
+		/// Check if a polygon is convex
 		/// </summary>
 		/// <param name="vertices"></param>
 		/// <returns></returns>
@@ -89,7 +89,6 @@ namespace Physics2D
 		/// <param name="vertices"></param>
 		/// <returns></returns>
 		std::vector<Vector2> grahamScan(const std::vector<Vector2>& vertices);
-		
 		/// <summary>
 		/// calculate point on line segment ab that is the shortest length to point p
 		/// </summary>

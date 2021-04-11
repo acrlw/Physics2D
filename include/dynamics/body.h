@@ -16,7 +16,7 @@ namespace Physics2D
                 Dynamic,
                 Bullet
                 };
-
+            Body();
             Vector2 position() const;
             void setPosition(const Vector2 &position);
 
@@ -60,24 +60,24 @@ namespace Physics2D
         private:
             void calcInertia();
 
-            real m_mass = 1;
-            real m_inertia = 0;
-            real m_invMass = 1;
-            real m_invInertia = 0;
+            real m_mass;
+            real m_inertia;
+            real m_invMass;
+            real m_invInertia;
     	
             Vector2 m_position;
             Vector2 m_velocity;
-            real m_angle = 0;
-            real m_angularVelocity = 0;
+            real m_angle;
+            real m_angularVelocity;
     	
             Vector2 m_forces;
-            real m_torques = 0;
+            real m_torques;
     	
-            Shape *m_shape = nullptr;
-            BodyType m_type = BodyType::Static;
+            Shape *m_shape;
+            BodyType m_type;
     	
-            bool m_sleep = true;
-            real m_damping = 0.5f;
+            bool m_sleep;
+            real m_damping;
     	
     };
 }

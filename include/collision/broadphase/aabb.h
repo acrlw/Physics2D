@@ -16,14 +16,14 @@ namespace Physics2D
 		AABB unite(const AABB& other)const;
 		bool isSubset(const AABB& other)const;
 		/// <summary>
-		/// Create tight AABB from shape.
+		/// Create AABB from shape.
 		/// </summary>
 		/// <param name="shape">shape source</param>
-		/// <param name="factor">AABB scale factor. Default factor means tight AABB</param>
+		/// <param name="factor">AABB scale factor. Default factor 1 means making tight AABB</param>
 		/// <returns></returns>
 		static AABB fromShape(const ShapePrimitive& shape, const real& factor = 1);
 		/// <summary>
-		/// Check whether two aabb is overlapping
+		/// Check if two aabbs are overlapping
 		/// </summary>
 		/// <param name="src"></param>
 		/// <param name="target"></param>
@@ -43,7 +43,7 @@ namespace Physics2D
 		/// <param name="factor"></param>
 		static void scale(AABB& aabb, const real& factor = 1);
 		/// <summary>
-		/// Check if b is a subset of a
+		/// Check if b is subset of a
 		/// </summary>
 		/// <param name="a"></param>
 		/// <param name="b"></param>

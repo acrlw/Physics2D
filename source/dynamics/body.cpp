@@ -1,7 +1,12 @@
 #include "include/dynamics/body.h"
 
 namespace Physics2D {
-
+    Body::Body() : m_mass(1), m_inertia(0), m_invMass(1), m_invInertia(0),
+	m_angle(0), m_angularVelocity(0), m_torques(0),
+	m_shape(nullptr), m_type(BodyType::Static), m_sleep(true), m_damping(0.8f)
+    {
+    	
+    }
     Vector2 Body::position() const
     {
         return m_position;
