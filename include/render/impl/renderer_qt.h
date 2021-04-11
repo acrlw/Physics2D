@@ -137,6 +137,11 @@ namespace Physics2D
 			color.setAlphaF(0.15f);
 			QBrush brush(color);
 			QPainterPath path;
+
+			QPen center = pen;
+			center.setWidth(2);
+			renderAngleLine(painter, world, shape, center);
+			
 			painter->translate(screen_p.x, screen_p.y);
 			painter->rotate(-shape.rotation);
 			path.addEllipse(QRectF(-A, -B, ellipse->width(), ellipse->height()));
@@ -146,10 +151,6 @@ namespace Physics2D
 			painter->rotate(shape.rotation);
 			painter->translate(-screen_p.x, -screen_p.y);
 
-
-			QPen center = pen;
-			center.setWidth(2);
-			renderAngleLine(painter, world, shape, center);
 			
 		}
 		static void renderCurve(QPainter* painter, World* world, const ShapePrimitive& shape, const QPen& pen)

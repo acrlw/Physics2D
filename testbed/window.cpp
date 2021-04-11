@@ -26,16 +26,16 @@ namespace Physics2D
     	
         //createStackBox(4, 70, 70);
         Body* rect = m_world.createBody();
-        rect->setShape(&rectangle);
+        rect->setShape(&ellipse);
         rect->setPosition({ -500, 250 });
-        rect->setAngle(15);
+        rect->setAngle(45);
         rect->setMass(2);
         rect->setType(Body::BodyType::Dynamic);
         m_world.setEnableGravity(true);
-        m_world.setLinearVelocityDamping(0.2f);
-        m_world.setAngularVelocityDamping(0.2f);
-        rect->setVelocity({ 15, 30 });
-        rect->setTorques(50);
+        m_world.setLinearVelocityDamping(1.0f);
+        m_world.setAngularVelocityDamping(1.0f);
+        rect->setVelocity({ 35, 45 });
+        rect->setAngularVelocity(20);
     	
         connect(&m_timer, &QTimer::timeout, this, &Window::process);
         m_timer.setInterval(15);

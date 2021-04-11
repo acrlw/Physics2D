@@ -30,12 +30,12 @@ namespace Physics2D
 			case Body::BodyType::Dynamic:
 				{
 					const Vector2 forces = g + body->forces();
-					const Vector2 a = body->inverseMass() * forces * m_linearVelocityDamping;
-					const Vector2 v = (body->velocity() + a * dt * m_velocityIteration) ;
+					const Vector2 a = body->inverseMass() * forces;
+					const Vector2 v = (body->velocity() + a * dt * m_velocityIteration) * m_linearVelocityDamping;
 					const Vector2 p = body->position() + v * dt * m_positionIteration;
 
-					const real b = body->inverseInertia() * body->torques() * m_angularVelocityDamping;
-					const real av = (body->angularVelocity() + b * dt * m_velocityIteration) ;
+					const real b = body->inverseInertia() * body->torques();
+					const real av = (body->angularVelocity() + b * dt * m_velocityIteration) * m_angularVelocityDamping;
 					const real angle = body->angle() + av * dt * m_positionIteration;
 
 					body->setVelocity(v);

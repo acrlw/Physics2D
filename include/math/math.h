@@ -70,11 +70,11 @@ namespace Physics2D
 		}
 		inline real angleToRadian(const real& angle)
 		{
-			return angle * (180.0f / Constant::Pi);
+			return angle * (Constant::Pi / 180.0f);
 		}
 		inline real radianToAngle(const real& radian)
 		{
-			return radian * (Constant::Pi / 180.0f);
+			return radian * (180.0f /Constant::Pi);
 		}
 		template <typename T, size_t iterations = 2> inline T fastInverseSqrt(T x) {
 			typedef typename std::conditional<sizeof(T) == 8, std::int64_t, std::int32_t>::type Tint;
