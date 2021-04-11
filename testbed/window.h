@@ -22,6 +22,7 @@ namespace Physics2D
 		Window(QWidget* parent = nullptr);
 		~Window();
 	public slots:
+		void process();
 	
 	protected:
 		void paintEvent(QPaintEvent*) override;
@@ -47,6 +48,7 @@ namespace Physics2D
 		Circle circle;
 		real m_angle = 0;
 		const Body* m_lastBody = nullptr;
+		QTimer m_timer;
 	};
 }
 #endif

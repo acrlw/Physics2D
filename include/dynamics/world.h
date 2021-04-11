@@ -11,13 +11,13 @@ namespace Physics2D
     class World
     {
 		public:
-            World() : m_gravity(0, 9.8), m_linearVelocityDamping(0.25, 0.25), m_angularVelocityDamping(0.25), m_bias(0.8),
-    			m_enableGravity(true), m_linearVelocityThreshold(0.02, 0.02), m_angularVelocityThreshold(0.02),
+            World() : m_gravity(0, -9.8), m_linearVelocityDamping(0.9), m_angularVelocityDamping(0.9), m_bias(0.8),
+    			m_enableGravity(true), m_linearVelocityThreshold(0.02), m_angularVelocityThreshold(0.02),
     			m_velocityIteration(6), m_positionIteration(8)
             {}
-            World(const Vector2& leftTop, const Vector2& rightBottom) : m_leftTop(leftTop), m_rightBottom(rightBottom), m_gravity(0, 9.8),
-    			m_linearVelocityDamping(0.25, 0.25), m_angularVelocityDamping(0.25),
-    			m_bias(0.8), m_enableGravity(true),m_linearVelocityThreshold(0.02, 0.02),
+            World(const Vector2& leftTop, const Vector2& rightBottom) : m_leftTop(leftTop), m_rightBottom(rightBottom), m_gravity(0, -9.8),
+    			m_linearVelocityDamping(0.9), m_angularVelocityDamping(0.9),
+    			m_bias(0.8), m_enableGravity(true),m_linearVelocityThreshold(0.02),
     			m_angularVelocityThreshold(0.02), m_velocityIteration(6), m_positionIteration(8)
             {}
             ~World();
@@ -35,14 +35,14 @@ namespace Physics2D
             Vector2 gravity() const;
             void setGravity(const Vector2 &gravity);
 
-            Vector2 linearVelocityDamping() const;
-            void setLinearVelocityDamping(const Vector2 &linearVelocityDamping);
+            real linearVelocityDamping() const;
+            void setLinearVelocityDamping(const real&linearVelocityDamping);
 
             real angularVelocityDamping() const;
             void setAngularVelocityDamping(const real &angularVelocityDamping);
 
-            Vector2 linearVelocityThreshold() const;
-            void setLinearVelocityThreshold(const Vector2 &linearVelocityThreshold);
+            real linearVelocityThreshold() const;
+            void setLinearVelocityThreshold(const real&linearVelocityThreshold);
 
             real angularVelocityThreshold() const;
             void setAngularVelocityThreshold(const real &angularVelocityThreshold);
@@ -52,6 +52,7 @@ namespace Physics2D
 
             void addBody(Body* body);
             void removeBody(Body* body);
+            Body* createBody();
 
             real width();
             real height();
@@ -70,14 +71,16 @@ namespace Physics2D
             real positionIteration() const;
             void setPositionIteration(const real &positionIteration);
 
+            Integrator integrator()const;
+            void setIntegrator(const Integrator& integrator);
         private:
             Vector2 m_leftTop;
             Vector2 m_rightBottom;
 
             Vector2 m_gravity;
-            Vector2 m_linearVelocityDamping;
+            real m_linearVelocityDamping;
             real m_angularVelocityDamping;
-            Vector2 m_linearVelocityThreshold;
+            real m_linearVelocityThreshold;
             real m_angularVelocityThreshold;
 
             real m_bias;
@@ -86,7 +89,7 @@ namespace Physics2D
     		
     		bool m_enableGravity;
             std::vector<Body*> m_bodyList;
-    		
+            Integrator m_integrator;
     };
 }
 #endif

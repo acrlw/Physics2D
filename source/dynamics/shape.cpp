@@ -91,7 +91,12 @@ namespace Physics2D
 		m_height = height;
 		calcVertices();
 	}
-
+	void Rectangle::scale(const real& factor)
+	{
+		m_width *= factor;
+		m_height *= factor;
+		calcVertices();
+	}
 	void Rectangle::calcVertices()
 	{
 		m_vertices.clear();

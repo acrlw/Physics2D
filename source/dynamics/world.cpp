@@ -1,183 +1,237 @@
 #include "include/dynamics/world.h"
 
-namespace Physics2D {
-    World::~World()
-    {
-    	for(Body * body: m_bodyList)
-            delete body;
-    }
-    Vector2 World::screenToWorld(const Vector2 &pos) const
-    {
-        return screenToWorld(m_leftTop, m_rightBottom, pos);
-    }
+namespace Physics2D
+{
+	World::~World()
+	{
+		for (Body* body : m_bodyList)
+			delete body;
+	}
 
-    Vector2 World::worldToScreen(const Vector2 &pos) const
-    {
-        return worldToScreen(m_leftTop, m_rightBottom, pos);
-    }
+	Vector2 World::screenToWorld(const Vector2& pos) const
+	{
+		return screenToWorld(m_leftTop, m_rightBottom, pos);
+	}
 
-    void World::step(const real &dt)
-    {
+	Vector2 World::worldToScreen(const Vector2& pos) const
+	{
+		return worldToScreen(m_leftTop, m_rightBottom, pos);
+	}
 
-    }
+	void World::step(const real& dt)
+	{
+		const Vector2 g = m_enableGravity ? m_gravity : (0, 0);
+		for (Body* body : m_bodyList)
+		{
+			switch (body->type())
+			{
+			case Body::BodyType::Static:
+				break;
+			case Body::BodyType::Dynamic:
+				{
+					const Vector2 forces = g + body->forces();
+					const Vector2 a = body->inverseMass() * forces * m_linearVelocityDamping;
+					const Vector2 v = (body->velocity() + a * dt * m_velocityIteration) ;
+					const Vector2 p = body->position() + v * dt * m_positionIteration;
 
-    void World::setGeometry(const Vector2& leftTop, const Vector2& rightBottom)
-    {
-        m_leftTop = leftTop;
-        m_rightBottom = rightBottom;
-    }
+					const real b = body->inverseInertia() * body->torques() * m_angularVelocityDamping;
+					const real av = (body->angularVelocity() + b * dt * m_velocityIteration) ;
+					const real angle = body->angle() + av * dt * m_positionIteration;
 
-    Vector2 World::worldToScreen(const Vector2 &leftTop, const Vector2 &rightBottom, const Vector2 &pos)
-    {
-        const real origin_y = rightBottom.y;
-        const real origin_x = (leftTop.x + rightBottom.x) * (0.5f);
-        return Vector2(origin_x + pos.x, origin_y - pos.y);
-    }
+					body->setVelocity(v);
+					body->setPosition(p);
+					body->setAngularVelocity(av);
+					body->setAngle(angle);
 
-    Vector2 World::screenToWorld(const Vector2 &leftTop, const Vector2 &rightBottom, const Vector2 &pos)
-    {
-        const real origin_y = rightBottom.y;
-        const real origin_x = (leftTop.x + rightBottom.x) * (0.5f);
-        Vector2 result = pos - Vector2(origin_x, origin_y);
-        result.y = -result.y;
-        return result;
-    }
+					body->clearForce();
+					body->clearTorque();
+					break;
+				}
+			case Body::BodyType::Kinematic:
+				{
+					break;
+				}
+			case Body::BodyType::Bullet:
+				{
+					break;
+				}
+			}
+		}
+	}
 
-    std::vector<Body*> World::bodyList() const
-    {
-        return m_bodyList;
-    }
-    
-    real World::bias() const
-    {
-        return m_bias;
-    }
-    
-    void World::setBias(const real &bias)
-    {
-        m_bias = bias;
-    }
-    
-    real World::velocityIteration() const
-    {
-        return m_velocityIteration;
-    }
-    
-    void World::setVelocityIteration(const real &velocityIteration)
-    {
-        m_velocityIteration = velocityIteration;
-    }
-    
-    real World::positionIteration() const
-    {
-        return m_positionIteration;
-    }
-    
-    void World::setPositionIteration(const real &positionIteration)
-    {
-        m_positionIteration = positionIteration;
-    }
-    
-    Vector2 World::leftTop() const
-    {
-        return m_leftTop;
-    }
-    
-    void World::setLeftTop(const Vector2 &leftTop)
-    {
-        m_leftTop = leftTop;
-    }
-    
-    Vector2 World::rightBottom() const
-    {
-        return m_rightBottom;
-    }
+	void World::setGeometry(const Vector2& leftTop, const Vector2& rightBottom)
+	{
+		m_leftTop = leftTop;
+		m_rightBottom = rightBottom;
+	}
 
-    void World::setRightBottom(const Vector2 &rightBottom)
-    {
-        m_rightBottom = rightBottom;
-    }
+	Vector2 World::worldToScreen(const Vector2& leftTop, const Vector2& rightBottom, const Vector2& pos)
+	{
+		const real origin_y = rightBottom.y;
+		const real origin_x = (leftTop.x + rightBottom.x) * (0.5f);
+		return Vector2(origin_x + pos.x, origin_y - pos.y);
+	}
 
-    Vector2 World::gravity() const
-    {
-        return m_gravity;
-    }
+	Vector2 World::screenToWorld(const Vector2& leftTop, const Vector2& rightBottom, const Vector2& pos)
+	{
+		const real origin_y = rightBottom.y;
+		const real origin_x = (leftTop.x + rightBottom.x) * (0.5f);
+		Vector2 result = pos - Vector2(origin_x, origin_y);
+		result.y = -result.y;
+		return result;
+	}
 
-    void World::setGravity(const Vector2 &gravity)
-    {
-        m_gravity = gravity;
-    }
+	std::vector<Body*> World::bodyList() const
+	{
+		return m_bodyList;
+	}
 
-    Vector2 World::linearVelocityDamping() const
-    {
-        return m_linearVelocityDamping;
-    }
+	real World::bias() const
+	{
+		return m_bias;
+	}
 
-    void World::setLinearVelocityDamping(const Vector2 &linearVelocityDamping)
-    {
-        m_linearVelocityDamping = linearVelocityDamping;
-    }
+	void World::setBias(const real& bias)
+	{
+		m_bias = bias;
+	}
 
-    real World::angularVelocityDamping() const
-    {
-        return m_angularVelocityDamping;
-    }
+	real World::velocityIteration() const
+	{
+		return m_velocityIteration;
+	}
 
-    void World::setAngularVelocityDamping(const real &angularVelocityDamping)
-    {
-        m_angularVelocityDamping = angularVelocityDamping;
-    }
+	void World::setVelocityIteration(const real& velocityIteration)
+	{
+		m_velocityIteration = velocityIteration;
+	}
 
-    Vector2 World::linearVelocityThreshold() const
-    {
-        return m_linearVelocityThreshold;
-    }
+	real World::positionIteration() const
+	{
+		return m_positionIteration;
+	}
 
-    void World::setLinearVelocityThreshold(const Vector2 &linearVelocityThreshold)
-    {
-        m_linearVelocityThreshold = linearVelocityThreshold;
-    }
+	void World::setPositionIteration(const real& positionIteration)
+	{
+		m_positionIteration = positionIteration;
+	}
 
-    real World::angularVelocityThreshold() const
-    {
-        return m_angularVelocityThreshold;
-    }
+	Integrator World::integrator() const
+	{
+		return m_integrator;
+	}
 
-    void World::setAngularVelocityThreshold(const real &angularVelocityThreshold)
-    {
-        m_angularVelocityThreshold = angularVelocityThreshold;
-    }
+	void World::setIntegrator(const Integrator& integrator)
+	{
+		m_integrator = integrator;
+	}
 
-    bool World::enableGravity() const
-    {
-        return m_enableGravity;
-    }
+	Vector2 World::leftTop() const
+	{
+		return m_leftTop;
+	}
 
-    void World::setEnableGravity(bool enableGravity)
-    {
-        m_enableGravity = enableGravity;
-    }
+	void World::setLeftTop(const Vector2& leftTop)
+	{
+		m_leftTop = leftTop;
+	}
 
-    void World::addBody(Body *body)
-    {
-        m_bodyList.emplace_back(body);
-    }
+	Vector2 World::rightBottom() const
+	{
+		return m_rightBottom;
+	}
 
-    void World::removeBody(Body *body)
-    {
-        m_bodyList.erase(std::remove(m_bodyList.begin(), m_bodyList.end(), body),
-            m_bodyList.end());
-        delete body;
-    }
+	void World::setRightBottom(const Vector2& rightBottom)
+	{
+		m_rightBottom = rightBottom;
+	}
 
-    real World::width()
-    {
-        return m_rightBottom.x - m_leftTop.x;
-    }
+	Vector2 World::gravity() const
+	{
+		return m_gravity;
+	}
 
-    real World::height()
-    {
-        return m_rightBottom.y - m_leftTop.y;
-    }
+	void World::setGravity(const Vector2& gravity)
+	{
+		m_gravity = gravity;
+	}
 
+	real World::linearVelocityDamping() const
+	{
+		return m_linearVelocityDamping;
+	}
+
+	void World::setLinearVelocityDamping(const real& linearVelocityDamping)
+	{
+		m_linearVelocityDamping = linearVelocityDamping;
+	}
+
+	real World::angularVelocityDamping() const
+	{
+		return m_angularVelocityDamping;
+	}
+
+	void World::setAngularVelocityDamping(const real& angularVelocityDamping)
+	{
+		m_angularVelocityDamping = angularVelocityDamping;
+	}
+
+	real World::linearVelocityThreshold() const
+	{
+		return m_linearVelocityThreshold;
+	}
+
+	void World::setLinearVelocityThreshold(const real& linearVelocityThreshold)
+	{
+		m_linearVelocityThreshold = linearVelocityThreshold;
+	}
+
+	real World::angularVelocityThreshold() const
+	{
+		return m_angularVelocityThreshold;
+	}
+
+	void World::setAngularVelocityThreshold(const real& angularVelocityThreshold)
+	{
+		m_angularVelocityThreshold = angularVelocityThreshold;
+	}
+
+	bool World::enableGravity() const
+	{
+		return m_enableGravity;
+	}
+
+	void World::setEnableGravity(bool enableGravity)
+	{
+		m_enableGravity = enableGravity;
+	}
+
+	void World::addBody(Body* body)
+	{
+		m_bodyList.emplace_back(body);
+	}
+
+	void World::removeBody(Body* body)
+	{
+		m_bodyList.erase(std::remove(m_bodyList.begin(), m_bodyList.end(), body),
+		                 m_bodyList.end());
+		delete body;
+	}
+
+	Body* World::createBody()
+	{
+		Body* body = new Body;
+		m_bodyList.emplace_back(body);
+		return body;
+	}
+
+	real World::width()
+	{
+		return m_rightBottom.x - m_leftTop.x;
+	}
+
+	real World::height()
+	{
+		return m_rightBottom.y - m_leftTop.y;
+	}
 }

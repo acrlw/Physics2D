@@ -57,6 +57,14 @@ namespace Physics2D {
         m_forces = forces;
     }
 
+	void Body::clearForce()
+    {
+        m_forces.clear();
+    }
+	void Body::clearTorque()
+    {
+        m_torques = 0;
+    }
     real Body::torques() const
     {
         return m_torques;
@@ -97,6 +105,7 @@ namespace Physics2D {
     {
         m_mass = mass;
         m_invMass = !realEqual(mass, 0) ? 1.0f / mass : 0;
+        calcInertia();
     }
 
     real Body::inertia() const
@@ -142,6 +151,7 @@ namespace Physics2D {
     {
         return m_invInertia;
     }
+    
 
     void Body::calcInertia()
     {
@@ -180,7 +190,7 @@ namespace Physics2D {
 
                 const real a = ellipse->A();
                 const real b = ellipse->B();
-                m_inertia = m_mass * (a*a + b*b) * (0.25f);
+                m_inertia = m_mass * (a*a + b*b) * (1.0f / 5.0f);
 
                 break;
             }

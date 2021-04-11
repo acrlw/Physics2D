@@ -17,7 +17,7 @@ namespace Physics2D
 			void remove();
 			void query(const Vector2& start, const Vector2& direction);
 			void generatePairs();
-			
+			void rotate();
 		private:
 	};
 }

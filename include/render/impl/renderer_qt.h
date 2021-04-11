@@ -181,8 +181,9 @@ namespace Physics2D
             switch (shape.shape->type()) {
                 case Shape::Type::Circle:
                 {
+					const Circle* circle = dynamic_cast<Circle*>(shape.shape);
 					Vector2 start = shape.transform;
-					Vector2 end = Matrix2x2(shape.rotation).multiply(Vector2(0, 1)) + start;
+					Vector2 end = Matrix2x2(shape.rotation).multiply(Vector2(circle->radius(), 0)) + start;
 					renderLine(painter, world, start, end, pen);
                     break;
                 }

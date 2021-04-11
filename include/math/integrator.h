@@ -22,11 +22,31 @@ namespace Physics2D
 		real angularAcceleration = 0;
 		real deltaTime = 0;
 	};
-	
-	class SemiImplicitEuler
+	class Integrator
 	{
 	public:
-		static BodyState integrate(BodyState& last, const real& dt)
+		enum class Type
+		{
+			SemiImplicitEuler,
+			VerletVelocity,
+			VerletPosition
+		};
+		virtual BodyState integrate(BodyState& last, const real& dt)
+		{
+			return BodyState();
+		};
+	protected:
+		Type m_type;
+	};
+	
+	class SemiImplicitEuler : public Integrator
+	{
+	public:
+		SemiImplicitEuler()
+		{
+			m_type = Type::SemiImplicitEuler;
+		}
+		BodyState integrate(BodyState& last, const real& dt)override
 		{
 			BodyState result;
 			result.velocity = last.velocity + last.acceleration * dt;
@@ -43,11 +63,15 @@ namespace Physics2D
 			return result;
 		}
 	};
-	class Verlet
+	class VerletVelocity : public Integrator
 	{
 	public:
 
-		static BodyState integrateVelocity(BodyState& state, const real& dt)
+		VerletVelocity()
+		{
+			m_type = Type::VerletVelocity;
+		}
+		BodyState integrate(BodyState& state, const real& dt)override
 		{
 			BodyState result;
 			Vector2 lastVelocity = state.position - state.lastPosition;
@@ -64,14 +88,24 @@ namespace Physics2D
 			
 			return result;
 		}
-		static BodyState integratePosition(BodyState& state, const real& dt)
+	};
+
+	class VerletPosition : public Integrator
+	{
+	public:
+
+		VerletPosition()
+		{
+			m_type = Type::VerletPosition;
+		}
+		BodyState integrate(BodyState& state, const real& dt)override
 		{
 			BodyState result;
 			result.position = state.position + ((state.position - state.lastPosition) * dt / state.lastDeltaTime) +
 				state.acceleration * dt * dt;
-			result.angle = state.angle + ((state.angle - state.lastAngle) * dt / state.lastDeltaTime) + 
+			result.angle = state.angle + ((state.angle - state.lastAngle) * dt / state.lastDeltaTime) +
 				state.angularAcceleration * dt * dt;
-			
+
 			result.velocity = (result.position - state.lastPosition) / (2 * dt);
 			result.angularAcceleration = (result.angle - state.lastAngle) / (2 * dt);
 
@@ -80,7 +114,7 @@ namespace Physics2D
 			result.lastAngle = state.angle;
 			result.lastVelocity = state.velocity;
 			result.lastAngularVelocity = state.angularVelocity;
-			
+
 			return result;
 		}
 	};

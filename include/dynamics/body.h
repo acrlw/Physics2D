@@ -4,6 +4,8 @@
 #include "include/math/math.h"
 #include "include/common/common.h"
 #include "include/dynamics/shape.h"
+#include "include/math/integrator.h"
+
 namespace Physics2D
 {
     class Body
@@ -31,6 +33,8 @@ namespace Physics2D
 
             Vector2 forces() const;
             void setForces(const Vector2 &forces);
+            void clearForce();
+            void clearTorque();
 
             real torques() const;
             void setTorques(const real &torques);
@@ -56,7 +60,7 @@ namespace Physics2D
 
             real inverseMass()const;
             real inverseInertia()const;
-
+            
         private:
             void calcInertia();
 
@@ -78,7 +82,8 @@ namespace Physics2D
     	
             bool m_sleep;
             real m_damping;
-    	
+
+            BodyState m_bodyState;
     };
 }
 #endif

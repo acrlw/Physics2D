@@ -11,7 +11,7 @@ namespace Physics2D
         m_world.setGeometry({ 0,0 }, { 1920,1080 });
 
     	
-        rectangle.set(25, 25);
+        rectangle.set(50, 25);
         rectangle.scale(2);
 
         
@@ -24,13 +24,32 @@ namespace Physics2D
         edge.set({ -250, 40 }, { 350, 180 });
         curve.set({ -600, 200 }, { -50, 20 }, { 0, 40 }, { 600, 150 });
     	
-        createStackBox(4, 70, 70);
-        
+        //createStackBox(4, 70, 70);
+        Body* rect = m_world.createBody();
+        rect->setShape(&rectangle);
+        rect->setPosition({ -500, 250 });
+        rect->setAngle(15);
+        rect->setMass(2);
+        rect->setType(Body::BodyType::Dynamic);
+        m_world.setEnableGravity(true);
+        m_world.setLinearVelocityDamping(0.2f);
+        m_world.setAngularVelocityDamping(0.2f);
+        rect->setVelocity({ 15, 30 });
+        rect->setTorques(50);
+    	
+        connect(&m_timer, &QTimer::timeout, this, &Window::process);
+        m_timer.setInterval(15);
+        m_timer.start();
     }
 
     Window::~Window()
     {
     	
+    }
+	void Window::process()
+    {
+        m_world.step(1.0f / 60.0f);
+        repaint();
     }
     void Window::paintEvent(QPaintEvent *)
     {
@@ -267,11 +286,10 @@ namespace Physics2D
     	{
     		for(int i = 0;i < 2 * (row - j) + 1;i++)
     		{
-                Body* body = new Body;
+                Body* body = m_world.createBody();
                 //body->setAngle(j * j + 12);
                 body->setShape(&rectangle);
                 body->setPosition({static_cast<real>(-spacing * (row - j) + i * spacing),static_cast<real>(j * margin + margin)});
-                m_world.addBody(body);
     		}
     	}
     }

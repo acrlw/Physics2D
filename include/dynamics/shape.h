@@ -79,6 +79,8 @@ namespace Physics2D
 
             real height()const;
             void setHeight(const real& height);
+
+            void scale(const real& factor) override;
         private:
             void calcVertices();
             real m_width;
