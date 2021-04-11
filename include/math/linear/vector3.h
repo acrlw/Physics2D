@@ -4,202 +4,48 @@
 #include "include/common/common.h"
 namespace Physics2D
 {
-
 	struct Vector3
 	{
-		Vector3(const real& _x = 0.0f, const real& _y = 0.0f, const real& _z = 0.0f)
-		{
-			x = _x;
-			y = _y;
-			z = _z;
-		}
-		Vector3(const Vector3& copy)
-		{
-			x = copy.x;
-			y = copy.y;
-			z = copy.z;
-		}
-		Vector3& operator=(const Vector3& copy)
-		{
-			x = copy.x;
-			y = copy.y;
-			z = copy.z;
-			return *this;
-		}
+        Vector3(const real& _x = 0.0f, const real& _y = 0.0f, const real& _z = 0.0f);
+        Vector3(const Vector3& copy);
+        Vector3& operator=(const Vector3& copy);
 		Vector3(Vector3&& other) = default;
 
-		Vector3 operator+(const Vector3& rhs)const
-		{
-			return Vector3(x + rhs.x, y + rhs.y, z + rhs.z);
-		}
+        Vector3 operator+(const Vector3& rhs)const;
+        Vector3 operator-(const Vector3& other)const;
+        Vector3 operator*(const real& factor)const;
+        Vector3 operator*(const int& factor)const;
+        Vector3 operator/(const real& factor)const;
+        Vector3 operator/(const int& factor)const;
 
-		Vector3 operator-(const Vector3& other)const
-		{
-			return Vector3(x - other.x, y - other.y, z - other.z);
-		}
+        Vector3& operator+=(const Vector3& rhs);
+        Vector3& operator-=(const Vector3& rhs);
+        Vector3& operator*=(const real& factor);
+        Vector3& operator*=(const int& factor);
+        Vector3& operator/=(const real& factor);
+        Vector3& operator/=(const int& factor);
 
-		Vector3 operator*(const real& factor)const
-		{
-			return Vector3(x * factor, y * factor, z * factor);
-		}
+        Vector3& set(const real& _x, const real& _y, const real& _z);
+        Vector3& set(const Vector3& other);
+        Vector3& clear();
+        Vector3& negate();
 
-		Vector3 operator*(const int& factor)const
-		{
-			return Vector3(x * factor, y * factor, z * factor);
-		}
+        real lengthSquare()const;
+        real length()const;
 
-		Vector3 operator/(const real& factor)const
-		{
-			assert(!realEqual(factor, 0));
-			return Vector3(x / factor, y / factor, z / factor);
-		}
+        Vector3& normalize();
+        Vector3 normal()const;
 
-		Vector3 operator/(const int& factor)const
-		{
-			assert(!realEqual(factor, 0));
-			return Vector3(x / factor, y / factor, z / factor);
-		}
+        bool equal(const Vector3& rhs)const;
+        Vector3& swap(Vector3& other);
 
-		Vector3& operator+=(const Vector3& rhs)
-		{
-			x += rhs.x;
-			y += rhs.y;
-			z += rhs.z;
-			return *this;
-		}
+        real dot(const Vector3& rhs)const;
+        Vector3& cross(const Vector3& rhs);
 
-		Vector3& operator-=(const Vector3& rhs)
-		{
-			x -= rhs.x;
-			y -= rhs.y;
-			z -= rhs.z;
-			return *this;
-		}
+        static real dotProduct(const Vector3& lhs, const Vector3& rhs);
+        static Vector3 crossProduct(const Vector3& lhs, const Vector3& rhs);
 
-		Vector3& operator*=(const real& factor)
-		{
-			x *= factor;
-			y *= factor;
-			z *= factor;
-			return *this;
-		}
-
-		Vector3& operator*=(const int& factor)
-		{
-			x *= factor;
-			y *= factor;
-			z *= factor;
-			return *this;
-		}
-
-		Vector3& operator/=(const real& factor)
-		{
-			assert(!realEqual(factor, 0));
-			x /= factor;
-			y /= factor;
-			z /= factor;
-			return *this;
-		}
-
-		Vector3& operator/=(const int& factor)
-		{
-			assert(!realEqual(factor, 0));
-			x /= factor;
-			y /= factor;
-			z /= factor;
-			return *this;
-		}
-
-		Vector3& set(const real& _x, const real& _y, const real& _z)
-		{
-			x = _x;
-			y = _y;
-			z = _z;
-			return *this;
-		}
-
-		Vector3& set(const Vector3& other)
-		{
-			x = other.x;
-			y = other.y;
-			z = other.z;
-			return *this;
-		}
-
-		Vector3& clear()
-		{
-			x = 0.0f;
-			y = 0.0f;
-			z = 0.0f;
-			return *this;
-		}
-
-		Vector3& negate()
-		{
-			x *= -1;
-			y *= -1;
-			z *= -1;
-			return *this;
-		}
-
-		real lengthSquare()const
-		{
-			return x * x + y * y + z * z;
-		}
-
-		real length()const
-		{
-			return sqrt(lengthSquare());
-		}
-
-		Vector3& normalize()
-		{
-			const real length_inv = Math::fastInverseSqrt<real>(lengthSquare());
-			x *= length_inv;
-			y *= length_inv;
-			z *= length_inv;
-			return *this;
-		}
-
-		Vector3 normal()const
-		{
-			return Vector3(*this).normalize();
-		}
-
-		bool equal(const Vector3& rhs)const
-		{
-			return realEqual(x, rhs.x) && realEqual(y, rhs.y) && realEqual(z, rhs.z);
-		}
-
-		Vector3& swap(Vector3& other)
-		{
-			realSwap(x, other.x);
-			realSwap(y, other.y);
-			realSwap(z, other.z);
-			return *this;
-		}
-
-		real dot(const Vector3& rhs)const
-		{
-			return x * rhs.x + y * rhs.y + z * rhs.z;
-		}
-
-		Vector3& cross(const Vector3& rhs)
-		{
-			x = y * rhs.z - rhs.y * z;
-			y = rhs.x * z - x * rhs.z;
-			z = x * rhs.y - y * rhs.x;
-			return *this;
-		}
-		static real dotProduct(const Vector3& lhs, const Vector3& rhs)
-		{
-			return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z;
-		}
-		static Vector3 crossProduct(const Vector3& lhs, const Vector3& rhs)
-		{
-			return Vector3(lhs.y * rhs.z - rhs.y * lhs.z, rhs.x * lhs.z - lhs.x * rhs.z, lhs.x * rhs.y - lhs.y * rhs.x);
-		}
-		real x;
+        real x;
 		real y;
 		real z;
 	};
