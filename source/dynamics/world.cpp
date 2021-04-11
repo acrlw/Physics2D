@@ -30,14 +30,14 @@ namespace Physics2D {
     Vector2 World::worldToScreen(const Vector2 &leftTop, const Vector2 &rightBottom, const Vector2 &pos)
     {
         const real origin_y = rightBottom.y;
-        const real origin_x = (leftTop.x + rightBottom.x) / 2;
+        const real origin_x = (leftTop.x + rightBottom.x) * (0.5f);
         return Vector2(origin_x + pos.x, origin_y - pos.y);
     }
 
     Vector2 World::screenToWorld(const Vector2 &leftTop, const Vector2 &rightBottom, const Vector2 &pos)
     {
         const real origin_y = rightBottom.y;
-        const real origin_x = (leftTop.x + rightBottom.x) / 2;
+        const real origin_x = (leftTop.x + rightBottom.x) * (0.5f);
         Vector2 result = pos - Vector2(origin_x, origin_y);
         result.y = -result.y;
         return result;

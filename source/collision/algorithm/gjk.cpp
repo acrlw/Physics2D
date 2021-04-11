@@ -1,44 +1,65 @@
 #include "include/collision/algorithm/gjk.h"
 
 
-
 namespace Physics2D
 {
-	
-	bool Simplex::calculateContainOrigin(const Simplex& simplex)
+	bool Simplex::containOrigin()
+	{
+		isContainOrigin = containOrigin(*this);
+		return isContainOrigin;
+	}
+
+	bool Simplex::containOrigin(const Simplex& simplex)
 	{
 		switch (simplex.vertices.size())
 		{
 		case 4:
-		{
-			real a = 0, b = 0, c = 0;
-			Vector2 oa = simplex.vertices[0].result * -1;
-			Vector2 ob = simplex.vertices[1].result * -1;
-			Vector2 oc = simplex.vertices[2].result * -1;
+			{
+				real a = 0, b = 0, c = 0;
+				Vector2 oa = simplex.vertices[0].result * -1;
+				Vector2 ob = simplex.vertices[1].result * -1;
+				Vector2 oc = simplex.vertices[2].result * -1;
 
-			a = Vector2::crossProduct(oa, ob);
-			b = Vector2::crossProduct(ob, oc);
-			c = Vector2::crossProduct(oc, oa);
+				a = Vector2::crossProduct(oa, ob);
+				b = Vector2::crossProduct(ob, oc);
+				c = Vector2::crossProduct(oc, oa);
 
-			if ((a <= 0 && b <= 0 && c <= 0) ||
-				(a >= 0 && b >= 0 && c >= 0))
-				return true;
-			return false;
-		}
+				if ((a <= 0 && b <= 0 && c <= 0) ||
+					(a >= 0 && b >= 0 && c >= 0))
+					return true;
+				return false;
+			}
 		case 2:
-		{
-			Vector2 oa = simplex.vertices[0].result * -1;
-			Vector2 ob = simplex.vertices[1].result * -1;
-			return Vector2::crossProduct(oa, ob) == 0;
-		}
+			{
+				Vector2 oa = simplex.vertices[0].result * -1;
+				Vector2 ob = simplex.vertices[1].result * -1;
+				return Vector2::crossProduct(oa, ob) == 0;
+			}
 		case 1:
-		{
-			return simplex.vertices[0].result.length() == 0;
-			break;
-		}
+			{
+				return simplex.vertices[0].result.length() == 0;
+				break;
+			}
 		default:
 			return false;
 		}
+	}
+
+	void Simplex::insert(const size_t& pos, const Minkowski& vertex)
+	{
+		vertices.insert(vertices.begin() + pos + 1, vertex);
+	}
+
+	bool Simplex::contains(const Minkowski& minkowski)
+	{
+		return std::find(std::begin(vertices), std::end(vertices), minkowski) != std::end(vertices);
+	}
+
+	Vector2 Simplex::lastVertex() const
+	{
+		if (vertices.size() == 2)
+			return vertices[vertices.size() - 1].result;
+		return vertices[vertices.size() - 2].result;
 	}
 
 	std::tuple<bool, Simplex> GJK::gjk(const ShapePrimitive& shape_A, const ShapePrimitive& shape_B,
@@ -61,35 +82,29 @@ namespace Physics2D
 
 			if (simplex.lastVertex().dot(direction) <= 0)
 				break;
-			else
+			if (simplex.containOrigin())
 			{
-				if (simplex.containOrigin())
-				{
-					found = true;
+				found = true;
+				break;
+			}
+			//if not contain origin
+			//find edge closest to origin
+			//reconstruct simplex
+			//find the point that is not belong to the edge closest to origin
+			//if found, there is no more minkowski difference, exit loop
+			//if not, add the point to the list
+
+			auto [index1, index2] = findEdgeClosestToOrigin(simplex);
+			direction = calculateDirectionByEdge(simplex.vertices[index1].result,
+			                                     simplex.vertices[index2].result, true);
+
+			auto result = adjustSimplex(simplex, index1, index2);
+			if (result.has_value())
+			{
+				if (std::find(std::begin(removed), std::end(removed), result.value()) != removed.end())
 					break;
-				}
-				else
-				{
-					//if not contain origin
-					//find edge closest to origin
-					//reconstruct simplex
-					//find the point that is not belong to the edge closest to origin
-					//if found, there is no more minkowski difference, exit loop
-					//if not, add the point to the list
 
-					auto [index1, index2] = findEdgeClosestToOrigin(simplex);
-					direction = calculateDirectionByEdge(simplex.vertices[index1].result,
-					                                     simplex.vertices[index2].result, true);
-
-					auto result = adjustSimplex(simplex, index1, index2);
-					if (result.has_value())
-					{
-						if (std::find(std::begin(removed), std::end(removed), result.value()) != removed.end())
-							break;
-
-						removed.emplace_back(result.value());
-					}
-				}
+				removed.emplace_back(result.value());
 			}
 			iter++;
 		}
@@ -152,11 +167,11 @@ namespace Physics2D
 		int dir = 1;
 		if ((A_s1 - A_s2).lengthSquare() < (B_s1 - B_s2).lengthSquare())
 		{
-			witness = (A_s1 + A_s2) / 2;
+			witness = (A_s1 + A_s2) * (1 / 2);
 		}
 		else
 		{
-			witness = (B_s1 + B_s2) / 2;
+			witness = (B_s1 + B_s2) * (1 / 2);
 			dir = dir * -1;
 		}
 		mirror = witness + v_penetr * dir;
@@ -295,5 +310,20 @@ namespace Physics2D
 			Vector2::dotProduct(ao, perpendicularOfAB) > 0 && !pointToOrigin))
 			perpendicularOfAB.negate();
 		return perpendicularOfAB;
+	}
+
+	Minkowski::Minkowski(const Vector2& point_a, const Vector2& point_b) : pointA(point_a), pointB(point_b),
+	                                                                       result(pointA - pointB)
+	{
+	}
+
+	bool Minkowski::operator ==(const Minkowski& rhs) const
+	{
+		return pointA == rhs.pointA && pointB == rhs.pointB;
+	}
+
+	bool Minkowski::operator !=(const Minkowski& rhs) const
+	{
+		return !(pointA == rhs.pointA && pointB == rhs.pointB);
 	}
 }

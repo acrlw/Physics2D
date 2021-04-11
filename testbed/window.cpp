@@ -11,7 +11,7 @@ namespace Physics2D
         m_world.setGeometry({ 0,0 }, { 1920,1080 });
 
     	
-        rectangle.set(50, 25);
+        rectangle.set(25, 25);
         rectangle.scale(2);
 
         
@@ -24,7 +24,8 @@ namespace Physics2D
         edge.set({ -250, 40 }, { 350, 180 });
         curve.set({ -600, 200 }, { -50, 20 }, { 0, 40 }, { 600, 150 });
     	
-        //createStackBox();
+        createStackBox(4, 70, 70);
+        
     }
 
     Window::~Window()
@@ -37,47 +38,14 @@ namespace Physics2D
     	//prepare for background, origin and clipping boundary
         painter.setRenderHint(QPainter::Antialiasing);
         painter.setClipRect(m_world.leftTop().x, m_world.leftTop().y, m_world.width(), m_world.height());
-        painter.fillRect(QRectF(m_world.leftTop().x, m_world.leftTop().y, m_world.width(), m_world.height()), QBrush(QColor(52, 52, 52)));
+        painter.fillRect(QRectF(m_world.leftTop().x, m_world.leftTop().y, m_world.width(), m_world.height()), QBrush(QColor(50, 50, 50)));
 		QPen origin(Qt::green, 10, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
         RendererQtImpl::renderPoint(&painter, &m_world, Vector2(0, 0), origin);
 
         QPen pen(Qt::green, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
         Renderer::render(&painter, &m_world, pen);
-
-        ShapePrimitive primitive;
-        primitive.shape = &rectangle;
-        primitive.rotation = m_angle;
-        primitive.transform.set(0, 200);
-        RendererQtImpl::renderShape(&painter, &m_world, primitive, pen);
-        AABB aabb = AABB::fromShape(primitive, 1.2);
-        pen.setWidth(1);
-    	RendererQtImpl::renderAABB(&painter, &m_world, aabb, pen);
-
-        ShapePrimitive primitive2;
-        primitive2.shape = &polygon;
-        primitive2.rotation = m_angle;
-        primitive2.transform.set(150, 150);
-        pen.setWidth(2);
-        RendererQtImpl::renderShape(&painter, &m_world, primitive2, pen);
-        AABB aabb_ell = AABB::fromShape(primitive2, 1.2);
-        pen.setWidth(1);
-        RendererQtImpl::renderAABB(&painter, &m_world, aabb_ell, pen);
         
-        AABB uni = aabb.unite(aabb_ell);
-        pen.setWidth(1);
-    	if(aabb.collide(aabb_ell))
-			pen.setColor(Qt::red);
-        RendererQtImpl::renderAABB(&painter, &m_world, uni, pen);
-    		
-    	if(m_lastBody != nullptr)
-    	{
-            ShapePrimitive shape;
-            shape.shape = m_lastBody->shape();
-            shape.rotation = m_lastBody->angle();
-            shape.transform = m_lastBody->position();
-            QPen contact(Qt::red, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-            RendererQtImpl::renderShape(&painter, &m_world, shape, contact);
-    	}
+
     }
 
     void Window::resizeEvent(QResizeEvent *e)
@@ -176,6 +144,10 @@ namespace Physics2D
         }
         repaint();
     }
+	void Window::testBVH(QPainter* painter)
+    {
+	    
+    }
     void Window::testHit(const QPoint& pos)
     {
         m_lastBody = nullptr;
@@ -196,6 +168,46 @@ namespace Physics2D
                 m_lastBody = body;
             }
         }
+
+        if (m_lastBody != nullptr)
+        {
+            ShapePrimitive shape;
+            shape.shape = m_lastBody->shape();
+            shape.rotation = m_lastBody->angle();
+            shape.transform = m_lastBody->position();
+            QPen contact(Qt::red, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+            //RendererQtImpl::renderShape(&painter, &m_world, shape, contact);
+        }
+    }
+	void Window::testAABB(QPainter* painter)
+    {
+
+        QPen pen(Qt::green, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+        ShapePrimitive primitive;
+        primitive.shape = &rectangle;
+        primitive.rotation = m_angle;
+        primitive.transform.set(0, 200);
+        RendererQtImpl::renderShape(painter, &m_world, primitive, pen);
+        AABB aabb = AABB::fromShape(primitive, 1.05);
+        pen.setWidth(1);
+        RendererQtImpl::renderAABB(painter, &m_world, aabb, pen);
+
+        ShapePrimitive primitive2;
+        primitive2.shape = &polygon;
+        primitive2.rotation = m_angle;
+        primitive2.transform.set(150, 150);
+        pen.setWidth(2);
+        RendererQtImpl::renderShape(painter, &m_world, primitive2, pen);
+        AABB aabb_ell = AABB::fromShape(primitive2, 1.05);
+        pen.setWidth(1);
+        RendererQtImpl::renderAABB(painter, &m_world, aabb_ell, pen);
+
+        AABB uni = aabb.unite(aabb_ell);
+        uni.scale(1.05);
+        pen.setWidth(1);
+        if (aabb.collide(aabb_ell))
+            pen.setColor(Qt::red);
+        RendererQtImpl::renderAABB(painter, &m_world, uni, pen);
     }
     void Window::testShape(QPainter* painter)
     {
@@ -249,16 +261,16 @@ namespace Physics2D
         RendererQtImpl::renderCurve(painter, &m_world, curve, pen);
     }
 
-    void Window::createStackBox()
+    void Window::createStackBox(const uint16_t& row = 10, const uint16_t& margin = 65, const uint16_t& spacing = 55)
     {
-    	for(int j = 10;j >= 0;j--)
+    	for(int j = row;j > 0;j--)
     	{
-    		for(int i = 0;i < 2 * (10 - j) + 1;i++)
+    		for(int i = 0;i < 2 * (row - j) + 1;i++)
     		{
                 Body* body = new Body;
                 //body->setAngle(j * j + 12);
                 body->setShape(&rectangle);
-                body->setPosition({static_cast<real>(-55 * (10 - j) + i * 55),static_cast<real>(j * 65 + 65)});
+                body->setPosition({static_cast<real>(-spacing * (row - j) + i * spacing),static_cast<real>(j * margin + margin)});
                 m_world.addBody(body);
     		}
     	}

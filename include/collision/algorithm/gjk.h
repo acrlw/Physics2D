@@ -2,7 +2,6 @@
 #define PHYSICS2D_GJK_H
 
 
-#include "include/math/math.h"
 #include "include/common/common.h"
 #include "include/collision/contact.h"
 #include "include/dynamics/shape.h"
@@ -13,16 +12,9 @@ namespace Physics2D
     struct Minkowski
     {
             Minkowski() = default;
-            Minkowski(const Vector2& point_a, const Vector2& point_b) : pointA(point_a), pointB(point_b), result(pointA - pointB)
-            {}
-            inline bool operator ==(const Minkowski& rhs)const
-            {
-                return pointA == rhs.pointA && pointB == rhs.pointB;
-            }
-            inline bool operator !=(const Minkowski& rhs)const
-            {
-                return !(pointA == rhs.pointA && pointB == rhs.pointB);
-            }
+            Minkowski(const Vector2& point_a, const Vector2& point_b);
+            inline bool operator ==(const Minkowski& rhs)const;
+            inline bool operator !=(const Minkowski& rhs)const;
             Vector2 pointA;
             Vector2 pointB;
             Vector2 result;
@@ -39,28 +31,12 @@ namespace Physics2D
     {
             std::vector<Minkowski> vertices;
             bool isContainOrigin = false;
-            bool containOrigin()
-            {
-                isContainOrigin = calculateContainOrigin(*this);
-                return isContainOrigin;
-            }
-            static bool calculateContainOrigin(const Simplex& simplex);
+            bool containOrigin();
+            static bool containOrigin(const Simplex& simplex);
     	
-            void insert(const size_t& pos, const Minkowski& vertex)
-            {
-                vertices.insert(vertices.begin() + pos + 1, vertex);
-            }
-            bool contains(const Minkowski& minkowski)
-            {
-                return std::find(std::begin(vertices), std::end(vertices), minkowski) != std::end(vertices);
-            }
-            Vector2 lastVertex()const
-            {
-                if (vertices.size() == 2)
-                    return vertices[vertices.size() - 1].result;
-                else
-                    return vertices[vertices.size() - 2].result;
-            }
+            void insert(const size_t& pos, const Minkowski& vertex);
+            bool contains(const Minkowski& minkowski);
+            Vector2 lastVertex()const;
     };
 
 

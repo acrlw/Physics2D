@@ -35,9 +35,9 @@ namespace Physics2D
                 return std::optional<Vector2>(a);
             return std::nullopt;
         }
-
-        const real cc_proj = ab.cross(ac) / ab_length;
-        const real dd_proj = ba.cross(bd) / ab_length;
+        const real ab_length_inv = 1 / ab_length;
+        const real cc_proj = ab.cross(ac) * ab_length_inv;
+        const real dd_proj = ba.cross(bd) * ab_length_inv;
         const real ad_proj = ad.dot(ab.normal());
         const real bc_proj = bc.dot(ba.normal());
         const real cproj_dproj = ab_length - ad_proj - bc_proj;
@@ -212,7 +212,7 @@ namespace Physics2D
         int iteration = 0;
         while (++iteration)
         {
-            real temp_x = (x_left + x_right) / 2;
+            real temp_x = (x_left + x_right) * 0.5;
             real temp_y = sgn * sqrt(pow(b, 2) - pow(b / a, 2) * pow(temp_x, 2));
             Vector2 t0(temp_x, temp_y);
             t0.set(temp_x, temp_y);
@@ -235,12 +235,12 @@ namespace Physics2D
     }
     Vector2 GeometryAlgorithm2D::triangleCentroid(const Vector2& a1, const Vector2& a2, const Vector2& a3)
     {
-        return Vector2(a1 + a2 + a3) / 3;
+        return Vector2(a1 + a2 + a3) * (1.0f / 3.0f);
     }
 
     real GeometryAlgorithm2D::triangleArea(const Vector2& a1, const Vector2& a2, const Vector2& a3)
     {
-        return abs(Vector2::crossProduct(a1 - a2, a1 - a3)) / 2;
+        return abs(Vector2::crossProduct(a1 - a2, a1 - a3)) * 0.5;
     }
 
     Vector2 GeometryAlgorithm2D::calculateCenter(const std::vector<Vector2>& vertices)

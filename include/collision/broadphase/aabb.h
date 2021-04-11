@@ -14,6 +14,7 @@ namespace Physics2D
 		bool collide(const AABB& other) const;
 		void scale(const real& factor);
 		AABB unite(const AABB& other)const;
+		bool isSubset(const AABB& other)const;
 		/// <summary>
 		/// Create tight AABB from shape.
 		/// </summary>
@@ -41,6 +42,14 @@ namespace Physics2D
 		/// <param name="aabb"></param>
 		/// <param name="factor"></param>
 		static void scale(AABB& aabb, const real& factor = 1);
+		/// <summary>
+		/// Check if b is a subset of a
+		/// </summary>
+		/// <param name="a"></param>
+		/// <param name="b"></param>
+		/// <returns></returns>
+		static bool isSubset(const AABB& a, const AABB& b);
+		
 	};
 }
 #endif

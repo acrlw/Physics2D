@@ -139,7 +139,7 @@ namespace Physics2D
 
 		Matrix2x2& setAngle(const real& angle)
 		{
-			const real arc = angle * Constant::Pi / 180;
+			const real arc = Math::angleToRadian(angle);
 			const real cosarc = Math::cosx(arc);
 			const real sinarc = Math::sinx(arc);
 			column1.set(cosarc, sinarc);

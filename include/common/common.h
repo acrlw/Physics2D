@@ -21,6 +21,7 @@ namespace Physics2D
 		const real Min = FLT_MIN;
 		const real NegativeMin = -Max;
 		const real Pi = 3.14159265358979f;
+		const real ReciprocalOfPi = 0.3183098861837907f;
 		const real GJKIteration = 50;
 		const real EPAEpsilon = 0.0001;
 	}
@@ -34,6 +35,7 @@ namespace Physics2D
 		const real Min = DBL_MIN;
 		const real NegativeMin = -Max;
 		const real Pi = 3.141592653589793238463;
+		const real ReciprocalOfPi = 0.3183098861837907;
 		const real GJKIteration = 50;
 		const real EPAEpsilon = 0.0001;
 	}

@@ -212,7 +212,7 @@ namespace Physics2D
 			assert(painter != nullptr && world != nullptr);
 			painter->setPen(pen);
 			Vector2 topLeft;
-			topLeft.set(-aabb.width / 2, aabb.height / 2);
+			topLeft.set(-aabb.width * (0.5f), aabb.height * (0.5f));
 			topLeft += aabb.position;
 			topLeft = world->worldToScreen(topLeft);
 			painter->drawRect(QRectF(topLeft.x, topLeft.y, aabb.width, aabb.height));

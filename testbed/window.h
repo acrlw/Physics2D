@@ -34,8 +34,10 @@ namespace Physics2D
 	
 	private:
 		void testShape(QPainter* painter);
+		void createStackBox(const uint16_t& row, const uint16_t& margin, const uint16_t& spacing);
 		void testHit(const QPoint& pos);
-		void createStackBox();
+		void testAABB(QPainter* painter);
+		void testBVH(QPainter* painter);
 		World m_world;
 		Rectangle rectangle;
 		Ellipse ellipse;

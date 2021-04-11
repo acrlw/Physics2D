@@ -2,7 +2,9 @@
 #include "tests/test.h"
 #include "include/math/math.h"
 #include "include/common/common.h"
+
 #include "fmt/core.h"
+#include "include/math/linear/linear.h"
 
 
 namespace Physics2D
@@ -133,7 +135,7 @@ namespace Physics2D
 		{
 			fmt::print("-----other test-----\n");
 			fmt::print("system method: 1/sqrt(23) = {}\n", 1.0f / sqrt(23));
-			fmt::print("fast inverse sqrt method: 1/sqrt(23) = {}\n", fastInverseSqrt<real>(23));
+			fmt::print("fast inverse sqrt method: 1/sqrt(23) = {}\n", Math::fastInverseSqrt<real>(23));
 		}
 		void testGeometryAlgorithm()
 		{

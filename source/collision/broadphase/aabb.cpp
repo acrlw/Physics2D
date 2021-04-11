@@ -17,6 +17,11 @@ namespace Physics2D
 		return unite(*this, other);
 	}
 
+	bool AABB::isSubset(const AABB& other) const
+	{
+		return isSubset(other, *this);
+	}
+
 	AABB AABB::fromShape(const ShapePrimitive& shape, const real& factor)
 	{
 		AABB aabb;
@@ -43,7 +48,7 @@ namespace Physics2D
 				}
 				aabb.width = abs(max_x - min_x);
 				aabb.height = abs(max_y - min_y);
-				aabb.position.set((max_x + min_x) / 2, (max_y + min_y) / 2);
+				aabb.position.set((max_x + min_x) * 0.5, (max_y + min_y) * 0.5);
 				break;
 			}
 			case Shape::Type::Ellipse:
@@ -87,7 +92,7 @@ namespace Physics2D
 				aabb.width = abs(edge->startPoint().x - edge->endPoint().x);
 				aabb.height = abs(edge->startPoint().y - edge->endPoint().y);
 				aabb.position.set(edge->startPoint().x + edge->endPoint().x, edge->startPoint().y + edge->endPoint().y);
-				aabb.position /= 2;
+				aabb.position *= 0.5;
 				break;
 			}
 			case Shape::Type::Curve:
@@ -112,40 +117,40 @@ namespace Physics2D
 
 	bool AABB::collide(const AABB& src, const AABB& target)
 	{
-		const real src_low_x = (-src.width / 2) + src.position.x;
-		const real src_high_x = (src.width / 2) + src.position.x;
+		const real src_low_x = (-src.width * 0.5) + src.position.x;
+		const real src_high_x = (src.width * 0.5) + src.position.x;
 
 
-		const real src_low_y = (-src.height / 2) + src.position.y;
-		const real src_high_y = (src.height / 2) + src.position.y;
+		const real src_low_y = (-src.height * 0.5) + src.position.y;
+		const real src_high_y = (src.height * 0.5) + src.position.y;
 
 
-		const real target_low_x = (-target.width / 2) + target.position.x;
-		const real target_high_x = (target.width / 2) + target.position.x;
+		const real target_low_x = (-target.width * 0.5) + target.position.x;
+		const real target_high_x = (target.width * 0.5) + target.position.x;
 
 
-		const real target_low_y = (-target.height / 2) + target.position.y;
-		const real target_high_y = (target.height / 2) + target.position.y;
+		const real target_low_y = (-target.height * 0.5) + target.position.y;
+		const real target_high_y = (target.height * 0.5) + target.position.y;
 
 		return !(src_high_x < target_low_x || target_high_x < src_low_x || src_high_y < target_low_y || target_high_y < src_low_y);
 	}
 
 	AABB AABB::unite(const AABB& src, const AABB& target)
 	{
-		const real src_low_x = (-src.width / 2) + src.position.x;
-		const real src_high_x = (src.width / 2) + src.position.x;
+		const real src_low_x = (-src.width * 0.5) + src.position.x;
+		const real src_high_x = (src.width * 0.5) + src.position.x;
 
 
-		const real src_low_y = (-src.height / 2) + src.position.y;
-		const real src_high_y = (src.height / 2) + src.position.y;
+		const real src_low_y = (-src.height * 0.5) + src.position.y;
+		const real src_high_y = (src.height * 0.5) + src.position.y;
 
 
-		const real target_low_x = (-target.width / 2) + target.position.x;
-		const real target_high_x = (target.width / 2) + target.position.x;
+		const real target_low_x = (-target.width * 0.5) + target.position.x;
+		const real target_high_x = (target.width * 0.5) + target.position.x;
 
 
-		const real target_low_y = (-target.height / 2) + target.position.y;
-		const real target_high_y = (target.height / 2) + target.position.y;
+		const real target_low_y = (-target.height * 0.5) + target.position.y;
+		const real target_high_y = (target.height * 0.5) + target.position.y;
 
 		const real low_x = Math::min(src_low_x, target_low_x);
 		const real high_x = Math::max(src_high_x, target_high_x);
@@ -154,7 +159,7 @@ namespace Physics2D
 		const real high_y = Math::max(src_high_y, target_high_y);
 
 		AABB aabb;
-		aabb.position.set((low_x + high_x) / 2, (low_y + high_y) / 2);
+		aabb.position.set((low_x + high_x) * 0.5, (low_y + high_y) * 0.5);
 		aabb.width = high_x - low_x;
 		aabb.height = high_y - low_y;
 
@@ -164,5 +169,25 @@ namespace Physics2D
 	{
 		aabb.width *= factor;
 		aabb.height *= factor;
+	}
+
+	bool AABB::isSubset(const AABB& a, const AABB& b)
+	{
+		const real a_low_x = (-a.width * 0.5) + a.position.x;
+		const real a_high_x = (a.width * 0.5) + a.position.x;
+
+
+		const real b_low_x = (-b.height * 0.5) + b.position.y;
+		const real b_high_x = (b.height * 0.5) + b.position.y;
+
+
+		const real a_low_y = (-a.width * 0.5) + a.position.x;
+		const real a_high_y = (a.width * 0.5) + a.position.x;
+
+
+		const real b_low_y = (-b.height * 0.5) + b.position.y;
+		const real b_high_y = (b.height * 0.5) + b.position.y;
+
+		return a_high_x >= b_high_x && b_low_x >= a_low_x && a_high_y >= b_high_y && b_low_y >= a_low_y;
 	}
 }
