@@ -2,13 +2,23 @@
 
 namespace Physics2D
 {
-	Matrix3x3::Matrix3x3(const Matrix3x3& mat)
+	Matrix3x3::Matrix3x3(const Matrix3x3& mat) : column1(mat.column1), column2(mat.column2), column3(mat.column3)
 	{
-		column1 = mat.column1;
-		column2 = mat.column2;
-		column3 = mat.column3;
 	}
 
+
+	Matrix3x3::Matrix3x3(const Vector3& col1, const Vector3& col2, const Vector3& col3)
+		: column1(col1), column2(col2), column3(col3)
+	{
+	}
+
+	Matrix3x3::Matrix3x3(const real& col1_x, const real& col1_y, const real& col1_z, const real& col2_x,
+		const real& col2_y, const real& col2_z, const real& col3_x, const real& col3_y,
+		const real& col3_z)
+		: column1(col1_x, col1_y, col1_z), column2(col2_x, col2_y, col2_z), column3(col3_x, col3_y, col3_z)
+	{
+	}
+	
 	Matrix3x3& Matrix3x3::operator=(const Matrix3x3& rhs)
 	{
 		column1 = rhs.column1;
@@ -185,21 +195,5 @@ namespace Physics2D
 		mat.transpose();
 		mat /= det;
 		return true;
-	}
-
-	Matrix3x3::Matrix3x3(const Vector3& col1, const Vector3& col2, const Vector3& col3)
-	{
-		column1 = col1;
-		column2 = col2;
-		column3 = col3;
-	}
-
-	Matrix3x3::Matrix3x3(const real& col1_x, const real& col1_y, const real& col1_z, const real& col2_x,
-	                     const real& col2_y, const real& col2_z, const real& col3_x, const real& col3_y,
-	                     const real& col3_z)
-	{
-		column1.set(col1_x, col1_y, col1_z);
-		column2.set(col2_x, col2_y, col2_z);
-		column3.set(col3_x, col3_y, col3_z);
 	}
 }

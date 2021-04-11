@@ -7,10 +7,18 @@ namespace Physics2D
 		setAngle(angle);
 	}
 
-	Matrix2x2::Matrix2x2(const Matrix2x2& mat)
+
+	Matrix2x2::Matrix2x2(const Vector2& col1, const Vector2& col2) : column1(col1), column2(col2)
 	{
-		column1 = mat.column1;
-		column2 = mat.column2;
+	}
+
+	Matrix2x2::Matrix2x2(const real& col1_x, const real& col1_y, const real& col2_x, const real& col2_y)
+		: column1(col1_x, col1_y), column2(col2_x, col2_y)
+	{
+	}
+	
+	Matrix2x2::Matrix2x2(const Matrix2x2& mat) : column1(mat.column1), column2(mat.column2)
+	{
 	}
 
 	Matrix2x2& Matrix2x2::operator=(const Matrix2x2& rhs)
@@ -175,17 +183,5 @@ namespace Physics2D
 		mat.column2.x *= -1;
 		mat /= det;
 		return true;
-	}
-
-	Matrix2x2::Matrix2x2(const Vector2& col1, const Vector2& col2)
-	{
-		column1 = col1;
-		column2 = col2;
-	}
-
-	Matrix2x2::Matrix2x2(const real& col1_x, const real& col1_y, const real& col2_x, const real& col2_y)
-	{
-		column1.set(col1_x, col1_y);
-		column2.set(col2_x, col2_y);
 	}
 }

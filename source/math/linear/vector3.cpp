@@ -2,18 +2,12 @@
 
 namespace Physics2D
 {
-	Vector3::Vector3(const real& _x, const real& _y, const real& _z)
+	Vector3::Vector3(const real& _x, const real& _y, const real& _z) : x(_x), y(_y), z(_z)
 	{
-		x = _x;
-		y = _y;
-		z = _z;
 	}
 
-	Vector3::Vector3(const Vector3& copy)
+	Vector3::Vector3(const Vector3& copy) : x(copy.x), y(copy.y), z(copy.z)
 	{
-		x = copy.x;
-		y = copy.y;
-		z = copy.z;
 	}
 
 	Vector3 Vector3::operator+(const Vector3& rhs) const

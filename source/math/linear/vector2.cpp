@@ -2,16 +2,12 @@
 
 namespace Physics2D
 {
-	Vector2::Vector2(const real& _x, const real& _y)
+	Vector2::Vector2(const real& _x, const real& _y) : x(_x), y(_y)
 	{
-		x = _x;
-		y = _y;
 	}
 
-	Vector2::Vector2(const Vector2& copy)
+	Vector2::Vector2(const Vector2& copy) : x(copy.x), y(copy.y)
 	{
-		x = copy.x;
-		y = copy.y;
 	}
 
 	Vector2 Vector2::operator+(const Vector2& rhs) const
