@@ -10,7 +10,6 @@ namespace Physics2D
 		this->setMouseTracking(true);
 		m_world.setGeometry({0, 0}, {1920, 1080});
 
-
 		rectangle.set(50, 25);
 		//rectangle.scale(2);
 		land.set(1600, 10);
@@ -25,10 +24,10 @@ namespace Physics2D
 
 		m_world.setEnableGravity(true);
 		m_world.setLinearVelocityDamping(0.9f);
-		m_world.setAirFrictionCoefficient(0.2f);
+		m_world.setAirFrictionCoefficient(0.1f);
 		m_world.setAngularVelocityDamping(0.01f);
 		//createStackBox(5, 25, 25);
-		targetPoint.set({0, 12.5});
+		targetPoint.set({25, 0});
 		testPendulum();
 		connect(&m_timer, &QTimer::timeout, this, &Window::process);
 		m_timer.setInterval(15);
@@ -41,7 +40,22 @@ namespace Physics2D
 
 	void Window::process()
 	{
-		testDistanceJoint();
+		const real dt = 1.0f / 60.0f;
+		const real inv_dt = 60.0f;
+		m_world.stepVelocity(dt);
+		m_rectCenter.emplace_back(Matrix2x2(rect->angle()).multiply(targetPoint) + rect->position());
+		DistanceConstraintPrimitive p, p2;
+		p.source = rect;
+		p.sourcePoint = targetPoint;
+		p.targetPoint = originPoint;
+		p.distance = 100;
+
+		
+		
+		DistanceConstraintSolver solver;
+		solver.solve(p, dt);
+		
+		m_world.stepPosition(dt);
 		
 		repaint();
 	}
@@ -76,40 +90,6 @@ namespace Physics2D
 	}
 	void Window::testDistanceJoint()
 	{
-		const real dt = 1.0f / 30.0f;
-		const real inv_dt = 30.0f;
-		m_world.stepVelocity(dt);
-		for(int k = 0;k < 1;k++)
-		{
-
-			const real beta = 0.8;
-			Vector2 ra = Matrix2x2(rect->angle()).multiply(targetPoint);
-			Vector2 pa = ra + rect->position();
-			m_rectCenter.emplace_back(pa);
-			Vector2 pb = originPoint;
-			Vector2 wr = Vector2::crossProduct(rect->angularVelocity(), ra);
-			Vector2 v_pa = rect->velocity() + wr;
-			Vector2 n = (pb - pa).normal();
-			Vector2 tb = (n * radius).negate() + pb;
-			Vector2 cpos = tb - pa;
-			error = cpos;
-			errorAll += error * dt;
-			if (lastError.x == 0.0 && lastError.y == 0.0)
-				lastError = error;
-			real mass_eff = 1.0 / (rect->inverseMass() + rect->inverseInertia() * (n.cross(ra)) * (n.cross(ra)));
-			real lambda = -mass_eff * (v_pa.dot(n));
-			
-			//impulse = K.invert() * (-beta* - dv - softness * P);
-			Vector2 impulse = 1.0f / mass_eff;
-			Vector2 v = rect->inverseMass() * lambda * n;
-			real omega = rect->inverseInertia() * ra.cross(n * abs(lambda));
-			v += cpos * beta + (error - lastError) * beta;
-			rect->velocity() += v;
-			//rect->angularVelocity() += omega;
-			lastError = error;
-		}
-
-		m_world.stepPosition(dt);
 	}
 	void Window::testPendulum()
 	{
@@ -119,7 +99,6 @@ namespace Physics2D
 		rect->angle() = 0;
 		rect->setMass(5);
 		rect->setType(Body::BodyType::Dynamic);
-
 		
 	}
 
@@ -143,11 +122,11 @@ namespace Physics2D
 		if(rect != nullptr)
 			RendererQtImpl::renderLine(&painter, &m_world, pos, originPoint, pen);
 
-		//pen.setWidth(1);
-		//for(const Vector2& p: m_rectCenter)
-		//{
-		//	RendererQtImpl::renderPoint(&painter, &m_world, p, pen);
-		//}
+		pen.setWidth(1);
+		for(const Vector2& p: m_rectCenter)
+		{
+			RendererQtImpl::renderPoint(&painter, &m_world, p, pen);
+		}
 	}
 
 	void Window::resizeEvent(QResizeEvent* e)
@@ -168,7 +147,9 @@ namespace Physics2D
 	void Window::mouseMoveEvent(QMouseEvent* e)
 	{
 		//testHit(e->pos());
-
+		
+		//Vector2 pos(e->pos().x(), e->pos().y());
+		//originPoint.set(m_world.screenToWorld(pos));
 		repaint();
 	}
 

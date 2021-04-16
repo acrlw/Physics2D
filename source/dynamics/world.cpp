@@ -49,7 +49,6 @@ namespace Physics2D
 	}
 	void World::stepPosition(const real& dt)
 	{
-		const Vector2 g = m_enableGravity ? m_gravity : (0, 0);
 		for (Body* body : m_bodyList)
 		{
 			switch (body->type())
