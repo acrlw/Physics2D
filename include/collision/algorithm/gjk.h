@@ -45,7 +45,7 @@ namespace Physics2D
     {
         public:
             /// <summary>
-            /// Gilbert¨CJohnson¨CKeerthi distance algorithm
+            /// Gilbert-Johnson-Keerthi distance algorithm
             /// </summary>
             /// <param name="shape_A"></param>
             /// <param name="shape_B"></param>

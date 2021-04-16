@@ -12,13 +12,29 @@ namespace Physics2D
     class Detector
     {
         public:
-            static ContactInfo detect(Body* body_A, Body* body_B)
+            static ContactInfo detect(Body* bodyA, Body* bodyB)
             {
                 ContactInfo result;
 
-                if (body_A == nullptr || body_B == nullptr)
+                if (bodyA == nullptr || bodyB == nullptr)
                     return result;
 
+                ShapePrimitive shapeA, shapeB;
+                shapeA.shape = bodyA->shape();
+                shapeA.rotation = bodyA->angle();
+                shapeA.transform = bodyA->position();
+
+                shapeB.shape = bodyB->shape();
+                shapeB.rotation = bodyB->angle();
+                shapeB.transform = bodyB->position();
+                auto [isCollide, simplex] = GJK::gjk(shapeA, shapeB);
+                result.isCollide = isCollide;
+            	if(isCollide)
+            	{
+                    simplex = GJK::epa(shapeA, shapeB, simplex);
+                    result = GJK::dumpInfo(shapeA, shapeB, simplex);
+            	}
+                return result;
 
             }
         private:

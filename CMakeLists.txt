@@ -68,7 +68,7 @@ add_executable(physics-engine
     "source/collision/broadphase/aabb.cpp"
     "include/render/impl/renderer_qt.h"
     "testbed/window.h"
-    "testbed/window.cpp")
+    "testbed/window.cpp" "include/dynamics/joint/joint.h" "include/dynamics/joint/mouse.h" "include/dynamics/joint/revolute.h" "include/dynamics/joint/pulley.h" "include/dynamics/joint/point.h" "include/dynamics/joint/distance.h")
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 find_package(fmt CONFIG REQUIRED)

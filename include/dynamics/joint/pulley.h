@@ -1,0 +1,8 @@
+#ifndef PHYSICS2D_DYNAMICS_JOINT_PULLEY_H
+#define PHYSICS2D_DYNAMICS_JOINT_PULLEY_H
+
+namespace Physics2D
+{
+
+}
+#endif

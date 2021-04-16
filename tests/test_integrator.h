@@ -36,7 +36,6 @@ namespace Physics2D
 				//fmt::print("angle:{}\n", state.angle);
 				//fmt::print("angularVelocity:{}\n", state.angularVelocity);
 				//fmt::print("--------------\n");
-				state = Verlet::integrateVelocity(state, 1.0f / 60.0f);
 			}
 		}
 	};

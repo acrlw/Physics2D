@@ -4,7 +4,7 @@ namespace Physics2D
 {
     void Renderer::render(QPainter* painter, World* world, const QPen& pen)
     {
-    	for(const Body* body: world->bodyList())
+    	for(Body * body: world->bodyList())
     	{
 			ShapePrimitive primitive;
 			primitive.shape = body->shape();

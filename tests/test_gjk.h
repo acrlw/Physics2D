@@ -34,12 +34,12 @@ namespace Physics2D
 			b.append({ 0,4 });
 			ShapePrimitive spa, spb;
 			spa.shape = &a;
-			spa.translation.set(6, -8);
+			spa.transform.set(6, -8);
 			spa.rotation = 45;
 
 			spb.shape = &b;
 			spb.rotation = -45;
-			spb.translation.set(6, 8);
+			spb.transform.set(6, 8);
 			fmt::print("p: {}\n", b.center());
 
 			auto [isCollide, simplex] = GJK::gjk(spa, spb);

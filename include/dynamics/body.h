@@ -19,25 +19,18 @@ namespace Physics2D
                 Bullet
                 };
             Body();
-            Vector2 position() const;
-            void setPosition(const Vector2 &position);
+            Vector2& position();
 
-            Vector2 velocity() const;
-            void setVelocity(const Vector2 &velocity);
+            Vector2& velocity();
 
-            real angle() const;
-            void setAngle(const real &angle);
+            real& angle();
 
-            real angularVelocity() const;
-            void setAngularVelocity(const real &angularVelocity);
+            real& angularVelocity();
 
-            Vector2 forces() const;
-            void setForces(const Vector2 &forces);
-            void clearForce();
+            Vector2& forces();
             void clearTorque();
 
-            real torques() const;
-            void setTorques(const real &torques);
+            real& torques();
 
             Shape *shape() const;
             void setShape(Shape *shape);

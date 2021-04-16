@@ -7,72 +7,42 @@ namespace Physics2D {
     {
     	
     }
-    Vector2 Body::position() const
+    Vector2& Body::position() 
     {
         return m_position;
     }
+    
 
-    void Body::setPosition(const Vector2 &position)
-    {
-        m_position = position;
-    }
-
-    Vector2 Body::velocity() const
+    Vector2& Body::velocity() 
     {
         return m_velocity;
     }
+    
 
-    void Body::setVelocity(const Vector2 &velocity)
-    {
-        m_velocity = velocity;
-    }
-
-    real Body::angle() const
+    real& Body::angle() 
     {
         return m_angle;
     }
 
-    void Body::setAngle(const real &angle)
-    {
-        m_angle = angle;
-    }
-
-    real Body::angularVelocity() const
+    real& Body::angularVelocity()
     {
         return m_angularVelocity;
     }
 
-    void Body::setAngularVelocity(const real &angularVelocity)
-    {
-        m_angularVelocity = angularVelocity;
-    }
-
-    Vector2 Body::forces() const
+    Vector2& Body::forces()
     {
         return m_forces;
     }
-
-    void Body::setForces(const Vector2 &forces)
-    {
-        m_forces = forces;
-    }
-
-	void Body::clearForce()
-    {
-        m_forces.clear();
-    }
+    
+	
 	void Body::clearTorque()
     {
         m_torques = 0;
     }
-    real Body::torques() const
+	
+    real& Body::torques()
     {
         return m_torques;
-    }
-
-    void Body::setTorques(const real &torques)
-    {
-        m_torques = torques;
     }
 
     Shape *Body::shape() const

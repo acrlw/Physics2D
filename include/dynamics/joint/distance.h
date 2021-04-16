@@ -1,0 +1,8 @@
+#ifndef PHYSICS2D_DYNAMICS_JOINT_DISTANCE_H
+#define PHYSICS2D_DYNAMICS_JOINT_DISTANCE_H
+
+namespace Physics2D
+{
+	
+}
+#endif

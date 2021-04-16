@@ -12,6 +12,8 @@
 #include <include/physics2d.h>
 #include <include/render/impl/renderer_qt.h>
 
+#include "include/dynamics/constraint/constraint.h"
+
 namespace Physics2D
 {
 	class Window : public QWidget
@@ -23,7 +25,7 @@ namespace Physics2D
 		~Window();
 	public slots:
 		void process();
-	
+
 	protected:
 		void paintEvent(QPaintEvent*) override;
 		void resizeEvent(QResizeEvent* e) override;
@@ -39,16 +41,34 @@ namespace Physics2D
 		void testHit(const QPoint& pos);
 		void testAABB(QPainter* painter);
 		void testBVH(QPainter* painter);
+		void testCollision();
+		void createSnakeBody();
+		void testDistanceJoint();
+		void testPendulum();
 		World m_world;
 		Rectangle rectangle;
+		Rectangle land;
 		Ellipse ellipse;
 		Edge edge;
 		Curve curve;
 		Polygon polygon;
 		Circle circle;
 		real m_angle = 0;
-		const Body* m_lastBody = nullptr;
+		Body* m_lastBody = nullptr;
 		QTimer m_timer;
+		Body* rect;
+		Body* rect2;
+		Body* rect3;
+		Body* rect4;
+		Body* ground;
+		real angle = 0;
+		real radius = 150;
+		Vector2 originPoint = { 0, 550 };
+		Vector2 targetPoint;
+		std::vector<Vector2> m_rectCenter;
+		Vector2 error;
+		Vector2 lastError;
+		Vector2 errorAll;
 	};
 }
 #endif

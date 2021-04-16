@@ -17,7 +17,65 @@ namespace Physics2D
 	{
 		return worldToScreen(m_leftTop, m_rightBottom, pos);
 	}
+	void World::stepVelocity(const real& dt)
+	{
+		const Vector2 g = m_enableGravity ? m_gravity : (0, 0);
+		for (Body* body : m_bodyList)
+		{
+			switch (body->type())
+			{
+			case Body::BodyType::Static:
+				break;
+			case Body::BodyType::Dynamic:
+			{
+				const Vector2 forces = g + body->forces() - 0.5 * m_airFrictionCoefficient * body->velocity();
+					
+				body->velocity() += body->inverseMass() * forces * dt * m_velocityIteration;
 
+				body->angularVelocity() += body->inverseInertia() * body->torques() * dt * m_velocityIteration;
+				
+				break;
+			}
+			case Body::BodyType::Kinematic:
+			{
+				break;
+			}
+			case Body::BodyType::Bullet:
+			{
+				break;
+			}
+			}
+		}
+	}
+	void World::stepPosition(const real& dt)
+	{
+		const Vector2 g = m_enableGravity ? m_gravity : (0, 0);
+		for (Body* body : m_bodyList)
+		{
+			switch (body->type())
+			{
+			case Body::BodyType::Static:
+				break;
+			case Body::BodyType::Dynamic:
+			{
+				body->position() += body->velocity() * dt * m_positionIteration;
+				body->angle() += body->angularVelocity() * dt * m_positionIteration;
+
+				body->forces().clear();
+				body->clearTorque();
+				break;
+			}
+			case Body::BodyType::Kinematic:
+			{
+				break;
+			}
+			case Body::BodyType::Bullet:
+			{
+				break;
+			}
+			}
+		}
+	}
 	void World::step(const real& dt)
 	{
 		const Vector2 g = m_enableGravity ? m_gravity : (0, 0);
@@ -38,12 +96,12 @@ namespace Physics2D
 					const real av = (body->angularVelocity() + b * dt * m_velocityIteration) * m_angularVelocityDamping;
 					const real angle = body->angle() + av * dt * m_positionIteration;
 
-					body->setVelocity(v);
-					body->setPosition(p);
-					body->setAngularVelocity(av);
-					body->setAngle(angle);
+					body->velocity() = v;
+					body->position() = p;
+					body->angularVelocity() = av;
+					body->angle() = angle;
 
-					body->clearForce();
+					body->forces().clear();
 					body->clearTorque();
 					break;
 				}
@@ -194,6 +252,16 @@ namespace Physics2D
 	void World::setAngularVelocityThreshold(const real& angularVelocityThreshold)
 	{
 		m_angularVelocityThreshold = angularVelocityThreshold;
+	}
+
+	real World::airFrictionCoefficient() const
+	{
+		return m_airFrictionCoefficient;
+	}
+
+	void World::setAirFrictionCoefficient(const real& airFrictionCoefficient)
+	{
+		m_airFrictionCoefficient = airFrictionCoefficient;
 	}
 
 	bool World::enableGravity() const
