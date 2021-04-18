@@ -1,4 +1,4 @@
-#include "include/math/algorithm/graphics/2d.h"
+#include "include/geometry/algorithm/2d.h"
 
 namespace Physics2D
 {

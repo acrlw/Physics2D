@@ -2,7 +2,8 @@
 #define PHYSICS2D_BROADPHASE_AABB_H
 
 #include "include/math/linear/linear.h"
-#include "include/dynamics/shape.h"
+#include "include/geometry/shape.h"
+
 namespace Physics2D
 {
 	struct AABB

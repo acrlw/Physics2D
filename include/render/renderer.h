@@ -3,7 +3,7 @@
 
 #include <QPainter>
 
-#include "include/dynamics/shape.h"
+#include "include/geometry/shape.h"
 #include "include/dynamics/world.h"
 
 namespace Physics2D

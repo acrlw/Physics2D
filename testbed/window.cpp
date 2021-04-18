@@ -10,24 +10,22 @@ namespace Physics2D
 		this->setMouseTracking(true);
 		m_world.setGeometry({0, 0}, {1920, 1080});
 
-		rectangle.set(50, 25);
-		//rectangle.scale(2);
-		land.set(1600, 10);
+		rectangle.set(1, 1);
 
-		polygon.append({ {-25,0}, {25, -12.5}, {25, 12.5}, {-25, 0} });
-		polygon.scale(2);
-		ellipse.set({-40, 30}, {40, -30});
-		circle.setRadius(6);
-		circle.scale(12);
-		edge.set({-800, 30}, {800, 30});
-		curve.set({-600, 200}, {-50, 20}, {0, 40}, {600, 150});
+		polygon.append({ {-5,0}, {5, -2.5}, {2, 2.5}, {-5, 0} });
+		polygon.scale(0.2);
+		ellipse.set({-4, 3}, {4, -3});
+		ellipse.scale(0.4);
+		circle.setRadius(1);
+		//circle.scale(12);
+		edge.set({-8, -3}, {8, -3});
 
 		m_world.setEnableGravity(true);
 		m_world.setLinearVelocityDamping(0.9f);
 		m_world.setAirFrictionCoefficient(0.1f);
 		m_world.setAngularVelocityDamping(0.01f);
-		//createStackBox(5, 25, 25);
-		targetPoint.set({25, 0});
+		//createStackBox(10, 1.2, 1.2);
+		targetPoint.set({0.5, 0});
 		testPendulum();
 		connect(&m_timer, &QTimer::timeout, this, &Window::process);
 		m_timer.setInterval(15);
@@ -42,18 +40,8 @@ namespace Physics2D
 	{
 		const real dt = 1.0f / 60.0f;
 		const real inv_dt = 60.0f;
+		rect2->angularVelocity() = 5;
 		m_world.stepVelocity(dt);
-		m_rectCenter.emplace_back(Matrix2x2(rect->angle()).multiply(targetPoint) + rect->position());
-		DistanceConstraintPrimitive p, p2;
-		p.source = rect;
-		p.sourcePoint = targetPoint;
-		p.targetPoint = originPoint;
-		p.distance = 100;
-
-		
-		
-		DistanceConstraintSolver solver;
-		solver.solve(p, dt);
 		
 		m_world.stepPosition(dt);
 		
@@ -64,13 +52,13 @@ namespace Physics2D
 		ground = m_world.createBody();
 		ground->setShape(&land);
 		ground->position().set({0, 100});
-		ground->setMass(50);
+		ground->setMass(100);
 
 		rect = m_world.createBody();
 		rect->setShape(&rectangle);
 		rect->position().set({0, 800});
 		rect->angle() = 45;
-		rect->setMass(2);
+		rect->setMass(100);
 		rect->setType(Body::BodyType::Dynamic);
 	}
 
@@ -90,16 +78,23 @@ namespace Physics2D
 	}
 	void Window::testDistanceJoint()
 	{
+		
 	}
 	void Window::testPendulum()
 	{
 		rect = m_world.createBody();
 		rect->setShape(&rectangle);
-		rect->position().set({ -800, 800 });
+		rect->position().set({ -2, 2 });
 		rect->angle() = 0;
-		rect->setMass(5);
+		rect->setMass(100);
 		rect->setType(Body::BodyType::Dynamic);
-		
+
+		rect2 = m_world.createBody();
+		rect2->setShape(&ellipse);
+		rect2->position().set(0, 5);
+		rect2->angle() = 0;
+		rect2->setMass(100);
+		rect2->setType(Body::BodyType::Kinematic);
 	}
 
 	void Window::paintEvent(QPaintEvent*)
@@ -108,6 +103,7 @@ namespace Physics2D
 		//prepare for background, origin and clipping boundary
 		painter.setRenderHint(QPainter::Antialiasing);
 		painter.setClipRect(m_world.leftTop().x, m_world.leftTop().y, m_world.width(), m_world.height());
+		painter.setBackground(QBrush(QColor(50, 50, 50)));
 		painter.fillRect(QRectF(m_world.leftTop().x, m_world.leftTop().y, m_world.width(), m_world.height()),
 		                 QBrush(QColor(50, 50, 50)));
 		QPen origin(Qt::green, 10, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
@@ -116,17 +112,7 @@ namespace Physics2D
 		QPen pen(Qt::green, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 		Renderer::render(&painter, &m_world, pen);
 
-
-		RendererQtImpl::renderPoint(&painter, &m_world, originPoint, pen);
-		Vector2 pos = Matrix2x2(rect->angle()).multiply(targetPoint) + rect->position();
-		if(rect != nullptr)
-			RendererQtImpl::renderLine(&painter, &m_world, pos, originPoint, pen);
-
-		pen.setWidth(1);
-		for(const Vector2& p: m_rectCenter)
-		{
-			RendererQtImpl::renderPoint(&painter, &m_world, p, pen);
-		}
+		
 	}
 
 	void Window::resizeEvent(QResizeEvent* e)
@@ -150,7 +136,7 @@ namespace Physics2D
 		
 		//Vector2 pos(e->pos().x(), e->pos().y());
 		//originPoint.set(m_world.screenToWorld(pos));
-		repaint();
+		//repaint();
 	}
 
 	void Window::keyPressEvent(QKeyEvent* event)
@@ -309,70 +295,18 @@ namespace Physics2D
 			pen.setColor(Qt::red);
 		RendererQtImpl::renderAABB(painter, &m_world, uni, pen);
 	}
-
-	void Window::testShape(QPainter* painter)
+	
+	void Window::createStackBox(const uint16_t& row = 10, const real& margin = 65, const real& spacing = 55)
 	{
-		Rectangle m_rectShape;
-		Polygon m_polygon;
-		Circle m_circle;
-		Ellipse m_ellipse;
-		Edge m_edge;
-		Curve m_curve;
-		ShapePrimitive rect, polygon, circle, ellipse, edge, curve;
-		m_rectShape.set(50, 50);
-		m_rectShape.scale(2);
-		m_polygon.append({{-4, 1}, {-3, -5}, {5, -6}, {7, 4}, {0, 6}, {-4, 1}});
-		m_polygon.scale(10);
-		m_ellipse.set({-20, 15}, {20, -15});
-		m_ellipse.scale(5);
-		m_circle.setRadius(6);
-		m_circle.scale(12);
-		m_edge.set({-250, 40}, {350, 60});
-		m_curve.set({-600, 200}, {-50, 20}, {0, 40}, {600, 150});
-
-
-		QPen pen(Qt::green, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-
-		rect.shape = &m_rectShape;
-		rect.rotation = 45;
-		rect.transform.set(180, 120);
-		RendererQtImpl::renderRectangle(painter, &m_world, rect, pen);
-
-		pen.setWidth(2);
-		polygon.shape = &m_polygon;
-		polygon.rotation = 45;
-		polygon.transform.set(-240, 180);
-		RendererQtImpl::renderPolygon(painter, &m_world, polygon, pen);
-
-		circle.shape = &m_circle;
-		circle.transform.set(-200, 250);
-		RendererQtImpl::renderCircle(painter, &m_world, circle, pen);
-
-		ellipse.shape = &m_ellipse;
-		ellipse.rotation = m_angle;
-		ellipse.transform.set(-100, 440);
-		RendererQtImpl::renderEllipse(painter, &m_world, ellipse, pen);
-
-		edge.shape = &m_edge;
-		edge.transform.set(0, 400);
-		RendererQtImpl::renderEdge(painter, &m_world, edge, pen);
-
-		curve.shape = &m_curve;
-		curve.transform.set(0, 600);
-		RendererQtImpl::renderCurve(painter, &m_world, curve, pen);
-	}
-
-	void Window::createStackBox(const uint16_t& row = 10, const uint16_t& margin = 65, const uint16_t& spacing = 55)
-	{
-		for (int j = row; j > 0; j--)
+		for (real j = row; j > 0; j--)
 		{
-			for (int i = 0; i < 2 * (row - j) + 1; i++)
+			for (real i = 0; i < 2 * (row - j) + 1; i++)
 			{
 				Body* body = m_world.createBody();
 				//body->setAngle(j * j + 12);
 				body->setShape(&rectangle);
 				body->position().set({
-					static_cast<real>(-spacing * (row - j) + i * spacing), static_cast<real>(j * margin + margin)
+					static_cast<real>(-spacing * (row - j) + i * spacing), static_cast<real>(j * margin + margin) - 10
 				});
 			}
 		}

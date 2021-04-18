@@ -1,5 +1,7 @@
 #include "include/collision/broadphase/aabb.h"
 
+#include "include/geometry/algorithm/2d.h"
+
 namespace Physics2D
 {
 	bool AABB::collide(const AABB& other) const

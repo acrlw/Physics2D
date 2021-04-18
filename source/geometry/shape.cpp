@@ -1,4 +1,5 @@
-#include "include/dynamics/shape.h"
+#include "include/geometry/shape.h"
+#include "include/geometry/algorithm/2d.h"
 
 namespace Physics2D
 {

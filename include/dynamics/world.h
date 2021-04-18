@@ -78,6 +78,8 @@ namespace Physics2D
 
             Integrator integrator()const;
             void setIntegrator(const Integrator& integrator);
+
+
         private:
             Vector2 m_leftTop;
             Vector2 m_rightBottom;
@@ -97,6 +99,7 @@ namespace Physics2D
             std::vector<Body*> m_bodyList;
             Integrator m_integrator;
 
+    		
     		
     };
 }

@@ -3,7 +3,7 @@
 #include "include/collision/broadphase/aabb.h"
 #include "include/math/math.h"
 #include "include/common/common.h"
-#include "include/dynamics/shape.h"
+#include "include/geometry/shape.h"
 #include "include/math/integrator.h"
 
 namespace Physics2D

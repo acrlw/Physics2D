@@ -36,8 +36,7 @@ namespace Physics2D
 		void keyReleaseEvent(QKeyEvent* event) override;
 	
 	private:
-		void testShape(QPainter* painter);
-		void createStackBox(const uint16_t& row, const uint16_t& margin, const uint16_t& spacing);
+		void createStackBox(const uint16_t& row, const real& margin, const real& spacing);
 		void testHit(const QPoint& pos);
 		void testAABB(QPainter* painter);
 		void testBVH(QPainter* painter);
@@ -69,6 +68,7 @@ namespace Physics2D
 		Vector2 error;
 		Vector2 lastError;
 		Vector2 errorAll;
+		DistanceConstraintPrimitive p;
 	};
 }
 #endif

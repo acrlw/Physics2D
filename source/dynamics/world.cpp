@@ -28,16 +28,16 @@ namespace Physics2D
 				break;
 			case Body::BodyType::Dynamic:
 			{
-				const Vector2 forces = g + body->forces() - 0.5 * m_airFrictionCoefficient * body->velocity();
-					
-				body->velocity() += body->inverseMass() * forces * dt * m_velocityIteration;
-
+				body->forces() += g - 0.5 * m_airFrictionCoefficient * body->velocity();
+				body->velocity() += body->inverseMass() * body->forces() * dt * m_velocityIteration;
 				body->angularVelocity() += body->inverseInertia() * body->torques() * dt * m_velocityIteration;
 				
 				break;
 			}
 			case Body::BodyType::Kinematic:
 			{
+				body->velocity() += body->inverseMass() * body->forces() * dt * m_velocityIteration;
+				body->angularVelocity() += body->inverseInertia() * body->torques() * dt * m_velocityIteration;
 				break;
 			}
 			case Body::BodyType::Bullet:
@@ -66,6 +66,11 @@ namespace Physics2D
 			}
 			case Body::BodyType::Kinematic:
 			{
+				body->position() += body->velocity() * dt * m_positionIteration;
+				body->angle() += body->angularVelocity() * dt * m_positionIteration;
+
+				body->forces().clear();
+				body->clearTorque();
 				break;
 			}
 			case Body::BodyType::Bullet:
@@ -124,17 +129,20 @@ namespace Physics2D
 
 	Vector2 World::worldToScreen(const Vector2& leftTop, const Vector2& rightBottom, const Vector2& pos)
 	{
-		const real origin_y = rightBottom.y;
+		//real screen origin
+		const real origin_y = (rightBottom.y + leftTop.y) * (0.5f);
 		const real origin_x = (leftTop.x + rightBottom.x) * (0.5f);
-		return Vector2(origin_x + pos.x, origin_y - pos.y);
+		return Vector2(origin_x + pos.x * Constant::meterToPixel, origin_y - pos.y * Constant::meterToPixel);
 	}
 
 	Vector2 World::screenToWorld(const Vector2& leftTop, const Vector2& rightBottom, const Vector2& pos)
 	{
-		const real origin_y = rightBottom.y;
+		//real screen origin
+		const real origin_y = (rightBottom.y + leftTop.y) * (0.5f);
 		const real origin_x = (leftTop.x + rightBottom.x) * (0.5f);
 		Vector2 result = pos - Vector2(origin_x, origin_y);
 		result.y = -result.y;
+		result *= Constant::pixelToMeter;
 		return result;
 	}
 

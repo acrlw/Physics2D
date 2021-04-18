@@ -167,11 +167,11 @@ namespace Physics2D
 		int dir = 1;
 		if ((A_s1 - A_s2).lengthSquare() < (B_s1 - B_s2).lengthSquare())
 		{
-			witness = (A_s1 + A_s2) * (1 / 2);
+			witness = (A_s1 + A_s2) * (0.5f);
 		}
 		else
 		{
-			witness = (B_s1 + B_s2) * (1 / 2);
+			witness = (B_s1 + B_s2) * (0.5f);
 			dir = dir * -1;
 		}
 		mirror = witness + v_penetr * dir;

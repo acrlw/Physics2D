@@ -2,6 +2,9 @@
 
 namespace Physics2D
 {
+	Matrix2x2::Matrix2x2()
+	{
+	}
 	Matrix2x2::Matrix2x2(const real& angle)
 	{
 		setAngle(angle);

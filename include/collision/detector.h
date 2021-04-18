@@ -4,7 +4,7 @@
 #include "include/collision/algorithm/sat.h"
 #include "include/collision/contact.h"
 #include "include/math/math.h"
-#include "include/dynamics/shape.h"
+#include "include/geometry/shape.h"
 #include "include/dynamics/body.h"
 
 namespace Physics2D

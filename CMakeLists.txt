@@ -23,11 +23,11 @@ add_executable(physics-engine
     "include/collision/detector.h"
     "include/common/common.h"
     "include/dynamics/body.h"
-    "include/dynamics/shape.h"
+    "include/geometry/shape.h"
     "include/dynamics/world.h"
     "include/math/integrator.h"
     "include/math/math.h"
-    "include/math/algorithm/graphics/2d.h"
+    "include/geometry/algorithm/2d.h"
     "include/profile/profiler.h"
     "include/render/renderer.h"
     "include/math/linear/vector2.h"
@@ -51,11 +51,11 @@ add_executable(physics-engine
     "source/collision/contact.cpp"
     "source/common/common.cpp"
     "source/dynamics/body.cpp"
-    "source/dynamics/shape.cpp"
     "source/dynamics/world.cpp"
     "source/math/integrator.cpp"
     "source/math/math.cpp"
-    "source/math/algorithm/graphics/2d.cpp"
+    "source/geometry/algorithm/2d.cpp"
+    "source/geometry/shape.cpp"
     "source/math/linear/vector2.cpp"
     "source/math/linear/vector3.cpp"
     "source/math/linear/matrix2x2.cpp"
@@ -68,7 +68,13 @@ add_executable(physics-engine
     "source/collision/broadphase/aabb.cpp"
     "include/render/impl/renderer_qt.h"
     "testbed/window.h"
-    "testbed/window.cpp" "include/dynamics/joint/joint.h" "include/dynamics/joint/mouse.h" "include/dynamics/joint/revolute.h" "include/dynamics/joint/pulley.h" "include/dynamics/joint/point.h" "include/dynamics/joint/distance.h")
+    "testbed/window.cpp"
+    "include/dynamics/joint/joint.h"
+    "include/dynamics/joint/mouse.h"
+    "include/dynamics/joint/revolute.h"
+    "include/dynamics/joint/pulley.h"
+    "include/dynamics/joint/point.h"
+    "include/dynamics/joint/distance.h")
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 find_package(fmt CONFIG REQUIRED)

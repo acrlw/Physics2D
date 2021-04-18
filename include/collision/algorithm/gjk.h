@@ -4,8 +4,8 @@
 
 #include "include/common/common.h"
 #include "include/collision/contact.h"
-#include "include/dynamics/shape.h"
-#include "include/math/algorithm/graphics/2d.h"
+#include "include/geometry/shape.h"
+#include "include/geometry/algorithm/2d.h"
 namespace Physics2D
 {
 

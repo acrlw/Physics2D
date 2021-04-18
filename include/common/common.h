@@ -38,6 +38,12 @@ namespace Physics2D
 		const real ReciprocalOfPi = 0.3183098861837907;
 		const real GJKIteration = 50;
 		const real EPAEpsilon = 0.0001;
+
+
+		//1 meter -> x pixel
+		const real meterToPixel = 50.0f;
+		//1 pixel -> 1 / x meter
+		const real pixelToMeter = 1.0f / meterToPixel;
 	}
 }
 
