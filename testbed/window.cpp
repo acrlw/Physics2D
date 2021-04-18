@@ -21,12 +21,15 @@ namespace Physics2D
 		edge.set({-8, -3}, {8, -3});
 
 		m_world.setEnableGravity(true);
-		m_world.setLinearVelocityDamping(0.9f);
-		m_world.setAirFrictionCoefficient(0.1f);
+		m_world.setLinearVelocityDamping(1.0f);
+		m_world.setAirFrictionCoefficient(1.0f);
 		m_world.setAngularVelocityDamping(0.01f);
 		//createStackBox(10, 1.2, 1.2);
-		targetPoint.set({0.5, 0});
+
 		testPendulum();
+		
+		
+
 		connect(&m_timer, &QTimer::timeout, this, &Window::process);
 		m_timer.setInterval(15);
 		m_timer.start();
@@ -40,9 +43,9 @@ namespace Physics2D
 	{
 		const real dt = 1.0f / 60.0f;
 		const real inv_dt = 60.0f;
-		rect2->angularVelocity() = 5;
+		rect->angularVelocity() = 9;
 		m_world.stepVelocity(dt);
-		
+
 		m_world.stepPosition(dt);
 		
 		repaint();
@@ -84,17 +87,18 @@ namespace Physics2D
 	{
 		rect = m_world.createBody();
 		rect->setShape(&rectangle);
-		rect->position().set({ -2, 2 });
+		rect->position().set({ 0, 4 });
 		rect->angle() = 0;
-		rect->setMass(100);
-		rect->setType(Body::BodyType::Dynamic);
+		rect->setMass(DBL_MAX);
+		rect->setType(Body::BodyType::Kinematic);
 
 		rect2 = m_world.createBody();
-		rect2->setShape(&ellipse);
-		rect2->position().set(0, 5);
+		rect2->setShape(&rectangle);
+		rect2->position().set(-12, -9);
 		rect2->angle() = 0;
 		rect2->setMass(100);
-		rect2->setType(Body::BodyType::Kinematic);
+		rect2->setType(Body::BodyType::Dynamic);
+		
 	}
 
 	void Window::paintEvent(QPaintEvent*)
@@ -111,8 +115,15 @@ namespace Physics2D
 
 		QPen pen(Qt::green, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 		Renderer::render(&painter, &m_world, pen);
+		if(rect2 != nullptr)
+		{
 
-		
+		}
+		//pen.setWidth(1);
+		//for (const Vector2& p : m_rectCenter)
+		//{
+		//	RendererQtImpl::renderPoint(&painter, &m_world, p, pen);
+		//}
 	}
 
 	void Window::resizeEvent(QResizeEvent* e)

@@ -28,7 +28,7 @@ namespace Physics2D
 				break;
 			case Body::BodyType::Dynamic:
 			{
-				body->forces() += g - 0.5 * m_airFrictionCoefficient * body->velocity();
+				body->forces() += g;
 				body->velocity() += body->inverseMass() * body->forces() * dt * m_velocityIteration;
 				body->angularVelocity() += body->inverseInertia() * body->torques() * dt * m_velocityIteration;
 				

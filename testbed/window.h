@@ -13,7 +13,7 @@
 #include <include/render/impl/renderer_qt.h>
 
 #include "include/dynamics/constraint/constraint.h"
-
+#include "include/dynamics/joint/joint.h"
 namespace Physics2D
 {
 	class Window : public QWidget
@@ -62,13 +62,13 @@ namespace Physics2D
 		Body* ground;
 		real angle = 0;
 		real radius = 150;
-		Vector2 originPoint = { 0, 550 };
+		Vector2 originPoint = { 0, 0 };
 		Vector2 targetPoint;
 		std::vector<Vector2> m_rectCenter;
 		Vector2 error;
 		Vector2 lastError;
 		Vector2 errorAll;
-		DistanceConstraintPrimitive p;
+		Joint joint;
 	};
 }
 #endif
