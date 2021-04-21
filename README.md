@@ -10,7 +10,8 @@ cmake CMakeLists.txt
 
 # Features
 - Collision Detection
-  - GJK/EPA
+  - GJK
+  - EPA
 - Simple 2D Geometry Algorithm
 - Rigid Body Dynamics Simulation
 - Axis-Aligned Bounding Box Generator
@@ -18,9 +19,12 @@ cmake CMakeLists.txt
 # Future
 - Sequential Impulse Solver
 - Joint
+  - Mouse
   - Prismatic
   - Angle
   - Point
   - Weld
   - Distance
 - Dynamic Bounding Volume Hierarchy Generator
+- V-Clip Algorithm
+- GJK Distance Algorithm
