@@ -13,6 +13,7 @@ namespace Physics2D
 
         Vector2 operator+(const Vector2& rhs)const;
         Vector2 operator-(const Vector2& rhs)const;
+        Vector2 operator-()const;
         Vector2 operator*(const int& factor)const;
         Vector2 operator*(const real& factor)const;
         Vector2 operator/(const real& factor)const;

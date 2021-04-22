@@ -44,7 +44,7 @@ namespace Physics2D
 
 			auto [isCollide, simplex] = GJK::gjk(spa, spb);
 			simplex = GJK::epa(spa, spb, simplex);
-			ContactInfo info = GJK::dumpInfo(spa, spb, simplex);
+			Contact info = GJK::dumpInfo(spa, spb, simplex);
 
 			auto result = GeometryAlgorithm2D::lineSegmentIntersection({ -4,2 }, { -2,3 }, { -2,0 }, { -3,4 });
 			if (result.has_value())

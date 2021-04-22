@@ -32,6 +32,7 @@ namespace Physics2D
 		void mousePressEvent(QMouseEvent*) override;
 		void mouseReleaseEvent(QMouseEvent* e) override;
 		void mouseMoveEvent(QMouseEvent* e) override;
+		void mouseDoubleClickEvent(QMouseEvent* event) override;
 		void keyPressEvent(QKeyEvent* event) override;
 		void keyReleaseEvent(QKeyEvent* event) override;
 	
@@ -68,6 +69,8 @@ namespace Physics2D
 		Vector2 error;
 		Vector2 lastError;
 		Vector2 errorAll;
+		Vector2 clickPos;
+		Vector2 mousePos;
 		Joint joint;
 	};
 }

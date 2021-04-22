@@ -69,7 +69,7 @@ namespace Physics2D
             /// <param name="shape_B"></param>
             /// <param name="simplex"></param>
             /// <returns></returns>
-            static ContactInfo dumpInfo(const ShapePrimitive& shape_A, const ShapePrimitive& shape_B, const Simplex& simplex);
+            static Contact dumpInfo(const ShapePrimitive& shape_A, const ShapePrimitive& shape_B, const Simplex& simplex);
             /// <summary>
             /// Support function.
             /// </summary>
@@ -107,6 +107,13 @@ namespace Physics2D
             /// <param name="pointToOrigin"></param>
             /// <returns></returns>
             static Vector2 calculateDirectionByEdge(const Vector2& p1, const Vector2& p2, bool pointToOrigin = true);
+    		/// <summary>
+    		/// Calculate the distance of two shape primitive
+    		/// </summary>
+    		/// <param name="shapeA"></param>
+    		/// <param name="shapeB"></param>
+    		/// <returns></returns>
+    		static Contact distance(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB, const real& iteration = 50, const real& epsilon = 0.0001);
     };
 }
 

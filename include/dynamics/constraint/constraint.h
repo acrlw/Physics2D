@@ -48,6 +48,16 @@ namespace Physics2D
 					primitive.source->angularVelocity() += primitive.source->inverseInertia() * torque;
 					primitive.lastError = cPos;
 					primitive.lastCross = torque;
+
+					//angle and angular velocity approximation
+					if (abs(primitive.source->angle()) < 0.5)
+					{
+						if (abs(primitive.source->angularVelocity()) < 0.5)
+						{
+							primitive.source->angularVelocity() = 0;
+						}
+						primitive.source->angle() = 0;
+					}
 				}
 			}
 		}

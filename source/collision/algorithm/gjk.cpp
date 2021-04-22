@@ -29,17 +29,6 @@ namespace Physics2D
 					return true;
 				return false;
 			}
-		case 2:
-			{
-				Vector2 oa = simplex.vertices[0].result * -1;
-				Vector2 ob = simplex.vertices[1].result * -1;
-				return Vector2::crossProduct(oa, ob) == 0;
-			}
-		case 1:
-			{
-				return simplex.vertices[0].result.length() == 0;
-				break;
-			}
 		default:
 			return false;
 		}
@@ -145,10 +134,10 @@ namespace Physics2D
 		return simplex;
 	}
 
-	ContactInfo GJK::dumpInfo(const ShapePrimitive& shape_A, const ShapePrimitive& shape_B, const Simplex& simplex)
+	Contact GJK::dumpInfo(const ShapePrimitive& shape_A, const ShapePrimitive& shape_B, const Simplex& simplex)
 	{
-		ContactInfo result;
-		result.isCollide = simplex.isContainOrigin;
+		Contact result;
+		result.isColliding = simplex.isContainOrigin;
 		auto [index1, index2] = findEdgeClosestToOrigin(simplex);
 		const Vector2 A_s1 = simplex.vertices[index1].pointA;
 		const Vector2 A_s2 = simplex.vertices[index2].pointA;
@@ -161,8 +150,9 @@ namespace Physics2D
 			normal();
 		real originToEdge = abs(normal.dot(simplex.vertices[index1].result));
 		v_penetr = normal * originToEdge * -1;
-		result.penetration = v_penetr;
-
+		result.normal = normal * -1;
+		result.penetration = originToEdge;
+		
 
 		int dir = 1;
 		if ((A_s1 - A_s2).lengthSquare() < (B_s1 - B_s2).lengthSquare())
@@ -200,6 +190,9 @@ namespace Physics2D
 		size_t index1 = 0;
 		size_t index2 = 0;
 
+		if(simplex.vertices.size() == 2)
+			return std::make_tuple(0, 1);
+		
 		for (size_t i = 0; i < simplex.vertices.size() - 1; i++)
 		{
 			Vector2 a = simplex.vertices[i].result;
@@ -310,6 +303,35 @@ namespace Physics2D
 			Vector2::dotProduct(ao, perpendicularOfAB) > 0 && !pointToOrigin))
 			perpendicularOfAB.negate();
 		return perpendicularOfAB;
+	}
+
+	Contact GJK::distance(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB, const real& iteration, const real& epsilon)
+	{
+		Contact result;
+		Simplex simplex;
+		Vector2 direction = shapeB.transform - shapeA.transform;
+		Minkowski m = support(shapeA, shapeB, direction);
+		simplex.vertices.emplace_back(m);
+		direction.negate();
+		m = support(shapeA, shapeB, direction);
+		simplex.vertices.emplace_back(m);
+		int iter = 0;
+		while (iter++ < iteration)
+		{
+			direction = calculateDirectionByEdge(simplex.vertices[0].result, simplex.vertices[1].result, true);
+			m = support(shapeA, shapeB, direction);
+			
+			if (simplex.contains(m))
+				break;
+
+			simplex.vertices.emplace_back(m);
+			simplex.vertices.emplace_back(simplex.vertices[0]);
+			auto [index1, index2] = findEdgeClosestToOrigin(simplex);
+			adjustSimplex(simplex, index1, index2);
+			
+		}
+		result = dumpInfo(shapeA, shapeB, simplex);
+		return result;
 	}
 
 	Minkowski::Minkowski(const Vector2& point_a, const Vector2& point_b) : pointA(point_a), pointB(point_b),

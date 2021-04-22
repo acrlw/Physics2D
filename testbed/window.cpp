@@ -10,26 +10,32 @@ namespace Physics2D
 		this->setMouseTracking(true);
 		m_world.setGeometry({0, 0}, {1920, 1080});
 
-		rectangle.set(1, 1);
+		rectangle.set(2, 2);
 
-		polygon.append({ {-5,0}, {5, -2.5}, {2, 2.5}, {-5, 0} });
-		polygon.scale(0.2);
+		land.set(24, 0.5);
+		polygon.append({ {3,0}, {0, 3}, {-3, 0}, {-2, -3},{2, -3}, {3, 0} });
+		//polygon.scale(0.2);
 		ellipse.set({-4, 3}, {4, -3});
-		ellipse.scale(0.4);
-		circle.setRadius(1);
-		//circle.scale(12);
-		edge.set({-8, -3}, {8, -3});
+		ellipse.scale(0.2);
+		circle.setRadius(0.5);
+		edge.set({-8, 0}, {8, 0});
 
 		m_world.setEnableGravity(true);
-		m_world.setLinearVelocityDamping(1.0f);
-		m_world.setAirFrictionCoefficient(1.0f);
-		m_world.setAngularVelocityDamping(0.01f);
+		m_world.setLinearVelocityDamping(0.8f);
+		m_world.setAirFrictionCoefficient(0.8f);
+		m_world.setAngularVelocityDamping(0.8f);
 		//createStackBox(10, 1.2, 1.2);
 
-		testPendulum();
+		//testPendulum();
+		testCollision();
+		ShapePrimitive p1, p2;
+		p1.shape = &rectangle;
+		p1.transform.set(4, 3);
+		p1.rotation = 45;
+		p2.shape = &polygon;
+		p2.transform.set(0, 0);
+		p2.rotation = 0;
 		
-		
-
 		connect(&m_timer, &QTimer::timeout, this, &Window::process);
 		m_timer.setInterval(15);
 		m_timer.start();
@@ -43,26 +49,55 @@ namespace Physics2D
 	{
 		const real dt = 1.0f / 60.0f;
 		const real inv_dt = 60.0f;
-		rect->angularVelocity() = 9;
 		m_world.stepVelocity(dt);
+		//rect->angularVelocity() = 9;
+		//auto result = Detector::detect(rect2, ground);
+		//if(result.info.isColliding)
+		//{
+		//	CollisionSolver solver;
+		//	solver.add(result);
+		//	solver.initialize(dt);
+		//	solver.solve(dt);
+		//}
 
-		m_world.stepPosition(dt);
+
 		
+		m_world.stepPosition(dt);
+
 		repaint();
 	}
 	void Window::testCollision()
 	{
-		ground = m_world.createBody();
-		ground->setShape(&land);
-		ground->position().set({0, 100});
-		ground->setMass(100);
-
+		rect2 = m_world.createBody();
+		rect2->setShape(&rectangle);
+		rect2->position().set({ 0, 0 });
+		rect2->angle() = 5;
+		rect2->setMass(100);
+		rect2->setType(Body::BodyType::Dynamic);
+		
+		rect3 = m_world.createBody();
+		rect3->setShape(&ellipse);
+		rect3->position().set({ -1, -2 });
+		rect3->angle() = 45;
+		rect3->setMass(100);
+		rect3->setType(Body::BodyType::Dynamic);
+		
 		rect = m_world.createBody();
 		rect->setShape(&rectangle);
-		rect->position().set({0, 800});
-		rect->angle() = 45;
-		rect->setMass(100);
-		rect->setType(Body::BodyType::Dynamic);
+		rect->position().set({ 0, 6 });
+		rect->angle() = 0;
+		rect->setMass(DBL_MAX);
+		rect->setType(Body::BodyType::Kinematic);
+		
+		ground = m_world.createBody();
+		ground->setShape(&land);
+		ground->position().set({0, -8});
+		ground->setMass(1000000);
+		ground->setType(Body::BodyType::Static);
+		
+		//createStackBox(5, 1.1, 1.1);
+		
+		
 	}
 
 	void Window::createSnakeBody()
@@ -117,7 +152,6 @@ namespace Physics2D
 		Renderer::render(&painter, &m_world, pen);
 		if(rect2 != nullptr)
 		{
-
 		}
 		//pen.setWidth(1);
 		//for (const Vector2& p : m_rectCenter)
@@ -133,21 +167,36 @@ namespace Physics2D
 		this->repaint();
 	}
 
-	void Window::mousePressEvent(QMouseEvent*)
+	void Window::mousePressEvent(QMouseEvent*e)
 	{
+
+		Vector2 pos(e->pos().x(), e->pos().y());
+		mousePos = m_world.screenToWorld(pos);
 	}
 
 	void Window::mouseReleaseEvent(QMouseEvent* e)
 	{
+		Vector2 pos(e->pos().x(), e->pos().y());
+		mousePos = m_world.screenToWorld(pos);
+		clickPos.clear();
 	}
+	
 
 	void Window::mouseMoveEvent(QMouseEvent* e)
 	{
 		//testHit(e->pos());
 		
-		//Vector2 pos(e->pos().x(), e->pos().y());
+		Vector2 pos(e->pos().x(), e->pos().y());
+		mousePos = m_world.screenToWorld(pos);
 		//originPoint.set(m_world.screenToWorld(pos));
-		//repaint();
+		repaint();
+	}
+
+	void Window::mouseDoubleClickEvent(QMouseEvent* event)
+	{
+		Vector2 pos(event->x(), event->y());
+		clickPos.set(m_world.screenToWorld(pos));
+		fmt::print("select body at {}\n",clickPos);
 	}
 
 	void Window::keyPressEvent(QKeyEvent* event)
@@ -266,15 +315,7 @@ namespace Physics2D
 			}
 		}
 
-		if (m_lastBody != nullptr)
-		{
-			ShapePrimitive shape;
-			shape.shape = m_lastBody->shape();
-			shape.rotation = m_lastBody->angle();
-			shape.transform = m_lastBody->position();
-			QPen contact(Qt::red, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-			//RendererQtImpl::renderShape(&painter, &m_world, shape, contact);
-		}
+		
 	}
 
 	void Window::testAABB(QPainter* painter)
@@ -314,11 +355,13 @@ namespace Physics2D
 			for (real i = 0; i < 2 * (row - j) + 1; i++)
 			{
 				Body* body = m_world.createBody();
-				//body->setAngle(j * j + 12);
-				body->setShape(&rectangle);
 				body->position().set({
-					static_cast<real>(-spacing * (row - j) + i * spacing), static_cast<real>(j * margin + margin) - 10
-				});
+					static_cast<real>(-spacing * (row - j) + i * spacing), static_cast<real>(j * margin + margin) + 2
+					});
+				body->setShape(&rectangle);
+				body->angle() = 0;
+				body->setMass(100);
+				body->setType(Body::BodyType::Dynamic);
 			}
 		}
 	}
