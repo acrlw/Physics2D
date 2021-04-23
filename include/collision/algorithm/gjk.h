@@ -36,6 +36,7 @@ namespace Physics2D
     	
             void insert(const size_t& pos, const Minkowski& vertex);
             bool contains(const Minkowski& minkowski);
+            bool fuzzyContains(const Minkowski& minkowski, const real& epsilon = 0.0001);
             Vector2 lastVertex()const;
     };
 
@@ -113,7 +114,7 @@ namespace Physics2D
     		/// <param name="shapeA"></param>
     		/// <param name="shapeB"></param>
     		/// <returns></returns>
-    		static Contact distance(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB, const real& iteration = 50, const real& epsilon = 0.0001);
+    		static Contact distance(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB, const real& iteration = 50, const real& epsilon = 0.000001);
     };
 }
 

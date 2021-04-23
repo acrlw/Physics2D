@@ -44,6 +44,16 @@ namespace Physics2D
 		return std::find(std::begin(vertices), std::end(vertices), minkowski) != std::end(vertices);
 	}
 
+	bool Simplex::fuzzyContains(const Minkowski& minkowski, const real& epsilon)
+	{
+		auto result = std::find_if(std::begin(vertices), std::end(vertices), 
+			[=](const Minkowski& element)
+			{
+				return (minkowski.result - element.result).lengthSquare() < epsilon;
+			});
+		return result != std::end(vertices);
+	}
+
 	Vector2 Simplex::lastVertex() const
 	{
 		if (vertices.size() == 2)
@@ -108,26 +118,22 @@ namespace Physics2D
 		Simplex edge;
 		Simplex simplex = src;
 		Vector2 normal;
-		real originToEdge;
 		Minkowski p;
 		while (iter <= iteration)
 		{
 			auto [index1, index2] = findEdgeClosestToOrigin(simplex);
 			normal = calculateDirectionByEdge(simplex.vertices[index1].result, simplex.vertices[index2].result, false).
 				normal();
-			originToEdge = abs(normal.dot(simplex.vertices[index1].result));
+
 			//new minkowski point
 			p = support(shape_A, shape_B, normal);
 
 			if (simplex.contains(p))
 				break;
 
-			const real d = p.result.dot(normal);
-			const real diff = abs(d - originToEdge);
-			//if distance of origin to edge is close enough to the distance of origin to edge point
-			if (diff < epsilon)
+			if (simplex.fuzzyContains(p, epsilon))
 				break;
-
+			
 			simplex.insert(index1, p);
 			iter++;
 		}
@@ -138,6 +144,42 @@ namespace Physics2D
 	{
 		Contact result;
 		result.isColliding = simplex.isContainOrigin;
+		if(simplex.vertices.size() == 2)
+		{
+
+
+			const Vector2 A_s1 = simplex.vertices[0].pointA;
+			const Vector2 A_s2 = simplex.vertices[1].pointA;
+			const Vector2 B_s1 = simplex.vertices[0].pointB;
+			const Vector2 B_s2 = simplex.vertices[1].pointB;
+			
+			Vector2 witness, mirror;
+
+			real diffEpsilonA = (A_s1 - A_s2).lengthSquare();
+			real diffEpsilonB = (B_s1 - B_s2).lengthSquare();
+			//two point
+			if(diffEpsilonA < 0.0001 && diffEpsilonB < 0.0001)
+			{
+				result.contactA = (A_s1 + A_s2) * 0.5;
+				result.contactB = (B_s1 + B_s2) * 0.5;
+				return result;
+			}
+			//point a and edge b
+			if(diffEpsilonA < 0.0001 && diffEpsilonB > 0.0001)
+			{
+				result.contactA = (A_s1 + A_s2) * 0.5;
+				result.contactB = GeometryAlgorithm2D::pointToLineSegment(B_s1, B_s2, result.contactA);
+				return result;
+			}
+			//point b and edge a
+			if (diffEpsilonA > 0.0001 && diffEpsilonB < 0.0001)
+			{
+				result.contactB = (B_s1 + B_s2) * 0.5;
+				result.contactA = GeometryAlgorithm2D::pointToLineSegment(A_s1, A_s2, result.contactB);
+				return result;
+			}
+			
+		}
 		auto [index1, index2] = findEdgeClosestToOrigin(simplex);
 		const Vector2 A_s1 = simplex.vertices[index1].pointA;
 		const Vector2 A_s2 = simplex.vertices[index2].pointA;
@@ -208,6 +250,16 @@ namespace Physics2D
 				index2 = i + 1;
 				min_dist = projection;
 			}
+			else if(realEqual(min_dist, projection))
+			{
+				real length1 = a.lengthSquare() + b.lengthSquare();
+				real length2 = simplex.vertices[index1].result.lengthSquare() + simplex.vertices[index2].result.lengthSquare();
+				if(length1 < length2)
+				{
+					index1 = i;
+					index2 = i + 1;
+				}
+			}
 		}
 		return std::make_tuple(index1, index2);
 	}
@@ -241,8 +293,8 @@ namespace Physics2D
 		case Shape::Type::Circle:
 			{
 				const Circle* circle = dynamic_cast<const Circle*>(shape.shape);
-				target = direction.normal() * circle->radius();
-				break;
+				target = direction.normal() * circle->radius() + shape.transform;
+				return target;
 			}
 		case Shape::Type::Ellipse:
 			{
@@ -324,11 +376,15 @@ namespace Physics2D
 			if (simplex.contains(m))
 				break;
 
+			//for ellipse
+			if (simplex.fuzzyContains(m, epsilon))
+				break;
+			
 			simplex.vertices.emplace_back(m);
 			simplex.vertices.emplace_back(simplex.vertices[0]);
 			auto [index1, index2] = findEdgeClosestToOrigin(simplex);
 			adjustSimplex(simplex, index1, index2);
-			
+
 		}
 		result = dumpInfo(shapeA, shapeB, simplex);
 		return result;

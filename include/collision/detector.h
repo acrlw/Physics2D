@@ -45,6 +45,35 @@ namespace Physics2D
                     simplex = GJK::epa(shapeA, shapeB, simplex);
                     result.info = GJK::dumpInfo(shapeA, shapeB, simplex);
             	}
+                
+                return result;
+
+            }
+			static CollisionInfo distance(Body* bodyA, Body* bodyB)
+            {
+
+                CollisionInfo result;
+
+                if (bodyA == nullptr || bodyB == nullptr)
+                    return result;
+
+                if (bodyA == bodyB)
+                    return result;
+
+                result.bodyA = bodyA;
+                result.bodyB = bodyB;
+
+                ShapePrimitive shapeA, shapeB;
+                shapeA.shape = bodyA->shape();
+                shapeA.rotation = bodyA->angle();
+                shapeA.transform = bodyA->position();
+
+                shapeB.shape = bodyB->shape();
+                shapeB.rotation = bodyB->angle();
+                shapeB.transform = bodyB->position();
+                
+                result.info = GJK::distance(shapeA, shapeB);
+
                 return result;
 
             }

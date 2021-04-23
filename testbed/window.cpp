@@ -10,14 +10,14 @@ namespace Physics2D
 		this->setMouseTracking(true);
 		m_world.setGeometry({0, 0}, {1920, 1080});
 
-		rectangle.set(2, 2);
-
+		rectangle.set(1, 1);
 		land.set(24, 0.5);
 		polygon.append({ {3,0}, {0, 3}, {-3, 0}, {-2, -3},{2, -3}, {3, 0} });
-		//polygon.scale(0.2);
+		polygon.scale(0.2);
 		ellipse.set({-4, 3}, {4, -3});
 		ellipse.scale(0.2);
 		circle.setRadius(0.5);
+		//circle.scale(7);
 		edge.set({-8, 0}, {8, 0});
 
 		m_world.setEnableGravity(true);
@@ -28,14 +28,6 @@ namespace Physics2D
 
 		//testPendulum();
 		testCollision();
-		ShapePrimitive p1, p2;
-		p1.shape = &rectangle;
-		p1.transform.set(4, 3);
-		p1.rotation = 45;
-		p2.shape = &polygon;
-		p2.transform.set(0, 0);
-		p2.rotation = 0;
-		
 		connect(&m_timer, &QTimer::timeout, this, &Window::process);
 		m_timer.setInterval(15);
 		m_timer.start();
@@ -50,7 +42,8 @@ namespace Physics2D
 		const real dt = 1.0f / 60.0f;
 		const real inv_dt = 60.0f;
 		m_world.stepVelocity(dt);
-		//rect->angularVelocity() = 9;
+		rect->angularVelocity() = 9;
+	    rect2->angularVelocity() = -9;
 		//auto result = Detector::detect(rect2, ground);
 		//if(result.info.isColliding)
 		//{
@@ -69,23 +62,23 @@ namespace Physics2D
 	void Window::testCollision()
 	{
 		rect2 = m_world.createBody();
-		rect2->setShape(&rectangle);
-		rect2->position().set({ 0, 0 });
-		rect2->angle() = 5;
+		rect2->setShape(&circle);
+		rect2->position().set({ 0, 2 });
+		rect2->angle() = 94;
 		rect2->setMass(100);
-		rect2->setType(Body::BodyType::Dynamic);
+		rect2->setType(Body::BodyType::Kinematic);
 		
 		rect3 = m_world.createBody();
 		rect3->setShape(&ellipse);
-		rect3->position().set({ -1, -2 });
+		rect3->position().set({ -1, 0 });
 		rect3->angle() = 45;
 		rect3->setMass(100);
 		rect3->setType(Body::BodyType::Dynamic);
 		
 		rect = m_world.createBody();
-		rect->setShape(&rectangle);
+		rect->setShape(&polygon);
 		rect->position().set({ 0, 6 });
-		rect->angle() = 0;
+		rect->angle() = -115;
 		rect->setMass(DBL_MAX);
 		rect->setType(Body::BodyType::Kinematic);
 		
@@ -153,6 +146,15 @@ namespace Physics2D
 		if(rect2 != nullptr)
 		{
 		}
+		auto result = Detector::distance(rect, rect2);
+		RendererQtImpl::renderLine(&painter, &m_world, result.info.contactA, result.info.contactB, pen);
+
+		//auto result = Detector::detect(rect, rect2);
+		//if(result.info.isColliding)
+		//{
+		//	pen.setColor(Qt::red);
+		//	RendererQtImpl::renderLine(&painter, &m_world, result.info.contactA, result.info.contactB, pen);
+		//}
 		//pen.setWidth(1);
 		//for (const Vector2& p : m_rectCenter)
 		//{
@@ -205,23 +207,23 @@ namespace Physics2D
 		{
 		case Qt::Key_R:
 			{
-				m_angle += 8;
+				m_angle += 1;
 				break;
 			}
 		case Qt::Key_Q:
 			{
-				m_angle -= 8;
+				m_angle -= 1;
 				break;
 			}
 		case Qt::Key_D:
 			{
-			rect->velocity() += Vector2(5, 0);
+			//rect->velocity() += Vector2(5, 0);
 				originPoint.set(originPoint + Vector2(5, 0));
 				break;
 			}
 		case Qt::Key_A:
 			{
-			rect->velocity() += Vector2(-5, 0);
+			//rect->velocity() += Vector2(-5, 0);
 				originPoint.set(originPoint + Vector2(-5, 0));
 				break;
 			}
@@ -237,7 +239,7 @@ namespace Physics2D
 			}
 		case Qt::Key_Space:
 		{
-			rect->forces() += Vector2(0, 50);
+			//rect->forces() += Vector2(0, 50);
 			originPoint.set(originPoint + Vector2(0, 5));
 			break;
 		}
@@ -249,44 +251,44 @@ namespace Physics2D
 
 	void Window::keyReleaseEvent(QKeyEvent* event)
 	{
-		switch (event->key())
-		{
-		case Qt::Key_R:
-		{
-			m_angle += 8;
-			break;
-		}
-		case Qt::Key_Q:
-		{
-			m_angle -= 8;
-			break;
-		}
-		case Qt::Key_D:
-		{
-			rect->velocity() += Vector2(5, 0);
-			originPoint.set(originPoint + Vector2(5, 0));
-			break;
-		}
-		case Qt::Key_A:
-		{
-			rect->velocity() += Vector2(-5, 0);
-			originPoint.set(originPoint + Vector2(-5, 0));
-			break;
-		}
-		case Qt::Key_S:
-		{
-			originPoint.set(originPoint + Vector2(0, -5));
-			break;
-		}
-		case Qt::Key_Space:
-		{
-			rect->forces() += Vector2(0, 50);
-			originPoint.set(originPoint + Vector2(0, 5));
-			break;
-		}
-		default:
-			break;
-		}
+		//switch (event->key())
+		//{
+		//case Qt::Key_R:
+		//{
+		//	m_angle += 8;
+		//	break;
+		//}
+		//case Qt::Key_Q:
+		//{
+		//	m_angle -= 8;
+		//	break;
+		//}
+		//case Qt::Key_D:
+		//{
+		//	rect->velocity() += Vector2(5, 0);
+		//	originPoint.set(originPoint + Vector2(5, 0));
+		//	break;
+		//}
+		//case Qt::Key_A:
+		//{
+		//	rect->velocity() += Vector2(-5, 0);
+		//	originPoint.set(originPoint + Vector2(-5, 0));
+		//	break;
+		//}
+		//case Qt::Key_S:
+		//{
+		//	originPoint.set(originPoint + Vector2(0, -5));
+		//	break;
+		//}
+		//case Qt::Key_Space:
+		//{
+		//	rect->forces() += Vector2(0, 50);
+		//	originPoint.set(originPoint + Vector2(0, 5));
+		//	break;
+		//}
+		//default:
+		//	break;
+		//}
 		repaint();
 	}
 
