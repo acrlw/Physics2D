@@ -10,12 +10,12 @@ namespace Physics2D
 		this->setMouseTracking(true);
 		m_world.setGeometry({0, 0}, {1920, 1080});
 
-		rectangle.set(1, 1);
+		rectangle.set(2, 2);
 		land.set(24, 0.5);
 		polygon.append({ {3,0}, {0, 3}, {-3, 0}, {-2, -3},{2, -3}, {3, 0} });
-		polygon.scale(0.2);
+		polygon.scale(0.6);
 		ellipse.set({-4, 3}, {4, -3});
-		ellipse.scale(0.2);
+		ellipse.scale(0.6);
 		circle.setRadius(0.5);
 		//circle.scale(7);
 		edge.set({-8, 0}, {8, 0});
@@ -62,10 +62,10 @@ namespace Physics2D
 	void Window::testCollision()
 	{
 		rect2 = m_world.createBody();
-		rect2->setShape(&circle);
-		rect2->position().set({ 0, 2 });
+		rect2->setShape(&polygon);
+		rect2->position().set({ 0, -2 });
 		rect2->angle() = 94;
-		rect2->setMass(100);
+		rect2->setMass(200);
 		rect2->setType(Body::BodyType::Kinematic);
 		
 		rect3 = m_world.createBody();
@@ -85,7 +85,7 @@ namespace Physics2D
 		ground = m_world.createBody();
 		ground->setShape(&land);
 		ground->position().set({0, -8});
-		ground->setMass(1000000);
+		ground->setMass(DBL_MAX);
 		ground->setType(Body::BodyType::Static);
 		
 		//createStackBox(5, 1.1, 1.1);

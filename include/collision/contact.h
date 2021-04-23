@@ -98,7 +98,7 @@ namespace Physics2D
 	private:
         std::vector<CollisionInfo> m_list;
 		real m_allowedPenetration = 0.02;
-		real m_bias = 0.02;
+		real m_bias = 0.2;
 		real m_iteration = 1;
 	};
 }

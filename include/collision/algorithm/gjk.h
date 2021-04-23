@@ -111,7 +111,7 @@ namespace Physics2D
     		/// <summary>
     		/// Calculate the distance of two shape primitive
     		/// </summary>
-    		/// <param name="shapeA"></param>
+    		/// <param name="shapeA"></param>'
     		/// <param name="shapeB"></param>
     		/// <returns></returns>
     		static Contact distance(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB, const real& iteration = 50, const real& epsilon = 0.000001);
