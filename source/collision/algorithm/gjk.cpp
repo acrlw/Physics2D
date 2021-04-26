@@ -46,11 +46,11 @@ namespace Physics2D
 
 	bool Simplex::fuzzyContains(const Minkowski& minkowski, const real& epsilon)
 	{
-		auto result = std::find_if(std::begin(vertices), std::end(vertices), 
-			[=](const Minkowski& element)
-			{
-				return (minkowski.result - element.result).lengthSquare() < epsilon;
-			});
+		auto result = std::find_if(std::begin(vertices), std::end(vertices),
+		                           [=](const Minkowski& element)
+		                           {
+			                           return (minkowski.result - element.result).lengthSquare() < epsilon;
+		                           });
 		return result != std::end(vertices);
 	}
 
@@ -122,9 +122,13 @@ namespace Physics2D
 		while (iter <= iteration)
 		{
 			auto [index1, index2] = findEdgeClosestToOrigin(simplex);
+			
 			normal = calculateDirectionByEdge(simplex.vertices[index1].result, simplex.vertices[index2].result, false).
 				normal();
 
+			if (GeometryAlgorithm2D::isPointOnSegment(simplex.vertices[index1].result, simplex.vertices[index2].result, { 0, 0 }))
+				normal.negate();
+			
 			//new minkowski point
 			p = support(shape_A, shape_B, normal);
 
@@ -133,88 +137,23 @@ namespace Physics2D
 
 			if (simplex.fuzzyContains(p, epsilon))
 				break;
-			
+
 			simplex.insert(index1, p);
 			iter++;
 		}
 		return simplex;
 	}
 
-	Contact GJK::dumpInfo(const ShapePrimitive& shape_A, const ShapePrimitive& shape_B, const Simplex& simplex)
+	PenetrationInfo GJK::dumpInfo(const PenetrationSource& source)
 	{
-		Contact result;
-		result.isColliding = simplex.isContainOrigin;
-		if(simplex.vertices.size() == 2)
-		{
-
-
-			const Vector2 A_s1 = simplex.vertices[0].pointA;
-			const Vector2 A_s2 = simplex.vertices[1].pointA;
-			const Vector2 B_s1 = simplex.vertices[0].pointB;
-			const Vector2 B_s2 = simplex.vertices[1].pointB;
-			
-			Vector2 witness, mirror;
-
-			real diffEpsilonA = (A_s1 - A_s2).lengthSquare();
-			real diffEpsilonB = (B_s1 - B_s2).lengthSquare();
-			//two point
-			if(diffEpsilonA < 0.0001 && diffEpsilonB < 0.0001)
-			{
-				result.contactA = (A_s1 + A_s2) * 0.5;
-				result.contactB = (B_s1 + B_s2) * 0.5;
-				return result;
-			}
-			//point a and edge b
-			if(diffEpsilonA < 0.0001 && diffEpsilonB > 0.0001)
-			{
-				result.contactA = (A_s1 + A_s2) * 0.5;
-				result.contactB = GeometryAlgorithm2D::pointToLineSegment(B_s1, B_s2, result.contactA);
-				return result;
-			}
-			//point b and edge a
-			if (diffEpsilonA > 0.0001 && diffEpsilonB < 0.0001)
-			{
-				result.contactB = (B_s1 + B_s2) * 0.5;
-				result.contactA = GeometryAlgorithm2D::pointToLineSegment(A_s1, A_s2, result.contactB);
-				return result;
-			}
-			
-		}
-		auto [index1, index2] = findEdgeClosestToOrigin(simplex);
-		const Vector2 A_s1 = simplex.vertices[index1].pointA;
-		const Vector2 A_s2 = simplex.vertices[index2].pointA;
-		const Vector2 B_s1 = simplex.vertices[index1].pointB;
-		const Vector2 B_s2 = simplex.vertices[index2].pointB;
-
-		Vector2 normal, v_penetr;
-		Vector2 witness, mirror;
-		normal = calculateDirectionByEdge(simplex.vertices[index1].result, simplex.vertices[index2].result, false).
+		PenetrationInfo result;
+		Vector2 edge1 = source.a1 - source.b1;
+		Vector2 edge2 = source.a2 - source.b2;
+		Vector2 normal = calculateDirectionByEdge(edge1, edge2, false).
 			normal();
-		real originToEdge = abs(normal.dot(simplex.vertices[index1].result));
-		v_penetr = normal * originToEdge * -1;
+		real originToEdge = abs(normal.dot(edge1));
 		result.normal = normal * -1;
 		result.penetration = originToEdge;
-		
-
-		int dir = 1;
-		if ((A_s1 - A_s2).lengthSquare() < (B_s1 - B_s2).lengthSquare())
-		{
-			witness = (A_s1 + A_s2) * (0.5f);
-		}
-		else
-		{
-			witness = (B_s1 + B_s2) * (0.5f);
-			dir = dir * -1;
-		}
-		mirror = witness + v_penetr * dir;
-		if (dir < 0)
-		{
-			Vector2 temp = witness;
-			witness = mirror;
-			mirror = temp;
-		}
-		result.contactA = witness;
-		result.contactB = mirror;
 		return result;
 	}
 
@@ -232,9 +171,9 @@ namespace Physics2D
 		size_t index1 = 0;
 		size_t index2 = 0;
 
-		if(simplex.vertices.size() == 2)
+		if (simplex.vertices.size() == 2)
 			return std::make_tuple(0, 1);
-		
+
 		for (size_t i = 0; i < simplex.vertices.size() - 1; i++)
 		{
 			Vector2 a = simplex.vertices[i].result;
@@ -250,11 +189,12 @@ namespace Physics2D
 				index2 = i + 1;
 				min_dist = projection;
 			}
-			else if(realEqual(min_dist, projection))
+			else if (realEqual(min_dist, projection))
 			{
 				real length1 = a.lengthSquare() + b.lengthSquare();
-				real length2 = simplex.vertices[index1].result.lengthSquare() + simplex.vertices[index2].result.lengthSquare();
-				if(length1 < length2)
+				real length2 = simplex.vertices[index1].result.lengthSquare() + simplex.vertices[index2].result.
+					lengthSquare();
+				if (length1 < length2)
 				{
 					index1 = i;
 					index2 = i + 1;
@@ -287,7 +227,6 @@ namespace Physics2D
 						target = vertex;
 					}
 				}
-
 				break;
 			}
 		case Shape::Type::Circle:
@@ -357,9 +296,10 @@ namespace Physics2D
 		return perpendicularOfAB;
 	}
 
-	Contact GJK::distance(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB, const real& iteration, const real& epsilon)
+	PointPair GJK::distance(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB, const real& iteration,
+	                           const real& epsilon)
 	{
-		Contact result;
+		PointPair result;
 		Simplex simplex;
 		Vector2 direction = shapeB.transform - shapeA.transform;
 		Minkowski m = support(shapeA, shapeB, direction);
@@ -372,24 +312,92 @@ namespace Physics2D
 		{
 			direction = calculateDirectionByEdge(simplex.vertices[0].result, simplex.vertices[1].result, true);
 			m = support(shapeA, shapeB, direction);
-			
+
 			if (simplex.contains(m))
 				break;
 
 			//for ellipse
 			if (simplex.fuzzyContains(m, epsilon))
 				break;
-			
+
 			simplex.vertices.emplace_back(m);
 			simplex.vertices.emplace_back(simplex.vertices[0]);
 			auto [index1, index2] = findEdgeClosestToOrigin(simplex);
 			adjustSimplex(simplex, index1, index2);
-
 		}
-		result = dumpInfo(shapeA, shapeB, simplex);
+		
+		auto source = dumpSource(simplex);
+		
+		const Vector2 A_s1 = source.a1;
+		const Vector2 A_s2 = source.a2;
+		const Vector2 B_s1 = source.b1;
+		const Vector2 B_s2 = source.b2;
+
+		const real diffEpsilonA = (A_s1 - A_s2).lengthSquare();
+		const real diffEpsilonB = (B_s1 - B_s2).lengthSquare();
+		//two point
+		if (diffEpsilonA < epsilon && diffEpsilonB < epsilon)
+		{
+			result.pointA = (A_s1 + A_s2) * 0.5;
+			result.pointB = (B_s1 + B_s2) * 0.5;
+		}
+		//point a and edge b
+		if (diffEpsilonA < epsilon && diffEpsilonB > epsilon)
+		{
+			result.pointA = (A_s1 + A_s2) * 0.5;
+			result.pointB = GeometryAlgorithm2D::pointToLineSegment(B_s1, B_s2, result.pointA);
+		}
+		//point b and edge a
+		if (diffEpsilonA > epsilon && diffEpsilonB < epsilon)
+		{
+			result.pointB = (B_s1 + B_s2) * 0.5;
+			result.pointA = GeometryAlgorithm2D::pointToLineSegment(A_s1, A_s2, result.pointB);
+		}
 		return result;
 	}
 
+	PenetrationSource GJK::dumpSource(const Simplex& simplex)
+	{
+		PenetrationSource result;
+		auto [index1, index2] = findEdgeClosestToOrigin(simplex);
+		result.a1 = simplex.vertices[index1].pointA;
+		result.a2 = simplex.vertices[index2].pointA;
+		result.b1 = simplex.vertices[index1].pointB;
+		result.b2 = simplex.vertices[index2].pointB;
+		return result;
+	}
+	
+	PointPair GJK::dumpContacts(const PenetrationSource& source, const PenetrationInfo& info)
+	{
+		PointPair result;
+		const Vector2 A_s1 = source.a1;
+		const Vector2 A_s2 = source.a2;
+		const Vector2 B_s1 = source.b1;
+		const Vector2 B_s2 = source.b2;
+		
+		Vector2 witness;
+
+		int dir = 1;
+		if ((A_s1 - A_s2).lengthSquare() < (B_s1 - B_s2).lengthSquare())
+		{
+			witness = (A_s1 + A_s2) * (0.5f);
+		}
+		else
+		{
+			witness = (B_s1 + B_s2) * (0.5f);
+			dir = dir * -1;
+		}
+		Vector2 mirror = witness + info.normal * info.penetration * -1 * dir;
+		if (dir < 0)
+		{
+			const Vector2 temp = witness;
+			witness = mirror;
+			mirror = temp;
+		}
+		result.pointA = witness;
+		result.pointB = mirror;
+		return result;
+	}
 	Minkowski::Minkowski(const Vector2& point_a, const Vector2& point_b) : pointA(point_a), pointB(point_b),
 	                                                                       result(pointA - pointB)
 	{

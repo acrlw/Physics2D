@@ -1,5 +1,7 @@
 #include "testbed/window.h"
 
+#include "include/collision/algorithm/clip.h"
+
 namespace Physics2D
 {
 	Window::Window(QWidget* parent)
@@ -13,10 +15,10 @@ namespace Physics2D
 		rectangle.set(2, 2);
 		land.set(24, 0.5);
 		polygon.append({ {3,0}, {0, 3}, {-3, 0}, {-2, -3},{2, -3}, {3, 0} });
-		polygon.scale(0.6);
+		polygon.scale(0.3);
 		ellipse.set({-4, 3}, {4, -3});
-		ellipse.scale(0.6);
-		circle.setRadius(0.5);
+		ellipse.scale(0.3);
+		circle.setRadius(1.5);
 		//circle.scale(7);
 		edge.set({-8, 0}, {8, 0});
 
@@ -39,11 +41,10 @@ namespace Physics2D
 
 	void Window::process()
 	{
-		const real dt = 1.0f / 60.0f;
-		const real inv_dt = 60.0f;
+		const real dt = 1.0f / 30.0f;
+		const real inv_dt = 30.0f;
 		m_world.stepVelocity(dt);
 		rect->angularVelocity() = 9;
-	    rect2->angularVelocity() = -9;
 		//auto result = Detector::detect(rect2, ground);
 		//if(result.info.isColliding)
 		//{
@@ -62,28 +63,28 @@ namespace Physics2D
 	void Window::testCollision()
 	{
 		rect2 = m_world.createBody();
-		rect2->setShape(&polygon);
-		rect2->position().set({ 0, -2 });
-		rect2->angle() = 94;
-		rect2->setMass(200);
+		rect2->setShape(&rectangle);
+		rect2->position().set({ 0, 0 });
+		rect2->angle() = 0;
+		rect2->setMass(500);
 		rect2->setType(Body::BodyType::Kinematic);
 		
 		rect3 = m_world.createBody();
-		rect3->setShape(&ellipse);
-		rect3->position().set({ -1, 0 });
-		rect3->angle() = 45;
+		rect3->setShape(&rectangle);
+		rect3->position().set({ -1, -1 });
+		rect3->angle() = 0;
 		rect3->setMass(100);
-		rect3->setType(Body::BodyType::Dynamic);
+		rect3->setType(Body::BodyType::Kinematic);
 		
 		rect = m_world.createBody();
-		rect->setShape(&polygon);
+		rect->setShape(&rectangle);
 		rect->position().set({ 0, 6 });
 		rect->angle() = -115;
 		rect->setMass(DBL_MAX);
 		rect->setType(Body::BodyType::Kinematic);
 		
 		ground = m_world.createBody();
-		ground->setShape(&land);
+		ground->setShape(&edge);
 		ground->position().set({0, -8});
 		ground->setMass(DBL_MAX);
 		ground->setType(Body::BodyType::Static);
@@ -114,7 +115,7 @@ namespace Physics2D
 	void Window::testPendulum()
 	{
 		rect = m_world.createBody();
-		rect->setShape(&rectangle);
+		rect->setShape(&circle);
 		rect->position().set({ 0, 4 });
 		rect->angle() = 0;
 		rect->setMass(DBL_MAX);
@@ -143,23 +144,11 @@ namespace Physics2D
 
 		QPen pen(Qt::green, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 		Renderer::render(&painter, &m_world, pen);
-		if(rect2 != nullptr)
-		{
-		}
-		auto result = Detector::distance(rect, rect2);
-		RendererQtImpl::renderLine(&painter, &m_world, result.info.contactA, result.info.contactB, pen);
 
-		//auto result = Detector::detect(rect, rect2);
-		//if(result.info.isColliding)
-		//{
-		//	pen.setColor(Qt::red);
-		//	RendererQtImpl::renderLine(&painter, &m_world, result.info.contactA, result.info.contactB, pen);
-		//}
-		//pen.setWidth(1);
-		//for (const Vector2& p : m_rectCenter)
-		//{
-		//	RendererQtImpl::renderPoint(&painter, &m_world, p, pen);
-		//}
+
+		pen.setColor(Qt::red);
+
+
 	}
 
 	void Window::resizeEvent(QResizeEvent* e)
@@ -218,23 +207,23 @@ namespace Physics2D
 		case Qt::Key_D:
 			{
 			//rect->velocity() += Vector2(5, 0);
-				originPoint.set(originPoint + Vector2(5, 0));
+			rect2->position().set(rect2->position() + Vector2(0.1, 0));
 				break;
 			}
 		case Qt::Key_A:
 			{
 			//rect->velocity() += Vector2(-5, 0);
-				originPoint.set(originPoint + Vector2(-5, 0));
+			rect2->position().set(rect2->position() + Vector2(-0.1, 0));
 				break;
 			}
 		case Qt::Key_S:
 			{
-				originPoint.set(originPoint + Vector2(0, -5));
+				rect2->position().set(rect2->position() + Vector2(0, -0.1));
 				break;
 			}
 		case Qt::Key_W:
 			{
-				originPoint.set(originPoint + Vector2(0, 5));
+				rect2->position().set(rect2->position() + Vector2(0, 0.1));
 				break;
 			}
 		case Qt::Key_Space:

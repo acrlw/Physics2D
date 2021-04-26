@@ -23,6 +23,7 @@ namespace Physics2D
             }
             virtual void scale(const real& factor) = 0;
             virtual ~Shape() {};
+            virtual bool contains(const Vector2& point, const real& epsilon = 0.0001) = 0;
         protected:
             Type m_type;
     };
@@ -47,6 +48,7 @@ namespace Physics2D
             void setPosition(const Vector2& pos);
 
             void scale(const real& factor) override;
+            bool contains(const Vector2& point, const real& epsilon = 0.0001) override;
         private:
             Vector2 m_position;
     };
@@ -64,6 +66,7 @@ namespace Physics2D
             void append(const Vector2& vertex);
             Vector2 center()const;
             void scale(const real& factor) override;
+            bool contains(const Vector2& point, const real& epsilon = 0.0001) override;
         protected:
             std::vector<Vector2> m_vertices;
     };
@@ -81,6 +84,7 @@ namespace Physics2D
             void setHeight(const real& height);
 
             void scale(const real& factor) override;
+            bool contains(const Vector2& point, const real& epsilon = 0.0001) override;
         private:
             void calcVertices();
             real m_width;
@@ -95,6 +99,7 @@ namespace Physics2D
             real radius() const;
             void setRadius(const real& radius);
             void scale(const real& factor) override;
+            bool contains(const Vector2& point, const real& epsilon = 0.0001) override;
         private:
             real m_radius;
     };
@@ -113,6 +118,7 @@ namespace Physics2D
             void setHeight(const real& height);
 
             void scale(const real& factor) override;
+            bool contains(const Vector2& point, const real& epsilon = 0.0001) override;
             real A()const;
             real B()const;
             real C()const;
@@ -134,6 +140,7 @@ namespace Physics2D
             Vector2 endPoint()const;
             void setEndPoint(const Vector2& end);
             void scale(const real& factor) override;
+            bool contains(const Vector2& point, const real& epsilon = 0.0001) override;
         private:
             Vector2 m_startPoint;
             Vector2 m_endPoint;
@@ -158,6 +165,7 @@ namespace Physics2D
             void setEndPoint(const Vector2 &endPoint);
 
             void scale(const real& factor) override;
+            bool contains(const Vector2& point, const real& epsilon = 0.0001) override;
         private:
             Vector2 m_startPoint;
             Vector2 m_control1;

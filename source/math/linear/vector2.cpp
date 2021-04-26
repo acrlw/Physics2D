@@ -65,12 +65,12 @@ namespace Physics2D
 
 	bool Vector2::operator==(const Vector2& rhs) const
 	{
-		return x == rhs.x && y == rhs.y;
+		return realEqual(x, rhs.x) && realEqual(y, rhs.y);
 	}
 
 	bool Vector2::operator!=(const Vector2& rhs) const
 	{
-		return x != rhs.x || y != rhs.y;
+		return !realEqual(x, rhs.x) || !realEqual(y, rhs.y);
 	}
 
 	real Vector2::lengthSquare() const

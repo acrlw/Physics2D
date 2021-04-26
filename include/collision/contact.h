@@ -1,105 +1,131 @@
 #ifndef PHYSICS2D_CONTACT_H
 #define PHYSICS2D_CONTACT_H
-#include "include/math/linear/linear.h"
-#include "include/dynamics/body.h"
-#include "include/dynamics/constraint/constraint.h"
+
+#include "include/geometry/shape.h"
+#include "include/collision/algorithm/gjk.h"
 namespace Physics2D
 {
-	struct Contact
+	struct ContactEdge
 	{
-		bool isColliding = false;
-		Vector2 contactA;
-		Vector2 contactB;
-		Vector2 normal;
-		real penetration = 0;
+		Vector2 point1;
+		Vector2 point2;
 	};
-	struct CollisionInfo
-	{
-        Body* bodyA = nullptr;
-        Body* bodyB = nullptr;
-        Contact info;
-		real effectiveMassNormal = 0;
-		real effectiveMassTangent = 0;
-		real bias = 0;
-		real accumulatedLambdaNormal = 0;
-		real accumulatedLambdaTangent = 0;
-	};
-	class CollisionSolver
+	class ContactGenerator
 	{
 	public:
-		void add(const CollisionInfo& resolve)
+		static std::optional<std::vector<PointPair>> clip(const ContactEdge& lhs, const ContactEdge& rhs, const bool& exchange = false)
 		{
-			m_list.emplace_back(resolve);
-		}
-		void solve(const real& dt)
-		{
-			for(int i = 0;i < m_iteration;i++)
+			std::vector<PointPair> result;
+			auto project = [](const Vector2& a, const Vector2& b, const Vector2& c)
 			{
-				for(CollisionInfo& resolve: m_list)
+				Vector2 ac = c - a;
+				Vector2 ab = b - a;
+
+				Vector2 bc = b - c;
+				Vector2 ba = a - b;
+
+				return !(ac.dot(ab) < 0 || bc.dot(ba) < 0);
+			};
+
+			auto push = [&result, &exchange](PointPair& pair)
+			{
+				if (result.size() < 2)
 				{
-					Vector2 ra = resolve.info.contactA - resolve.bodyA->position();
-					Vector2 rb = resolve.info.contactB - resolve.bodyB->position();
-					//bodyB.position() += penetration -> separate two body
-					Vector2 n = resolve.info.normal;
-					Vector2 t = Vector2::crossProduct(n, 1.0);
-					
-					Vector2 rv = resolve.bodyB->velocity() + Vector2::crossProduct(resolve.bodyB->angularVelocity(), rb) -
-						resolve.bodyA->velocity() + Vector2::crossProduct(resolve.bodyA->angularVelocity(), ra);
-
-					real rv_n = rv.dot(resolve.info.normal);
-					real lambda_n = resolve.effectiveMassNormal * (rv_n + resolve.bias);
-					
-					real old_lambda_n = resolve.accumulatedLambdaNormal;
-					resolve.accumulatedLambdaNormal = Math::max(old_lambda_n + lambda_n, 0.0);
-					lambda_n = resolve.accumulatedLambdaNormal - old_lambda_n;
-
-					Vector2 impulseNormal = lambda_n * resolve.info.normal;
-					resolve.bodyA->velocity() += resolve.bodyA->inverseMass() * impulseNormal;
-					resolve.bodyA->angularVelocity() += resolve.bodyA->inverseInertia() * ra.cross(impulseNormal);
+					if(exchange)
+					{
+						Vector2 temp = pair.pointA;
+						pair.pointA = pair.pointB;
+						pair.pointB = temp;
+					}
+					result.emplace_back(pair);
+					return true;
 				}
-			}
-			m_list.clear();
-		}
-		void initialize(const real& dt)
-		{
-			for (CollisionInfo& resolve : m_list)
+				return false;
+			};
+			
+			if(project(lhs.point1, lhs.point2, rhs.point1))
 			{
-				Vector2 ra = resolve.info.contactA - resolve.bodyA->position();
-				Vector2 rb = resolve.info.contactB - resolve.bodyB->position();
-				//bodyA.position() += penetration -> separate two body
-				Vector2 n = resolve.info.normal;
-				Vector2 t = Vector2::crossProduct(n, 1.0);
-				
-				real im_a = resolve.bodyA->inverseMass();
-				real im_b = resolve.bodyB->inverseMass();
-				real ii_a = resolve.bodyA->inverseInertia();
-				real ii_b = resolve.bodyB->inverseInertia();
-
-				real ra_n = ra.cross(n);
-				real rb_n = rb.cross(n);
-
-				real ra_t = ra.cross(t);
-				real rb_t = rb.cross(t);
-				//effective mass = 1.0 / k-matrix
-				resolve.effectiveMassNormal = 1.0 /
-					(im_a + ii_a * ra_n * ra_n + im_b + ii_b * rb_n * rb_n);
-
-				resolve.effectiveMassTangent = 1.0 /
-					(im_a + ii_a * ra_t * ra_t + im_b + ii_b * rb_t * rb_t);
-
-				resolve.bias = m_bias * (1.0 / dt) * Math::max(0.0, resolve.info.penetration - m_allowedPenetration);
-
-				
-				Vector2 impulseNormal = resolve.accumulatedLambdaNormal * resolve.info.normal;
-				resolve.bodyA->velocity() += resolve.bodyA->inverseMass() * impulseNormal;
-				resolve.bodyA->angularVelocity() += resolve.bodyA->inverseInertia() * ra.cross(impulseNormal);
+				PointPair pair;
+				pair.pointA = GeometryAlgorithm2D::pointToLineSegment(lhs.point1, lhs.point2, rhs.point1);
+				pair.pointB = rhs.point1;
+				push(pair);
 			}
+			
+			if (project(lhs.point1, lhs.point2, rhs.point2))
+			{
+				PointPair pair;
+				pair.pointA = GeometryAlgorithm2D::pointToLineSegment(lhs.point1, lhs.point2, rhs.point1);
+				pair.pointB = rhs.point2;
+				push(pair);
+			}
+			
+			if (project(rhs.point1, rhs.point2, lhs.point1))
+			{
+				PointPair pair;
+				pair.pointA = lhs.point1;
+				pair.pointB = GeometryAlgorithm2D::pointToLineSegment(rhs.point1, rhs.point2, lhs.point1);
+				push(pair);
+			}
+			
+			if (project(rhs.point1, rhs.point2, lhs.point2))
+			{
+				PointPair pair;
+				pair.pointA = lhs.point2;
+				pair.pointB = GeometryAlgorithm2D::pointToLineSegment(rhs.point1, rhs.point2, lhs.point2);
+				push(pair);
+			}
+
+			if (result.empty())
+				return std::nullopt;
+
+			return std::optional<std::vector<PointPair>>(result);
 		}
-	private:
-        std::vector<CollisionInfo> m_list;
-		real m_allowedPenetration = 0.02;
-		real m_bias = 0.2;
-		real m_iteration = 1;
+		static std::optional<std::vector<PointPair>> generate(const ShapePrimitive& shape, const ContactEdge& edge, const Vector2& source, const PenetrationInfo& info, const bool& exchange = false)
+		{
+			
+			if (shape.shape->type() != Shape::Type::Polygon)
+				return std::nullopt;
+			
+			
+			auto adjacent = [](const Polygon& polygon, const Vector2& source)
+			{
+				auto target = std::find_if(std::begin(polygon.vertices()), std::end(polygon.vertices()), [=](const Vector2& element)
+					{
+						return (element - source).lengthSquare() < 0.0001;
+					});
+				
+				auto previous = std::prev(target, 1);
+				auto next = std::next(target, 1);
+				
+				if(target == std::end(polygon.vertices()))
+					previous = polygon.vertices().begin() + 1;
+				
+				if(target == std::begin(polygon.vertices()))
+					next = polygon.vertices().end() - 1;
+				
+				return std::make_tuple(*previous, *next);
+			};
+			
+			Vector2 src = Matrix2x2(-shape.rotation).multiply(source - shape.transform);
+			Vector2 target;
+			auto [previous, next] = adjacent(*dynamic_cast<Polygon*>(shape.shape), src);
+			
+			previous = Matrix2x2(shape.rotation).multiply(previous) + shape.transform;
+			next = Matrix2x2(shape.rotation).multiply(next) + shape.transform;
+
+			if (abs((source - previous).dot(info.normal)) < 0.0001)
+			{
+				target = previous;
+			}
+			else if (abs((source - next).dot(info.normal)) < 0.0001)
+			{
+				target = next;
+			}
+			else
+				return std::nullopt;
+			
+			return clip({ source, target }, edge, exchange);
+		}
 	};
 }
 #endif

@@ -19,7 +19,10 @@ namespace Physics2D
 	{
 		m_position *= factor;
 	}
-
+	bool Point::contains(const Vector2& point, const real& epsilon) 
+	{
+		return (m_position - point).lengthSquare() < epsilon;
+	}
 	void Point::setPosition(const Vector2& pos)
 	{
 		m_position = pos;
@@ -56,6 +59,18 @@ namespace Physics2D
 		assert(!m_vertices.empty());
 		for (Vector2& vertex : m_vertices)
 			vertex *= factor;
+	}
+
+	bool Polygon::contains(const Vector2& point, const real& epsilon)
+	{
+		for(int i = 0;i < m_vertices.size() - 1;i++)
+		{
+			Vector2 ab = m_vertices[i + 1] - m_vertices[i];
+			Vector2 ac = point - m_vertices[i];
+			if (ab.cross(ac) < epsilon)
+				return false;
+		}
+		return true;
 	}
 
 	Rectangle::Rectangle(const real& width, const real& height)
@@ -98,6 +113,11 @@ namespace Physics2D
 		m_height *= factor;
 		calcVertices();
 	}
+	bool Rectangle::contains(const Vector2& point, const real& epsilon)
+	{
+		return (point.x < m_width / 2.0 && point.x > -m_width / 2.0) && 
+			point.y < m_height / 2.0 && point.y > -m_height / 2.0;
+	}
 	void Rectangle::calcVertices()
 	{
 		m_vertices.clear();
@@ -126,6 +146,11 @@ namespace Physics2D
 	void Circle::scale(const real& factor)
 	{
 		m_radius *= factor;
+	}
+
+	bool Circle::contains(const Vector2& point, const real& epsilon)
+	{
+		return (m_radius * m_radius - point.lengthSquare()) > epsilon;
 	}
 
 	Ellipse::Ellipse(const real& width, const real& height)
@@ -160,6 +185,11 @@ namespace Physics2D
 	{
 		m_width *= factor;
 		m_height *= factor;
+	}
+
+	bool Ellipse::contains(const Vector2& point, const real& epsilon)
+	{
+		return false;
 	}
 
 	real Ellipse::width() const
@@ -226,6 +256,11 @@ namespace Physics2D
 		m_endPoint *= factor;
 	}
 
+	bool Edge::contains(const Vector2& point, const real& epsilon)
+	{
+		return GeometryAlgorithm2D::isPointOnSegment(m_startPoint, m_endPoint, point);
+	}
+
 	Curve::Curve()
 	{
 		m_type = Type::Curve;
@@ -285,5 +320,9 @@ namespace Physics2D
 		m_control1 *= factor;
 		m_control2 *= factor;
 		m_endPoint *= factor;
+	}
+	bool Curve::contains(const Vector2& point, const real& epsilon)
+	{
+		return false;
 	}
 }
