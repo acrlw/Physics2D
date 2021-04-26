@@ -148,7 +148,15 @@ namespace Physics2D
 
 		pen.setColor(Qt::red);
 
-
+		auto result = Detector::detect(rect2, rect3);
+		if(result.isColliding)
+		{
+			for(auto& elem: result.contactList)
+			{
+				RendererQtImpl::renderPoint(&painter, &m_world, elem.pointA, pen);
+				RendererQtImpl::renderPoint(&painter, &m_world, elem.pointB, pen);
+			}
+		}
 	}
 
 	void Window::resizeEvent(QResizeEvent* e)

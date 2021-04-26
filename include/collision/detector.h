@@ -11,6 +11,7 @@ namespace Physics2D
 {
 	struct Collision
 	{
+		bool isColliding = false;
 		Body* bodyA = nullptr;
 		Body* bodyB = nullptr;
 		std::vector<PointPair> contactList;
@@ -49,6 +50,7 @@ namespace Physics2D
 				return result;
 
 			auto [isColliding, simplex] = GJK::gjk(shapeA, shapeB);
+			result.isColliding = isColliding;
 			if (isColliding)
 			{
 				result.bodyA = bodyA;
@@ -81,7 +83,7 @@ namespace Physics2D
 					ContactEdge edge;
 					edge.point1 = source.b1;
 					edge.point2 = source.b2;
-					auto temp = ContactGenerator::generate(shapeB, edge, source.a1, info, true);
+					auto temp = ContactGenerator::generate(shapeA, edge, source.a1, info, true);
 					if (temp.has_value())
 						result.contactList = temp.value();
 					else

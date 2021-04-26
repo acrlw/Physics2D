@@ -93,15 +93,19 @@ namespace Physics2D
 					{
 						return (element - source).lengthSquare() < 0.0001;
 					});
+
+				decltype(target) previous, next;
 				
-				auto previous = std::prev(target, 1);
-				auto next = std::next(target, 1);
-				
-				if(target == std::end(polygon.vertices()))
+				if (target == std::end(polygon.vertices()))
 					previous = polygon.vertices().begin() + 1;
+				else
+					previous = std::prev(target, 1);
+				
 				
 				if(target == std::begin(polygon.vertices()))
 					next = polygon.vertices().end() - 1;
+				else
+					next = std::next(target, 1);
 				
 				return std::make_tuple(*previous, *next);
 			};
