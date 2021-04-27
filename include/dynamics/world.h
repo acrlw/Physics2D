@@ -11,11 +11,11 @@ namespace Physics2D
     class World
     {
 		public:
-            World() : m_gravity(0, -9.8), m_linearVelocityDamping(0.9), m_angularVelocityDamping(0.9), m_bias(0.8),
+            World() : m_gravity(0, -0.15), m_linearVelocityDamping(0.9), m_angularVelocityDamping(0.9), m_bias(0.8),
     			m_enableGravity(true), m_linearVelocityThreshold(0.02), m_angularVelocityThreshold(0.02), m_airFrictionCoefficient(0.7),
     			m_velocityIteration(6), m_positionIteration(8)
             {}
-            World(const Vector2& leftTop, const Vector2& rightBottom) : m_leftTop(leftTop), m_rightBottom(rightBottom), m_gravity(0, -9.8),
+            World(const Vector2& leftTop, const Vector2& rightBottom) : m_leftTop(leftTop), m_rightBottom(rightBottom), m_gravity(0, -0.15),
     			m_linearVelocityDamping(0.9), m_angularVelocityDamping(0.9), m_airFrictionCoefficient(0.7),
     			m_bias(0.8), m_enableGravity(true),m_linearVelocityThreshold(0.02),
     			m_angularVelocityThreshold(0.02), m_velocityIteration(6), m_positionIteration(8)

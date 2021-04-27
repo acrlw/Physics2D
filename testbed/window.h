@@ -14,6 +14,7 @@
 
 #include "include/dynamics/constraint/constraint.h"
 #include "include/dynamics/joint/joint.h"
+#include "include/collision/solver.h"
 namespace Physics2D
 {
 	class Window : public QWidget

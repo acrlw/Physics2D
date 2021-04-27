@@ -12,24 +12,24 @@ namespace Physics2D
 		this->setMouseTracking(true);
 		m_world.setGeometry({0, 0}, {1920, 1080});
 
-		rectangle.set(2, 2);
+		rectangle.set(1, 1);
 		land.set(24, 0.5);
 		polygon.append({ {3,0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3},{2, -3}, {3, 0} });
-		polygon.scale(0.3);
+		polygon.scale(0.2);
 		ellipse.set({-4, 3}, {4, -3});
 		ellipse.scale(0.3);
-		circle.setRadius(1.5);
+		circle.setRadius(0.6);
 		//circle.scale(7);
-		edge.set({-8, 0}, {8, 0});
+		edge.set({-18, 0}, {18, 0});
 
 		m_world.setEnableGravity(true);
 		m_world.setLinearVelocityDamping(0.8f);
 		m_world.setAirFrictionCoefficient(0.8f);
 		m_world.setAngularVelocityDamping(0.8f);
-		//createStackBox(10, 1.2, 1.2);
+		testCollision();
+		//createStackBox(4, 1.2, 1.2);
 
 		//testPendulum();
-		testCollision();
 		connect(&m_timer, &QTimer::timeout, this, &Window::process);
 		m_timer.setInterval(15);
 		m_timer.start();
@@ -41,20 +41,38 @@ namespace Physics2D
 
 	void Window::process()
 	{
-		const real dt = 1.0f / 30.0f;
-		const real inv_dt = 30.0f;
-		rect2->angle() = m_angle;
+		const real dt = 1.0f / 60.0f;
+		const real inv_dt = 60.0f;
 		m_world.stepVelocity(dt);
 		rect->angularVelocity() = 9;
-		//auto result = Detector::detect(rect2, ground);
-		//if(result.info.isColliding)
-		//{
-		//	CollisionSolver solver;
-		//	solver.add(result);
-		//	solver.initialize(dt);
-		//	solver.solve(dt);
-		//}
+		CollisionSolver solver;
 
+		//for(int i = 0;i < m_world.bodyList().size();i++)
+		//{
+		//	for(int j = 0;j < m_world.bodyList().size();j++)
+		//	{
+		//		auto result = Detector::detect(m_world.bodyList()[i], m_world.bodyList()[j]);
+		//		if (result.isColliding)
+		//			solver.add(&result);
+		//	}
+		//}
+		auto result1 = Detector::detect(rect2, ground);
+		if(result1.isColliding)
+			solver.add(&result1);
+
+		auto result2 = Detector::detect(rect3, ground);
+		if (result2.isColliding)
+			solver.add(&result2);
+		
+		auto result3 = Detector::detect(rect2, rect3);
+		if (result3.isColliding)
+			solver.add(&result3);
+
+		
+		
+
+		solver.prepare(dt);
+		solver.solve(dt);
 
 		
 		m_world.stepPosition(dt);
@@ -64,30 +82,30 @@ namespace Physics2D
 	void Window::testCollision()
 	{
 		rect2 = m_world.createBody();
-		rect2->setShape(&polygon);
-		rect2->position().set({ 0, 0 });
+		rect2->setShape(&rectangle);
+		rect2->position().set({ 0, -2 });
 		rect2->angle() = 0;
-		rect2->setMass(500);
-		rect2->setType(Body::BodyType::Kinematic);
+		rect2->setMass(400);
+		rect2->setType(Body::BodyType::Dynamic);
 		
 		rect3 = m_world.createBody();
-		rect3->setShape(&rectangle);
-		rect3->position().set({ -1, -1 });
+		rect3->setShape(&polygon);
+		rect3->position().set({ 0.2, 1 });
 		rect3->angle() = 0;
-		rect3->setMass(100);
-		rect3->setType(Body::BodyType::Kinematic);
+		rect3->setMass(200);
+		rect3->setType(Body::BodyType::Dynamic);
 		
 		rect = m_world.createBody();
 		rect->setShape(&rectangle);
 		rect->position().set({ 0, 6 });
 		rect->angle() = -115;
-		rect->setMass(DBL_MAX);
+		rect->setMass(100000000);
 		rect->setType(Body::BodyType::Kinematic);
 		
 		ground = m_world.createBody();
-		ground->setShape(&edge);
+		ground->setShape(&land);
 		ground->position().set({0, -8});
-		ground->setMass(DBL_MAX);
+		ground->setMass(100000000);
 		ground->setType(Body::BodyType::Static);
 		
 		//createStackBox(5, 1.1, 1.1);
@@ -146,19 +164,6 @@ namespace Physics2D
 		QPen pen(Qt::green, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 		Renderer::render(&painter, &m_world, pen);
 
-
-
-		auto result = Detector::detect(rect2, rect3);
-		if(result.isColliding)
-		{
-			for(auto& elem: result.contactList)
-			{
-				pen.setColor(Qt::red);
-				RendererQtImpl::renderPoint(&painter, &m_world, elem.pointA, pen);
-				pen.setColor(Qt::blue);
-				RendererQtImpl::renderPoint(&painter, &m_world, elem.pointB, pen);
-			}
-		}
 	}
 
 	void Window::resizeEvent(QResizeEvent* e)
@@ -202,49 +207,49 @@ namespace Physics2D
 
 	void Window::keyPressEvent(QKeyEvent* event)
 	{
-		switch (event->key())
-		{
-		case Qt::Key_R:
-			{
-				m_angle += 1;
-				break;
-			}
-		case Qt::Key_Q:
-			{
-				m_angle -= 1;
-				break;
-			}
-		case Qt::Key_D:
-			{
-			//rect->velocity() += Vector2(5, 0);
-			rect2->position().set(rect2->position() + Vector2(0.1, 0));
-				break;
-			}
-		case Qt::Key_A:
-			{
-			//rect->velocity() += Vector2(-5, 0);
-			rect2->position().set(rect2->position() + Vector2(-0.1, 0));
-				break;
-			}
-		case Qt::Key_S:
-			{
-				rect2->position().set(rect2->position() + Vector2(0, -0.1));
-				break;
-			}
-		case Qt::Key_W:
-			{
-				rect2->position().set(rect2->position() + Vector2(0, 0.1));
-				break;
-			}
-		case Qt::Key_Space:
-		{
-			//rect->forces() += Vector2(0, 50);
-			originPoint.set(originPoint + Vector2(0, 5));
-			break;
-		}
-		default:
-			break;
-		}
+		//switch (event->key())
+		//{
+		//case Qt::Key_R:
+		//	{
+		//		m_angle += 1;
+		//		break;
+		//	}
+		//case Qt::Key_Q:
+		//	{
+		//		m_angle -= 1;
+		//		break;
+		//	}
+		//case Qt::Key_D:
+		//	{
+		//	//rect->velocity() += Vector2(5, 0);
+		//	rect2->position().set(rect2->position() + Vector2(0.1, 0));
+		//		break;
+		//	}
+		//case Qt::Key_A:
+		//	{
+		//	//rect->velocity() += Vector2(-5, 0);
+		//	rect2->position().set(rect2->position() + Vector2(-0.1, 0));
+		//		break;
+		//	}
+		//case Qt::Key_S:
+		//	{
+		//		rect2->position().set(rect2->position() + Vector2(0, -0.1));
+		//		break;
+		//	}
+		//case Qt::Key_W:
+		//	{
+		//		rect2->position().set(rect2->position() + Vector2(0, 0.1));
+		//		break;
+		//	}
+		//case Qt::Key_Space:
+		//{
+		//	//rect->forces() += Vector2(0, 50);
+		//	originPoint.set(originPoint + Vector2(0, 5));
+		//	break;
+		//}
+		//default:
+		//	break;
+		//}
 		repaint();
 	}
 
@@ -357,11 +362,11 @@ namespace Physics2D
 			{
 				Body* body = m_world.createBody();
 				body->position().set({
-					static_cast<real>(-spacing * (row - j) + i * spacing), static_cast<real>(j * margin + margin) + 2
+					static_cast<real>(-spacing * (row - j) + i * spacing), static_cast<real>(j * margin + margin) + 0
 					});
 				body->setShape(&rectangle);
 				body->angle() = 0;
-				body->setMass(100);
+				body->setMass(400);
 				body->setType(Body::BodyType::Dynamic);
 			}
 		}

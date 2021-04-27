@@ -25,10 +25,14 @@ namespace Physics2D
 			switch (body->type())
 			{
 			case Body::BodyType::Static:
+			{
+				body->velocity().clear();
+				body->angularVelocity() = 0;
 				break;
+			}
 			case Body::BodyType::Dynamic:
 			{
-				body->forces() += g;
+				body->forces() += body->mass() * g;
 				body->velocity() += body->inverseMass() * body->forces() * dt * m_velocityIteration;
 				body->angularVelocity() += body->inverseInertia() * body->torques() * dt * m_velocityIteration;
 				
