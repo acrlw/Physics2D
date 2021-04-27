@@ -14,6 +14,7 @@ cmake CMakeLists.txt
   - GJK
   - EPA
   - Distance
+  - Contact Pair
   - Support Shape
     - ellipse
     - circle
@@ -46,4 +47,3 @@ cmake CMakeLists.txt
   - Weld
   - Distance
 - Dynamic Bounding Volume Hierarchy Generator
-- V-Clip Algorithm
