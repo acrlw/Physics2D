@@ -58,6 +58,11 @@ namespace Physics2D
 	{
 		Vector2 pointA;
 		Vector2 pointB;
+		bool operator==(const PointPair& other)const
+		{
+			return (other.pointA.fuzzyEqual(this->pointA) && other.pointB.fuzzyEqual(this->pointB))
+				|| (other.pointB.fuzzyEqual(this->pointA) && other.pointA.fuzzyEqual(this->pointB));
+		}
 	};
 
 	class GJK

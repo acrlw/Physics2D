@@ -23,12 +23,12 @@ namespace Physics2D
 		const real Pi = 3.14159265358979f;
 		const real ReciprocalOfPi = 0.3183098861837907f;
 		const real GJKIteration = 50;
-		const real EPAEpsilon = 0.0001;
-		
+		const real GeometryEpsilon = 0.0001;
+
 		//1 meter -> x pixel
-		const real meterToPixel = 50.0f;
+		const real MeterToPixel = 50.0f;
 		//1 pixel -> 1 / x meter
-		const real pixelToMeter = 1.0f / meterToPixel;
+		const real PixelToMeter = 1.0f / MeterToPixel;
 	}
 #else
 	using real = double;
@@ -42,13 +42,13 @@ namespace Physics2D
 		const real Pi = 3.141592653589793238463;
 		const real ReciprocalOfPi = 0.3183098861837907;
 		const real GJKIteration = 50;
-		const real EPAEpsilon = 0.0001;
+		const real GeometryEpsilon = 0.0001;
 
 
 		//1 meter -> x pixel
-		const real meterToPixel = 50.0f;
+		const real MeterToPixel = 50.0f;
 		//1 pixel -> 1 / x meter
-		const real pixelToMeter = 1.0f / meterToPixel;
+		const real PixelToMeter = 1.0f / MeterToPixel;
 	}
 }
 

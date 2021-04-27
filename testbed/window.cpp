@@ -14,7 +14,7 @@ namespace Physics2D
 
 		rectangle.set(2, 2);
 		land.set(24, 0.5);
-		polygon.append({ {3,0}, {0, 3}, {-3, 0}, {-2, -3},{2, -3}, {3, 0} });
+		polygon.append({ {3,0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3},{2, -3}, {3, 0} });
 		polygon.scale(0.3);
 		ellipse.set({-4, 3}, {4, -3});
 		ellipse.scale(0.3);
@@ -43,6 +43,7 @@ namespace Physics2D
 	{
 		const real dt = 1.0f / 30.0f;
 		const real inv_dt = 30.0f;
+		rect2->angle() = m_angle;
 		m_world.stepVelocity(dt);
 		rect->angularVelocity() = 9;
 		//auto result = Detector::detect(rect2, ground);
@@ -63,7 +64,7 @@ namespace Physics2D
 	void Window::testCollision()
 	{
 		rect2 = m_world.createBody();
-		rect2->setShape(&rectangle);
+		rect2->setShape(&polygon);
 		rect2->position().set({ 0, 0 });
 		rect2->angle() = 0;
 		rect2->setMass(500);
@@ -146,14 +147,15 @@ namespace Physics2D
 		Renderer::render(&painter, &m_world, pen);
 
 
-		pen.setColor(Qt::red);
 
 		auto result = Detector::detect(rect2, rect3);
 		if(result.isColliding)
 		{
 			for(auto& elem: result.contactList)
 			{
+				pen.setColor(Qt::red);
 				RendererQtImpl::renderPoint(&painter, &m_world, elem.pointA, pen);
+				pen.setColor(Qt::blue);
 				RendererQtImpl::renderPoint(&painter, &m_world, elem.pointB, pen);
 			}
 		}

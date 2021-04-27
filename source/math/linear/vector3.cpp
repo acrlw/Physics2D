@@ -125,6 +125,10 @@ namespace Physics2D
 		return realEqual(x, rhs.x) && realEqual(y, rhs.y) && realEqual(z, rhs.z);
 	}
 
+	bool Vector3::fuzzyEqual(const Vector3& rhs, const real& epsilon) const
+	{
+		return (*this - rhs).lengthSquare() < epsilon;
+	}
 	Vector3& Vector3::swap(Vector3& other)
 	{
 		realSwap(x, other.x);

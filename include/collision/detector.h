@@ -72,7 +72,7 @@ namespace Physics2D
 					ContactEdge edge;
 					edge.point1 = source.a1;
 					edge.point2 = source.a2;
-					auto temp = ContactGenerator::generate(shapeB, edge, source.b1, info);
+					auto temp = ContactGenerator::generate(shapeB, edge, source.b1, info, true);
 					if (temp.has_value())
 						result.contactList = temp.value();
 					else
@@ -83,7 +83,7 @@ namespace Physics2D
 					ContactEdge edge;
 					edge.point1 = source.b1;
 					edge.point2 = source.b2;
-					auto temp = ContactGenerator::generate(shapeA, edge, source.a1, info, true);
+					auto temp = ContactGenerator::generate(shapeA, edge, source.a1, info, false);
 					if (temp.has_value())
 						result.contactList = temp.value();
 					else
@@ -98,7 +98,7 @@ namespace Physics2D
 						result.contactList.emplace_back(GJK::dumpContacts(source, info));
 				}
 			}
-
+			assert(result.contactList.size() != 3);
 			return result;
 		}
 

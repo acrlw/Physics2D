@@ -28,6 +28,8 @@ namespace Physics2D
 
         bool operator==(const Vector2& rhs)const;
         bool operator!=(const Vector2& rhs)const;
+        bool equal(const Vector2& rhs)const;
+        bool fuzzyEqual(const Vector2& rhs, const real& epsilon = Constant::GeometryEpsilon)const;
 
         real lengthSquare()const;
         real length()const;
@@ -35,7 +37,6 @@ namespace Physics2D
         Vector2& set(const Vector2& copy);
         Vector2& clear();
         Vector2& negate();
-        bool equal(const Vector2& rhs)const;
         Vector2& swap(Vector2& other) noexcept;
 
         Vector2& normalize();

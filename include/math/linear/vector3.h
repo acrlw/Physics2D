@@ -37,6 +37,7 @@ namespace Physics2D
         Vector3 normal()const;
 
         bool equal(const Vector3& rhs)const;
+        bool fuzzyEqual(const Vector3& rhs, const real& epsilon = Constant::GeometryEpsilon)const;
         Vector3& swap(Vector3& other);
 
         real dot(const Vector3& rhs)const;

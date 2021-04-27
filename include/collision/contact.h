@@ -18,27 +18,24 @@ namespace Physics2D
 			std::vector<PointPair> result;
 			auto project = [](const Vector2& a, const Vector2& b, const Vector2& c)
 			{
-				Vector2 ac = c - a;
-				Vector2 ab = b - a;
-
-				Vector2 bc = b - c;
-				Vector2 ba = a - b;
-
-				return !(ac.dot(ab) < 0 || bc.dot(ba) < 0);
+				return !((c - a).dot(b - a) < 0 || (c - b).dot(a - b) < 0);
 			};
 
 			auto push = [&result, &exchange](PointPair& pair)
 			{
 				if (result.size() < 2)
 				{
-					if(exchange)
+					if (exchange)
 					{
 						Vector2 temp = pair.pointA;
 						pair.pointA = pair.pointB;
 						pair.pointB = temp;
 					}
-					result.emplace_back(pair);
-					return true;
+					if (std::find(std::begin(result), std::end(result), pair) == std::end(result))
+					{
+						result.emplace_back(pair);
+						return true;
+					}
 				}
 				return false;
 			};
@@ -54,7 +51,7 @@ namespace Physics2D
 			if (project(lhs.point1, lhs.point2, rhs.point2))
 			{
 				PointPair pair;
-				pair.pointA = GeometryAlgorithm2D::pointToLineSegment(lhs.point1, lhs.point2, rhs.point1);
+				pair.pointA = GeometryAlgorithm2D::pointToLineSegment(lhs.point1, lhs.point2, rhs.point2);
 				pair.pointB = rhs.point2;
 				push(pair);
 			}
@@ -74,11 +71,8 @@ namespace Physics2D
 				pair.pointB = GeometryAlgorithm2D::pointToLineSegment(rhs.point1, rhs.point2, lhs.point2);
 				push(pair);
 			}
-
-			if (result.empty())
-				return std::nullopt;
-
-			return std::optional<std::vector<PointPair>>(result);
+			
+			return result.empty() ? std::nullopt : std::optional<std::vector<PointPair>>(result);
 		}
 		static std::optional<std::vector<PointPair>> generate(const ShapePrimitive& shape, const ContactEdge& edge, const Vector2& source, const PenetrationInfo& info, const bool& exchange = false)
 		{
@@ -91,37 +85,38 @@ namespace Physics2D
 			{
 				auto target = std::find_if(std::begin(polygon.vertices()), std::end(polygon.vertices()), [=](const Vector2& element)
 					{
-						return (element - source).lengthSquare() < 0.0001;
+						return element.fuzzyEqual(source);
 					});
 
 				decltype(target) previous, next;
+
 				
 				if (target == std::end(polygon.vertices()))
-					previous = polygon.vertices().begin() + 1;
-				else
-					previous = std::prev(target, 1);
-				
-				
-				if(target == std::begin(polygon.vertices()))
-					next = polygon.vertices().end() - 1;
+					next = polygon.vertices().begin() + 1;
 				else
 					next = std::next(target, 1);
+				
+				
+				if (target == std::begin(polygon.vertices()))
+					previous = polygon.vertices().end() - 2;
+				else
+					previous = std::prev(target, 1);
 				
 				return std::make_tuple(*previous, *next);
 			};
 			
-			Vector2 src = Matrix2x2(-shape.rotation).multiply(source - shape.transform);
+			const Vector2 src = Matrix2x2(-shape.rotation).multiply(source - shape.transform);
 			Vector2 target;
 			auto [previous, next] = adjacent(*dynamic_cast<Polygon*>(shape.shape), src);
 			
 			previous = Matrix2x2(shape.rotation).multiply(previous) + shape.transform;
 			next = Matrix2x2(shape.rotation).multiply(next) + shape.transform;
 
-			if (abs((source - previous).dot(info.normal)) < 0.0001)
+			if (abs((source - previous).dot(info.normal)) < Constant::GeometryEpsilon)
 			{
 				target = previous;
 			}
-			else if (abs((source - next).dot(info.normal)) < 0.0001)
+			else if (abs((source - next).dot(info.normal)) < Constant::GeometryEpsilon)
 			{
 				target = next;
 			}

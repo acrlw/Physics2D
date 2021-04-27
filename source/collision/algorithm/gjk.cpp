@@ -387,7 +387,7 @@ namespace Physics2D
 			witness = (B_s1 + B_s2) * (0.5f);
 			dir = dir * -1;
 		}
-		Vector2 mirror = witness + info.normal * info.penetration * -1 * dir;
+		Vector2 mirror = witness + info.normal * info.penetration * dir;
 		if (dir < 0)
 		{
 			const Vector2 temp = witness;

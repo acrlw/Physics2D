@@ -108,7 +108,7 @@ namespace Physics2D
 			color.setAlphaF(0.15f);
 			QBrush brush(color);
 			QPainterPath path;
-			const real radius = circle->radius() * Constant::meterToPixel;
+			const real radius = circle->radius() * Constant::MeterToPixel;
 			path.addEllipse(QRectF(-radius, -radius, 2 * radius, 2 * radius));
 			//QPainter default rotation orientation is clockwise
 			painter->translate(screen_p.x, screen_p.y);
@@ -131,10 +131,10 @@ namespace Physics2D
 			renderPoint(painter, world, shape.transform, pen);
 			const Ellipse* ellipse = dynamic_cast<Ellipse*>(shape.shape);
 			const Vector2 screen_p = world->worldToScreen(shape.transform);
-			real A = ellipse->A() * Constant::meterToPixel;
-			real B = ellipse->B() * Constant::meterToPixel;
-			real width = ellipse->width() * Constant::meterToPixel;
-			real height = ellipse->height() * Constant::meterToPixel;
+			real A = ellipse->A() * Constant::MeterToPixel;
+			real B = ellipse->B() * Constant::MeterToPixel;
+			real width = ellipse->width() * Constant::MeterToPixel;
+			real height = ellipse->height() * Constant::MeterToPixel;
 			QColor color = pen.color();
 			color.setAlphaF(0.15f);
 			QBrush brush(color);
