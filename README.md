@@ -31,9 +31,9 @@ cmake CMakeLists.txt
   - line segment intersection
   - circumcircle of triangle
   - inscribed circle of triangle
-  - check convexity of polygon
-  - calculate the nearest points on line segment and ellipse
-  - calculate point on ellipse which is the nearest point to the target point
+  - convexity of polygon
+  - the nearest points on line segment and ellipse
+  - point on ellipse which is the nearest point to the target point
 - Rigid Body Dynamics Simulation
 - Axis-Aligned Bounding Box Generator
 
