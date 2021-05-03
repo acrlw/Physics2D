@@ -15,6 +15,11 @@
 #include "include/dynamics/constraint/constraint.h"
 #include "include/dynamics/joint/joint.h"
 #include "include/collision/solver.h"
+#include "include/dynamics/joint/angle.h"
+#include "include/dynamics/joint/distance.h"
+#include "include/dynamics/joint/point.h"
+
+
 namespace Physics2D
 {
 	class Window : public QWidget
@@ -38,6 +43,7 @@ namespace Physics2D
 		void keyReleaseEvent(QKeyEvent* event) override;
 	
 	private:
+		void createBoxesAndGround(const real& count = 10);
 		void createStackBox(const uint16_t& row, const real& margin, const real& spacing);
 		void testHit(const QPoint& pos);
 		void testAABB(QPainter* painter);
@@ -72,7 +78,15 @@ namespace Physics2D
 		Vector2 errorAll;
 		Vector2 clickPos;
 		Vector2 mousePos;
-		Joint joint;
+		CollisionSolver solver;
+		
+		AngleJointPrimitive prim;
+		AngleJoint joint;
+
+		//PointJointPrimitive prim2;
+		//PointJoint joint2;
+		DistanceJointPrimitive prim3;
+		DistanceJoint joint3;
 	};
 }
 #endif

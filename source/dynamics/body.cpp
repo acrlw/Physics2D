@@ -74,7 +74,12 @@ namespace Physics2D {
     void Body::setMass(const real &mass)
     {
         m_mass = mass;
-        m_invMass = !realEqual(mass, 0) ? 1.0f / mass : 0;
+    	
+    	if(realEqual(mass,Constant::Max))
+            m_invMass = 0;
+        else
+			m_invMass = !realEqual(mass, 0) ? 1.0 / mass : 0;
+    	
         calcInertia();
     }
 
@@ -121,7 +126,23 @@ namespace Physics2D {
     {
         return m_invInertia;
     }
-    
+
+    void Body::applyImpulse(const Vector2& force, const Vector2& r)
+    {
+        m_velocity += m_invMass * force;
+        m_angularVelocity += m_invInertia * r.cross(force);
+    }
+
+    Vector2 Body::toLocalPoint(const Vector2& point)const
+    {
+        return Matrix2x2(-m_angle).multiply(point - m_position);
+    }
+
+    Vector2 Body::toWorldPoint(const Vector2& point) const
+    {
+        return Matrix2x2(m_angle).multiply(point) + m_position;
+    }
+
 
     void Body::calcInertia()
     {
@@ -167,7 +188,10 @@ namespace Physics2D {
             default:
                 break;
         }
-        m_invInertia = !realEqual(m_inertia, 0) ? 1.0f / m_inertia : 0;
+        if (realEqual(m_mass, Constant::Max))
+            m_invInertia = 0;
+        else
+			m_invInertia = !realEqual(m_inertia, 0) ? 1.0 / m_inertia : 0;
     }
 
 }

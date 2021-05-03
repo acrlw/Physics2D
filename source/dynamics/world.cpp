@@ -134,16 +134,16 @@ namespace Physics2D
 	Vector2 World::worldToScreen(const Vector2& leftTop, const Vector2& rightBottom, const Vector2& pos)
 	{
 		//real screen origin
-		const real origin_y = (rightBottom.y + leftTop.y) * (0.5f);
-		const real origin_x = (leftTop.x + rightBottom.x) * (0.5f);
+		const real origin_y = (rightBottom.y + leftTop.y) * (0.5);
+		const real origin_x = (leftTop.x + rightBottom.x) * (0.5);
 		return Vector2(origin_x + pos.x * Constant::MeterToPixel, origin_y - pos.y * Constant::MeterToPixel);
 	}
 
 	Vector2 World::screenToWorld(const Vector2& leftTop, const Vector2& rightBottom, const Vector2& pos)
 	{
 		//real screen origin
-		const real origin_y = (rightBottom.y + leftTop.y) * (0.5f);
-		const real origin_x = (leftTop.x + rightBottom.x) * (0.5f);
+		const real origin_y = (rightBottom.y + leftTop.y) * (0.5);
+		const real origin_x = (leftTop.x + rightBottom.x) * (0.5);
 		Vector2 result = pos - Vector2(origin_x, origin_y);
 		result.y = -result.y;
 		result *= Constant::PixelToMeter;
@@ -304,12 +304,12 @@ namespace Physics2D
 		return body;
 	}
 
-	real World::width()
+	real World::width()const
 	{
 		return m_rightBottom.x - m_leftTop.x;
 	}
 
-	real World::height()
+	real World::height()const
 	{
 		return m_rightBottom.y - m_leftTop.y;
 	}

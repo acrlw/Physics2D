@@ -23,7 +23,7 @@ namespace Physics2D
 			{
 				if (primitive.source == nullptr)
 					continue;
-				for (int i = 0; i < 10; i++)
+				for (int i = 0; i < 20; i++)
 				{
 					Vector2 ra = Matrix2x2(primitive.source->angle()).multiply(primitive.sourcePoint);
 					Vector2 pa = ra + primitive.source->position();
@@ -36,7 +36,7 @@ namespace Physics2D
 
 					Vector2 tb = (n * primitive.distance).negate() + primitive.targetPoint;
 					Vector2 cPos = tb - pa;
-					const real effectiveMass = 1.0f / (primitive.source->inverseMass() + primitive.source->inverseInertia() * pow(ra.cross(n), 2));
+					const real effectiveMass = 1.0 / (primitive.source->inverseMass() + primitive.source->inverseInertia() * pow(ra.cross(n), 2));
 					real lambda = -effectiveMass * (vel.dot(n));
 					Vector2 v = primitive.source->inverseMass() * lambda * n;
 					v += cPos * primitive.stiffness + (cPos - primitive.lastError) * primitive.stiffness;
@@ -50,14 +50,14 @@ namespace Physics2D
 					primitive.lastCross = torque;
 
 					//angle and angular velocity approximation
-					if (abs(primitive.source->angle()) < 0.5)
-					{
-						if (abs(primitive.source->angularVelocity()) < 0.5)
-						{
-							primitive.source->angularVelocity() = 0;
-						}
-						primitive.source->angle() = 0;
-					}
+					//if (abs(primitive.source->angle()) < 0.5)
+					//{
+					//	if (abs(primitive.source->angularVelocity()) < 0.5)
+					//	{
+					//		primitive.source->angularVelocity() = 0;
+					//	}
+					//	primitive.source->angle() = 0;
+					//}
 				}
 			}
 		}

@@ -53,7 +53,11 @@ namespace Physics2D
 
             real inverseMass()const;
             real inverseInertia()const;
-            
+
+            void applyImpulse(const Vector2& force, const Vector2& r);
+            Vector2 toLocalPoint(const Vector2& point)const;
+            Vector2 toWorldPoint(const Vector2& point)const;
+
         private:
             void calcInertia();
 

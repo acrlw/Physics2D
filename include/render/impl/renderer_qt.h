@@ -39,7 +39,7 @@ namespace Physics2D
 			renderPoint(painter, world, Matrix2x2(shape.rotation).multiply(dynamic_cast<Polygon*>(shape.shape)->center()) + shape.transform, center);
 			QPolygonF polygon;
 			QColor color = pen.color();
-			color.setAlphaF(0.15f);
+			color.setAlphaF(0.2);
 			QBrush brush(color);
 
 			for(const Vector2& point: dynamic_cast<Polygon*>(shape.shape)->vertices())

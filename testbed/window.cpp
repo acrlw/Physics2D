@@ -1,7 +1,5 @@
 #include "testbed/window.h"
 
-#include "include/collision/algorithm/clip.h"
-
 namespace Physics2D
 {
 	Window::Window(QWidget* parent)
@@ -13,12 +11,12 @@ namespace Physics2D
 		m_world.setGeometry({0, 0}, {1920, 1080});
 
 		rectangle.set(1, 1);
-		land.set(24, 0.5);
+		land.set(36, 0.2);
 		polygon.append({ {3,0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3},{2, -3}, {3, 0} });
 		polygon.scale(0.2);
 		ellipse.set({-4, 3}, {4, -3});
-		ellipse.scale(0.3);
-		circle.setRadius(0.6);
+		ellipse.scale(0.1);
+		circle.setRadius(0.5);
 		//circle.scale(7);
 		edge.set({-18, 0}, {18, 0});
 
@@ -27,9 +25,31 @@ namespace Physics2D
 		m_world.setAirFrictionCoefficient(0.8f);
 		m_world.setAngularVelocityDamping(0.8f);
 		testCollision();
-		//createStackBox(4, 1.2, 1.2);
-
+		//createStackBox(4, 1.1, 1.1);
+		//createBoxesAndGround(12);
 		//testPendulum();
+
+
+		//prim2.bodyA = rect2;
+		//prim2.bodyB = rect3;
+		//prim2.localPointA.set(0, -0.2);
+		//prim2.localPointB.set(0, 0.2);
+		//joint2.set(prim2);
+		
+		prim.bodyA = rect2;
+		prim.bodyB = rect3;
+		prim.referenceAngle = 0;
+
+		joint.set(prim);
+
+		prim3.minDistance = 4;
+		prim3.maxDistance = 5;
+		prim3.bodyA = rect2;
+		prim3.bodyB = rect3;
+		prim3.localPointA.set(0, -0.5);
+		prim3.localPointB.set(0, 0.5);
+		joint3.set(prim3);
+		
 		connect(&m_timer, &QTimer::timeout, this, &Window::process);
 		m_timer.setInterval(15);
 		m_timer.start();
@@ -44,68 +64,75 @@ namespace Physics2D
 		const real dt = 1.0f / 60.0f;
 		const real inv_dt = 60.0f;
 		m_world.stepVelocity(dt);
-		rect->angularVelocity() = 9;
-		CollisionSolver solver;
 
 		//for(int i = 0;i < m_world.bodyList().size();i++)
 		//{
 		//	for(int j = 0;j < m_world.bodyList().size();j++)
 		//	{
-		//		auto result = Detector::detect(m_world.bodyList()[i], m_world.bodyList()[j]);
-		//		if (result.isColliding)
-		//			solver.add(&result);
+		//		if(i != j)
+		//		{
+		//			auto result = Detector::detect(m_world.bodyList()[i], m_world.bodyList()[j]);
+		//			if (result.isColliding)
+		//				solver.add(result);
+		//		}
 		//	}
 		//}
 		auto result1 = Detector::detect(rect2, ground);
 		if(result1.isColliding)
-			solver.add(&result1);
-
+			solver.add(result1);
 		auto result2 = Detector::detect(rect3, ground);
 		if (result2.isColliding)
-			solver.add(&result2);
-		
-		auto result3 = Detector::detect(rect2, rect3);
-		if (result3.isColliding)
-			solver.add(&result3);
+			solver.add(result2);
+		//auto result3 = Detector::detect(rect2, rect3);
+		//if (result3.isColliding)
+		//	solver.add(result3);
 
 		
-		
-
 		solver.prepare(dt);
 		solver.solve(dt);
+		
+		joint.prepare(dt);
+		joint.solveVelocity(dt);
+		joint.solvePosition(dt);
 
+		//joint2.prepare(dt);
+		//joint2.solveVelocity(dt);
+		//joint2.solvePosition(dt);
+
+		joint3.prepare(dt);
+		joint3.solveVelocity(dt);
+		joint3.solvePosition(dt);
 		
 		m_world.stepPosition(dt);
-
 		repaint();
 	}
 	void Window::testCollision()
 	{
 		rect2 = m_world.createBody();
 		rect2->setShape(&rectangle);
-		rect2->position().set({ 0, -2 });
+		rect2->position().set({ 0, 0 });
 		rect2->angle() = 0;
-		rect2->setMass(400);
-		rect2->setType(Body::BodyType::Dynamic);
+		rect2->setMass(100);
+		rect2->setType(Body::BodyType::Static);
 		
 		rect3 = m_world.createBody();
-		rect3->setShape(&polygon);
-		rect3->position().set({ 0.2, 1 });
+		rect3->setShape(&rectangle);
+		rect3->position().set({ 0, 6 });
 		rect3->angle() = 0;
-		rect3->setMass(200);
+		rect3->setMass(300);
 		rect3->setType(Body::BodyType::Dynamic);
 		
 		rect = m_world.createBody();
 		rect->setShape(&rectangle);
 		rect->position().set({ 0, 6 });
 		rect->angle() = -115;
-		rect->setMass(100000000);
-		rect->setType(Body::BodyType::Kinematic);
+		rect->setMass(Constant::Max);
+		rect->setType(Body::BodyType::Static);
 		
 		ground = m_world.createBody();
-		ground->setShape(&land);
+		ground->setShape(&edge);
 		ground->position().set({0, -8});
-		ground->setMass(100000000);
+		ground->setMass(Constant::Max);
 		ground->setType(Body::BodyType::Static);
 		
 		//createStackBox(5, 1.1, 1.1);
@@ -207,6 +234,7 @@ namespace Physics2D
 
 	void Window::keyPressEvent(QKeyEvent* event)
 	{
+		rect3->velocity() += {0, 9.8};
 		//switch (event->key())
 		//{
 		//case Qt::Key_R:
@@ -362,7 +390,7 @@ namespace Physics2D
 			{
 				Body* body = m_world.createBody();
 				body->position().set({
-					static_cast<real>(-spacing * (row - j) + i * spacing), static_cast<real>(j * margin + margin) + 0
+					static_cast<real>(-spacing * (row - j) + i * spacing), static_cast<real>(j * margin + margin) - 6
 					});
 				body->setShape(&rectangle);
 				body->angle() = 0;
@@ -370,5 +398,31 @@ namespace Physics2D
 				body->setType(Body::BodyType::Dynamic);
 			}
 		}
+
+
+		ground = m_world.createBody();
+		ground->setShape(&land);
+		ground->position().set({ 0, -8 });
+		ground->setMass(100000000);
+		ground->setType(Body::BodyType::Static);
+	}
+	void Window::createBoxesAndGround(const real& count)
+	{
+		for(real j = 0;j < count;j++)
+		{
+			Body* body = m_world.createBody();
+			body->position().set({1, -6 + j * 1.2});
+			body->setShape(&rectangle);
+			body->angle() = 0;
+			body->setMass(400);
+			body->setType(Body::BodyType::Dynamic);
+		}
+
+
+		ground = m_world.createBody();
+		ground->setShape(&land);
+		ground->position().set({ 0, -8 });
+		ground->setMass(100000000);
+		ground->setType(Body::BodyType::Static);
 	}
 }

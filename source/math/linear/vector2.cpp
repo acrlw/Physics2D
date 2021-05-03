@@ -173,12 +173,12 @@ namespace Physics2D
 
 	Vector2 Vector2::crossProduct(const real& lhs, const Vector2& rhs)
 	{
-		return Vector2(-lhs * rhs.y, lhs * rhs.x);
+		return Vector2(-rhs.y, rhs.x) * lhs;
 	}
 
 	Vector2 Vector2::crossProduct(const Vector2& lhs, const real& rhs)
 	{
-		return Vector2(rhs * lhs.y, -rhs * lhs.x);
+		return Vector2(lhs.y, -lhs.x) * rhs;
 	}
 
 	Vector2& Vector2::operator/=(const int& factor)

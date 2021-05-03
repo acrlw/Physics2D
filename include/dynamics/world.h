@@ -59,8 +59,8 @@ namespace Physics2D
             void removeBody(Body* body);
             Body* createBody();
 
-            real width();
-            real height();
+            real width()const;
+            real height()const;
     	
             static Vector2 worldToScreen(const Vector2& leftTop, const Vector2& rightBottom, const Vector2& pos);
             static Vector2 screenToWorld(const Vector2& leftTop, const Vector2& rightBottom, const Vector2& pos);
