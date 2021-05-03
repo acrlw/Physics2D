@@ -16,8 +16,14 @@ namespace Physics2D
 	class AngleJoint: public Joint
 	{
 	public:
-		AngleJoint() = default;
-		AngleJoint(const AngleJointPrimitive& prim) : m_primitive(prim) {}
+		AngleJoint()
+		{
+			m_type = JointType::Angle;
+		}
+		AngleJoint(const AngleJointPrimitive& prim) : m_primitive(prim)
+		{
+			m_type = JointType::Angle;
+		}
 		void set(const AngleJointPrimitive& prim)
 		{
 			m_primitive = prim;
@@ -51,6 +57,10 @@ namespace Physics2D
 		void solvePosition(const real& dt) override
 		{
 
+		}
+		AngleJointPrimitive primitive()const
+		{
+			return m_primitive;
 		}
 	private:
 		AngleJointPrimitive m_primitive;

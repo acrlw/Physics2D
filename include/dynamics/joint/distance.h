@@ -19,6 +19,10 @@ namespace Physics2D
 	class DistanceJoint : public Joint
 	{
 	public:
+		DistanceJoint()
+		{
+			m_type = JointType::Distance;
+		}
 		void set(const DistanceJointPrimitive& primitive)
 		{
 			m_primitive = primitive;
@@ -84,6 +88,11 @@ namespace Physics2D
 		void solvePosition(const real& dt) override
 		{
 			
+		}
+
+		DistanceJointPrimitive primitive()const
+		{
+			return m_primitive;
 		}
 	private:
 		DistanceJointPrimitive m_primitive;

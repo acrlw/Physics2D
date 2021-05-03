@@ -43,11 +43,11 @@ namespace Physics2D
 		joint.set(prim);
 
 		prim3.minDistance = 4;
-		prim3.maxDistance = 5;
+		prim3.maxDistance = 6;
 		prim3.bodyA = rect2;
 		prim3.bodyB = rect3;
-		prim3.localPointA.set(0, -0.5);
-		prim3.localPointB.set(0, 0.5);
+		prim3.localPointA.set(0.5, 0.5);
+		prim3.localPointB.set(-0.5, -0.5);
 		joint3.set(prim3);
 		
 		connect(&m_timer, &QTimer::timeout, this, &Window::process);
@@ -188,7 +188,7 @@ namespace Physics2D
 		QPen origin(Qt::green, 10, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 		RendererQtImpl::renderPoint(&painter, &m_world, Vector2(0, 0), origin);
 
-		QPen pen(Qt::green, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		QPen pen(Qt::green, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 		Renderer::render(&painter, &m_world, pen);
 
 	}

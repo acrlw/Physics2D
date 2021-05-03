@@ -19,8 +19,14 @@ namespace Physics2D
 	class PointJoint : public Joint
 	{
 	public:
-		PointJoint() = default;
-		PointJoint(const PointJointPrimitive& prim) : m_primitive(prim) {}
+		PointJoint()
+		{
+			m_type = JointType::Point;
+		}
+		PointJoint(const PointJointPrimitive& prim) : m_primitive(prim)
+		{
+			m_type = JointType::Point;
+		}
 		void set(const PointJointPrimitive& prim)
 		{
 			m_primitive = prim;
@@ -76,6 +82,10 @@ namespace Physics2D
 			Vector2 pb = m_primitive.bodyB->toWorldPoint(rb);
 			
 			
+		}
+		PointJointPrimitive primitive()const
+		{
+			return m_primitive;
 		}
 	private:
 		PointJointPrimitive m_primitive;

@@ -7,6 +7,12 @@
 #include "QPainterPath"
 #include "QPen"
 #include "QBrush"
+#include "include/dynamics/joint/joint.h"
+#include "include/dynamics/joint/angle.h"
+#include "include/dynamics/joint/distance.h"
+#include "include/dynamics/joint/mouse.h"
+#include "include/dynamics/joint/pulley.h"
+#include "include/dynamics/joint/point.h"
 namespace Physics2D
 {
 	class RendererQtImpl
@@ -221,6 +227,126 @@ namespace Physics2D
 			topLeft = world->worldToScreen(topLeft);
 			painter->drawRect(QRectF(topLeft.x, topLeft.y, aabb.width, aabb.height));
 		}
+		static void renderAngleJoint(QPainter* painter, World* world, Joint* joint, const QPen& pen)
+		{
+			assert(joint != nullptr);
+			AngleJoint* angleJoint = dynamic_cast<AngleJoint*>(joint);
+		}
+		static void renderDistanceJoint(QPainter* painter, World* world, Joint* joint, const QPen& pen)
+		{
+			assert(joint != nullptr);
+			DistanceJoint* distanceJoint = dynamic_cast<DistanceJoint*>(joint);
+			Vector2 pa = distanceJoint->primitive().bodyA->toWorldPoint(distanceJoint->primitive().localPointA);
+			Vector2 pb = distanceJoint->primitive().bodyB->toWorldPoint(distanceJoint->primitive().localPointB);
+			Vector2 n = (pb - pa).normal();
+			Vector2 minPoint = n * distanceJoint->primitive().minDistance + pa;
+			Vector2 maxPoint = n * distanceJoint->primitive().maxDistance + pa;
+			QColor minColor = Qt::blue;
+			QColor maxColor = Qt::red;
+			minColor.setAlphaF(0.25);
+			maxColor.setAlphaF(0.25);
+			QPen min(minColor, 6);
+			QPen max(maxColor, 6);
+			QPen p(Qt::gray, 6);
+			renderPoint(painter, world, pa, p);
+			renderPoint(painter, world, pb, p);
+			renderPoint(painter, world, minPoint, min);
+			renderPoint(painter, world, maxPoint, max);
+			QColor color = Qt::cyan;
+			color.setAlphaF(0.25);
+			QPen line(color, 1);
+			renderLine(painter, world, pa, maxPoint, line);
+
+		}
+		static void renderMouseJoint(QPainter* painter, World* world, Joint* joint, const QPen& pen)
+		{
+			assert(joint != nullptr);
+
+		}
+		static void renderPointJoint(QPainter* painter, World* world, Joint* joint, const QPen& pen)
+		{
+			assert(joint != nullptr);
+			PointJoint* pointJoint = dynamic_cast<PointJoint*>(joint);
+			Vector2 pa = pointJoint->primitive().bodyA->toWorldPoint(pointJoint->primitive().localPointA);
+			Vector2 pb = pointJoint->primitive().bodyB->toWorldPoint(pointJoint->primitive().localPointB);
+			QPen p(Qt::gray, 6);
+			QColor color = Qt::cyan;
+			color.setAlphaF(0.25);
+			QPen line(color, 1);
+			renderPoint(painter, world, pa, p);
+			renderPoint(painter, world, pb, p);
+			renderLine(painter, world, pa, pb, line);
+		}
+		static void renderPulleyJoint(QPainter* painter, World* world, Joint* joint, const QPen& pen)
+		{
+			assert(joint != nullptr);
+
+		}
+		static void renderPrismaticJoint(QPainter* painter, World* world, Joint* joint, const QPen& pen)
+		{
+			assert(joint != nullptr);
+
+		}
+		static void renderRevoluteJoint(QPainter* painter, World* world, Joint* joint, const QPen& pen)
+		{
+			assert(joint != nullptr);
+
+		}
+		static void renderWheelJoint(QPainter* painter, World* world, Joint* joint, const QPen& pen)
+		{
+			assert(joint != nullptr);
+
+		}
+		static void renderJoint(QPainter* painter, World* world, Joint* joint, const QPen& pen)
+		{
+			assert(painter != nullptr && world != nullptr);
+
+			switch (joint->type())
+			{
+			case JointType::Angle:
+			{
+				renderAngleJoint(painter, world, joint, pen);
+				break;
+			}
+			case JointType::Distance:
+			{
+				renderDistanceJoint(painter, world, joint, pen);
+				break;
+			}
+			case JointType::Mouse:
+			{
+				renderMouseJoint(painter, world, joint, pen);
+				break;
+			}
+			case JointType::Point:
+			{
+				renderPointJoint(painter, world, joint, pen);
+				break;
+			}
+			case JointType::Pulley:
+			{
+				renderPulleyJoint(painter, world, joint, pen);
+				break;
+			}
+			case JointType::Prismatic:
+			{
+				renderPrismaticJoint(painter, world, joint, pen);
+				break;
+			}
+			case JointType::Revolute:
+			{
+				renderRevoluteJoint(painter, world, joint, pen);
+				break;
+			}
+			case JointType::Wheel:
+			{
+				renderWheelJoint(painter, world, joint, pen);
+				break;
+			}
+			default:
+				break;
+			}
+		}
 		static void renderShape(QPainter *painter, World *world, const ShapePrimitive& shape, const QPen& pen)
 		{
 			assert(painter != nullptr && world != nullptr);
@@ -255,7 +381,6 @@ namespace Physics2D
 				break;
 			}
 		}
-	private:
 		
 	};
 }

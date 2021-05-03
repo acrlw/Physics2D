@@ -3,6 +3,17 @@
 #include "include/dynamics/body.h"
 namespace Physics2D
 {
+	enum class JointType
+	{
+		Distance,
+		Point,
+		Angle,
+		Pulley,
+		Prismatic,
+		Wheel,
+		Revolute,
+		Mouse,
+	};
 	class Joint
 	{
 	public:
@@ -10,7 +21,12 @@ namespace Physics2D
 		virtual void prepare(const real& dt) = 0;
 		virtual void solveVelocity(const real& dt) = 0;
 		virtual void solvePosition(const real& dt) = 0;
-	private:
+		JointType type()const
+		{
+			return m_type;
+		}
+	protected:
+		JointType m_type;
 	};
 	
 }
