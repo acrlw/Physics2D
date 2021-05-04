@@ -23,12 +23,18 @@ namespace Physics2D
 		{
 			m_type = JointType::Distance;
 		}
+		DistanceJoint(const DistanceJointPrimitive& primitive) : m_primitive(primitive)
+		{
+			m_type = JointType::Distance;
+		}
 		void set(const DistanceJointPrimitive& primitive)
 		{
 			m_primitive = primitive;
 		}
 		void prepare(const real& dt) override
 		{
+			assert(m_primitive.minDistance < m_primitive.maxDistance);
+			
 			Vector2 ra = m_primitive.localPointA;
 			Vector2 rb = m_primitive.localPointB;
 			
@@ -67,6 +73,8 @@ namespace Physics2D
 		}
 		void solveVelocity(const real& dt) override
 		{
+			if (m_primitive.bias == 0)
+				return;
 			Vector2 ra = m_primitive.localPointA;
 			Vector2 rb = m_primitive.localPointB;
 			

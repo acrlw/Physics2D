@@ -5,7 +5,7 @@
 #include "include/math/math.h"
 #include "include/math/integrator.h"
 #include "include/profile/profiler.h"
-
+#include "include/dynamics/joint/joints.h"
 namespace Physics2D
 {
     class World
@@ -58,6 +58,10 @@ namespace Physics2D
             void addBody(Body* body);
             void removeBody(Body* body);
             Body* createBody();
+    	
+            AngleJoint* createJoint(const AngleJointPrimitive& primitive);
+            PointJoint* createJoint(const PointJointPrimitive& primitive);
+            DistanceJoint* createJoint(const DistanceJointPrimitive& primitive);
 
             real width()const;
             real height()const;
@@ -66,6 +70,7 @@ namespace Physics2D
             static Vector2 screenToWorld(const Vector2& leftTop, const Vector2& rightBottom, const Vector2& pos);
 
             std::vector<Body*> bodyList()const;
+            std::vector<Joint*> jointList()const;
 
             real bias() const;
             void setBias(const real &bias);
@@ -97,6 +102,7 @@ namespace Physics2D
     		
     		bool m_enableGravity;
             std::vector<Body*> m_bodyList;
+            std::vector<Joint*> m_jointList;
             Integrator m_integrator;
 
     		

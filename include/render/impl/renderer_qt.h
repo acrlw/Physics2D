@@ -1,18 +1,11 @@
 #ifndef PHYSICS2D_RENDERER_IMPL_QT_H
 #define PHYSICS2D_RENDERER_IMPL_QT_H
-#include "include/physics2d.h"
-#include "include/render/renderer.h"
+#include "include/dynamics/world.h"
 #include "QPainter"
 #include "QPointF"
 #include "QPainterPath"
 #include "QPen"
 #include "QBrush"
-#include "include/dynamics/joint/joint.h"
-#include "include/dynamics/joint/angle.h"
-#include "include/dynamics/joint/distance.h"
-#include "include/dynamics/joint/mouse.h"
-#include "include/dynamics/joint/pulley.h"
-#include "include/dynamics/joint/point.h"
 namespace Physics2D
 {
 	class RendererQtImpl
@@ -187,35 +180,16 @@ namespace Physics2D
 		static void renderAngleLine(QPainter* painter, World* world, const ShapePrimitive& shape, const QPen& pen)
 		{
 			assert(painter != nullptr && world != nullptr);
-            switch (shape.shape->type()) {
-                case Shape::Type::Circle:
-                {
-					const Circle* circle = dynamic_cast<Circle*>(shape.shape);
-					Vector2 start = shape.transform;
-					Vector2 end = Matrix2x2(shape.rotation).multiply(Vector2(circle->radius(), 0)) + start;
-					renderLine(painter, world, start, end, pen);
-                    break;
-                }
-                case Shape::Type::Polygon:
-                {
-					Vector2 start = shape.transform + Matrix2x2(shape.rotation).multiply(dynamic_cast<Polygon*>(shape.shape)->center());
-					Vector2 end = dynamic_cast<Polygon*>(shape.shape)->vertices()[0];
-					end = Matrix2x2(shape.rotation).multiply(end);
-					end += shape.transform;
-					renderLine(painter, world, start, end, pen);
-                    break;
-                }
-                case Shape::Type::Ellipse:
-                {
-					const Ellipse* ellipse = dynamic_cast<Ellipse*>(shape.shape);
-					Vector2 start = shape.transform;
-					Vector2 end = Matrix2x2(shape.rotation).multiply(Vector2(ellipse->A(), 0)) + start;
-					renderLine(painter, world, start, end, pen);
-                    break;
-                }
-                default:
-                    break;
-            }
+			QColor colorX("#8BC34A");
+			QColor colorY("#FFEB3B");
+			QPen xAxis(colorX, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+			QPen yAxis(colorY, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+			Vector2 xP(0.5, 0);
+			Vector2 yP(0, 0.5);
+			xP = Matrix2x2(shape.rotation).multiply(xP) + shape.transform;
+			yP = Matrix2x2(shape.rotation).multiply(yP) + shape.transform;
+			renderLine(painter, world, shape.transform, xP, xAxis);
+			renderLine(painter, world, shape.transform, yP, yAxis);
 		}
 		static void renderAABB(QPainter *painter, World* world, const AABB& aabb, const QPen& pen)
 		{
@@ -241,21 +215,21 @@ namespace Physics2D
 			Vector2 n = (pb - pa).normal();
 			Vector2 minPoint = n * distanceJoint->primitive().minDistance + pa;
 			Vector2 maxPoint = n * distanceJoint->primitive().maxDistance + pa;
-			QColor minColor = Qt::blue;
-			QColor maxColor = Qt::red;
-			minColor.setAlphaF(0.25);
-			maxColor.setAlphaF(0.25);
-			QPen min(minColor, 6);
-			QPen max(maxColor, 6);
-			QPen p(Qt::gray, 6);
+			QColor minColor("#448AFF");
+			QColor maxColor("#F44336");
+			minColor.setAlphaF(0.8);
+			maxColor.setAlphaF(0.8);
+			QPen min(minColor, 6, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+			QPen max(maxColor, 6, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+			QPen p(Qt::gray, 6, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 			renderPoint(painter, world, pa, p);
 			renderPoint(painter, world, pb, p);
 			renderPoint(painter, world, minPoint, min);
 			renderPoint(painter, world, maxPoint, max);
-			QColor color = Qt::cyan;
-			color.setAlphaF(0.25);
-			QPen line(color, 1);
-			renderLine(painter, world, pa, maxPoint, line);
+			QColor color = Qt::green;
+			color.setAlphaF(0.45);
+			QPen line(color, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+			renderLine(painter, world, pa, pb, line);
 
 		}
 		static void renderMouseJoint(QPainter* painter, World* world, Joint* joint, const QPen& pen)
@@ -269,10 +243,13 @@ namespace Physics2D
 			PointJoint* pointJoint = dynamic_cast<PointJoint*>(joint);
 			Vector2 pa = pointJoint->primitive().bodyA->toWorldPoint(pointJoint->primitive().localPointA);
 			Vector2 pb = pointJoint->primitive().bodyB->toWorldPoint(pointJoint->primitive().localPointB);
-			QPen p(Qt::gray, 6);
-			QColor color = Qt::cyan;
-			color.setAlphaF(0.25);
-			QPen line(color, 1);
+			
+			QColor pColor = Qt::gray;
+			QPen p(pColor, 6, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+			
+			QColor color = Qt::green;
+			color.setAlphaF(0.45);
+			QPen line(color, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 			renderPoint(painter, world, pa, p);
 			renderPoint(painter, world, pb, p);
 			renderLine(painter, world, pa, pb, line);

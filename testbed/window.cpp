@@ -1,5 +1,7 @@
 #include "testbed/window.h"
 
+#include "include/render/renderer.h"
+
 namespace Physics2D
 {
 	Window::Window(QWidget* parent)
@@ -20,35 +22,26 @@ namespace Physics2D
 		//circle.scale(7);
 		edge.set({-18, 0}, {18, 0});
 
-		m_world.setEnableGravity(true);
+		distancePrim.minDistance = 0.6;
+		distancePrim.maxDistance = 0.9;
+		distancePrim.localPointA.set(-0.5, -0.5);
+		distancePrim.localPointB.set(0.5, 0.5);
+
+		anglePrim.referenceAngle = 0;
+
+		pointPrim.localPointA.set(0, -0.5);
+		pointPrim.localPointB.set(0, 0.5);
+		
+		
+		m_world.setEnableGravity(false);
 		m_world.setLinearVelocityDamping(0.8f);
 		m_world.setAirFrictionCoefficient(0.8f);
 		m_world.setAngularVelocityDamping(0.8f);
-		testCollision();
+		//testCollision();
 		//createStackBox(4, 1.1, 1.1);
 		//createBoxesAndGround(12);
 		//testPendulum();
-
-
-		//prim2.bodyA = rect2;
-		//prim2.bodyB = rect3;
-		//prim2.localPointA.set(0, -0.2);
-		//prim2.localPointB.set(0, 0.2);
-		//joint2.set(prim2);
-		
-		prim.bodyA = rect2;
-		prim.bodyB = rect3;
-		prim.referenceAngle = 0;
-
-		joint.set(prim);
-
-		prim3.minDistance = 4;
-		prim3.maxDistance = 6;
-		prim3.bodyA = rect2;
-		prim3.bodyB = rect3;
-		prim3.localPointA.set(0.5, 0.5);
-		prim3.localPointB.set(-0.5, -0.5);
-		joint3.set(prim3);
+		testJoint();
 		
 		connect(&m_timer, &QTimer::timeout, this, &Window::process);
 		m_timer.setInterval(15);
@@ -77,34 +70,66 @@ namespace Physics2D
 		//		}
 		//	}
 		//}
-		auto result1 = Detector::detect(rect2, ground);
-		if(result1.isColliding)
-			solver.add(result1);
-		auto result2 = Detector::detect(rect3, ground);
-		if (result2.isColliding)
-			solver.add(result2);
+		
+		//auto result1 = Detector::detect(rect2, ground);
+		//if(result1.isColliding)
+		//	solver.add(result1);
+		//auto result2 = Detector::detect(rect3, ground);
+		//if (result2.isColliding)
+		//	solver.add(result2);
+		
 		//auto result3 = Detector::detect(rect2, rect3);
 		//if (result3.isColliding)
 		//	solver.add(result3);
 
 		
-		solver.prepare(dt);
-		solver.solve(dt);
+		//solver.prepare(dt);
+		//solver.solve(dt);
 		
-		joint.prepare(dt);
-		joint.solveVelocity(dt);
-		joint.solvePosition(dt);
 
-		//joint2.prepare(dt);
-		//joint2.solveVelocity(dt);
-		//joint2.solvePosition(dt);
-
-		joint3.prepare(dt);
-		joint3.solveVelocity(dt);
-		joint3.solvePosition(dt);
+		
 		
 		m_world.stepPosition(dt);
 		repaint();
+	}
+	void Window::testJoint()
+	{
+		rect = m_world.createBody();
+		rect->setShape(&rectangle);
+		rect->position().set({ 0, 0 });
+		rect->angle() = 0;
+		rect->setMass(100);
+		rect->setType(Body::BodyType::Dynamic);
+		
+		rect2 = m_world.createBody();
+		rect2->setShape(&rectangle);
+		rect2->position().set({ 0, -4 });
+		rect2->angle() = 0;
+		rect2->setMass(100);
+		rect2->setType(Body::BodyType::Dynamic);
+		
+		rect3 = m_world.createBody();
+		rect3->setShape(&rectangle);
+		rect3->position().set({ 0, -8 });
+		rect3->angle() = 0;
+		rect3->setMass(300);
+		rect3->setType(Body::BodyType::Dynamic);
+
+		distancePrim.bodyA = rect;
+		distancePrim.bodyB = rect2;
+		DistanceJoint* joint = m_world.createJoint(distancePrim);
+
+		distancePrim.bodyA = rect2;
+		distancePrim.bodyB = rect3;
+		joint = m_world.createJoint(distancePrim);
+
+		anglePrim.bodyA = rect;
+		anglePrim.bodyB = rect2;
+		AngleJoint* joint2 = m_world.createJoint(anglePrim);
+
+		anglePrim.bodyA = rect2;
+		anglePrim.bodyB = rect3;
+		joint2 = m_world.createJoint(anglePrim);
 	}
 	void Window::testCollision()
 	{
@@ -190,6 +215,7 @@ namespace Physics2D
 
 		QPen pen(Qt::green, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 		Renderer::render(&painter, &m_world, pen);
+
 
 	}
 

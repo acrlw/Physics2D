@@ -12,5 +12,9 @@ namespace Physics2D
 			primitive.transform = body->position();
             RendererQtImpl::renderShape(painter, world, primitive, pen);
     	}
+		for (Joint* joint : world->jointList())
+		{
+			RendererQtImpl::renderJoint(painter, world, joint, pen);
+		}
     }
 }

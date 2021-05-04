@@ -6,6 +6,9 @@ namespace Physics2D
 	{
 		for (Body* body : m_bodyList)
 			delete body;
+		
+		for (Joint* joint : m_jointList)
+			delete joint;
 	}
 
 	Vector2 World::screenToWorld(const Vector2& pos) const
@@ -50,9 +53,19 @@ namespace Physics2D
 			}
 			}
 		}
+		for(Joint* joint: m_jointList)
+			joint->prepare(dt);
+		
+		for(int i = 0;i < m_velocityIteration;i++)
+			for (Joint* joint : m_jointList)
+				joint->solveVelocity(dt);
 	}
 	void World::stepPosition(const real& dt)
 	{
+		for (int i = 0; i < m_positionIteration; i++)
+			for (Joint* joint : m_jointList)
+				joint->solvePosition(dt);
+		
 		for (Body* body : m_bodyList)
 		{
 			switch (body->type())
@@ -153,6 +166,11 @@ namespace Physics2D
 	std::vector<Body*> World::bodyList() const
 	{
 		return m_bodyList;
+	}
+
+	std::vector<Joint*> World::jointList() const
+	{
+		return m_jointList;
 	}
 
 	real World::bias() const
@@ -302,6 +320,27 @@ namespace Physics2D
 		Body* body = new Body;
 		m_bodyList.emplace_back(body);
 		return body;
+	}
+
+	AngleJoint* World::createJoint(const AngleJointPrimitive& primitive)
+	{
+		AngleJoint* joint = new AngleJoint(primitive);
+		m_jointList.emplace_back(joint);
+		return joint;
+	}
+
+	PointJoint* World::createJoint(const PointJointPrimitive& primitive)
+	{
+		PointJoint* joint = new PointJoint(primitive);
+		m_jointList.emplace_back(joint);
+		return joint;
+	}
+
+	DistanceJoint* World::createJoint(const DistanceJointPrimitive& primitive)
+	{
+		DistanceJoint* joint = new DistanceJoint(primitive);
+		m_jointList.emplace_back(joint);
+		return joint;
 	}
 
 	real World::width()const

@@ -13,11 +13,7 @@
 #include <include/render/impl/renderer_qt.h>
 
 #include "include/dynamics/constraint/constraint.h"
-#include "include/dynamics/joint/joint.h"
 #include "include/collision/solver.h"
-#include "include/dynamics/joint/angle.h"
-#include "include/dynamics/joint/distance.h"
-#include "include/dynamics/joint/point.h"
 
 
 namespace Physics2D
@@ -48,6 +44,7 @@ namespace Physics2D
 		void testHit(const QPoint& pos);
 		void testAABB(QPainter* painter);
 		void testBVH(QPainter* painter);
+		void testJoint();
 		void testCollision();
 		void createSnakeBody();
 		void testDistanceJoint();
@@ -79,14 +76,9 @@ namespace Physics2D
 		Vector2 clickPos;
 		Vector2 mousePos;
 		CollisionSolver solver;
-		
-		AngleJointPrimitive prim;
-		AngleJoint joint;
-
-		//PointJointPrimitive prim2;
-		//PointJoint joint2;
-		DistanceJointPrimitive prim3;
-		DistanceJoint joint3;
+		DistanceJointPrimitive distancePrim;
+		AngleJointPrimitive anglePrim;
+		PointJointPrimitive pointPrim;
 	};
 }
 #endif
