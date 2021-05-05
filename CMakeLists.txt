@@ -74,7 +74,9 @@ add_executable(physics-engine
     "include/dynamics/joint/revolute.h"
     "include/dynamics/joint/pulley.h"
     "include/dynamics/joint/point.h"
-    "include/dynamics/joint/distance.h" "include/collision/solver.h" "include/dynamics/joint/angle.h" "include/dynamics/joint/joints.h")
+    "include/dynamics/joint/distance.h"
+    "include/dynamics/joint/angle.h"
+    "include/dynamics/joint/joints.h")
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 find_package(fmt CONFIG REQUIRED)

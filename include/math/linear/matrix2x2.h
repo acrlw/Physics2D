@@ -24,6 +24,12 @@ namespace Physics2D
 
         Vector2 row1()const;
         Vector2 row2()const;
+		
+        real& e11();
+        real& e12();
+		
+        real& e21();
+        real& e22();
 
         real determinant()const;
         Matrix2x2& transpose();

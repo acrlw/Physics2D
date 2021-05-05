@@ -7,13 +7,12 @@
 #include <QTimer>
 #include <QMouseEvent>
 #include <QKeyEvent>
+#include <QWheelEvent>
 #include <QPaintEvent>
 #include <QPainterPath>
 #include <include/physics2d.h>
 #include <include/render/impl/renderer_qt.h>
 
-#include "include/dynamics/constraint/constraint.h"
-#include "include/collision/solver.h"
 
 
 namespace Physics2D
@@ -37,6 +36,7 @@ namespace Physics2D
 		void mouseDoubleClickEvent(QMouseEvent* event) override;
 		void keyPressEvent(QKeyEvent* event) override;
 		void keyReleaseEvent(QKeyEvent* event) override;
+		void wheelEvent(QWheelEvent* event)override;
 	
 	private:
 		void createBoxesAndGround(const real& count = 10);
@@ -75,10 +75,10 @@ namespace Physics2D
 		Vector2 errorAll;
 		Vector2 clickPos;
 		Vector2 mousePos;
-		CollisionSolver solver;
 		DistanceJointPrimitive distancePrim;
 		AngleJointPrimitive anglePrim;
 		PointJointPrimitive pointPrim;
+		MouseJointPrimitive mousePrim;
 	};
 }
 #endif

@@ -75,6 +75,44 @@ namespace Physics2D
 		return Vector3(column1.z, column2.z, column3.z);
 	}
 
+	real& Matrix3x3::e11()
+	{
+		return column1.x;
+	}
+	real& Matrix3x3::e12()
+	{
+		return column2.x;
+	}
+	real& Matrix3x3::e13()
+	{
+		return column3.x;
+	}
+
+	real& Matrix3x3::e21()
+	{
+		return column1.y;
+	}
+	real& Matrix3x3::e22()
+	{
+		return column2.y;
+	}
+	real& Matrix3x3::e23()
+	{
+		return column3.y;
+	}
+	
+	real& Matrix3x3::e31()
+	{
+		return column1.z;
+	}
+	real& Matrix3x3::e32()
+	{
+		return column2.z;
+	}
+	real& Matrix3x3::e33()
+	{
+		return column3.z;
+	}
 	real Matrix3x3::determinant() const
 	{
 		return determinant(*this);

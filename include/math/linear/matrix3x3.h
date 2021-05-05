@@ -27,6 +27,18 @@ namespace Physics2D
         Vector3 row2()const;
         Vector3 row3()const;
 
+        real& e11();
+        real& e12();
+        real& e13();
+
+        real& e21();
+        real& e22();
+        real& e23();
+
+        real& e31();
+        real& e32();
+        real& e33();
+
         Matrix3x3& set(const real& col1_x, const real& col1_y, const real& col1_z,
             const real& col2_x, const real& col2_y, const real& col2_z,
             const real& col3_x, const real& col3_y, const real& col3_z);

@@ -80,6 +80,25 @@ namespace Physics2D
 		return Vector2(column1.y, column2.y);
 	}
 
+	real& Matrix2x2::e11()
+	{
+		return column1.x;
+	}
+
+	real& Matrix2x2::e21()
+	{
+		return column1.y;
+	}
+	real& Matrix2x2::e12()
+	{
+		return column2.x;
+	}
+
+	real& Matrix2x2::e22()
+	{
+		return column2.y;
+	}
+
 	real Matrix2x2::determinant() const
 	{
 		return determinant(*this);

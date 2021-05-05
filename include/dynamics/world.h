@@ -62,6 +62,9 @@ namespace Physics2D
             AngleJoint* createJoint(const AngleJointPrimitive& primitive);
             PointJoint* createJoint(const PointJointPrimitive& primitive);
             DistanceJoint* createJoint(const DistanceJointPrimitive& primitive);
+            MouseJoint* createJoint(const MouseJointPrimitive& primitive);
+            PulleyJoint* createJoint(const PulleyJointPrimitive& primitive);
+            RevoluteJoint* createJoint(const RevoluteJointPrimitive& primitive);
 
             real width()const;
             real height()const;

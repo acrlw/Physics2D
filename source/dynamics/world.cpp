@@ -38,7 +38,6 @@ namespace Physics2D
 				body->forces() += body->mass() * g;
 				body->velocity() += body->inverseMass() * body->forces() * dt * m_velocityIteration;
 				body->angularVelocity() += body->inverseInertia() * body->torques() * dt * m_velocityIteration;
-				
 				break;
 			}
 			case Body::BodyType::Kinematic:
@@ -62,7 +61,7 @@ namespace Physics2D
 	}
 	void World::stepPosition(const real& dt)
 	{
-		for (int i = 0; i < m_positionIteration; i++)
+		for (int i = 0; i < m_velocityIteration; i++)
 			for (Joint* joint : m_jointList)
 				joint->solvePosition(dt);
 		
@@ -339,6 +338,27 @@ namespace Physics2D
 	DistanceJoint* World::createJoint(const DistanceJointPrimitive& primitive)
 	{
 		DistanceJoint* joint = new DistanceJoint(primitive);
+		m_jointList.emplace_back(joint);
+		return joint;
+	}
+
+	MouseJoint* World::createJoint(const MouseJointPrimitive& primitive)
+	{
+		MouseJoint* joint = new MouseJoint(primitive);
+		m_jointList.emplace_back(joint);
+		return joint;
+	}
+
+	PulleyJoint* World::createJoint(const PulleyJointPrimitive& primitive)
+	{
+		PulleyJoint* joint = new PulleyJoint(primitive);
+		m_jointList.emplace_back(joint);
+		return joint;
+	}
+
+	RevoluteJoint* World::createJoint(const RevoluteJointPrimitive& primitive)
+	{
+		RevoluteJoint* joint = new RevoluteJoint(primitive);
 		m_jointList.emplace_back(joint);
 		return joint;
 	}

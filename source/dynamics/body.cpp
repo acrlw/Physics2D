@@ -127,21 +127,13 @@ namespace Physics2D {
         return m_invInertia;
     }
 
-    void Body::applyImpulse(const Vector2& force, const Vector2& r)
+    void Body::applyImpulse(const Vector2& impulse, const Vector2& r)
     {
-        m_velocity += m_invMass * force;
-        m_angularVelocity += m_invInertia * r.cross(force);
+        m_velocity += m_invMass * impulse;
+        m_angularVelocity += m_invInertia * r.cross(impulse);
     }
 
-    Vector2 Body::toLocalPoint(const Vector2& point)const
-    {
-        return Matrix2x2(-m_angle).multiply(point - m_position);
-    }
 
-    Vector2 Body::toWorldPoint(const Vector2& point) const
-    {
-        return Matrix2x2(m_angle).multiply(point) + m_position;
-    }
 
 
     void Body::calcInertia()

@@ -7,8 +7,19 @@ namespace Physics2D
 {
     class SAT
     {
-            
-
+    public:
+    	static std::optional<Vector2> circleVsCircle(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB)
+    	{
+    		
+    	}
+    	static std::optional<Vector2> circleVsPolygon(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB)
+    	{
+    		
+    	}
+    	static std::optional<Vector2> polygonVsPolygon(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB)
+    	{
+    		
+    	}
     };
 }
 #endif
