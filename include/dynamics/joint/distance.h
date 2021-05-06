@@ -39,9 +39,9 @@ namespace Physics2D
 			assert(m_primitive.minDistance <= m_primitive.maxDistance);
 			
 		}
-		void solveVelocity(const real& dt) override
+		Vector2 solveVelocity(const real& dt) override
 		{
-			
+			return Vector2();
 		}
 		void solvePosition(const real& dt) override
 		{

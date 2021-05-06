@@ -28,6 +28,11 @@ namespace Physics2D
 		m_position = pos;
 	}
 
+	Vector2 Point::center()const
+	{
+		return m_position;
+	}
+
 	Polygon::Polygon()
 	{
 		m_type = Type::Polygon;
@@ -49,7 +54,7 @@ namespace Physics2D
 		m_vertices.emplace_back(vertex);
 	}
 
-	Vector2 Polygon::center() const
+	Vector2 Polygon::center()const
 	{
 		return GeometryAlgorithm2D::calculateCenter(this->vertices());
 	}
@@ -153,6 +158,11 @@ namespace Physics2D
 		return (m_radius * m_radius - point.lengthSquare()) > epsilon;
 	}
 
+	Vector2 Circle::center()const
+	{
+		return Vector2();
+	}
+
 	Ellipse::Ellipse(const real& width, const real& height)
 	{
 		m_type = Type::Ellipse;
@@ -190,6 +200,11 @@ namespace Physics2D
 	bool Ellipse::contains(const Vector2& point, const real& epsilon)
 	{
 		return false;
+	}
+
+	Vector2 Ellipse::center()const
+	{
+		return Vector2();
 	}
 
 	real Ellipse::width() const
@@ -261,6 +276,11 @@ namespace Physics2D
 		return GeometryAlgorithm2D::isPointOnSegment(m_startPoint, m_endPoint, point);
 	}
 
+	Vector2 Edge::center()const
+	{
+		return (m_startPoint + m_endPoint) / 2.0;
+	}
+
 	Curve::Curve()
 	{
 		m_type = Type::Curve;
@@ -324,5 +344,9 @@ namespace Physics2D
 	bool Curve::contains(const Vector2& point, const real& epsilon)
 	{
 		return false;
+	}
+	Vector2 Curve::center() const
+	{
+		return Vector2();
 	}
 }

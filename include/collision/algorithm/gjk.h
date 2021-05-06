@@ -64,7 +64,9 @@ namespace Physics2D
 				|| (other.pointB.fuzzyEqual(this->pointA) && other.pointA.fuzzyEqual(this->pointB));
 		}
 	};
-
+	/// <summary>
+	/// GJK Collision Detection Class
+	/// </summary>
 	class GJK
 	{
 	public:
@@ -75,7 +77,7 @@ namespace Physics2D
 		/// <param name="shape_B"></param>
 		/// <param name="iteration"></param>
 		/// <returns>return initial simplex and whether collision exists</returns>
-		static std::tuple<bool, Simplex> gjk(const ShapePrimitive& shape_A, const ShapePrimitive& shape_B,
+		static std::tuple<bool, Simplex> gjk(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB,
 		                                     const size_t& iteration = 50);
 		/// <summary>
 		/// Expanding Polygon Algorithm
@@ -86,7 +88,7 @@ namespace Physics2D
 		/// <param name="iteration">iteration times</param>
 		/// <param name="epsilon">epsilon of iterated result</param>
 		/// <returns>return expanded simplex</returns>
-		static Simplex epa(const ShapePrimitive& shape_A, const ShapePrimitive& shape_B, const Simplex& src,
+		static Simplex epa(const ShapePrimitive& shapeA, const ShapePrimitive& shapshapeBe_B, const Simplex& src,
 		                   const size_t& iteration = 50, const real& epsilon = 0.0001);
 		/// <summary>
 		/// Dump collision penetration normal and depth
@@ -103,7 +105,7 @@ namespace Physics2D
 		/// <param name="shape_B"></param>
 		/// <param name="direction"></param>
 		/// <returns></returns>
-		static Minkowski support(const ShapePrimitive& shape_A, const ShapePrimitive& shape_B,
+		static Minkowski support(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB,
 		                         const Vector2& direction);
 		/// <summary>
 		/// Find two points that can form an edge closest to origin of simplex

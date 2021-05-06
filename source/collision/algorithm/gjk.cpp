@@ -61,20 +61,20 @@ namespace Physics2D
 		return vertices[vertices.size() - 2].result;
 	}
 
-	std::tuple<bool, Simplex> GJK::gjk(const ShapePrimitive& shape_A, const ShapePrimitive& shape_B,
+	std::tuple<bool, Simplex> GJK::gjk(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB,
 	                                   const size_t& iteration)
 	{
 		Simplex simplex;
 		bool found = false;
-		Vector2 direction = shape_B.transform - shape_A.transform;
-		Minkowski diff = support(shape_A, shape_B, direction);
+		Vector2 direction = shapeB.transform - shapeA.transform;
+		Minkowski diff = support(shapeA, shapeB, direction);
 		simplex.vertices.emplace_back(diff);
 		direction.negate();
 		size_t iter = 0;
 		std::vector<Minkowski> removed;
 		while (iter <= iteration)
 		{
-			diff = support(shape_A, shape_B, direction);
+			diff = support(shapeA, shapeB, direction);
 			simplex.vertices.emplace_back(diff);
 			if (simplex.vertices.size() == 3)
 				simplex.vertices.emplace_back(simplex.vertices[0]);
@@ -111,7 +111,7 @@ namespace Physics2D
 		return std::make_tuple(found, simplex);
 	}
 
-	Simplex GJK::epa(const ShapePrimitive& shape_A, const ShapePrimitive& shape_B, const Simplex& src,
+	Simplex GJK::epa(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB, const Simplex& src,
 	                 const size_t& iteration, const real& epsilon)
 	{
 		size_t iter = 0;
@@ -130,7 +130,7 @@ namespace Physics2D
 				normal.negate();
 			
 			//new minkowski point
-			p = support(shape_A, shape_B, normal);
+			p = support(shapeA, shapeB, normal);
 
 			if (simplex.contains(p))
 				break;
@@ -157,10 +157,10 @@ namespace Physics2D
 		return result;
 	}
 
-	Minkowski GJK::support(const ShapePrimitive& shape_A, const ShapePrimitive& shape_B, const Vector2& direction)
+	Minkowski GJK::support(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB, const Vector2& direction)
 	{
-		Vector2 p1 = findFarthestPoint(shape_A, direction);
-		Vector2 p2 = findFarthestPoint(shape_B, direction * -1);
+		Vector2 p1 = findFarthestPoint(shapeA, direction);
+		Vector2 p2 = findFarthestPoint(shapeB, direction * -1);
 		return Minkowski(p1, p2);
 	}
 

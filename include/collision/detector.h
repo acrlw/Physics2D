@@ -21,6 +21,7 @@ namespace Physics2D
 
 	class Detector
 	{
+
 	public:
 		static Collision detect(Body* bodyA, Body* bodyB);
 		static std::optional<PointPair> distance(Body* bodyA, Body* bodyB);

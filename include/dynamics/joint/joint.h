@@ -19,7 +19,7 @@ namespace Physics2D
 	public:
 		Joint(){}
 		virtual void prepare(const real& dt) = 0;
-		virtual void solveVelocity(const real& dt) = 0;
+		virtual Vector2 solveVelocity(const real& dt) = 0;
 		virtual void solvePosition(const real& dt) = 0;
 		JointType type()const
 		{

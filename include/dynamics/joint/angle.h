@@ -42,7 +42,7 @@ namespace Physics2D
 			
 
 		}
-		void solveVelocity(const real& dt) override
+		Vector2 solveVelocity(const real& dt) override
 		{
 			real dw = m_primitive.bodyA->angularVelocity() - m_primitive.bodyB->angularVelocity();
 			real impulse = m_primitive.effectiveMass * (-dw + m_primitive.bias);
@@ -53,6 +53,7 @@ namespace Physics2D
 
 			m_primitive.lastImpulse = impulse;
 			m_primitive.accumulatedImpulse += impulse;
+			return Vector2();
 		}
 		void solvePosition(const real& dt) override
 		{

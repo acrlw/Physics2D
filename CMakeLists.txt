@@ -16,7 +16,7 @@ add_executable(physics-engine
     main.cpp
     "include/collision/algorithm/gjk.h"
     "include/collision/algorithm/sat.h"
-    "include/collision/algorithm/mpr.h"
+    
     "include/collision/algorithm/clip.h"
     "include/collision/collider.h"
     "include/collision/contact.h"
@@ -42,6 +42,7 @@ add_executable(physics-engine
     "tests/test_geomentry.h" 
     "testbed/testbed.h" 
     "testbed/testbed.cpp"
+    "include/collision/algorithm/mpr.h"
     "source/collision/algorithm/sat.cpp"
     "source/collision/algorithm/gjk.cpp"
     "source/collision/algorithm/mpr.cpp"

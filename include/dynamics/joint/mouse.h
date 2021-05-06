@@ -51,31 +51,30 @@ namespace Physics2D
 			k.e22() = im_a + ii_a * ra.x * ra.x;
 
 			m_primitive.effectiveMass = k.invert();
-			m_primitive.bias = -m_factor * c * inv_dt;
+			m_primitive.bias = - c * inv_dt;
 		}
-		void solveVelocity(const real& dt) override
+		Vector2 solveVelocity(const real& dt) override
 		{
 			Vector2 ra = Matrix2x2(m_primitive.bodyA->angle()).multiply(m_primitive.localPointA);
 			Vector2 va = m_primitive.bodyA->velocity() + Vector2::crossProduct(m_primitive.bodyA->angularVelocity(), ra);
-			va.negate();
-
-			Vector2 c = m_primitive.mousePoint - (m_primitive.bodyA->position() + ra);
-			Vector2 normal = c.normal();
-			Vector2 jv = va.dot(normal) * normal;
 			
-			Vector2 impulse = m_primitive.effectiveMass.multiply(-jv + m_primitive.bias);
+			Vector2 jv = va + m_primitive.bias;
+			Vector2 impulse = m_primitive.effectiveMass.multiply(jv.negate());
 
-			m_primitive.bodyA->applyImpulse(-impulse, ra);
-
+			m_primitive.bodyA->applyImpulse(impulse, ra);
+			
 			m_primitive.lastImpulse = impulse;
+			return impulse;
 		}
 		void solvePosition(const real& dt) override
 		{
-			
+			//Vector2 ra = Matrix2x2(m_primitive.bodyA->angle()).multiply(m_primitive.localPointA);
+			//Vector2 c = m_primitive.mousePoint - (m_primitive.bodyA->position() + ra);
+			//m_primitive.bodyA->position() += c * m_primitive.bodyA->inverseMass();
 		}
 	private:
 		MouseJointPrimitive m_primitive;
-		real m_factor = 0.2;
+		real m_factor = 0.5;
 	};
 }
 #endif

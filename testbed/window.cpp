@@ -12,12 +12,12 @@ namespace Physics2D
 		this->setMouseTracking(true);
 		m_world.setGeometry({0, 0}, {1920, 1080});
 
-		rectangle.set(1, 1);
+		rectangle.set(2, 2);
 		land.set(36, 0.2);
 		polygon.append({ {3,0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3},{2, -3}, {3, 0} });
-		polygon.scale(0.2);
-		ellipse.set({-4, 3}, {4, -3});
-		ellipse.scale(0.1);
+		//polygon.scale(0.2);
+		ellipse.set({-5, 4}, {5, -4});
+		//ellipse.scale(0.1);
 		circle.setRadius(0.5);
 		//circle.scale(7);
 		edge.set({-18, 0}, {18, 0});
@@ -37,29 +37,54 @@ namespace Physics2D
 		
 		
 		m_world.setEnableGravity(true);
+		m_world.setGravity({ 0, -9.8 });
 		m_world.setLinearVelocityDamping(0.8f);
 		m_world.setAirFrictionCoefficient(0.8f);
 		m_world.setAngularVelocityDamping(0.8f);
 		//createStackBox(4, 1.1, 1.1);
 		//createBoxesAndGround(12);
 		//testPendulum();
-		testCollision();
+		//testCollision();
+		testMpr();
 		//testJoint();
 		
 		connect(&m_timer, &QTimer::timeout, this, &Window::process);
 		m_timer.setInterval(15);
 		m_timer.start();
+
+		
 	}
 
 	Window::~Window()
 	{
 	}
-
+	void Window::testMpr()
+	{
+		ShapePrimitive shape1, shape2;
+		shape1.shape = &rectangle;
+		shape2.shape = &rectangle;
+		shape1.rotation = 45;
+		shape1.transform.set(1, 1);
+		shape2.rotation = 37;
+		shape2.transform.set(1.5, 2);
+		auto [centerToOrigin, simplex] = MPR::discover(shape1, shape2);
+		auto [isColliding, finalSimplex] = MPR::refine(shape1, shape2, simplex, centerToOrigin);
+		fmt::print("collide:{}\n", isColliding);
+		fmt::print("A:{}, B:{}, result:{}\n", finalSimplex.vertices[1].pointA, finalSimplex.vertices[1].pointB, finalSimplex.vertices[1].result);
+		fmt::print("A:{}, B:{}, result:{}\n", finalSimplex.vertices[2].pointA, finalSimplex.vertices[2].pointB, finalSimplex.vertices[2].result);
+	}
 	void Window::process()
 	{
-		const real dt = 1.0f / 120.0f;
-		const real inv_dt = 120.0f;
+		const real dt = 1.0 / 60.0;
+		const real inv_dt = 60;
 		m_world.stepVelocity(dt);
+
+		for (Joint* joint : m_world.jointList())
+			joint->prepare(dt);
+		
+		for (Joint* joint : m_world.jointList())
+			fmt::print("{}\n", joint->solveVelocity(dt));
+		
 		
 		m_world.stepPosition(dt);
 		repaint();
@@ -70,7 +95,7 @@ namespace Physics2D
 		rect->setShape(&rectangle);
 		rect->position().set({ 0, 0 });
 		rect->angle() = 0;
-		rect->setMass(100);
+		rect->setMass(5);
 		rect->setType(Body::BodyType::Dynamic);
 		
 		rect2 = m_world.createBody();
@@ -86,6 +111,9 @@ namespace Physics2D
 		rect3->angle() = 0;
 		rect3->setMass(100);
 		rect3->setType(Body::BodyType::Dynamic);
+
+		mousePrim.bodyA = rect;
+		MouseJoint* j = m_world.createJoint(mousePrim);
 		
 	}
 	void Window::testCollision()
@@ -173,7 +201,19 @@ namespace Physics2D
 		QPen pen(Qt::green, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 		Renderer::render(&painter, &m_world, pen);
 
-
+		QColor color = Qt::green;
+		color.setAlphaF(0.6);
+		pen.setColor(color);
+		for(int i = 0;i < 10;i++)
+		{
+			RendererQtImpl::renderPoint(&painter, &m_world, Vector2(0, i), pen);
+			RendererQtImpl::renderPoint(&painter, &m_world, Vector2(i, 0), pen);
+		}
+		color.setAlphaF(0.45);
+		pen.setColor(color);
+		pen.setWidth(1);
+		RendererQtImpl::renderLine(&painter, &m_world, Vector2(0, 0), Vector2(0, 10), pen);
+		RendererQtImpl::renderLine(&painter, &m_world, Vector2(0, 0), Vector2(10, 0), pen);
 	}
 
 	void Window::resizeEvent(QResizeEvent* e)
@@ -225,8 +265,8 @@ namespace Physics2D
 
 	void Window::keyPressEvent(QKeyEvent* event)
 	{
-		rect3->velocity() += {0, 9.8};
-		mousePrim.mousePoint -= {-1, 1};
+		//rect3->velocity() += {0, 9.8};
+		//mousePrim.mousePoint -= {-1, 1};
 		//switch (event->key())
 		//{
 		//case Qt::Key_R:

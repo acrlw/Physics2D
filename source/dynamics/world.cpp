@@ -52,12 +52,6 @@ namespace Physics2D
 			}
 			}
 		}
-		for(Joint* joint: m_jointList)
-			joint->prepare(dt);
-		
-		for(int i = 0;i < m_velocityIteration;i++)
-			for (Joint* joint : m_jointList)
-				joint->solveVelocity(dt);
 	}
 	void World::stepPosition(const real& dt)
 	{

@@ -2,7 +2,7 @@
 
 namespace Physics2D
 {
-	std::optional<std::vector<PointPair>> ContactGenerator::clip(const ContactEdge& lhs, const ContactEdge& rhs, const bool& exchange = false)
+	std::optional<std::vector<PointPair>> ContactGenerator::clip(const ContactEdge& lhs, const ContactEdge& rhs, const bool& exchange)
 	{
 		std::vector<PointPair> result;
 		auto project = [](const Vector2& a, const Vector2& b, const Vector2& c)
@@ -63,7 +63,7 @@ namespace Physics2D
 
 		return result.empty() ? std::nullopt : std::optional<std::vector<PointPair>>(result);
 	}
-	std::optional<std::vector<PointPair>> ContactGenerator::generate(const ShapePrimitive& shape, const ContactEdge& edge, const Vector2& source, const PenetrationInfo& info, const bool& exchange = false)
+	std::optional<std::vector<PointPair>> ContactGenerator::generate(const ShapePrimitive& shape, const ContactEdge& edge, const Vector2& source, const PenetrationInfo& info, const bool& exchange)
 	{
 
 		if (shape.shape->type() != Shape::Type::Polygon)
@@ -102,13 +102,9 @@ namespace Physics2D
 		next = Matrix2x2(shape.rotation).multiply(next) + shape.transform;
 
 		if (abs((source - previous).dot(info.normal)) < Constant::GeometryEpsilon)
-		{
 			target = previous;
-		}
 		else if (abs((source - next).dot(info.normal)) < Constant::GeometryEpsilon)
-		{
 			target = next;
-		}
 		else
 			return std::nullopt;
 

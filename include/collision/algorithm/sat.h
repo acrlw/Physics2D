@@ -5,21 +5,28 @@
 #include "include/geometry/shape.h"
 namespace Physics2D
 {
+    /// <summary>
+    /// Separating Axis Theorem
+    /// </summary>
+    
     class SAT
     {
     public:
-    	static std::optional<Vector2> circleVsCircle(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB)
+        static std::optional<PenetrationInfo> circleVsCircle(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB);
+        static std::optional<Vector2> circleVsPolygon(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB);
+        static std::optional<Vector2> polygonVsPolygon(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB);
+    private:
+        struct ProjectedPoint
+        {
+            Vector2 vertex;
+            real value = 0;
+        };
+    	struct ProjectedSegment
     	{
-    		
-    	}
-    	static std::optional<Vector2> circleVsPolygon(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB)
-    	{
-    		
-    	}
-    	static std::optional<Vector2> polygonVsPolygon(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB)
-    	{
-    		
-    	}
+            ProjectedPoint min;
+            ProjectedPoint max;
+            static std::tuple<ProjectedSegment, real> intersect(const ProjectedSegment& s1, const ProjectedSegment& s2);
+    	};
     };
 }
 #endif

@@ -12,7 +12,7 @@
 #include <QPainterPath>
 #include <include/physics2d.h>
 #include <include/render/impl/renderer_qt.h>
-
+#include <include/collision/algorithm/mpr.h>
 
 
 namespace Physics2D
@@ -49,6 +49,7 @@ namespace Physics2D
 		void createSnakeBody();
 		void testDistanceJoint();
 		void testPendulum();
+		void testMpr();
 		World m_world;
 		Rectangle rectangle;
 		Rectangle land;
@@ -79,6 +80,8 @@ namespace Physics2D
 		AngleJointPrimitive anglePrim;
 		PointJointPrimitive pointPrim;
 		MouseJointPrimitive mousePrim;
+
+		int counter = 0;
 	};
 }
 #endif

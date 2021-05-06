@@ -55,28 +55,30 @@ namespace Physics2D
             real inverseInertia()const;
 
             void applyImpulse(const Vector2& impulse, const Vector2& r);
-
+            Vector2 toLocalPoint(const Vector2& point)const;
+            Vector2 toWorldPoint(const Vector2& point)const;
+            Vector2 toActualPoint(const Vector2& point)const;
         private:
             void calcInertia();
 
-            real m_mass;
-            real m_inertia;
-            real m_invMass;
-            real m_invInertia;
+            real m_mass = 0;
+            real m_inertia = 0;
+            real m_invMass = 0;
+            real m_invInertia = 0;
     	
             Vector2 m_position;
             Vector2 m_velocity;
-            real m_angle;
-            real m_angularVelocity;
+            real m_angle = 0;
+            real m_angularVelocity = 0;
     	
             Vector2 m_forces;
-            real m_torques;
+            real m_torques = 0;
     	
-            Shape *m_shape;
-            BodyType m_type;
+            Shape *m_shape = nullptr;
+            BodyType m_type = BodyType::Static;
     	
-            bool m_sleep;
-            real m_damping;
+            bool m_sleep = false;
+            real m_damping = 0.7;
 
             BodyState m_bodyState;
     };
