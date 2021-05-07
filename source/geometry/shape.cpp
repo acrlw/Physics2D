@@ -349,4 +349,8 @@ namespace Physics2D
 	{
 		return Vector2();
 	}
+	Vector2 ShapePrimitive::translate(const Vector2& source)const
+	{
+		return Matrix2x2(rotation).multiply(source) + transform;
+	}
 }

@@ -38,6 +38,7 @@ namespace Physics2D
         Shape* shape = nullptr;
         Vector2 transform;
         real rotation = 0;
+        Vector2 translate(const Vector2& source)const;
     };
     class Point: public Shape
     {
