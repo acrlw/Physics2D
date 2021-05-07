@@ -11,11 +11,13 @@ cmake CMakeLists.txt
 # Features
 - Basic Linear Algebra
 - Collision Detection Algorithm
+  - SAT
   - GJK
   - EPA
+  - MPR
   - Distance
   - Contact Pair
-  - Support Shape
+  - Support Mapping
     - ellipse
     - circle
     - polygon
