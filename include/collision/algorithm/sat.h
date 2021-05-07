@@ -9,6 +9,7 @@ namespace Physics2D
     {
         Vector2 vertex;
         real value = 0;
+        bool operator==(const ProjectedPoint& rhs);
     };
     struct ProjectedEdge
     {
@@ -24,8 +25,7 @@ namespace Physics2D
 	
     struct SATResult
     {
-        ProjectedSegment pointPair;
-        ProjectedEdge targetEdge;
+        PointPair pointPair;
         Vector2 normal;
         real penetration = Constant::Max;
         bool isColliding = false;
@@ -42,6 +42,8 @@ namespace Physics2D
         static SATResult polygonVsPolygon(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB);
     private:
         static ProjectedSegment axisProjection(const ShapePrimitive& shape, Polygon* polygon, const Vector2& normal);
+        static ProjectedSegment axisProjection(const ShapePrimitive& shape, Circle* circle, const Vector2& normal);
+        static ProjectedSegment axisProjection(const ShapePrimitive& shape, Ellipse* ellipse, const Vector2& normal);
     };
 }
 #endif

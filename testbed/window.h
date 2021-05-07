@@ -13,7 +13,7 @@
 #include <include/physics2d.h>
 #include <include/render/impl/renderer_qt.h>
 #include <include/collision/algorithm/mpr.h>
-
+#include <include/collision/algorithm/sat.h>
 
 namespace Physics2D
 {
@@ -50,6 +50,7 @@ namespace Physics2D
 		void testDistanceJoint();
 		void testPendulum();
 		void testMpr();
+		void testSAT();
 		World m_world;
 		Rectangle rectangle;
 		Rectangle land;

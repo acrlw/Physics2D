@@ -45,9 +45,9 @@ namespace Physics2D
 		//createBoxesAndGround(12);
 		//testPendulum();
 		//testCollision();
-		testMpr();
+		//testMpr();
 		//testJoint();
-		
+		testSAT();
 		connect(&m_timer, &QTimer::timeout, this, &Window::process);
 		m_timer.setInterval(15);
 		m_timer.start();
@@ -73,6 +73,21 @@ namespace Physics2D
 		fmt::print("A:{}, B:{}, result:{}\n", finalSimplex.vertices[1].pointA, finalSimplex.vertices[1].pointB, finalSimplex.vertices[1].result);
 		fmt::print("A:{}, B:{}, result:{}\n", finalSimplex.vertices[2].pointA, finalSimplex.vertices[2].pointB, finalSimplex.vertices[2].result);
 	}
+
+	void Window::testSAT()
+	{
+		ShapePrimitive shape1, shape2;
+		shape1.shape = &rectangle;
+		shape2.shape = &rectangle;
+		shape1.rotation = 45;
+		shape1.transform.set(1, 1);
+		shape2.rotation = 37;
+		shape2.transform.set(3, 1);
+		SATResult result = SAT::polygonVsPolygon(shape2, shape1);
+		fmt::print("collide:{}, normal:{}, penetration:{}\n", result.isColliding, result.normal, result.penetration);
+		fmt::print("point pair: {}, {}\n", result.pointPair.pointA, result.pointPair.pointB);
+	}
+
 	void Window::process()
 	{
 		const real dt = 1.0 / 60.0;
@@ -204,7 +219,7 @@ namespace Physics2D
 		QColor color = Qt::green;
 		color.setAlphaF(0.6);
 		pen.setColor(color);
-		for(int i = 0;i < 10;i++)
+		for(int i = -10;i <= 10;i++)
 		{
 			RendererQtImpl::renderPoint(&painter, &m_world, Vector2(0, i), pen);
 			RendererQtImpl::renderPoint(&painter, &m_world, Vector2(i, 0), pen);
@@ -212,8 +227,8 @@ namespace Physics2D
 		color.setAlphaF(0.45);
 		pen.setColor(color);
 		pen.setWidth(1);
-		RendererQtImpl::renderLine(&painter, &m_world, Vector2(0, 0), Vector2(0, 10), pen);
-		RendererQtImpl::renderLine(&painter, &m_world, Vector2(0, 0), Vector2(10, 0), pen);
+		RendererQtImpl::renderLine(&painter, &m_world, Vector2(0, -10), Vector2(0, 10), pen);
+		RendererQtImpl::renderLine(&painter, &m_world, Vector2(-10, 0), Vector2(10, 0), pen);
 	}
 
 	void Window::resizeEvent(QResizeEvent* e)

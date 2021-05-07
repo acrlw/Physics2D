@@ -37,7 +37,7 @@ namespace Physics2D
 	{
 		const real Epsilon = DBL_EPSILON;
 		const real Max = DBL_MAX;
-		const real Min = DBL_MIN;
+		const real PositiveMin = DBL_MIN;
 		const real NegativeMin = -Max;
 		const real Pi = 3.141592653589793238463;
 		const real ReciprocalOfPi = 0.3183098861837907;
