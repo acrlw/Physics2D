@@ -25,6 +25,7 @@ namespace Physics2D
 	public:
 		Renderer(){}
 		static void render(QPainter* painter, World* world, const QPen& pen);
+		static void render(QPainter* painter, World* world, Body* body, const QPen& pen);
 	private:
 	};
 }

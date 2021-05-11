@@ -4,22 +4,29 @@
 
 namespace Physics2D
 {
-	struct AABBPair
+	struct BodyPair
 	{
-		AABB aabb1;
-		AABB aabb2;
+		Body* bodyA;
+		Body* bodyB;
 	};
+	
 	class DBVH
 	{
 		public:
-
+			struct Pair
+			{
+				Pair(const AABB& aabb, Body* source = nullptr): body(source), value(aabb){}
+				Body* body = nullptr;
+				AABB value;
+			};
 			struct Node
 			{
-				Node(const AABB& aabb) : value(aabb){}
+				Node(const Pair& pair) : pair(pair){}
+				Node(const AABB& aabb) : pair(aabb){}
 				Node* parent = nullptr;
 				Node* left = nullptr;
 				Node* right = nullptr;
-				AABB value;
+				Pair pair;
 				bool isLeaf()const;
 				bool isBranch()const;
 				bool isRoot()const;
@@ -27,22 +34,24 @@ namespace Physics2D
 		
 			DBVH();
 			~DBVH();
-			void insert(const AABB& aabb);
+			void insert(Body* body);
 			Node* root()const;
-			std::vector<AABBPair> generatePairs();
+			std::vector<BodyPair> generatePairs();
 		private:
+			void insert(const AABB& aabb);
 			void cleanUp(Node* node);
 			void traverseToLeaf(Node*& node, std::vector<Node*>& leaves);
 			real deltaCost(Node* node, const AABB& aabb);
 			void totalCost(Node* node, const AABB& aabb, real& cost);
-			void merge(Node* node, const AABB& aabb);
+			void merge(Node* node, const Pair& pair);
 			void update(Node* parent);
 			void balance(Node* node);
-			void generate(Node* node, std::vector<AABBPair>& pairs);
-			void generate(Node* left, Node* right, std::vector<AABBPair>& pairs);
+			void generate(Node* node, std::vector<BodyPair>& pairs);
+			void generate(Node* left, Node* right, std::vector<BodyPair>& pairs);
 			int height(Node* node);
 			Node* m_root = nullptr;
 			real m_profile = 0;
+			real m_leafFactor = 1.5;
 	};
 }
 #endif

@@ -70,8 +70,7 @@ namespace Physics2D
 		ground->position().set({ 0, -10 });
 		ground->setMass(Constant::Max);
 		ground->setType(Body::BodyType::Static);
-		AABB aabb = AABB::fromBody(ground);
-		dbvh.insert(aabb);
+		dbvh.insert(ground);
 		
 	}
 	void Window::testMpr()
@@ -247,16 +246,20 @@ namespace Physics2D
 		RendererQtImpl::renderLine(&painter, &m_world, Vector2(0, -10), Vector2(0, 10), pen);
 		RendererQtImpl::renderLine(&painter, &m_world, Vector2(-10, 0), Vector2(10, 0), pen);
 
-		QPen aabbPen(Qt::red, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		DBVH::Node* root = dbvh.root();
-		drawDbvh(root, &painter);
+		QPen aabbPen(Qt::red, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		//DBVH::Node* root = dbvh.root();
+		//drawDbvh(root, &painter);
 
-		auto list = dbvh.generatePairs();
-		for(auto& pair: list)
-		{
-			RendererQtImpl::renderAABB(&painter, &m_world, pair.aabb1, aabbPen);
-			RendererQtImpl::renderAABB(&painter, &m_world, pair.aabb2, aabbPen);
-		}
+		//auto list = dbvh.generatePairs();
+		//for(auto& pair: list)
+		//{
+		//	Collision result = Detector::detect(pair.bodyA, pair.bodyB);
+		//	if(result.isColliding)
+		//	{
+		//		Renderer::render(&painter, &m_world, pair.bodyA, aabbPen);
+		//		Renderer::render(&painter, &m_world, pair.bodyB, aabbPen);
+		//	}
+		//}
 	}
 	void Window::drawDbvh(DBVH::Node * node, QPainter* painter)
 	{
@@ -268,7 +271,7 @@ namespace Physics2D
 
 		QPen pen(Qt::green, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 		if(node->isLeaf())
-			RendererQtImpl::renderAABB(painter, &m_world, node->value, pen);
+			RendererQtImpl::renderAABB(painter, &m_world, node->pair.value, pen);
 	}
 	void Window::resizeEvent(QResizeEvent* e)
 	{
@@ -296,8 +299,7 @@ namespace Physics2D
 		body->angle() = -360 + QRandomGenerator::global()->bounded(720);
 		body->setMass(400);
 		body->setType(Body::BodyType::Static);
-		AABB aabb = AABB::fromBody(body, 1.5);
-		dbvh.insert(aabb);
+		dbvh.insert(body);
 		
 	}
 
