@@ -23,6 +23,7 @@ cmake CMakeLists.txt
     - polygon
     - line
     - point
+- Dynamic Bounding Volume Hierarchy
 - Simple 2D Geometry Algorithm
   - raycast
   - graham scan convex hull
@@ -48,5 +49,4 @@ cmake CMakeLists.txt
   - Point
   - Weld
   - Distance
-- Dynamic Bounding Volume Hierarchy Generator
 - Non-Fit Polygon
