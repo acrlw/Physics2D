@@ -28,5 +28,6 @@ namespace Physics2D
 		
 	private:
 	};
+	
 }
 #endif

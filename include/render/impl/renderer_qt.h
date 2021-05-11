@@ -196,10 +196,10 @@ namespace Physics2D
 			assert(painter != nullptr && world != nullptr);
 			painter->setPen(pen);
 			Vector2 topLeft;
-			topLeft.set(-aabb.width * (0.5f), aabb.height * (0.5f));
+			topLeft.set(-aabb.width * (0.5), aabb.height * (0.5));
 			topLeft += aabb.position;
 			topLeft = world->worldToScreen(topLeft);
-			painter->drawRect(QRectF(topLeft.x, topLeft.y, aabb.width, aabb.height));
+			painter->drawRect(QRectF(topLeft.x, topLeft.y, aabb.width * Constant::MeterToPixel, aabb.height * Constant::MeterToPixel));
 		}
 		static void renderAngleJoint(QPainter* painter, World* world, Joint* joint, const QPen& pen)
 		{

@@ -10,11 +10,12 @@
 #include <QWheelEvent>
 #include <QPaintEvent>
 #include <QPainterPath>
+#include <QRandomGenerator>
 #include <include/physics2d.h>
 #include <include/render/impl/renderer_qt.h>
 #include <include/collision/algorithm/mpr.h>
 #include <include/collision/algorithm/sat.h>
-
+#include <include/collision/broadphase/dbvh.h>
 namespace Physics2D
 {
 	class Window : public QWidget
@@ -29,6 +30,7 @@ namespace Physics2D
 
 	protected:
 		void paintEvent(QPaintEvent*) override;
+		void drawDbvh(DBVH::Node* node, QPainter* painter);
 		void resizeEvent(QResizeEvent* e) override;
 		void mousePressEvent(QMouseEvent*) override;
 		void mouseReleaseEvent(QMouseEvent* e) override;
@@ -51,6 +53,7 @@ namespace Physics2D
 		void testPendulum();
 		void testMpr();
 		void testSAT();
+		void testBroadphase();
 		World m_world;
 		Rectangle rectangle;
 		Rectangle land;
@@ -81,7 +84,7 @@ namespace Physics2D
 		AngleJointPrimitive anglePrim;
 		PointJointPrimitive pointPrim;
 		MouseJointPrimitive mousePrim;
-
+		DBVH dbvh;
 		int counter = 0;
 	};
 }

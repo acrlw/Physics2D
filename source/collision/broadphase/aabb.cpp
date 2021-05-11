@@ -1,5 +1,7 @@
 #include "include/collision/broadphase/aabb.h"
 
+
+#include "include/dynamics/body.h"
 #include "include/geometry/algorithm/2d.h"
 
 namespace Physics2D
@@ -14,9 +16,20 @@ namespace Physics2D
 		scale(*this, factor);
 	}
 
-	AABB AABB::unite(const AABB& other)const
+	AABB& AABB::unite(const AABB& other)
 	{
-		return unite(*this, other);
+		*this = unite(*this, other);
+		return *this;
+	}
+
+	real AABB::surfaceArea() const
+	{
+		return (width + height) * 2;
+	}
+
+	real AABB::volume() const
+	{
+		return width * height;
 	}
 
 	bool AABB::isSubset(const AABB& other) const
@@ -117,6 +130,18 @@ namespace Physics2D
 		return aabb;
 	}
 
+	AABB AABB::fromBody(Body* body, const real& factor)
+	{
+		assert(body != nullptr);
+		assert(body->shape() != nullptr);
+		
+		ShapePrimitive primitive;
+		primitive.shape = body->shape();
+		primitive.rotation = body->angle();
+		primitive.transform = body->position();
+		return fromShape(primitive, factor);
+	}
+
 	bool AABB::collide(const AABB& src, const AABB& target)
 	{
 		const real src_low_x = (-src.width * 0.5) + src.position.x;
@@ -137,8 +162,14 @@ namespace Physics2D
 		return !(src_high_x < target_low_x || target_high_x < src_low_x || src_high_y < target_low_y || target_high_y < src_low_y);
 	}
 
-	AABB AABB::unite(const AABB& src, const AABB& target)
+	AABB AABB::unite(const AABB& src, const AABB& target, const real& factor)
 	{
+		if (src.isEmpty())
+			return target;
+
+		if (target.isEmpty())
+			return src;
+		
 		const real src_low_x = (-src.width * 0.5) + src.position.x;
 		const real src_high_x = (src.width * 0.5) + src.position.x;
 
@@ -165,6 +196,7 @@ namespace Physics2D
 		aabb.width = high_x - low_x;
 		aabb.height = high_y - low_y;
 
+		aabb.scale(factor);
 		return aabb;
 	}
 	void AABB::scale(AABB& aabb, const real& factor)
@@ -172,7 +204,7 @@ namespace Physics2D
 		aabb.width *= factor;
 		aabb.height *= factor;
 	}
-
+	//b is a subset of a
 	bool AABB::isSubset(const AABB& a, const AABB& b)
 	{
 		const real a_low_x = (-a.width * 0.5) + a.position.x;

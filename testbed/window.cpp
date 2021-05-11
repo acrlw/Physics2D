@@ -12,12 +12,12 @@ namespace Physics2D
 		this->setMouseTracking(true);
 		m_world.setGeometry({0, 0}, {1920, 1080});
 
-		rectangle.set(2, 2);
+		rectangle.set(0.5, 0.5);
 		land.set(36, 0.2);
 		polygon.append({ {3,0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3},{2, -3}, {3, 0} });
-		//polygon.scale(0.2);
+		polygon.scale(0.2);
 		ellipse.set({-5, 4}, {5, -4});
-		//ellipse.scale(0.1);
+		ellipse.scale(0.1);
 		circle.setRadius(0.5);
 		//circle.scale(7);
 		edge.set({-18, 0}, {18, 0});
@@ -47,16 +47,32 @@ namespace Physics2D
 		//testCollision();
 		//testMpr();
 		//testJoint();
-		testSAT();
+		//testSAT();
+		testBroadphase();
 		connect(&m_timer, &QTimer::timeout, this, &Window::process);
 		m_timer.setInterval(15);
 		m_timer.start();
-
 		
 	}
 
 	Window::~Window()
 	{
+	}
+	void Window::testBroadphase()
+	{
+		//create random boxes
+		
+		
+
+
+		ground = m_world.createBody();
+		ground->setShape(&land);
+		ground->position().set({ 0, -10 });
+		ground->setMass(Constant::Max);
+		ground->setType(Body::BodyType::Static);
+		AABB aabb = AABB::fromBody(ground);
+		dbvh.insert(aabb);
+		
 	}
 	void Window::testMpr()
 	{
@@ -99,7 +115,6 @@ namespace Physics2D
 		
 		for (Joint* joint : m_world.jointList())
 			fmt::print("{}\n", joint->solveVelocity(dt));
-		
 		
 		m_world.stepPosition(dt);
 		repaint();
@@ -216,6 +231,8 @@ namespace Physics2D
 		QPen pen(Qt::green, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 		Renderer::render(&painter, &m_world, pen);
 
+		
+		
 		QColor color = Qt::green;
 		color.setAlphaF(0.6);
 		pen.setColor(color);
@@ -229,8 +246,30 @@ namespace Physics2D
 		pen.setWidth(1);
 		RendererQtImpl::renderLine(&painter, &m_world, Vector2(0, -10), Vector2(0, 10), pen);
 		RendererQtImpl::renderLine(&painter, &m_world, Vector2(-10, 0), Vector2(10, 0), pen);
-	}
 
+		QPen aabbPen(Qt::red, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		DBVH::Node* root = dbvh.root();
+		drawDbvh(root, &painter);
+
+		auto list = dbvh.generatePairs();
+		for(auto& pair: list)
+		{
+			RendererQtImpl::renderAABB(&painter, &m_world, pair.aabb1, aabbPen);
+			RendererQtImpl::renderAABB(&painter, &m_world, pair.aabb2, aabbPen);
+		}
+	}
+	void Window::drawDbvh(DBVH::Node * node, QPainter* painter)
+	{
+		if (node == nullptr)
+			return;
+
+		drawDbvh(node->left, painter);
+		drawDbvh(node->right, painter);
+
+		QPen pen(Qt::green, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		if(node->isLeaf())
+			RendererQtImpl::renderAABB(painter, &m_world, node->value, pen);
+	}
 	void Window::resizeEvent(QResizeEvent* e)
 	{
 		m_world.setRightBottom(Vector2(e->size().width() - m_world.leftTop().x,
@@ -243,12 +282,22 @@ namespace Physics2D
 
 		Vector2 pos(e->pos().x(), e->pos().y());
 		mousePos = m_world.screenToWorld(pos);
-		Body* nb = m_world.createBody();
-		nb->setShape(&circle);
-		nb->position().set({ 0, -2 });
-		nb->angle() = 5;
-		nb->setMass(300);
-		nb->setType(Body::BodyType::Dynamic);
+		
+		//Body* nb = m_world.createBody();
+		//nb->setShape(&circle);
+		//nb->position().set({ 0, -2 });
+		//nb->angle() = 5;
+		//nb->setMass(300);
+		//nb->setType(Body::BodyType::Dynamic);
+
+		Body* body = m_world.createBody();
+		body->position().set(mousePos);
+		body->setShape(&rectangle);
+		body->angle() = -360 + QRandomGenerator::global()->bounded(720);
+		body->setMass(400);
+		body->setType(Body::BodyType::Static);
+		AABB aabb = AABB::fromBody(body, 1.5);
+		dbvh.insert(aabb);
 		
 	}
 
@@ -468,7 +517,7 @@ namespace Physics2D
 			body->setShape(&rectangle);
 			body->angle() = 0;
 			body->setMass(400);
-			body->setType(Body::BodyType::Dynamic);
+			body->setType(Body::BodyType::Static);
 		}
 
 

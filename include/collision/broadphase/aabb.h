@@ -6,6 +6,8 @@
 
 namespace Physics2D
 {
+	class Body;
+
 	struct AABB
 	{
 		AABB() = default;
@@ -14,8 +16,11 @@ namespace Physics2D
 		Vector2 position;
 		bool collide(const AABB& other) const;
 		void scale(const real& factor);
-		AABB unite(const AABB& other)const;
+		AABB& unite(const AABB& other);
+		real surfaceArea()const;
+		real volume()const;
 		bool isSubset(const AABB& other)const;
+		bool isEmpty()const;
 		/// <summary>
 		/// Create AABB from shape.
 		/// </summary>
@@ -23,6 +28,7 @@ namespace Physics2D
 		/// <param name="factor">AABB scale factor. Default factor 1 means making tight AABB</param>
 		/// <returns></returns>
 		static AABB fromShape(const ShapePrimitive& shape, const real& factor = 1);
+		static AABB fromBody(Body* body, const real& factor = 1);
 		/// <summary>
 		/// Check if two aabbs are overlapping
 		/// </summary>
@@ -36,7 +42,7 @@ namespace Physics2D
 		/// <param name="src"></param>
 		/// <param name="target"></param>
 		/// <returns></returns>
-		static AABB unite(const AABB& src, const AABB& target);
+		static AABB unite(const AABB& src, const AABB& target, const real& factor = 1);
 		/// <summary>
 		/// Scale width and height of aabb
 		/// </summary>
@@ -52,5 +58,10 @@ namespace Physics2D
 		static bool isSubset(const AABB& a, const AABB& b);
 		
 	};
+
+	inline bool AABB::isEmpty() const
+	{
+		return realEqual(width, 0) && realEqual(height, 0) && position.fuzzyEqual({ 0, 0 });
+	}
 }
 #endif

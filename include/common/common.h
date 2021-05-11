@@ -19,10 +19,10 @@ namespace Physics2D
 		const real Epsilon = FLT_EPSILON;
 		const real Max = FLT_MAX;
 		const real Min = FLT_MIN;
+		const real PositiveMin = FLT_MIN;
 		const real NegativeMin = -Max;
 		const real Pi = 3.14159265358979f;
 		const real ReciprocalOfPi = 0.3183098861837907f;
-		const real GJKIteration = 50;
 		const real GeometryEpsilon = 0.0001;
 
 		//1 meter -> x pixel
@@ -41,12 +41,10 @@ namespace Physics2D
 		const real NegativeMin = -Max;
 		const real Pi = 3.141592653589793238463;
 		const real ReciprocalOfPi = 0.3183098861837907;
-		const real GJKIteration = 50;
 		const real GeometryEpsilon = 0.0001;
-
-
+		
 		//1 meter -> x pixel
-		const real MeterToPixel = 100.0;
+		const real MeterToPixel = 50.0;
 		//1 pixel -> 1 / x meter
 		const real PixelToMeter = 1.0 / MeterToPixel;
 	}
