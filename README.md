@@ -23,6 +23,8 @@ cmake CMakeLists.txt
     - polygon
     - line
     - point
+- Rigid Body Dynamics Simulation
+- Axis-Aligned Bounding Box Generator
 - Dynamic Bounding Volume Hierarchy
 - Simple 2D Geometry Algorithm
   - raycast
@@ -37,8 +39,6 @@ cmake CMakeLists.txt
   - convexity of polygon
   - the nearest points on line segment and ellipse
   - point on ellipse which is the nearest point to the target point
-- Rigid Body Dynamics Simulation
-- Axis-Aligned Bounding Box Generator
 
 # Future
 - Sequential Impulse Solver
