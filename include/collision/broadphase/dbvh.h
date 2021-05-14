@@ -27,6 +27,8 @@ namespace Physics2D
 				Node* left = nullptr;
 				Node* right = nullptr;
 				Pair pair;
+				void separate(Node* node);
+				void swap(Node* source, Node* target);
 				bool isLeaf()const;
 				bool isBranch()const;
 				bool isRoot()const;
@@ -35,20 +37,23 @@ namespace Physics2D
 			DBVH();
 			~DBVH();
 			void insert(Body* body);
+			void update(Body* body);
+			void remove(Body* body);
 			Node* root()const;
 			std::vector<BodyPair> generatePairs();
 		private:
-			void insert(const AABB& aabb);
 			void cleanUp(Node* node);
 			void traverseToLeaf(Node*& node, std::vector<Node*>& leaves);
-			real deltaCost(Node* node, const AABB& aabb);
-			void totalCost(Node* node, const AABB& aabb, real& cost);
-			void merge(Node* node, const Pair& pair);
+			real deltaCost(Node* node, const AABB& aabb)const;
+			void totalCost(Node* node, const AABB& aabb, real& cost)const;
+			Node* merge(Node* node, const Pair& pair);
 			void update(Node* parent);
 			void balance(Node* node);
 			void generate(Node* node, std::vector<BodyPair>& pairs);
 			void generate(Node* left, Node* right, std::vector<BodyPair>& pairs);
 			int height(Node* node);
+
+			std::map<Body*, Node*> m_leaves;
 			Node* m_root = nullptr;
 			real m_profile = 0;
 			real m_leafFactor = 1.5;

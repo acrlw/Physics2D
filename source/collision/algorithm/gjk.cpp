@@ -3,13 +3,13 @@
 
 namespace Physics2D
 {
-	bool Simplex::containOrigin()
+	bool Simplex::containOrigin(bool strict)
 	{
-		isContainOrigin = containOrigin(*this);
+		isContainOrigin = containOrigin(*this, strict);
 		return isContainOrigin;
 	}
 
-	bool Simplex::containOrigin(const Simplex& simplex)
+	bool Simplex::containOrigin(const Simplex& simplex, bool strict)
 	{
 		switch (simplex.vertices.size())
 		{
@@ -28,6 +28,15 @@ namespace Physics2D
 					(a >= 0 && b >= 0 && c >= 0))
 					return true;
 				return false;
+			}
+		case 2:
+			{
+				if(strict)
+				{
+					Vector2 oa = simplex.vertices[0].result * -1;
+					Vector2 ob = simplex.vertices[1].result * -1;
+					return GeometryAlgorithm2D::isPointOnSegment(oa, ob, { 0, 0 });
+				}
 			}
 		default:
 			return false;
@@ -67,6 +76,10 @@ namespace Physics2D
 		Simplex simplex;
 		bool found = false;
 		Vector2 direction = shapeB.transform - shapeA.transform;
+		
+		if (direction.fuzzyEqual({ 0, 0 }))
+			direction.set(1, 1);
+
 		Minkowski diff = support(shapeA, shapeB, direction);
 		simplex.vertices.emplace_back(diff);
 		direction.negate();

@@ -16,6 +16,13 @@ namespace Physics2D
 		scale(*this, factor);
 	}
 
+	void AABB::clear()
+	{
+		position.clear();
+		width = 0.0;
+		height = 0.0;
+	}
+
 	AABB& AABB::unite(const AABB& other)
 	{
 		*this = unite(*this, other);

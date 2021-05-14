@@ -9,7 +9,7 @@ namespace Physics2D
 
 	struct Matrix3x3
 	{
-        Matrix3x3();
+        Matrix3x3() = default;
         Matrix3x3(const Matrix3x3& mat);
         Matrix3x3(const Vector3& col1, const Vector3& col2, const Vector3& col3);
         Matrix3x3(const real& col1_x, const real& col1_y, const real& col1_z,

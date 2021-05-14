@@ -141,6 +141,11 @@ namespace Physics2D
 		return (*this - rhs).lengthSquare() < epsilon;
 	}
 
+	bool Vector2::isOrigin(const real& epsilon) const
+	{
+		return fuzzyEqual({ 0, 0 }, epsilon);
+	}
+
 	real Vector2::dot(const Vector2& rhs) const
 	{
 		return x * rhs.x + y * rhs.y;

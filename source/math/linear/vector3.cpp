@@ -129,6 +129,10 @@ namespace Physics2D
 	{
 		return (*this - rhs).lengthSquare() < epsilon;
 	}
+	bool Vector3::isOrigin(const real& epsilon) const
+	{
+		return fuzzyEqual({0, 0, 0}, epsilon);
+	}
 	Vector3& Vector3::swap(Vector3& other)
 	{
 		realSwap(x, other.x);

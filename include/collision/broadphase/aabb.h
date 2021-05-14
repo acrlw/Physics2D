@@ -16,6 +16,7 @@ namespace Physics2D
 		Vector2 position;
 		bool collide(const AABB& other) const;
 		void scale(const real& factor);
+		void clear();
 		AABB& unite(const AABB& other);
 		real surfaceArea()const;
 		real volume()const;

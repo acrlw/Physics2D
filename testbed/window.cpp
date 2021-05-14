@@ -12,10 +12,10 @@ namespace Physics2D
 		this->setMouseTracking(true);
 		m_world.setGeometry({0, 0}, {1920, 1080});
 
-		rectangle.set(0.5, 0.5);
+		rectangle.set(0.1, 0.1);
 		land.set(36, 0.2);
 		polygon.append({ {3,0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3},{2, -3}, {3, 0} });
-		polygon.scale(0.2);
+		polygon.scale(0.1);
 		ellipse.set({-5, 4}, {5, -4});
 		ellipse.scale(0.1);
 		circle.setRadius(0.5);
@@ -61,16 +61,24 @@ namespace Physics2D
 	void Window::testBroadphase()
 	{
 		//create random boxes
-		
-		
 
-
-		ground = m_world.createBody();
-		ground->setShape(&land);
-		ground->position().set({ 0, -10 });
-		ground->setMass(Constant::Max);
-		ground->setType(Body::BodyType::Static);
-		dbvh.insert(ground);
+		//ground = m_world.createBody();
+		//ground->setShape(&land);
+		//ground->position().set({ 0, -10 });
+		//ground->setMass(Constant::Max);
+		//ground->setType(Body::BodyType::Static);
+		//dbvh.insert(ground);
+		//
+		for(int i = 0;i < 20;i++)
+		{
+			Body* body = m_world.createBody();
+			body->position().set(-9.0 + QRandomGenerator::global()->bounded(18.0), -9.0 + QRandomGenerator::global()->bounded(18.0));
+			body->setShape(&rectangle);
+			body->angle() = -360 + QRandomGenerator::global()->bounded(720);
+			body->setMass(400);
+			body->setType(Body::BodyType::Static);
+			dbvh.insert(body);
+		}
 		
 	}
 	void Window::testMpr()
@@ -247,19 +255,20 @@ namespace Physics2D
 		RendererQtImpl::renderLine(&painter, &m_world, Vector2(-10, 0), Vector2(10, 0), pen);
 
 		QPen aabbPen(Qt::red, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		//DBVH::Node* root = dbvh.root();
-		//drawDbvh(root, &painter);
+		DBVH::Node* root = dbvh.root();
+		drawDbvh(root, &painter);
 
-		//auto list = dbvh.generatePairs();
-		//for(auto& pair: list)
-		//{
-		//	Collision result = Detector::detect(pair.bodyA, pair.bodyB);
-		//	if(result.isColliding)
-		//	{
-		//		Renderer::render(&painter, &m_world, pair.bodyA, aabbPen);
-		//		Renderer::render(&painter, &m_world, pair.bodyB, aabbPen);
-		//	}
-		//}
+		auto list = dbvh.generatePairs();
+		for(auto& pair: list)
+		{
+			Collision result = Detector::detect(pair.bodyA, pair.bodyB);
+			if (result.isColliding)
+			{
+				Renderer::render(&painter, &m_world, pair.bodyA, aabbPen);
+				Renderer::render(&painter, &m_world, pair.bodyB, aabbPen);
+				counter++;
+			}
+		}
 	}
 	void Window::drawDbvh(DBVH::Node * node, QPainter* painter)
 	{
@@ -292,14 +301,32 @@ namespace Physics2D
 		//nb->angle() = 5;
 		//nb->setMass(300);
 		//nb->setType(Body::BodyType::Dynamic);
+		switch (e->button())
+		{
+		case Qt::LeftButton:
+			{
 
-		Body* body = m_world.createBody();
-		body->position().set(mousePos);
-		body->setShape(&rectangle);
-		body->angle() = -360 + QRandomGenerator::global()->bounded(720);
-		body->setMass(400);
-		body->setType(Body::BodyType::Static);
-		dbvh.insert(body);
+			int index = m_world.bodyList().size() - 1;
+			dbvh.remove(m_world.bodyList()[QRandomGenerator::global()->bounded(index)]);
+			break;
+			}
+		case Qt::RightButton:
+			{
+
+			Body* body = m_world.createBody();
+			body->position().set(mousePos);
+			body->setShape(&rectangle);
+			body->angle() = -360 + QRandomGenerator::global()->bounded(720);
+			body->setMass(400);
+			body->setType(Body::BodyType::Static);
+			dbvh.insert(body);
+			break;
+			}
+		}
+		if(e->button() == Qt::LeftButton)
+		{
+			
+		}
 		
 	}
 

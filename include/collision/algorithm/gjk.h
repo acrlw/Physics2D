@@ -31,8 +31,8 @@ namespace Physics2D
 	{
 		std::vector<Minkowski> vertices;
 		bool isContainOrigin = false;
-		bool containOrigin();
-		static bool containOrigin(const Simplex& simplex);
+		bool containOrigin(bool strict = false);
+		static bool containOrigin(const Simplex& simplex, bool strict = false);
 
 		void insert(const size_t& pos, const Minkowski& vertex);
 		bool contains(const Minkowski& minkowski);

@@ -10,6 +10,10 @@ namespace Physics2D
 		Vector2 origin = shapeB.transform - shapeA.transform;
 		Minkowski v0(centerA + shapeA.transform, centerB + shapeB.transform);
 		Vector2 direction = centerB - centerA + origin;
+		
+		if (direction.fuzzyEqual({ 0, 0 }))
+			direction.set(1, 1);
+		
 		Minkowski v1 = GJK::support(shapeA, shapeB, direction);
 		direction = GJK::calculateDirectionByEdge(v0.result, v1.result, true);
 		Minkowski v2 = GJK::support(shapeA, shapeB, direction);

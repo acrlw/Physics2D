@@ -31,28 +31,28 @@ namespace Physics2D
 		{
 			if (node->isLeaf())
 				return std::make_tuple(node, AABB::unite(node->pair.value, aabb).surfaceArea());
-
-			std::vector<Node*> leaves;
-			traverseToLeaf(node, leaves);
-			Node* lowCost = nullptr;
+			
+			Node* lowCostNode = nullptr;
 			real costValue = Constant::Max;
-			for (Node* node : leaves)
+			for (auto const& [key, val] : m_leaves)
 			{
+				assert(val != nullptr);
 				real cost = 0;
-				totalCost(node, aabb, cost);
-				if (costValue > cost)
+				totalCost(val, aabb, cost);
+				if(costValue > cost)
 				{
 					costValue = cost;
-					lowCost = node;
+					lowCostNode = val;
 				}
 			}
 
-			return std::make_tuple(lowCost, costValue);
+			return std::make_tuple(lowCostNode, costValue);
 		};
 
 		if (m_root == nullptr)
 		{
 			m_root = new Node(pair);
+			m_leaves.insert({ body, m_root });
 			return;
 		}
 
@@ -67,96 +67,98 @@ namespace Physics2D
 		{
 			auto [leftTarget, leftLowestCost] = getCost(m_root->left, pair.value);
 			auto [rightTarget, rightLowestCost] = getCost(m_root->right, pair.value);
+			Node* target1 = nullptr;
+			Node* target2 = nullptr;
 			if (leftLowestCost < rightLowestCost)
 			{
-				merge(leftTarget, pair);
-				//update(leftTarget);
-				balance(m_root);
-				update(leftTarget);
+				target1 = merge(leftTarget, pair);
+				target2 = leftTarget;
 			}
 			else
 			{
-				merge(rightTarget, pair);
-				//update(rightTarget);
-				balance(m_root);
-				update(rightTarget);
+				target1 = merge(rightTarget, pair);
+				target2 = rightTarget;
+			}
+			balance(m_root);
+			//update(target2);
+			//update(target1);
+
+			for (auto const& [key, val] : m_leaves)
+			{
+				update(val);
 			}
 		}
-		
 	}
-	void DBVH::insert(const AABB& aabb)
+	void DBVH::update(Body* body)
 	{
-		
-		auto getCost = [&](Node*& node, const AABB& aabb)
+		AABB thin = AABB::fromBody(body);
+		if(!thin.isSubset(m_leaves[body]->pair.value))
 		{
-			if (node->isLeaf())
-				return std::make_tuple(node, AABB::unite(node->pair.value, aabb).surfaceArea());
-
-			std::vector<Node*> leaves;
-			traverseToLeaf(node, leaves);
-			Node* lowCost = nullptr;
-			real costValue = Constant::Max;
-			for (Node* node : leaves)
+			remove(body);
+			insert(body);
+		}
+	}
+	void DBVH::remove(Body* body)
+	{
+		auto moveup = [&](Node* branch)
+		{
+			Node* parent = branch->parent;
+			Node* child = branch->left != nullptr ? branch->left : branch->right;
+			
+			if (branch->isRoot())
 			{
-				real cost = 0;
-				totalCost(node, aabb, cost);
-				if (costValue > cost)
-				{
-					costValue = cost;
-					lowCost = node;
-				}
+				child->parent = nullptr;
+				m_root = child;
+				delete branch;
+				return child;
 			}
-
-			return std::make_tuple(lowCost, costValue);
+			
+			parent->swap(branch, child);
+			branch->parent = nullptr;
+			branch->pair.value.clear();
+			delete branch;
+			return child;
 		};
-
-		if (m_root == nullptr)
-		{
-			m_root = new Node(aabb);
+		
+		//separate
+		auto iter = m_leaves.find(body);
+		
+		if (iter == m_leaves.end())
 			return;
-		}
+		
+		Node* source = iter->second;
+		Node* parent = source->parent;
+		parent->separate(source);
+		source->pair.body = nullptr;
+		source->pair.value.clear();
+		delete source;
 
-		if (m_root->isLeaf() && m_root->isRoot())
-		{
-			merge(m_root, aabb);
-			update(m_root);
-			return;
-		}
-
-		if (m_root->isRoot())
-		{
-			auto [leftTarget, leftLowestCost] = getCost(m_root->left, aabb);
-			auto [rightTarget, rightLowestCost] = getCost(m_root->right, aabb);
-			if (leftLowestCost < rightLowestCost)
-			{
-				merge(leftTarget, aabb);
-				//update(leftTarget);
-				balance(m_root);
-				update(leftTarget);
-			}
-			else
-			{
-				merge(rightTarget, aabb);
-				//update(rightTarget);
-				balance(m_root);
-				update(rightTarget);
-			}
-		}
-
-		//wrap
+		Node * child = moveup(parent);
+		
+		//erase
+		m_leaves.erase(body);
+		balance(child->parent);
 	}
-	
-
-	void DBVH::merge(Node* node, const Pair& pair)
+	DBVH::Node* DBVH::merge(Node* node, const Pair& pair)
 	{
+		assert(node != nullptr);
+		
 		Node* newNode = new Node(pair);
 		Node* copy = new Node(node->pair);
+
+		m_leaves.insert({ newNode->pair.body, newNode });
+		if (node->isLeaf())
+			m_leaves[node->pair.body] = copy;
+
+		
 		node->pair.body = nullptr;
 		node->pair.value = AABB::unite(pair.value, node->pair.value);
 		node->left = copy;
 		node->right = newNode;
 		copy->parent = node;
 		newNode->parent = node;
+
+		return newNode;
 	}
 
 	void DBVH::update(Node* parent)
@@ -164,9 +166,10 @@ namespace Physics2D
 		if (parent == nullptr)
 			return;
 
-		if (parent->left != nullptr && parent->right != nullptr)
+		if (parent->isBranch() || parent->isRoot())
 			parent->pair.value = AABB::unite(parent->left->pair.value, parent->right->pair.value);
 
+		
 		update(parent->parent);
 
 		if (parent->parent == nullptr && parent->left != nullptr && parent->right != nullptr)
@@ -185,6 +188,9 @@ namespace Physics2D
 
 		auto LL = [&](Node* node)
 		{
+			if (node == nullptr || node->isRoot())
+				return;
+			
 			if (node->parent == m_root)
 			{
 				Node* parent = node->parent;
@@ -218,6 +224,9 @@ namespace Physics2D
 		};
 		auto RR = [&](Node* node)
 		{
+			if (node == nullptr || node->isRoot())
+				return;
+			
 			if (node->parent == m_root)
 			{
 				Node* parent = node->parent;
@@ -234,6 +243,7 @@ namespace Physics2D
 				m_root = node;
 				return;
 			}
+			
 			Node* parent = node->parent;
 			Node* left = node->left;
 			Node* grandparent = parent->parent;
@@ -268,11 +278,13 @@ namespace Physics2D
 		}
 		balance(node->left);
 		balance(node->right);
+		balance(node->parent);
 	}
 
 	//check if children collide with each other
 	void DBVH::generate(Node* node, std::vector<BodyPair>& pairs)
 	{
+		
 		if (node->isLeaf())
 			return;
 
@@ -290,7 +302,7 @@ namespace Physics2D
 		if (left == nullptr || right == nullptr)
 			return;
 
-		bool result = left->pair.value.collide(right->pair.value);
+		bool result = left->pair.value.collide(right->pair.value) || left->pair.value.isSubset(right->pair.value);
 		m_profile++;
 		
 		if (!result)
@@ -349,21 +361,60 @@ namespace Physics2D
 		traverseToLeaf(node->right, leaves);
 	}
 
-	real DBVH::deltaCost(Node* node, const AABB& aabb)
+	real DBVH::deltaCost(Node* node, const AABB& aabb)const
 	{
+		if (node == nullptr)
+			return 0;
+		
 		if (node->isLeaf())
 			return AABB::unite(node->pair.value, aabb).surfaceArea();
 
 		return AABB::unite(node->pair.value, aabb).surfaceArea() - node->pair.value.surfaceArea();
 	}
 
-	void DBVH::totalCost(Node* node, const AABB& aabb, real& cost)
+	void DBVH::totalCost(Node* node, const AABB& aabb, real& cost)const
 	{
 		if (node == nullptr)
 			return;
 
-		cost += deltaCost(node, aabb);
+		const real temp = deltaCost(node, aabb);
+		cost += temp;
 		totalCost(node->parent, aabb, cost);
+	}
+
+	void DBVH::Node::separate(Node* node)
+	{
+		if (node == nullptr || isLeaf())
+			return;
+
+		if (node == left)
+		{
+			left = nullptr;
+			node->parent = nullptr;
+			pair.value = right->pair.value;
+		}
+		else if(node == right)
+		{
+			right = nullptr;
+			node->parent = nullptr;
+			pair.value = left->pair.value;
+		}
+	}
+
+	void DBVH::Node::swap(Node* source, Node* target)
+	{
+		if(source == left)
+		{
+			separate(left);
+			target->parent = this;
+			left = target;
+		}
+		else if (source == right)
+		{
+			separate(right);
+			target->parent = this;
+			right = target;
+		}
 	}
 
 	bool DBVH::Node::isLeaf() const

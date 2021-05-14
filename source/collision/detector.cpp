@@ -30,6 +30,10 @@ namespace Physics2D
 			return result;
 
 		auto [isColliding, simplex] = GJK::gjk(shapeA, shapeB);
+		
+		if(shapeA.transform.fuzzyEqual(shapeB.transform) && !isColliding)
+			isColliding = simplex.containOrigin(true);
+		
 		result.isColliding = isColliding;
 		if (isColliding)
 		{

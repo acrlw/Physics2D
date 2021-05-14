@@ -7,7 +7,7 @@ namespace Physics2D
 
 	struct Matrix2x2
 	{
-		Matrix2x2();
+		Matrix2x2() = default;
         Matrix2x2(const real& angle);
         Matrix2x2(const Matrix2x2& mat);
         Matrix2x2(const Vector2& col1, const Vector2& col2);

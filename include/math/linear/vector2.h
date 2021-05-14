@@ -6,7 +6,7 @@ namespace Physics2D
 {
 	struct Vector2
 	{
-        Vector2(const real& _x = 0.0f, const real& _y = 0.0f);
+        Vector2(const real& _x = 0.0, const real& _y = 0.0);
         Vector2(const Vector2& copy);
         Vector2& operator=(const Vector2& copy);
 		Vector2(Vector2&& other) = default;
@@ -30,7 +30,8 @@ namespace Physics2D
         bool operator!=(const Vector2& rhs)const;
         bool equal(const Vector2& rhs)const;
         bool fuzzyEqual(const Vector2& rhs, const real& epsilon = Constant::GeometryEpsilon)const;
-
+        bool isOrigin(const real& epsilon = Constant::GeometryEpsilon)const;
+		
         real lengthSquare()const;
         real length()const;
         Vector2& set(const real& _x, const real& _y);
