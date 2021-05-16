@@ -2,6 +2,7 @@
 #define PHYSICS2D_DETECTOR_H
 #include "include/collision/algorithm/gjk.h"
 #include "include/collision/algorithm/sat.h"
+#include "include/collision/algorithm/mpr.h"
 #include "include/collision/contact.h"
 #include "include/math/math.h"
 #include "include/geometry/shape.h"

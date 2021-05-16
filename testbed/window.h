@@ -16,6 +16,7 @@
 #include <include/collision/algorithm/mpr.h>
 #include <include/collision/algorithm/sat.h>
 #include <include/collision/broadphase/dbvh.h>
+
 namespace Physics2D
 {
 	class Window : public QWidget
@@ -45,14 +46,11 @@ namespace Physics2D
 		void createStackBox(const uint16_t& row, const real& margin, const real& spacing);
 		void testHit(const QPoint& pos);
 		void testAABB(QPainter* painter);
-		void testBVH(QPainter* painter);
 		void testJoint();
 		void testCollision();
 		void createSnakeBody();
 		void testDistanceJoint();
 		void testPendulum();
-		void testMpr();
-		void testSAT();
 		void testBroadphase();
 		World m_world;
 		Rectangle rectangle;

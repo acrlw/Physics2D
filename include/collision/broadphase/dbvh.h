@@ -4,11 +4,6 @@
 
 namespace Physics2D
 {
-	struct BodyPair
-	{
-		Body* bodyA;
-		Body* bodyB;
-	};
 	
 	class DBVH
 	{
@@ -40,17 +35,16 @@ namespace Physics2D
 			void update(Body* body);
 			void remove(Body* body);
 			Node* root()const;
-			std::vector<BodyPair> generatePairs();
+			std::vector<std::pair<Body*, Body*>> generatePairs();
 		private:
 			void cleanUp(Node* node);
-			void traverseToLeaf(Node*& node, std::vector<Node*>& leaves);
 			real deltaCost(Node* node, const AABB& aabb)const;
 			void totalCost(Node* node, const AABB& aabb, real& cost)const;
 			Node* merge(Node* node, const Pair& pair);
 			void update(Node* parent);
 			void balance(Node* node);
-			void generate(Node* node, std::vector<BodyPair>& pairs);
-			void generate(Node* left, Node* right, std::vector<BodyPair>& pairs);
+			void generate(Node* node, std::vector<std::pair<Body*, Body*>>& pairs);
+			void generate(Node* left, Node* right, std::vector<std::pair<Body*, Body*>>& pairs);
 			int height(Node* node);
 
 			std::map<Body*, Node*> m_leaves;

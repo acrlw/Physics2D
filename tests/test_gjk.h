@@ -1,5 +1,6 @@
 #pragma once
 #include "include/physics2d.h"
+#include "include/collision/algorithm/mpr.h"
 #include "tests/test.h"
 namespace Physics2D
 {
@@ -63,6 +64,39 @@ namespace Physics2D
 		void testEdge()
 		{
 			
+		}
+		void testMpr()
+		{
+			Rectangle rectangle;
+			rectangle.set(1, 1);
+			ShapePrimitive shape1, shape2;
+			shape1.shape = &rectangle;
+			shape2.shape = &rectangle;
+			shape1.rotation = 45;
+			shape1.transform.set(1, 1);
+			shape2.rotation = 37;
+			shape2.transform.set(1.5, 2);
+			auto [centerToOrigin, simplex] = MPR::discover(shape1, shape2);
+			auto [isColliding, finalSimplex] = MPR::refine(shape1, shape2, simplex, centerToOrigin);
+			fmt::print("collide:{}\n", isColliding);
+			fmt::print("A:{}, B:{}, result:{}\n", finalSimplex.vertices[1].pointA, finalSimplex.vertices[1].pointB, finalSimplex.vertices[1].result);
+			fmt::print("A:{}, B:{}, result:{}\n", finalSimplex.vertices[2].pointA, finalSimplex.vertices[2].pointB, finalSimplex.vertices[2].result);
+		}
+
+		void testSAT()
+		{
+			Rectangle rectangle;
+			rectangle.set(1, 1);
+			ShapePrimitive shape1, shape2;
+			shape1.shape = &rectangle;
+			shape2.shape = &rectangle;
+			shape1.rotation = 45;
+			shape1.transform.set(1, 1);
+			shape2.rotation = 37;
+			shape2.transform.set(3, 1);
+			SATResult result = SAT::polygonVsPolygon(shape2, shape1);
+			fmt::print("collide:{}, normal:{}, penetration:{}\n", result.isColliding, result.normal, result.penetration);
+			fmt::print("point pair: {}, {}\n", result.pointPair.pointA, result.pointPair.pointB);
 		}
 	};
 }

@@ -60,7 +60,7 @@ namespace Physics2D
 			
 			Vector2 jv = va + m_primitive.bias;
 			Vector2 impulse = m_primitive.effectiveMass.multiply(jv.negate());
-
+			impulse += (impulse - m_primitive.lastImpulse) * dt;
 			m_primitive.bodyA->applyImpulse(impulse, ra);
 			
 			m_primitive.lastImpulse = impulse;
@@ -68,9 +68,7 @@ namespace Physics2D
 		}
 		void solvePosition(const real& dt) override
 		{
-			//Vector2 ra = Matrix2x2(m_primitive.bodyA->angle()).multiply(m_primitive.localPointA);
-			//Vector2 c = m_primitive.mousePoint - (m_primitive.bodyA->position() + ra);
-			//m_primitive.bodyA->position() += c * m_primitive.bodyA->inverseMass();
+
 		}
 	private:
 		MouseJointPrimitive m_primitive;

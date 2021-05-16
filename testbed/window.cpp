@@ -1,5 +1,8 @@
 #include "testbed/window.h"
 
+
+#include "include/dynamics/constraint/constraint.h"
+#include "include/dynamics/constraint/contact.h"
 #include "include/render/renderer.h"
 
 namespace Physics2D
@@ -12,9 +15,9 @@ namespace Physics2D
 		this->setMouseTracking(true);
 		m_world.setGeometry({0, 0}, {1920, 1080});
 
-		rectangle.set(0.1, 0.1);
-		land.set(36, 0.2);
-		polygon.append({ {3,0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3},{2, -3}, {3, 0} });
+		rectangle.set(1, 1.5);
+		land.set(18, 0.2);
+		polygon.append({{3, 0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3}, {2, -3}, {3, 0}});
 		polygon.scale(0.1);
 		ellipse.set({-5, 4}, {5, -4});
 		ellipse.scale(0.1);
@@ -32,84 +35,45 @@ namespace Physics2D
 		pointPrim.localPointA.set(-0.5, -0.5);
 		pointPrim.localPointB.set(0.5, 0.5);
 
-		mousePrim.localPointA.set(0.5, 0.5);
+		mousePrim.localPointA.set(-0.5, -0.5);
 		mousePrim.mousePoint.set(2.0, 2.0);
-		
-		
-		m_world.setEnableGravity(true);
-		m_world.setGravity({ 0, -9.8 });
+
+
+		m_world.setEnableGravity(false);
+		m_world.setGravity({0, -0.8});
 		m_world.setLinearVelocityDamping(0.8f);
 		m_world.setAirFrictionCoefficient(0.8f);
 		m_world.setAngularVelocityDamping(0.8f);
-		//createStackBox(4, 1.1, 1.1);
+		//createStackBox(6, 1.1, 1.1);
 		//createBoxesAndGround(12);
 		//testPendulum();
-		//testCollision();
-		//testMpr();
+		testCollision();
 		//testJoint();
-		//testSAT();
-		testBroadphase();
+		//testBroadphase();
 		connect(&m_timer, &QTimer::timeout, this, &Window::process);
 		m_timer.setInterval(15);
 		m_timer.start();
-		
 	}
 
 	Window::~Window()
 	{
 	}
+
 	void Window::testBroadphase()
 	{
-		//create random boxes
-
-		//ground = m_world.createBody();
-		//ground->setShape(&land);
-		//ground->position().set({ 0, -10 });
-		//ground->setMass(Constant::Max);
-		//ground->setType(Body::BodyType::Static);
-		//dbvh.insert(ground);
-		//
-		for(int i = 0;i < 20;i++)
+		for (int i = 0; i < 500; i++)
 		{
 			Body* body = m_world.createBody();
-			body->position().set(-9.0 + QRandomGenerator::global()->bounded(18.0), -9.0 + QRandomGenerator::global()->bounded(18.0));
+			body->position().set(-9.0 + QRandomGenerator::global()->bounded(18.0),
+			                     -9.0 + QRandomGenerator::global()->bounded(18.0));
 			body->setShape(&rectangle);
 			body->angle() = -360 + QRandomGenerator::global()->bounded(720);
 			body->setMass(400);
 			body->setType(Body::BodyType::Static);
 			dbvh.insert(body);
 		}
-		
-	}
-	void Window::testMpr()
-	{
-		ShapePrimitive shape1, shape2;
-		shape1.shape = &rectangle;
-		shape2.shape = &rectangle;
-		shape1.rotation = 45;
-		shape1.transform.set(1, 1);
-		shape2.rotation = 37;
-		shape2.transform.set(1.5, 2);
-		auto [centerToOrigin, simplex] = MPR::discover(shape1, shape2);
-		auto [isColliding, finalSimplex] = MPR::refine(shape1, shape2, simplex, centerToOrigin);
-		fmt::print("collide:{}\n", isColliding);
-		fmt::print("A:{}, B:{}, result:{}\n", finalSimplex.vertices[1].pointA, finalSimplex.vertices[1].pointB, finalSimplex.vertices[1].result);
-		fmt::print("A:{}, B:{}, result:{}\n", finalSimplex.vertices[2].pointA, finalSimplex.vertices[2].pointB, finalSimplex.vertices[2].result);
 	}
 
-	void Window::testSAT()
-	{
-		ShapePrimitive shape1, shape2;
-		shape1.shape = &rectangle;
-		shape2.shape = &rectangle;
-		shape1.rotation = 45;
-		shape1.transform.set(1, 1);
-		shape2.rotation = 37;
-		shape2.transform.set(3, 1);
-		SATResult result = SAT::polygonVsPolygon(shape2, shape1);
-		fmt::print("collide:{}, normal:{}, penetration:{}\n", result.isColliding, result.normal, result.penetration);
-		fmt::print("point pair: {}, {}\n", result.pointPair.pointA, result.pointPair.pointB);
-	}
 
 	void Window::process()
 	{
@@ -117,74 +81,108 @@ namespace Physics2D
 		const real inv_dt = 60;
 		m_world.stepVelocity(dt);
 
+		ContactConstraintSolver solver;
+		auto list = dbvh.generatePairs();
+		for (auto& pair : list)
+		{
+			Collision result = Detector::detect(pair.first, pair.second);
+			if (result.isColliding)
+			{
+				ContactInfo info;
+				info.result = result;
+				solver.add(info);
+			}
+		}
+		
+		solver.prepare();
+		solver.solveVelocity(dt);
+		solver.solvePosition(dt);
+
+
 		for (Joint* joint : m_world.jointList())
 			joint->prepare(dt);
-		
+
 		for (Joint* joint : m_world.jointList())
 			fmt::print("{}\n", joint->solveVelocity(dt));
-		
+
 		m_world.stepPosition(dt);
+		for (Body* body : m_world.bodyList())
+			dbvh.update(body);
 		repaint();
 	}
+
 	void Window::testJoint()
 	{
 		rect = m_world.createBody();
 		rect->setShape(&rectangle);
-		rect->position().set({ 0, 0 });
+		rect->position().set({0, 0});
 		rect->angle() = 0;
 		rect->setMass(5);
 		rect->setType(Body::BodyType::Dynamic);
-		
+
 		rect2 = m_world.createBody();
 		rect2->setShape(&rectangle);
-		rect2->position().set({ 0, -5 });
+		rect2->position().set({0, -5});
 		rect2->angle() = 0;
 		rect2->setMass(100);
 		rect2->setType(Body::BodyType::Dynamic);
-		
+
 		rect3 = m_world.createBody();
 		rect3->setShape(&circle);
-		rect3->position().set({ 0, -8 });
+		rect3->position().set({0, -8});
 		rect3->angle() = 0;
 		rect3->setMass(100);
-		rect3->setType(Body::BodyType::Dynamic);
+		rect3->setType(Body::BodyType::Static);
 
 		mousePrim.bodyA = rect;
 		MouseJoint* j = m_world.createJoint(mousePrim);
-		
+
+		dbvh.insert(rect);
+		dbvh.insert(rect2);
+		dbvh.insert(rect3);
 	}
+
 	void Window::testCollision()
 	{
-		rect2 = m_world.createBody();
-		rect2->setShape(&rectangle);
-		rect2->position().set({ 0, 2 });
-		rect2->angle() = 5;
-		rect2->setMass(300);
-		rect2->setType(Body::BodyType::Dynamic);
-		
-		rect3 = m_world.createBody();
-		rect3->setShape(&circle);
-		rect3->position().set({ 3, 0 });
-		rect3->angle() = 0;
-		rect3->setMass(300);
-		rect3->setType(Body::BodyType::Static);
-		
-		rect = m_world.createBody();
-		rect->setShape(&circle);
-		rect->position().set({ 0, 6 });
-		rect->angle() = -115;
-		rect->setMass(Constant::Max);
-		rect->setType(Body::BodyType::Static);
-		
 		ground = m_world.createBody();
-		ground->setShape(&edge);
-		ground->position().set({0, -4});
+		ground->setShape(&land);
+		ground->position().set({ 0, -8 });
 		ground->setMass(Constant::Max);
 		ground->setType(Body::BodyType::Static);
-		
-		//createStackBox(5, 1.1, 1.1);
-		
-		
+		dbvh.insert(ground);
+
+		//for(int i = 0;i < 8;i++)
+		//{
+		//	Body* body = m_world.createBody();
+		//	body->setShape(&circle);
+		//	body->setMass(30);
+		//	body->angle() = 0;
+		//	body->position().set(-8 + 2*i, 0);
+		//	body->setType(Body::BodyType::Dynamic);
+		//	dbvh.insert(body);
+		//}
+		rect = m_world.createBody();
+		rect->setShape(&polygon);
+		rect->position().set({-4, 0});
+		rect->angle() = 90;
+		rect->setMass(20);
+		rect->setType(Body::BodyType::Dynamic);
+
+		rect2 = m_world.createBody();
+		rect2->setShape(&circle);
+		rect2->position().set({ 4, 0 });
+		rect2->angle() = 0;
+		rect2->setMass(20);
+		rect2->setType(Body::BodyType::Dynamic);
+		dbvh.insert(rect2);
+		dbvh.insert(rect);
+		rect->velocity().set(0.5, 0);
+		rect2->velocity().set(-0.5, 0);
+
+		rect->angularVelocity() = 15;
+		rect2->angularVelocity() = -15;
+
+		//rect->velocity().set(0, -4);
 	}
 
 	void Window::createSnakeBody()
@@ -201,15 +199,16 @@ namespace Physics2D
 				rect2 = rect;
 		}
 	}
+
 	void Window::testDistanceJoint()
 	{
-		
 	}
+
 	void Window::testPendulum()
 	{
 		rect = m_world.createBody();
 		rect->setShape(&circle);
-		rect->position().set({ 0, 4 });
+		rect->position().set({0, 4});
 		rect->angle() = 0;
 		rect->setMass(DBL_MAX);
 		rect->setType(Body::BodyType::Kinematic);
@@ -220,7 +219,6 @@ namespace Physics2D
 		rect2->angle() = 0;
 		rect2->setMass(100);
 		rect2->setType(Body::BodyType::Dynamic);
-		
 	}
 
 	void Window::paintEvent(QPaintEvent*)
@@ -238,12 +236,11 @@ namespace Physics2D
 		QPen pen(Qt::green, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 		Renderer::render(&painter, &m_world, pen);
 
-		
-		
+
 		QColor color = Qt::green;
 		color.setAlphaF(0.6);
 		pen.setColor(color);
-		for(int i = -10;i <= 10;i++)
+		for (int i = -10; i <= 10; i++)
 		{
 			RendererQtImpl::renderPoint(&painter, &m_world, Vector2(0, i), pen);
 			RendererQtImpl::renderPoint(&painter, &m_world, Vector2(i, 0), pen);
@@ -254,23 +251,31 @@ namespace Physics2D
 		RendererQtImpl::renderLine(&painter, &m_world, Vector2(0, -10), Vector2(0, 10), pen);
 		RendererQtImpl::renderLine(&painter, &m_world, Vector2(-10, 0), Vector2(10, 0), pen);
 
-		QPen aabbPen(Qt::red, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+
 		DBVH::Node* root = dbvh.root();
 		drawDbvh(root, &painter);
-
+		QPen BodyA(Qt::red, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		QPen BodyB(Qt::blue, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		QPen PointA(Qt::red, 6, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		QPen PointB(Qt::blue, 6, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 		auto list = dbvh.generatePairs();
-		for(auto& pair: list)
+		for (auto& pair : list)
 		{
-			Collision result = Detector::detect(pair.bodyA, pair.bodyB);
+			Collision result = Detector::detect(pair.first, pair.second);
 			if (result.isColliding)
 			{
-				Renderer::render(&painter, &m_world, pair.bodyA, aabbPen);
-				Renderer::render(&painter, &m_world, pair.bodyB, aabbPen);
-				counter++;
+				for(auto& pair: result.contactList)
+				{
+					Renderer::render(&painter, &m_world, result.bodyA, BodyA);
+					Renderer::render(&painter, &m_world, result.bodyB, BodyB);
+					RendererQtImpl::renderPoint(&painter, &m_world, pair.pointA, PointA);
+					RendererQtImpl::renderPoint(&painter, &m_world, pair.pointB, PointB);
+				}
 			}
 		}
 	}
-	void Window::drawDbvh(DBVH::Node * node, QPainter* painter)
+
+	void Window::drawDbvh(DBVH::Node* node, QPainter* painter)
 	{
 		if (node == nullptr)
 			return;
@@ -278,10 +283,11 @@ namespace Physics2D
 		drawDbvh(node->left, painter);
 		drawDbvh(node->right, painter);
 
-		QPen pen(Qt::green, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		if(node->isLeaf())
-			RendererQtImpl::renderAABB(painter, &m_world, node->pair.value, pen);
+		QPen pen(Qt::lightGray, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		//if(node->isLeaf())
+		RendererQtImpl::renderAABB(painter, &m_world, node->pair.value, pen);
 	}
+
 	void Window::resizeEvent(QResizeEvent* e)
 	{
 		m_world.setRightBottom(Vector2(e->size().width() - m_world.leftTop().x,
@@ -289,12 +295,11 @@ namespace Physics2D
 		this->repaint();
 	}
 
-	void Window::mousePressEvent(QMouseEvent*e)
+	void Window::mousePressEvent(QMouseEvent* e)
 	{
-
 		Vector2 pos(e->pos().x(), e->pos().y());
 		mousePos = m_world.screenToWorld(pos);
-		
+
 		//Body* nb = m_world.createBody();
 		//nb->setShape(&circle);
 		//nb->position().set({ 0, -2 });
@@ -305,29 +310,25 @@ namespace Physics2D
 		{
 		case Qt::LeftButton:
 			{
-
-			int index = m_world.bodyList().size() - 1;
-			dbvh.remove(m_world.bodyList()[QRandomGenerator::global()->bounded(index)]);
-			break;
+				int index = m_world.bodyList().size() - 1;
+				dbvh.remove(m_world.bodyList()[QRandomGenerator::global()->bounded(index)]);
+				break;
 			}
 		case Qt::RightButton:
 			{
-
-			Body* body = m_world.createBody();
-			body->position().set(mousePos);
-			body->setShape(&rectangle);
-			body->angle() = -360 + QRandomGenerator::global()->bounded(720);
-			body->setMass(400);
-			body->setType(Body::BodyType::Static);
-			dbvh.insert(body);
-			break;
+				Body* body = m_world.createBody();
+				body->position().set(mousePos);
+				body->setShape(&rectangle);
+				body->angle() = -360 + QRandomGenerator::global()->bounded(720);
+				body->setMass(400);
+				body->setType(Body::BodyType::Static);
+				dbvh.insert(body);
+				break;
 			}
 		}
-		if(e->button() == Qt::LeftButton)
+		if (e->button() == Qt::LeftButton)
 		{
-			
 		}
-		
 	}
 
 	void Window::mouseReleaseEvent(QMouseEvent* e)
@@ -336,12 +337,12 @@ namespace Physics2D
 		mousePos = m_world.screenToWorld(pos);
 		clickPos.clear();
 	}
-	
+
 
 	void Window::mouseMoveEvent(QMouseEvent* e)
 	{
 		//testHit(e->pos());
-		
+
 		Vector2 pos(e->pos().x(), e->pos().y());
 		mousePos = m_world.screenToWorld(pos);
 		//originPoint.set(m_world.screenToWorld(pos));
@@ -353,7 +354,7 @@ namespace Physics2D
 	{
 		Vector2 pos(event->x(), event->y());
 		clickPos.set(m_world.screenToWorld(pos));
-		fmt::print("select body at {}\n",clickPos);
+		fmt::print("select body at {}\n", clickPos);
 	}
 
 	void Window::keyPressEvent(QKeyEvent* event)
@@ -451,13 +452,8 @@ namespace Physics2D
 
 	void Window::wheelEvent(QWheelEvent* event)
 	{
-
-		
 	}
 
-	void Window::testBVH(QPainter* painter)
-	{
-	}
 
 	void Window::testHit(const QPoint& pos)
 	{
@@ -479,8 +475,6 @@ namespace Physics2D
 				m_lastBody = body;
 			}
 		}
-
-		
 	}
 
 	void Window::testAABB(QPainter* painter)
@@ -512,7 +506,7 @@ namespace Physics2D
 			pen.setColor(Qt::red);
 		RendererQtImpl::renderAABB(painter, &m_world, uni, pen);
 	}
-	
+
 	void Window::createStackBox(const uint16_t& row = 10, const real& margin = 65, const real& spacing = 55)
 	{
 		for (real j = row; j > 0; j--)
@@ -522,24 +516,27 @@ namespace Physics2D
 				Body* body = m_world.createBody();
 				body->position().set({
 					static_cast<real>(-spacing * (row - j) + i * spacing), static_cast<real>(j * margin + margin) - 6
-					});
+				});
 				body->setShape(&rectangle);
 				body->angle() = 0;
 				body->setMass(400);
 				body->setType(Body::BodyType::Dynamic);
+				dbvh.insert(body);
 			}
 		}
 
 
 		ground = m_world.createBody();
 		ground->setShape(&land);
-		ground->position().set({ 0, -8 });
-		ground->setMass(100000000);
+		ground->position().set({0, -8});
+		ground->setMass(Constant::Max);
 		ground->setType(Body::BodyType::Static);
+		dbvh.insert(ground);
 	}
+
 	void Window::createBoxesAndGround(const real& count)
 	{
-		for(real j = 0;j < count;j++)
+		for (real j = 0; j < count; j++)
 		{
 			Body* body = m_world.createBody();
 			body->position().set({1, -6 + j * 1.2});
@@ -552,8 +549,8 @@ namespace Physics2D
 
 		ground = m_world.createBody();
 		ground->setShape(&land);
-		ground->position().set({ 0, -8 });
-		ground->setMass(100000000);
+		ground->position().set({0, -8});
+		ground->setMass(Constant::Max);
 		ground->setType(Body::BodyType::Static);
 	}
 }

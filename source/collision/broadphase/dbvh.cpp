@@ -16,10 +16,10 @@ namespace Physics2D
 		return m_root;
 	}
 
-	std::vector<BodyPair> DBVH::generatePairs()
+	std::vector<std::pair<Body*, Body*>> DBVH::generatePairs()
 	{
 		m_profile = 0;
-		std::vector<BodyPair> pairs;
+		std::vector<std::pair<Body*, Body*>> pairs;
 		generate(m_root, pairs);
 		return pairs;
 	}
@@ -282,10 +282,9 @@ namespace Physics2D
 	}
 
 	//check if children collide with each other
-	void DBVH::generate(Node* node, std::vector<BodyPair>& pairs)
+	void DBVH::generate(Node* node, std::vector<std::pair<Body*, Body*>>& pairs)
 	{
-		
-		if (node->isLeaf())
+		if (node == nullptr || node->isLeaf())
 			return;
 
 		bool result = AABB::collide(node->left->pair.value, node->right->pair.value);
@@ -297,7 +296,7 @@ namespace Physics2D
 		generate(node->right, pairs);
 	}
 
-	void DBVH::generate(Node* left, Node* right, std::vector<BodyPair>& pairs)
+	void DBVH::generate(Node* left, Node* right, std::vector<std::pair<Body*, Body*>>& pairs)
 	{
 		if (left == nullptr || right == nullptr)
 			return;
@@ -311,7 +310,7 @@ namespace Physics2D
 		if (left->isLeaf() && right->isLeaf())
 		{
 			m_profile++;
-			BodyPair pair = {left->pair.body, right->pair.body};
+			std::pair<Body*, Body*> pair = {left->pair.body, right->pair.body};
 			pairs.emplace_back(pair);
 		}
 		if (left->isLeaf() && right->isBranch())
@@ -347,20 +346,6 @@ namespace Physics2D
 		delete node;
 		node = nullptr;
 	}
-
-	void DBVH::traverseToLeaf(Node*& node, std::vector<Node*>& leaves)
-	{
-		if (node == nullptr)
-			return;
-		if (node->isLeaf())
-		{
-			leaves.emplace_back(node);
-			return;
-		}
-		traverseToLeaf(node->left, leaves);
-		traverseToLeaf(node->right, leaves);
-	}
-
 	real DBVH::deltaCost(Node* node, const AABB& aabb)const
 	{
 		if (node == nullptr)

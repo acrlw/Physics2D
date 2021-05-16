@@ -2,5 +2,5 @@
 
 int main(int argc, char* argv[])
 {
-	return Physics2D::TestBedApplication::exec(argc, argv);;
+	return Physics2D::TestBedApplication::exec(argc, argv);
 }
