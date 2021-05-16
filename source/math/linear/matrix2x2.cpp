@@ -68,6 +68,37 @@ namespace Physics2D
 		return Matrix2x2(column1 - rhs.column1, column2 - rhs.column2);
 	}
 
+	real& Matrix2x2::operator()(const uint32_t& row, const uint32_t& col)
+	{
+		assert(row <= 2 && col <= 2);
+
+		switch (row)
+		{
+		case 1:
+		{
+			switch (col)
+			{
+			case 1:
+				return e11();
+			case 2:
+				return e12();
+			}
+			break;
+		}
+		case 2:
+		{
+			switch (col)
+			{
+			case 1:
+				return e21();
+			case 2:
+				return e22();
+			}
+			break;
+		}
+		}
+	}
+
 	Vector2 Matrix2x2::row1() const
 	{
 		return Vector2(column1.x, column2.x);

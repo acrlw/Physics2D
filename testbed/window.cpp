@@ -47,12 +47,17 @@ namespace Physics2D
 		//createStackBox(6, 1.1, 1.1);
 		//createBoxesAndGround(12);
 		//testPendulum();
-		testCollision();
-		//testJoint();
+		//testCollision();
+		 testJoint();
 		//testBroadphase();
 		connect(&m_timer, &QTimer::timeout, this, &Window::process);
 		m_timer.setInterval(15);
 		m_timer.start();
+
+		Matrix2x2 mat;
+		mat(1, 1) = 1;
+		mat(2, 2) = 1;
+		fmt::print("{}\n", mat);
 	}
 
 	Window::~Window()
@@ -154,7 +159,7 @@ namespace Physics2D
 		for(int i = 0;i < 8;i++)
 		{
 			Body* body = m_world.createBody();
-			body->setShape(&ellipse);
+			body->setShape(&rectangle);
 			body->setMass(30);
 			body->angle() = 0;
 			body->position().set(-8 + 2*i, 0);

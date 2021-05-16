@@ -13,12 +13,12 @@ namespace Physics2D
 	}
 
 	Matrix3x3::Matrix3x3(const real& col1_x, const real& col1_y, const real& col1_z, const real& col2_x,
-		const real& col2_y, const real& col2_z, const real& col3_x, const real& col3_y,
-		const real& col3_z)
+	                     const real& col2_y, const real& col2_z, const real& col3_x, const real& col3_y,
+	                     const real& col3_z)
 		: column1(col1_x, col1_y, col1_z), column2(col2_x, col2_y, col2_z), column3(col3_x, col3_y, col3_z)
 	{
 	}
-	
+
 	Matrix3x3& Matrix3x3::operator=(const Matrix3x3& rhs)
 	{
 		column1 = rhs.column1;
@@ -60,6 +60,53 @@ namespace Physics2D
 		return *this;
 	}
 
+	real& Matrix3x3::operator()(const uint32_t& row, const uint32_t& col)
+	{
+		assert(row <= 3 && col <= 3);
+		switch (row)
+		{
+		case 1:
+			{
+				switch (col)
+				{
+				case 1:
+					return e11();
+				case 2:
+					return e12();
+				case 3:
+					return e13();
+				}
+				break;
+			}
+		case 2:
+			{
+				switch (col)
+				{
+				case 1:
+					return e21();
+				case 2:
+					return e22();
+				case 3:
+					return e23();
+				}
+				break;
+			}
+		case 3:
+			{
+				switch (col)
+				{
+				case 1:
+					return e31();
+				case 2:
+					return e32();
+				case 3:
+					return e33();
+				}
+				break;
+			}
+		}
+	}
+
 	Vector3 Matrix3x3::row1() const
 	{
 		return Vector3(column1.x, column2.x, column3.x);
@@ -79,10 +126,12 @@ namespace Physics2D
 	{
 		return column1.x;
 	}
+
 	real& Matrix3x3::e12()
 	{
 		return column2.x;
 	}
+
 	real& Matrix3x3::e13()
 	{
 		return column3.x;
@@ -92,27 +141,32 @@ namespace Physics2D
 	{
 		return column1.y;
 	}
+
 	real& Matrix3x3::e22()
 	{
 		return column2.y;
 	}
+
 	real& Matrix3x3::e23()
 	{
 		return column3.y;
 	}
-	
+
 	real& Matrix3x3::e31()
 	{
 		return column1.z;
 	}
+
 	real& Matrix3x3::e32()
 	{
 		return column2.z;
 	}
+
 	real& Matrix3x3::e33()
 	{
 		return column3.z;
 	}
+
 	real Matrix3x3::determinant() const
 	{
 		return determinant(*this);
