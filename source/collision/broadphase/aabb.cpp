@@ -218,12 +218,12 @@ namespace Physics2D
 		const real a_high_x = (a.width * 0.5) + a.position.x;
 
 
-		const real b_low_x = (-b.height * 0.5) + b.position.y;
-		const real b_high_x = (b.height * 0.5) + b.position.y;
+		const real b_low_x = (-b.width * 0.5) + b.position.x;
+		const real b_high_x = (b.width * 0.5) + b.position.x;
 
 
-		const real a_low_y = (-a.width * 0.5) + a.position.x;
-		const real a_high_y = (a.width * 0.5) + a.position.x;
+		const real a_low_y = (-a.height * 0.5) + a.position.y;
+		const real a_high_y = (a.height * 0.5) + a.position.y;
 
 
 		const real b_low_y = (-b.height * 0.5) + b.position.y;

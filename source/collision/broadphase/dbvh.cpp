@@ -91,7 +91,7 @@ namespace Physics2D
 	}
 	void DBVH::update(Body* body)
 	{
-		AABB thin = AABB::fromBody(body);
+		AABB thin = AABB::fromBody(body, 1.2);
 		if(!thin.isSubset(m_leaves[body]->pair.value))
 		{
 			remove(body);

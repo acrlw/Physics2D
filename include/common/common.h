@@ -44,7 +44,7 @@ namespace Physics2D
 		const real GeometryEpsilon = 0.0001;
 		
 		//1 meter -> x pixel
-		const real MeterToPixel = 300.0;
+		const real MeterToPixel = 50.0;
 		//1 pixel -> 1 / x meter
 		const real PixelToMeter = 1.0 / MeterToPixel;
 	}

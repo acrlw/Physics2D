@@ -151,26 +151,26 @@ namespace Physics2D
 		ground->setType(Body::BodyType::Static);
 		dbvh.insert(ground);
 
-		//for(int i = 0;i < 8;i++)
-		//{
-		//	Body* body = m_world.createBody();
-		//	body->setShape(&circle);
-		//	body->setMass(30);
-		//	body->angle() = 0;
-		//	body->position().set(-8 + 2*i, 0);
-		//	body->setType(Body::BodyType::Dynamic);
-		//	dbvh.insert(body);
-		//}
+		for(int i = 0;i < 8;i++)
+		{
+			Body* body = m_world.createBody();
+			body->setShape(&ellipse);
+			body->setMass(30);
+			body->angle() = 0;
+			body->position().set(-8 + 2*i, 0);
+			body->setType(Body::BodyType::Dynamic);
+			dbvh.insert(body);
+		}
 		rect = m_world.createBody();
 		rect->setShape(&polygon);
-		rect->position().set({-4, 0});
+		rect->position().set({-10, 0});
 		rect->angle() = 90;
 		rect->setMass(20);
 		rect->setType(Body::BodyType::Dynamic);
 
 		rect2 = m_world.createBody();
 		rect2->setShape(&circle);
-		rect2->position().set({ 4, 0 });
+		rect2->position().set({ 10, 0 });
 		rect2->angle() = 0;
 		rect2->setMass(20);
 		rect2->setType(Body::BodyType::Dynamic);
@@ -283,9 +283,9 @@ namespace Physics2D
 		drawDbvh(node->left, painter);
 		drawDbvh(node->right, painter);
 
-		QPen pen(Qt::lightGray, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		//if(node->isLeaf())
-		RendererQtImpl::renderAABB(painter, &m_world, node->pair.value, pen);
+		QPen pen(Qt::cyan, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		if(node->isLeaf())
+			RendererQtImpl::renderAABB(painter, &m_world, node->pair.value, pen);
 	}
 
 	void Window::resizeEvent(QResizeEvent* e)
