@@ -4,14 +4,19 @@ namespace Physics2D
 {
     void Renderer::render(QPainter* painter, World* world, const QPen& pen)
     {
-    	for(Body * body: world->bodyList())
-			render(painter, world, body, pen);
+		if (painter == nullptr || world == nullptr)
+			return;
     	
-		for (Joint* joint : world->jointList())
-			RendererQtImpl::renderJoint(painter, world, joint, pen);
+		for(auto& body: world->bodyList())
+			render(painter, world, body.get(), pen);
+
+		for (auto& joint : world->jointList())
+			RendererQtImpl::renderJoint(painter, world, joint.get(), pen);
     }
 	void Renderer::render(QPainter* painter, World* world, Body* body, const QPen& pen)
 	{
+		if (painter == nullptr || world == nullptr || body == nullptr)
+			return;
 		ShapePrimitive primitive;
 		primitive.shape = body->shape();
 		primitive.rotation = body->angle();

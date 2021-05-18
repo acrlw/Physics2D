@@ -44,8 +44,6 @@ namespace Physics2D
 	private:
 		void createBoxesAndGround(const real& count = 10);
 		void createStackBox(const uint16_t& row, const real& margin, const real& spacing);
-		void testHit(const QPoint& pos);
-		void testAABB(QPainter* painter);
 		void testJoint();
 		void testCollision();
 		void createSnakeBody();
@@ -84,6 +82,14 @@ namespace Physics2D
 		MouseJointPrimitive mousePrim;
 		DBVH dbvh;
 		int counter = 0;
+		
+		std::shared_ptr<Ellipse> ellipse_ptr;
+		std::shared_ptr<Edge> edge_ptr;
+		std::shared_ptr<Curve> curve_ptr;
+		std::shared_ptr<Polygon> polygon_ptr;
+		std::shared_ptr<Rectangle> land_ptr;
+		std::shared_ptr<Rectangle> rectangle_ptr;
+		std::shared_ptr<Circle> circle_ptr;
 	};
 }
 #endif

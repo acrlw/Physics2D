@@ -24,6 +24,8 @@ namespace Physics2D
 
 	Matrix2x2& Matrix2x2::operator=(const Matrix2x2& rhs)
 	{
+		if (&rhs == this)
+			return *this;
 		column1 = rhs.column1;
 		column2 = rhs.column2;
 		return *this;

@@ -226,7 +226,7 @@ namespace Physics2D
 		{
 		case Shape::Type::Polygon:
 			{
-				const Polygon* polygon = dynamic_cast<const Polygon*>(shape.shape);
+				const Polygon* polygon = dynamic_cast<const Polygon*>(shape.shape.get());
 				Vector2 p0 = polygon->vertices()[0];
 				real max = 0;
 				target = polygon->vertices()[0];
@@ -244,19 +244,19 @@ namespace Physics2D
 			}
 		case Shape::Type::Circle:
 			{
-				const Circle* circle = dynamic_cast<const Circle*>(shape.shape);
+				const Circle* circle = dynamic_cast<const Circle*>(shape.shape.get());
 				target = direction.normal() * circle->radius() + shape.transform;
 				return target;
 			}
 		case Shape::Type::Ellipse:
 			{
-				const Ellipse* ellipse = dynamic_cast<const Ellipse*>(shape.shape);
+				const Ellipse* ellipse = dynamic_cast<const Ellipse*>(shape.shape.get());
 				target = GeometryAlgorithm2D::calculateEllipseProjectionPoint(ellipse->A(), ellipse->B(), rot_dir);
 				break;
 			}
 		case Shape::Type::Edge:
 			{
-				const Edge* edge = dynamic_cast<const Edge*>(shape.shape);
+				const Edge* edge = dynamic_cast<const Edge*>(shape.shape.get());
 				real dot1 = Vector2::dotProduct(edge->startPoint(), direction);
 				real dot2 = Vector2::dotProduct(edge->endPoint(), direction);
 				target = dot1 > dot2 ? edge->startPoint() : edge->endPoint();
@@ -264,7 +264,7 @@ namespace Physics2D
 			}
 		case Shape::Type::Point:
 			{
-				return dynamic_cast<const Point*>(shape.shape)->position();
+				return dynamic_cast<const Point*>(shape.shape.get())->position();
 			}
 		default:
 			break;

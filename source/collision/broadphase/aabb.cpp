@@ -51,7 +51,7 @@ namespace Physics2D
 		{
 			case Shape::Type::Polygon:
 			{
-				const Polygon* polygon = dynamic_cast<Polygon*>(shape.shape);
+				const Polygon* polygon = dynamic_cast<Polygon*>(shape.shape.get());
 				real max_x = Constant::NegativeMin, max_y = Constant::NegativeMin, min_x = Constant::Max, min_y = Constant::Max;
 				for(const Vector2& v: polygon->vertices())
 				{
@@ -75,7 +75,7 @@ namespace Physics2D
 			}
 			case Shape::Type::Ellipse:
 			{
-				const Ellipse* ellipse = dynamic_cast<Ellipse*>(shape.shape);
+				const Ellipse* ellipse = dynamic_cast<Ellipse*>(shape.shape.get());
 
 				Vector2 top_dir{ 0, 1 };
 				Vector2 left_dir{ -1, 0 };
@@ -103,14 +103,14 @@ namespace Physics2D
 			}
 			case Shape::Type::Circle:
 			{
-				const Circle* circle = dynamic_cast<Circle*>(shape.shape);
+				const Circle* circle = dynamic_cast<Circle*>(shape.shape.get());
 				aabb.width = circle->radius() * 2;
 				aabb.height = circle->radius() * 2;
 				break;
 			}
 			case Shape::Type::Edge:
 			{
-				const Edge* edge = dynamic_cast<Edge*>(shape.shape);
+				const Edge* edge = dynamic_cast<Edge*>(shape.shape.get());
 				aabb.width = abs(edge->startPoint().x - edge->endPoint().x);
 				aabb.height = abs(edge->startPoint().y - edge->endPoint().y);
 				aabb.position.set(edge->startPoint().x + edge->endPoint().x, edge->startPoint().y + edge->endPoint().y);
@@ -119,13 +119,13 @@ namespace Physics2D
 			}
 			case Shape::Type::Curve:
 			{
-				const Curve* curve = dynamic_cast<Curve*>(shape.shape);
+				const Curve* curve = dynamic_cast<Curve*>(shape.shape.get());
 				
 				break;
 			}
 			case Shape::Type::Point:
 			{
-				const Point* curve = dynamic_cast<Point*>(shape.shape);
+				const Point* curve = dynamic_cast<Point*>(shape.shape.get());
 				aabb.width = 1;
 				aabb.height = 1;
 				break;

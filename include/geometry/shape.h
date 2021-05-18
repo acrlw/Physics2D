@@ -35,7 +35,7 @@ namespace Physics2D
     /// </summary>
     struct ShapePrimitive
     {
-        Shape* shape = nullptr;
+		std::shared_ptr<Shape> shape;
         Vector2 transform;
         real rotation = 0;
         Vector2 translate(const Vector2& source)const;

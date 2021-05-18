@@ -39,15 +39,18 @@ namespace Physics2D
 		result.isColliding = isColliding;
 		
 		//auto [isColliding, simplex] = GJK::gjk(shapeA, shapeB);
-		
+		//
 		//if(shapeA.transform.fuzzyEqual(shapeB.transform) && !isColliding)
 		//	isColliding = simplex.containOrigin(true);
-		
+		//
 		//result.isColliding = isColliding;
+		
 		if (isColliding)
 		{
 
 			//simplex = GJK::epa(shapeA, shapeB, simplex);
+			//PenetrationSource source = GJK::dumpSource(simplex);
+			
 			portal.vertices.erase(portal.vertices.begin());
 			PenetrationSource source = GJK::dumpSource(portal);
 

@@ -4,11 +4,11 @@ namespace Physics2D
 {
 	World::~World()
 	{
-		for (Body* body : m_bodyList)
-			delete body;
-		
-		for (Joint* joint : m_jointList)
-			delete joint;
+		for (auto& body : m_bodyList)
+			body.release();
+
+		for (auto& joint : m_jointList)
+			joint.release();
 	}
 
 	Vector2 World::screenToWorld(const Vector2& pos) const
@@ -23,7 +23,7 @@ namespace Physics2D
 	void World::stepVelocity(const real& dt)
 	{
 		const Vector2 g = m_enableGravity ? m_gravity : (0, 0);
-		for (Body* body : m_bodyList)
+		for (auto& body : m_bodyList)
 		{
 			switch (body->type())
 			{
@@ -56,10 +56,10 @@ namespace Physics2D
 	void World::stepPosition(const real& dt)
 	{
 		for (int i = 0; i < m_velocityIteration; i++)
-			for (Joint* joint : m_jointList)
+			for(auto& joint: m_jointList)
 				joint->solvePosition(dt);
-		
-		for (Body* body : m_bodyList)
+
+		for (auto& body : m_bodyList)
 		{
 			switch (body->type())
 			{
@@ -93,7 +93,7 @@ namespace Physics2D
 	void World::step(const real& dt)
 	{
 		const Vector2 g = m_enableGravity ? m_gravity : (0, 0);
-		for (Body* body : m_bodyList)
+		for (auto& body : m_bodyList)
 		{
 			switch (body->type())
 			{
@@ -155,17 +155,6 @@ namespace Physics2D
 		result *= Constant::PixelToMeter;
 		return result;
 	}
-
-	std::vector<Body*> World::bodyList() const
-	{
-		return m_bodyList;
-	}
-
-	std::vector<Joint*> World::jointList() const
-	{
-		return m_jointList;
-	}
-
 	real World::bias() const
 	{
 		return m_bias;
@@ -204,6 +193,16 @@ namespace Physics2D
 	void World::setIntegrator(const Integrator& integrator)
 	{
 		m_integrator = integrator;
+	}
+
+	std::vector<std::unique_ptr<Body>>& World::bodyList()
+	{
+		return m_bodyList;
+	}
+
+	std::vector<std::unique_ptr<Joint>>& World::jointList()
+	{
+		return m_jointList;
 	}
 
 	Vector2 World::leftTop() const
@@ -295,66 +294,63 @@ namespace Physics2D
 	{
 		m_enableGravity = enableGravity;
 	}
-
-	void World::addBody(Body* body)
-	{
-		m_bodyList.emplace_back(body);
-	}
-
-	void World::removeBody(Body* body)
-	{
-		m_bodyList.erase(std::remove(m_bodyList.begin(), m_bodyList.end(), body),
-		                 m_bodyList.end());
-		delete body;
-	}
+	
 
 	Body* World::createBody()
 	{
-		Body* body = new Body;
-		m_bodyList.emplace_back(body);
-		return body;
+		//Body* body = new Body;
+		auto body = std::make_unique<Body>();
+		Body* temp = body.get();
+		m_bodyList.emplace_back(std::move(body));
+		return temp;
 	}
 
 	AngleJoint* World::createJoint(const AngleJointPrimitive& primitive)
 	{
-		AngleJoint* joint = new AngleJoint(primitive);
-		m_jointList.emplace_back(joint);
-		return joint;
+		auto joint = std::make_unique<AngleJoint>(primitive);
+		AngleJoint* temp = joint.get();
+		m_jointList.emplace_back(std::move(joint));
+		return temp;
 	}
 
 	PointJoint* World::createJoint(const PointJointPrimitive& primitive)
 	{
-		PointJoint* joint = new PointJoint(primitive);
-		m_jointList.emplace_back(joint);
-		return joint;
+		auto joint = std::make_unique<PointJoint>(primitive);
+		PointJoint* temp = joint.get();
+		m_jointList.emplace_back(std::move(joint));
+		return temp;
 	}
 
 	DistanceJoint* World::createJoint(const DistanceJointPrimitive& primitive)
 	{
-		DistanceJoint* joint = new DistanceJoint(primitive);
-		m_jointList.emplace_back(joint);
-		return joint;
+		auto joint = std::make_unique<DistanceJoint>(primitive);
+		DistanceJoint* temp = joint.get();
+		m_jointList.emplace_back(std::move(joint));
+		return temp;
 	}
 
 	MouseJoint* World::createJoint(const MouseJointPrimitive& primitive)
 	{
-		MouseJoint* joint = new MouseJoint(primitive);
-		m_jointList.emplace_back(joint);
-		return joint;
+		auto joint = std::make_unique<MouseJoint>(primitive);
+		MouseJoint* temp = joint.get();
+		m_jointList.emplace_back(std::move(joint));
+		return temp;
 	}
 
 	PulleyJoint* World::createJoint(const PulleyJointPrimitive& primitive)
 	{
-		PulleyJoint* joint = new PulleyJoint(primitive);
-		m_jointList.emplace_back(joint);
-		return joint;
+		auto joint = std::make_unique<PulleyJoint>(primitive);
+		PulleyJoint* temp = joint.get();
+		m_jointList.emplace_back(std::move(joint));
+		return temp;
 	}
 
 	RevoluteJoint* World::createJoint(const RevoluteJointPrimitive& primitive)
 	{
-		RevoluteJoint* joint = new RevoluteJoint(primitive);
-		m_jointList.emplace_back(joint);
-		return joint;
+		auto joint = std::make_unique<RevoluteJoint>(primitive);
+		RevoluteJoint* temp = joint.get();
+		m_jointList.emplace_back(std::move(joint));
+		return temp;
 	}
 
 	real World::width()const

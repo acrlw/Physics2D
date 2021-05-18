@@ -18,7 +18,7 @@ namespace Physics2D
                 Dynamic,
                 Bullet
                 };
-            Body();
+            Body() = default;
             Vector2& position();
 
             Vector2& velocity();
@@ -32,8 +32,8 @@ namespace Physics2D
 
             real& torques();
 
-            Shape *shape() const;
-            void setShape(Shape *shape);
+            std::shared_ptr<Shape> shape() const;
+            void setShape(std::shared_ptr<Shape> shape);
 
             BodyType type() const;
             void setType(const BodyType &type);
@@ -74,7 +74,7 @@ namespace Physics2D
             Vector2 m_forces;
             real m_torques = 0;
     	
-            Shape *m_shape = nullptr;
+            std::shared_ptr<Shape>m_shape;
             BodyType m_type = BodyType::Static;
     	
             bool m_sleep = false;

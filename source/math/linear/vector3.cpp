@@ -194,6 +194,8 @@ namespace Physics2D
 
 	Vector3& Vector3::operator=(const Vector3& copy)
 	{
+		if (&copy == this)
+			return *this;
 		x = copy.x;
 		y = copy.y;
 		z = copy.z;

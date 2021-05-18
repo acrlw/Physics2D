@@ -1,10 +1,6 @@
 #include "include/dynamics/body.h"
 
 namespace Physics2D {
-    Body::Body()
-    {
-    	
-    }
     Vector2& Body::position() 
     {
         return m_position;
@@ -43,12 +39,12 @@ namespace Physics2D {
         return m_torques;
     }
 
-    Shape *Body::shape() const
+    std::shared_ptr<Shape> Body::shape() const
     {
         return m_shape;
     }
 
-    void Body::setShape(Shape *shape)
+    void Body::setShape(std::shared_ptr<Shape> shape)
     {
         m_shape = shape;
         calcInertia();
@@ -151,14 +147,14 @@ namespace Physics2D {
         switch (m_shape->type()) {
             case Shape::Type::Circle:
             {
-                const Circle * circle = dynamic_cast<Circle*>(m_shape);
+                const Circle * circle = dynamic_cast<Circle*>(m_shape.get());
 
                 m_inertia = m_mass * circle->radius() * circle->radius() * (0.5f);
                 break;
             }
             case Shape::Type::Polygon:
             {
-                const Polygon * polygon = dynamic_cast<Polygon*>(m_shape);
+                const Polygon * polygon = dynamic_cast<Polygon*>(m_shape.get());
 
                 const Vector2 center = polygon->center();
                 real sum1 = 0.0f;
@@ -179,7 +175,7 @@ namespace Physics2D {
             }
             case Shape::Type::Ellipse:
             {
-                const Ellipse * ellipse = dynamic_cast<Ellipse*>(m_shape);
+                const Ellipse * ellipse = dynamic_cast<Ellipse*>(m_shape.get());
 
                 const real a = ellipse->A();
                 const real b = ellipse->B();

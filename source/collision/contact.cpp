@@ -96,7 +96,7 @@ namespace Physics2D
 
 		const Vector2 src = Matrix2x2(-shape.rotation).multiply(source - shape.transform);
 		Vector2 target;
-		auto [previous, next] = adjacent(*dynamic_cast<Polygon*>(shape.shape), src);
+		auto [previous, next] = adjacent(*dynamic_cast<Polygon*>(shape.shape.get()), src);
 
 		previous = Matrix2x2(shape.rotation).multiply(previous) + shape.transform;
 		next = Matrix2x2(shape.rotation).multiply(next) + shape.transform;

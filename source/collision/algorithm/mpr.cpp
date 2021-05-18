@@ -46,8 +46,20 @@ namespace Physics2D
 			if (v1.fuzzyEqual(newVertex.result) || v2.fuzzyEqual(newVertex.result))
 				break;
 
-			lastRemoved = simplex.vertices[2];
-			simplex.vertices[2] = newVertex;
+			const real dist13 = GeometryAlgorithm2D::pointToLineSegment(v1, newVertex.result, { 0, 0 }).lengthSquare();
+			const real dist23 = GeometryAlgorithm2D::pointToLineSegment(v2, newVertex.result, { 0, 0 }).lengthSquare();
+
+			if(dist13 < dist23)
+			{
+				simplex.vertices[1] = simplex.vertices[1];
+				simplex.vertices[2] = newVertex;
+			}
+			else
+			{
+				simplex.vertices[1] = simplex.vertices[2];
+				simplex.vertices[2] = newVertex;
+			}
+			
 		}
 		return std::make_tuple(isColliding, simplex);
 	}

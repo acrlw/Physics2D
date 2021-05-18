@@ -54,9 +54,7 @@ namespace Physics2D
 
             bool enableGravity() const;
             void setEnableGravity(bool enableGravity);
-
-            void addBody(Body* body);
-            void removeBody(Body* body);
+            
             Body* createBody();
     	
             AngleJoint* createJoint(const AngleJointPrimitive& primitive);
@@ -71,9 +69,7 @@ namespace Physics2D
     	
             static Vector2 worldToScreen(const Vector2& leftTop, const Vector2& rightBottom, const Vector2& pos);
             static Vector2 screenToWorld(const Vector2& leftTop, const Vector2& rightBottom, const Vector2& pos);
-
-            std::vector<Body*> bodyList()const;
-            std::vector<Joint*> jointList()const;
+            
 
             real bias() const;
             void setBias(const real &bias);
@@ -87,7 +83,9 @@ namespace Physics2D
             Integrator integrator()const;
             void setIntegrator(const Integrator& integrator);
 
-
+            std::vector<std::unique_ptr<Body>>& bodyList();
+    	
+            std::vector<std::unique_ptr<Joint>>& jointList();
         private:
             Vector2 m_leftTop;
             Vector2 m_rightBottom;
@@ -104,10 +102,11 @@ namespace Physics2D
             real m_positionIteration;
     		
     		bool m_enableGravity;
-            std::vector<Body*> m_bodyList;
-            std::vector<Joint*> m_jointList;
+            std::vector<std::unique_ptr<Body>> m_bodyList;
+            std::vector<std::unique_ptr<Joint>> m_jointList;
             Integrator m_integrator;
 
+            
     		
     		
     };

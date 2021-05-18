@@ -60,7 +60,7 @@ namespace Physics2D
 			
 			Vector2 jv = va + m_primitive.bias;
 			Vector2 impulse = m_primitive.effectiveMass.multiply(jv.negate());
-			impulse += (impulse - m_primitive.lastImpulse) * dt;
+			//impulse += (impulse - m_primitive.lastImpulse) * dt;
 			m_primitive.bodyA->applyImpulse(impulse, ra);
 			
 			m_primitive.lastImpulse = impulse;

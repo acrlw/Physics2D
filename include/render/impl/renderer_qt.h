@@ -35,13 +35,13 @@ namespace Physics2D
 			Vector2 position = world->worldToScreen(shape.transform);
 			renderPoint(painter, world, shape.transform, pen);
 			QPen center(Qt::gray, 8, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-			renderPoint(painter, world, Matrix2x2(shape.rotation).multiply(dynamic_cast<Polygon*>(shape.shape)->center()) + shape.transform, center);
+			renderPoint(painter, world, Matrix2x2(shape.rotation).multiply(dynamic_cast<Polygon*>(shape.shape.get())->center()) + shape.transform, center);
 			QPolygonF polygon;
 			QColor color = pen.color();
 			color.setAlphaF(0.2);
 			QBrush brush(color);
 
-			for(const Vector2& point: dynamic_cast<Polygon*>(shape.shape)->vertices())
+			for(const Vector2& point: dynamic_cast<Polygon*>(shape.shape.get())->vertices())
 			{
 				const Vector2 world_p = Matrix2x2(shape.rotation).multiply(point) + shape.transform;
 				const Vector2 screen_p = world->worldToScreen(world_p);
@@ -61,7 +61,7 @@ namespace Physics2D
 		{
 			assert(painter != nullptr && world != nullptr);
 			assert(shape.shape->type() == Shape::Type::Edge);
-			Edge* edge = dynamic_cast<Edge*>(shape.shape);
+			Edge* edge = dynamic_cast<Edge*>(shape.shape.get());
 			renderPoint(painter, world, edge->startPoint() + shape.transform, pen);
 			renderPoint(painter, world, edge->endPoint() + shape.transform, pen);
 			renderLine(painter, world, edge->startPoint() + shape.transform, edge->endPoint() + shape.transform, pen);
@@ -75,7 +75,7 @@ namespace Physics2D
 			Vector2 position = world->worldToScreen(shape.transform);
 			QPolygonF polygon;
 
-			for (const Vector2& point : dynamic_cast<Rectangle*>(shape.shape)->vertices())
+			for (const Vector2& point : dynamic_cast<Rectangle*>(shape.shape.get())->vertices())
 			{
 				const Vector2 world_p = Matrix2x2(shape.rotation).multiply(point) + shape.transform;
 				const Vector2 screen_p = world->worldToScreen(world_p);
@@ -99,7 +99,7 @@ namespace Physics2D
 		{
 			assert(painter != nullptr && world != nullptr);
 			assert(shape.shape->type() == Shape::Type::Circle);
-			const Circle* circle = dynamic_cast<Circle*>(shape.shape);
+			const Circle* circle = dynamic_cast<Circle*>(shape.shape.get());
 			const Vector2 screen_p = world->worldToScreen(shape.transform);
 			renderPoint(painter, world, shape.transform, pen);
 
@@ -128,7 +128,7 @@ namespace Physics2D
 			assert(painter != nullptr && world != nullptr);
 			assert(shape.shape->type() == Shape::Type::Ellipse);
 			renderPoint(painter, world, shape.transform, pen);
-			const Ellipse* ellipse = dynamic_cast<Ellipse*>(shape.shape);
+			const Ellipse* ellipse = dynamic_cast<Ellipse*>(shape.shape.get());
 			const Vector2 screen_p = world->worldToScreen(shape.transform);
 			real A = ellipse->A() * Constant::MeterToPixel;
 			real B = ellipse->B() * Constant::MeterToPixel;
@@ -158,7 +158,7 @@ namespace Physics2D
 		{
 			assert(painter != nullptr && world != nullptr);
 			assert(shape.shape->type() == Shape::Type::Curve);
-			const Curve* curve = dynamic_cast<Curve*>(shape.shape);
+			const Curve* curve = dynamic_cast<Curve*>(shape.shape.get());
 
 			renderPoint(painter, world, curve->startPoint() + shape.transform, pen);
 			renderPoint(painter, world, curve->endPoint() + shape.transform, pen);

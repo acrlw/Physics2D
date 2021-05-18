@@ -25,7 +25,10 @@ namespace Physics2D
 	}
 	void DBVH::insert(Body* body)
 	{
-		Pair pair(AABB::fromBody(body, m_leafFactor), body);
+		AABB aabb = AABB::fromBody(body);
+		aabb.width += m_leafFactor;
+		aabb.height += m_leafFactor;
+		Pair pair(aabb, body);
 		
 		auto getCost = [&](Node*& node, const AABB& aabb)
 		{
