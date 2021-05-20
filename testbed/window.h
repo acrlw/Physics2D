@@ -17,6 +17,8 @@
 #include <include/collision/algorithm/sat.h>
 #include <include/collision/broadphase/dbvh.h>
 
+#include "include/utils/camera.h"
+
 namespace Physics2D
 {
 	class Window : public QWidget
@@ -31,7 +33,6 @@ namespace Physics2D
 
 	protected:
 		void paintEvent(QPaintEvent*) override;
-		void drawDbvh(DBVH::Node* node, QPainter* painter);
 		void resizeEvent(QResizeEvent* e) override;
 		void mousePressEvent(QMouseEvent*) override;
 		void mouseReleaseEvent(QMouseEvent* e) override;
@@ -90,6 +91,9 @@ namespace Physics2D
 		std::shared_ptr<Rectangle> land_ptr;
 		std::shared_ptr<Rectangle> rectangle_ptr;
 		std::shared_ptr<Circle> circle_ptr;
+
+		Utils::Camera camera;
+		bool cameraTransform = false;
 	};
 }
 #endif

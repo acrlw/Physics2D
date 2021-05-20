@@ -5,6 +5,7 @@
 
 #include "include/geometry/shape.h"
 #include "include/dynamics/world.h"
+#include "include/utils/camera.h"
 
 namespace Physics2D
 {
@@ -20,13 +21,6 @@ namespace Physics2D
 	//	virtual void renderPoint(const Vector2& pos) = 0;
 	//	virtual void renderLine(const Vector2& p1, const Vector2& p2) = 0;
 	//};
-	class Renderer
-	{
-	public:
-		Renderer(){}
-		static void render(QPainter* painter, World* world, const QPen& pen);
-		static void render(QPainter* painter, World* world, Body* body, const QPen& pen);
-	private:
-	};
+
 }
 #endif

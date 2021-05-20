@@ -15,24 +15,11 @@ namespace Physics2D
     			m_enableGravity(true), m_linearVelocityThreshold(0.02), m_angularVelocityThreshold(0.02), m_airFrictionCoefficient(0.7),
     			m_velocityIteration(1), m_positionIteration(1)
             {}
-            World(const Vector2& leftTop, const Vector2& rightBottom) : m_leftTop(leftTop), m_rightBottom(rightBottom), m_gravity(0, -1),
-    			m_linearVelocityDamping(0.9), m_angularVelocityDamping(0.9), m_airFrictionCoefficient(0.7),
-    			m_bias(0.8), m_enableGravity(true),m_linearVelocityThreshold(0.02),
-    			m_angularVelocityThreshold(0.02), m_velocityIteration(1), m_positionIteration(1)
-            {}
             ~World();
-            Vector2 screenToWorld(const Vector2& pos)const;
-            Vector2 worldToScreen(const Vector2& pos)const;
             void stepVelocity(const real& dt);
             void stepPosition(const real& dt);
             void step(const real& dt);
-
-            void setGeometry(const Vector2& leftTop, const Vector2& rightBottom);
-            Vector2 leftTop() const;
-            void setLeftTop(const Vector2 &leftTop);
-
-            Vector2 rightBottom() const;
-            void setRightBottom(const Vector2 &rightBottom);
+            
 
             Vector2 gravity() const;
             void setGravity(const Vector2 &gravity);
@@ -63,14 +50,7 @@ namespace Physics2D
             MouseJoint* createJoint(const MouseJointPrimitive& primitive);
             PulleyJoint* createJoint(const PulleyJointPrimitive& primitive);
             RevoluteJoint* createJoint(const RevoluteJointPrimitive& primitive);
-
-            real width()const;
-            real height()const;
-    	
-            static Vector2 worldToScreen(const Vector2& leftTop, const Vector2& rightBottom, const Vector2& pos);
-            static Vector2 screenToWorld(const Vector2& leftTop, const Vector2& rightBottom, const Vector2& pos);
-            
-
+			
             real bias() const;
             void setBias(const real &bias);
 
@@ -87,8 +67,6 @@ namespace Physics2D
     	
             std::vector<std::unique_ptr<Joint>>& jointList();
         private:
-            Vector2 m_leftTop;
-            Vector2 m_rightBottom;
 
             Vector2 m_gravity;
             real m_linearVelocityDamping;

@@ -43,10 +43,7 @@ namespace Physics2D
 		const real ReciprocalOfPi = 0.3183098861837907;
 		const real GeometryEpsilon = 0.0001;
 		
-		//1 meter -> x pixel
-		static real MeterToPixel = 50.0;
-		//1 pixel -> 1 / x meter
-		static real PixelToMeter = 1.0 / MeterToPixel;
+
 	}
 }
 

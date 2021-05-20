@@ -36,6 +36,8 @@ namespace Physics2D
 			void remove(Body* body);
 			Node* root()const;
 			std::vector<std::pair<Body*, Body*>> generatePairs();
+
+			std::map<Body*, Node*>& leaves();
 		private:
 			void cleanUp(Node* node);
 			real deltaCost(Node* node, const AABB& aabb)const;

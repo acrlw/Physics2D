@@ -23,6 +23,10 @@ namespace Physics2D
 		generate(m_root, pairs);
 		return pairs;
 	}
+	std::map<Body*, DBVH::Node*>& DBVH::leaves()
+	{
+		return m_leaves;
+	}
 	void DBVH::insert(Body* body)
 	{
 		AABB aabb = AABB::fromBody(body);

@@ -13,7 +13,6 @@ namespace Physics2D
 		this->setWindowTitle("Testbed");
 		this->resize(1920, 1080);
 		this->setMouseTracking(true);
-		m_world.setGeometry({0, 0}, {1920, 1080});
 
 		rectangle.set(1, 1);
 		land.set(18, 0.2);
@@ -54,17 +53,18 @@ namespace Physics2D
 		//createStackBox(6, 1.1, 1.1);
 		//createBoxesAndGround(12);
 		//testPendulum();
-		testCollision();
-		 //testJoint();
+		//testCollision();
+		 testJoint();
 		//testBroadphase();
+
+		camera.setViewport({ {0, 0}, {1920, 1080} });
+		camera.setWorld(&m_world);
+		camera.setDbvh(&dbvh);
+		
 		connect(&m_timer, &QTimer::timeout, this, &Window::process);
 		m_timer.setInterval(15);
 		m_timer.start();
-
-		Matrix2x2 mat;
-		mat(1, 1) = 1;
-		mat(2, 2) = 1;
-		fmt::print("{}\n", mat);
+		
 	}
 
 	Window::~Window()
@@ -154,6 +154,7 @@ namespace Physics2D
 		dbvh.insert(rect);
 		dbvh.insert(rect2);
 		dbvh.insert(rect3);
+		camera.setTargetBody(rect);
 	}
 
 	void Window::testCollision()
@@ -177,14 +178,14 @@ namespace Physics2D
 		//	dbvh.insert(body);
 		//}
 		rect = m_world.createBody();
-		rect->setShape(polygon_ptr);
+		rect->setShape(rectangle_ptr);
 		rect->position().set({-5, 0});
 		rect->angle() = 90;
 		rect->setMass(20);
 		rect->setType(Body::BodyType::Static);
 
 		rect2 = m_world.createBody();
-		rect2->setShape(circle_ptr);
+		rect2->setShape(polygon_ptr);
 		rect2->position().set({ 5, 0 });
 		rect2->angle() = 0;
 		rect2->setMass(20);
@@ -240,89 +241,34 @@ namespace Physics2D
 	{
 		QPainter painter(this);
 		//prepare for background, origin and clipping boundary
-		painter.setRenderHint(QPainter::Antialiasing);
-		painter.setClipRect(m_world.leftTop().x, m_world.leftTop().y, m_world.width(), m_world.height());
-		painter.setBackground(QBrush(QColor(50, 50, 50)));
-		painter.fillRect(QRectF(m_world.leftTop().x, m_world.leftTop().y, m_world.width(), m_world.height()),
-		                 QBrush(QColor(50, 50, 50)));
-		QPen origin(Qt::green, 10, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		RendererQtImpl::renderPoint(&painter, &m_world, Vector2(0, 0), origin);
-
-		QPen pen(Qt::green, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		Renderer::render(&painter, &m_world, pen);
-
-
-		QColor color = Qt::green;
-		color.setAlphaF(0.6);
-		pen.setColor(color);
-		for (int i = -10; i <= 10; i++)
-		{
-			RendererQtImpl::renderPoint(&painter, &m_world, Vector2(0, i), pen);
-			RendererQtImpl::renderPoint(&painter, &m_world, Vector2(i, 0), pen);
-		}
-		color.setAlphaF(0.45);
-		pen.setColor(color);
-		pen.setWidth(1);
-		RendererQtImpl::renderLine(&painter, &m_world, Vector2(0, -10), Vector2(0, 10), pen);
-		RendererQtImpl::renderLine(&painter, &m_world, Vector2(-10, 0), Vector2(10, 0), pen);
-
-
-		DBVH::Node* root = dbvh.root();
-		drawDbvh(root, &painter);
-		;
-		QPen BodyA(QColor(255, 0, 0, 150), 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		QPen BodyB(QColor(0, 0, 255, 150), 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		QPen PointA(QColor(255, 0, 0, 150), 6, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		QPen PointB(QColor(0, 255, 255, 150), 6, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		auto list = dbvh.generatePairs();
-		for (auto& pair : list)
-		{
-			Collision result = Detector::detect(pair.first, pair.second);
-			if (result.isColliding)
-			{
-				for(auto& pair: result.contactList)
-				{
-					Renderer::render(&painter, &m_world, result.bodyA, BodyA);
-					Renderer::render(&painter, &m_world, result.bodyB, BodyB);
-					RendererQtImpl::renderPoint(&painter, &m_world, pair.pointA, PointA);
-					RendererQtImpl::renderPoint(&painter, &m_world, pair.pointB, PointB);
-				}
-			}
-		}
-	}
-
-	void Window::drawDbvh(DBVH::Node* node, QPainter* painter)
-	{
-		if (node == nullptr)
-			return;
-
-		drawDbvh(node->left, painter);
-		drawDbvh(node->right, painter);
-
-		QPen pen(Qt::cyan, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		if(node->isLeaf())
-			RendererQtImpl::renderAABB(painter, &m_world, node->pair.value, pen);
+		camera.render(&painter);
+		
 	}
 
 	void Window::resizeEvent(QResizeEvent* e)
 	{
-		m_world.setRightBottom(Vector2(e->size().width() - m_world.leftTop().x,
-		                               e->size().height() - m_world.leftTop().y));
+
+		camera.setViewport({ {0, 0}, {e->size().width() - camera.viewport().topLeft.x,
+									   e->size().height() - camera.viewport().topLeft.y } });
 		this->repaint();
 	}
 
 	void Window::mousePressEvent(QMouseEvent* e)
 	{
 		Vector2 pos(e->pos().x(), e->pos().y());
-		mousePos = m_world.screenToWorld(pos);
-		circle_ptr.get()->scale(1.5);
+		mousePos = camera.screenToWorld(pos);
+		if (e->button() == Qt::RightButton)
+		{
+			cameraTransform = true;
+		}
 	}
 
 	void Window::mouseReleaseEvent(QMouseEvent* e)
 	{
 		Vector2 pos(e->pos().x(), e->pos().y());
-		mousePos = m_world.screenToWorld(pos);
+		mousePos = camera.screenToWorld(pos);
 		clickPos.clear();
+		cameraTransform = false;
 	}
 
 
@@ -331,120 +277,69 @@ namespace Physics2D
 		//testHit(e->pos());
 
 		Vector2 pos(e->pos().x(), e->pos().y());
-		mousePos = m_world.screenToWorld(pos);
 		//originPoint.set(m_world.screenToWorld(pos));
 		//mousePrim.mousePoint = mousePos;
+		if(cameraTransform)
+		{
+			Vector2 tf = camera.screenToWorld(pos) - mousePos;
+			tf *= 5;
+			camera.setTransform(camera.transform() + tf);
+		}
+		mousePos = camera.screenToWorld(pos);
 		repaint();
 	}
 
 	void Window::mouseDoubleClickEvent(QMouseEvent* event)
 	{
 		Vector2 pos(event->x(), event->y());
-		clickPos.set(m_world.screenToWorld(pos));
+		clickPos.set(camera.screenToWorld(pos));
 		fmt::print("select body at {}\n", clickPos);
+		
 	}
 
 	void Window::keyPressEvent(QKeyEvent* event)
 	{
-		//rect3->velocity() += {0, 9.8};
-		//mousePrim.mousePoint -= {-1, 1};
-		//switch (event->key())
-		//{
-		//case Qt::Key_R:
-		//	{
-		//		m_angle += 1;
-		//		break;
-		//	}
-		//case Qt::Key_Q:
-		//	{
-		//		m_angle -= 1;
-		//		break;
-		//	}
-		//case Qt::Key_D:
-		//	{
-		//	//rect->velocity() += Vector2(5, 0);
-		//	rect2->position().set(rect2->position() + Vector2(0.1, 0));
-		//		break;
-		//	}
-		//case Qt::Key_A:
-		//	{
-		//	//rect->velocity() += Vector2(-5, 0);
-		//	rect2->position().set(rect2->position() + Vector2(-0.1, 0));
-		//		break;
-		//	}
-		//case Qt::Key_S:
-		//	{
-		//		rect2->position().set(rect2->position() + Vector2(0, -0.1));
-		//		break;
-		//	}
-		//case Qt::Key_W:
-		//	{
-		//		rect2->position().set(rect2->position() + Vector2(0, 0.1));
-		//		break;
-		//	}
-		//case Qt::Key_Space:
-		//{
-		//	//rect->forces() += Vector2(0, 50);
-		//	originPoint.set(originPoint + Vector2(0, 5));
-		//	break;
-		//}
-		//default:
-		//	break;
-		//}
+		switch (event->key())
+		{
+		case Qt::Key_J:
+			{
+				camera.setJointVisible(!camera.jointVisible());
+				break;
+			}
+		case Qt::Key_B:
+			{
+				camera.setBodyVisible(!camera.bodyVisible());
+				break;
+			}
+		case Qt::Key_D:
+			{
+				camera.setDbvhVisible(!camera.dbvhVisible());
+				break;
+			}
+		case Qt::Key_A:
+			{
+				camera.setAabbVisible(!camera.aabbVisible());
+				break;
+			}
+		default:
+			break;
+		}
 		repaint();
 	}
 
 	void Window::keyReleaseEvent(QKeyEvent* event)
 	{
-		//switch (event->key())
-		//{
-		//case Qt::Key_R:
-		//{
-		//	m_angle += 8;
-		//	break;
-		//}
-		//case Qt::Key_Q:
-		//{
-		//	m_angle -= 8;
-		//	break;
-		//}
-		//case Qt::Key_D:
-		//{
-		//	rect->velocity() += Vector2(5, 0);
-		//	originPoint.set(originPoint + Vector2(5, 0));
-		//	break;
-		//}
-		//case Qt::Key_A:
-		//{
-		//	rect->velocity() += Vector2(-5, 0);
-		//	originPoint.set(originPoint + Vector2(-5, 0));
-		//	break;
-		//}
-		//case Qt::Key_S:
-		//{
-		//	originPoint.set(originPoint + Vector2(0, -5));
-		//	break;
-		//}
-		//case Qt::Key_Space:
-		//{
-		//	rect->forces() += Vector2(0, 50);
-		//	originPoint.set(originPoint + Vector2(0, 5));
-		//	break;
-		//}
-		//default:
-		//	break;
-		//}
+
 		repaint();
 	}
 
 	void Window::wheelEvent(QWheelEvent* event)
 	{
-		if(event->angleDelta().y() > 0)
-			Constant::MeterToPixel += 5;
+		if (event->angleDelta().y() > 0)
+			camera.setMeterToPixel(camera.meterToPixel() + 5);
 		else
-			Constant::MeterToPixel -= 5;
-
-		Constant::PixelToMeter = 1.0 / Constant::MeterToPixel;
+			camera.setMeterToPixel(camera.meterToPixel() - 5);
+		
 	}
 	
 

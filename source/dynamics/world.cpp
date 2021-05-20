@@ -10,16 +10,6 @@ namespace Physics2D
 		for (auto& joint : m_jointList)
 			joint.release();
 	}
-
-	Vector2 World::screenToWorld(const Vector2& pos) const
-	{
-		return screenToWorld(m_leftTop, m_rightBottom, pos);
-	}
-
-	Vector2 World::worldToScreen(const Vector2& pos) const
-	{
-		return worldToScreen(m_leftTop, m_rightBottom, pos);
-	}
 	void World::stepVelocity(const real& dt)
 	{
 		const Vector2 g = m_enableGravity ? m_gravity : (0, 0);
@@ -130,31 +120,7 @@ namespace Physics2D
 			}
 		}
 	}
-
-	void World::setGeometry(const Vector2& leftTop, const Vector2& rightBottom)
-	{
-		m_leftTop = leftTop;
-		m_rightBottom = rightBottom;
-	}
-
-	Vector2 World::worldToScreen(const Vector2& leftTop, const Vector2& rightBottom, const Vector2& pos)
-	{
-		//real screen origin
-		const real origin_y = (rightBottom.y + leftTop.y) * (0.5);
-		const real origin_x = (leftTop.x + rightBottom.x) * (0.5);
-		return Vector2(origin_x + pos.x * Constant::MeterToPixel, origin_y - pos.y * Constant::MeterToPixel);
-	}
-
-	Vector2 World::screenToWorld(const Vector2& leftTop, const Vector2& rightBottom, const Vector2& pos)
-	{
-		//real screen origin
-		const real origin_y = (rightBottom.y + leftTop.y) * (0.5);
-		const real origin_x = (leftTop.x + rightBottom.x) * (0.5);
-		Vector2 result = pos - Vector2(origin_x, origin_y);
-		result.y = -result.y;
-		result *= Constant::PixelToMeter;
-		return result;
-	}
+	
 	real World::bias() const
 	{
 		return m_bias;
@@ -204,27 +170,7 @@ namespace Physics2D
 	{
 		return m_jointList;
 	}
-
-	Vector2 World::leftTop() const
-	{
-		return m_leftTop;
-	}
-
-	void World::setLeftTop(const Vector2& leftTop)
-	{
-		m_leftTop = leftTop;
-	}
-
-	Vector2 World::rightBottom() const
-	{
-		return m_rightBottom;
-	}
-
-	void World::setRightBottom(const Vector2& rightBottom)
-	{
-		m_rightBottom = rightBottom;
-	}
-
+	
 	Vector2 World::gravity() const
 	{
 		return m_gravity;
@@ -351,15 +297,5 @@ namespace Physics2D
 		RevoluteJoint* temp = joint.get();
 		m_jointList.emplace_back(std::move(joint));
 		return temp;
-	}
-
-	real World::width()const
-	{
-		return m_rightBottom.x - m_leftTop.x;
-	}
-
-	real World::height()const
-	{
-		return m_rightBottom.y - m_leftTop.y;
 	}
 }
