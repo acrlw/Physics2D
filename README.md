@@ -26,6 +26,11 @@ cmake CMakeLists.txt
 - Rigid Body Dynamics Simulation
 - Axis-Aligned Bounding Box Generator
 - Dynamic Bounding Volume Hierarchy
+- Basic Debug Drawing
+  - Rigid Body
+  - AABB
+  - DBVH
+  - Joint
 - Simple 2D Geometry Algorithm
   - raycast
   - graham scan convex hull
