@@ -88,6 +88,7 @@ namespace Physics2D::Utils
         DBVH* m_dbvh = nullptr;
 
 		real m_zoomFactor = 1.0;
+        real m_easingTime = 200;
 	};
 }
 #endif

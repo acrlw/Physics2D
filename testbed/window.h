@@ -94,6 +94,8 @@ namespace Physics2D
 
 		Utils::Camera camera;
 		bool cameraTransform = false;
+		bool isStop = false;
+		Body* selectedBody = nullptr;
 	};
 }
 #endif

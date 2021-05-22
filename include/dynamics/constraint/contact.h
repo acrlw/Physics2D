@@ -151,10 +151,10 @@ namespace Physics2D
 
 
 						real v_rel1 = n.dot(vcp1.vpb - vcp1.vpa);
-						vcp1.bias = -0.2 * v_rel1;
+						vcp1.bias = -0.8 * v_rel1;
 
 						real v_rel2 = n.dot(vcp2.vpb - vcp2.vpa);
-						vcp2.bias = -0.2 * v_rel2;
+						vcp2.bias = -0.8 * v_rel2;
 
 						info.points.emplace_back(vcp1);
 						info.points.emplace_back(vcp2);
@@ -166,7 +166,7 @@ namespace Physics2D
 
 		void solveVelocity(const real& dt)
 		{
-			for(int i = 0;i < 5;i++)
+			for(int i = 0;i < 2;i++)
 			{
 				for (auto& info : m_list)
 				{
@@ -180,11 +180,10 @@ namespace Physics2D
 						real jvb = jv + vcp->bias;
 						real lambda_n = -vcp->effectiveMassNormal * jvb;
 						//lambda_n = -lambda_n;
-						if (lambda_n < 0)
-							lambda_n = -lambda_n;
-						//real newImpulse = Math::max(vcp->accumulatedNormalImpulse + lambda_n, 0);
-						//lambda_n = newImpulse - vcp->accumulatedNormalImpulse;
-						//vcp->accumulatedNormalImpulse = newImpulse;
+						
+						real newImpulse = Math::max(vcp->accumulatedNormalImpulse - lambda_n, 0);
+						lambda_n = newImpulse - vcp->accumulatedNormalImpulse;
+						vcp->accumulatedNormalImpulse = newImpulse;
 						
 						Vector2 impulse_n = lambda_n * info.result.normal;
 						info.result.bodyA->applyImpulse(impulse_n, vcp->ra);

@@ -4,7 +4,6 @@
 #include "include/dynamics/body.h"
 #include "include/math/math.h"
 #include "include/math/integrator.h"
-#include "include/profile/profiler.h"
 #include "include/dynamics/joint/joints.h"
 namespace Physics2D
 {

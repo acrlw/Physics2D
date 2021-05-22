@@ -29,7 +29,6 @@ namespace Physics2D
 		Simplex simplex = source;
 		bool isColliding = false;
 		Vector2 v1, v2, direction;
-		Minkowski lastRemoved;
 		real counter = 0;
 		while (counter++ < iteration)
 		{
@@ -49,16 +48,24 @@ namespace Physics2D
 			const real dist13 = GeometryAlgorithm2D::pointToLineSegment(v1, newVertex.result, { 0, 0 }).lengthSquare();
 			const real dist23 = GeometryAlgorithm2D::pointToLineSegment(v2, newVertex.result, { 0, 0 }).lengthSquare();
 
-			if(dist13 < dist23)
-			{
-				simplex.vertices[1] = simplex.vertices[1];
+			//bool contain1 = GeometryAlgorithm2D::triangleContainsOrigin(simplex.vertices[0].result,
+			//	simplex.vertices[1].result, newVertex.result);
+			//bool contain2 = GeometryAlgorithm2D::triangleContainsOrigin(simplex.vertices[0].result,
+			//	simplex.vertices[2].result, newVertex.result);
+			//if(contain1 == contain2)
+			//{
+			//}
+			//else if(contain1)
+			//	simplex.vertices[2] = newVertex;
+			//else if (contain2)
+			//	simplex.vertices[1] = newVertex;
+
+			if (dist13 < dist23)
 				simplex.vertices[2] = newVertex;
-			}
 			else
-			{
-				simplex.vertices[1] = simplex.vertices[2];
-				simplex.vertices[2] = newVertex;
-			}
+				simplex.vertices[1] = newVertex;
+
+			
 			
 		}
 		return std::make_tuple(isColliding, simplex);

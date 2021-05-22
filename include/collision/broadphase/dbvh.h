@@ -33,12 +33,15 @@ namespace Physics2D
 			~DBVH();
 			void insert(Body* body);
 			void update(Body* body);
-			void remove(Body* body);
+			Node* extract(Body* body);
+			void erase(Body* body);
+			
 			Node* root()const;
 			std::vector<std::pair<Body*, Body*>> generatePairs();
 
 			std::map<Body*, Node*>& leaves();
 		private:
+			void insert(Node* node);
 			void cleanUp(Node* node);
 			real deltaCost(Node* node, const AABB& aabb)const;
 			void totalCost(Node* node, const AABB& aabb, real& cost)const;

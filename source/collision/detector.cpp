@@ -48,11 +48,12 @@ namespace Physics2D
 		if (isColliding)
 		{
 
+			portal.vertices.erase(portal.vertices.begin());
+			PenetrationSource source = GJK::dumpSource(portal);
+			
 			//simplex = GJK::epa(shapeA, shapeB, simplex);
 			//PenetrationSource source = GJK::dumpSource(simplex);
 			
-			portal.vertices.erase(portal.vertices.begin());
-			PenetrationSource source = GJK::dumpSource(portal);
 
 			const auto info = GJK::dumpInfo(source);
 			result.normal = info.normal;

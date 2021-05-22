@@ -162,6 +162,7 @@ namespace Physics2D
 		/// <param name="direction"></param>
 		/// <returns></returns>
 		Vector2 calculateEllipseProjectionPoint(const real& a, const real& b, const Vector2& direction);
+		bool triangleContainsOrigin(const Vector2& a, const Vector2& b, const Vector2& c);
 	};
 }
 #endif

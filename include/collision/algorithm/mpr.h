@@ -5,6 +5,9 @@ namespace Physics2D
 {
 	/// <summary>
 	/// Minkowski Portal Refinement
+	/// Attention:
+	/// The implementation of MPR still remain some bugs when computing deeper object penetration.
+	/// It may causes error penetration depth and normal.
 	/// </summary>
 	class MPR
 	{

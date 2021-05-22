@@ -27,6 +27,16 @@ namespace Physics2D
 	{
 		return m_leaves;
 	}
+
+	void DBVH::insert(Node* node)
+	{
+		AABB aabb = AABB::fromBody(node->pair.body);
+		aabb.width += m_leafFactor;
+		aabb.height += m_leafFactor;
+		node->pair.value = aabb;
+		
+	}
+
 	void DBVH::insert(Body* body)
 	{
 		AABB aabb = AABB::fromBody(body);
@@ -87,8 +97,6 @@ namespace Physics2D
 				target2 = rightTarget;
 			}
 			balance(m_root);
-			//update(target2);
-			//update(target1);
 
 			for (auto const& [key, val] : m_leaves)
 			{
@@ -101,17 +109,17 @@ namespace Physics2D
 		AABB thin = AABB::fromBody(body, 1.2);
 		if(!thin.isSubset(m_leaves[body]->pair.value))
 		{
-			remove(body);
+			erase(body);
 			insert(body);
 		}
 	}
-	void DBVH::remove(Body* body)
+	DBVH::Node* DBVH::extract(Body* body)
 	{
 		auto moveup = [&](Node* branch)
 		{
 			Node* parent = branch->parent;
 			Node* child = branch->left != nullptr ? branch->left : branch->right;
-			
+
 			if (branch->isRoot())
 			{
 				child->parent = nullptr;
@@ -119,32 +127,40 @@ namespace Physics2D
 				delete branch;
 				return child;
 			}
-			
+
 			parent->swap(branch, child);
 			branch->parent = nullptr;
 			branch->pair.value.clear();
 			delete branch;
 			return child;
 		};
-		
+
 		//separate
 		auto iter = m_leaves.find(body);
-		
+
 		if (iter == m_leaves.end())
-			return;
-		
+			return nullptr;
+
 		Node* source = iter->second;
 		Node* parent = source->parent;
 		parent->separate(source);
-		source->pair.body = nullptr;
-		source->pair.value.clear();
-		delete source;
 
-		Node * child = moveup(parent);
+		Node* child = moveup(parent);
 		
-		//erase
-		m_leaves.erase(body);
 		balance(child->parent);
+		return source;
+	}
+	void DBVH::erase(Body* body)
+	{
+		Node* target = extract(body);
+		
+		if (target == nullptr)
+			return;
+
+		target->pair.body = nullptr;
+		target->pair.value.clear();
+		delete target;
+		m_leaves.erase(body);
 	}
 	DBVH::Node* DBVH::merge(Node* node, const Pair& pair)
 	{

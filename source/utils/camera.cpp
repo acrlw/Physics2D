@@ -2,7 +2,6 @@
 
 #include "include/render/impl/renderer_qt.h"
 
-
 namespace Physics2D::Utils
 {
 	void Camera::render(QPainter* painter)
@@ -14,7 +13,26 @@ namespace Physics2D::Utils
 
 			if (m_targetBody != nullptr)
 			{
+				real dt = 1.0 / 30.0;
+				Vector2 real_origin(m_origin.x + m_transform.x, m_origin.y - m_transform.y);
+				Vector2 target(-m_targetBody->position().x, m_targetBody->position().y);
+				target = worldToScreen(target) - real_origin;
+				
+				//lerp
+				//if (c.lengthSquare() < 0.1)
+				//	m_transform = target;
+				//else
+				//	m_transform += c * 0.02;
 
+				//exp
+				Vector2 c = target - m_transform;
+				if (c.lengthSquare() < 0.1)
+					m_transform = target;
+				else
+					m_transform -= (1.0 - std::exp(dt)) * c;
+				
+				//real frames = m_easingTime * 60;
+				
 			}
 
 			
@@ -195,11 +213,13 @@ namespace Physics2D::Utils
     }
 	Vector2 Camera::worldToScreen(const Vector2& pos)
 	{
-		return Vector2(m_origin.x + pos.x * m_meterToPixel, m_origin.y - pos.y * m_meterToPixel);
+		Vector2 real_origin(m_origin.x + m_transform.x, m_origin.y - m_transform.y);
+		return Vector2(real_origin.x + pos.x * m_meterToPixel, real_origin.y - pos.y * m_meterToPixel);
 	}
 	Vector2 Camera::screenToWorld(const Vector2& pos)
 	{
-		Vector2 result = pos - m_origin;
+		Vector2 real_origin(m_origin.x + m_transform.x, m_origin.y - m_transform.y);
+		Vector2 result = pos - real_origin;
 		result.y = -result.y;
 		result *= m_pixelToMeter;
 		return result;
