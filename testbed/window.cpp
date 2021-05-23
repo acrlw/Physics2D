@@ -14,7 +14,7 @@ namespace Physics2D
 		this->resize(1920, 1080);
 		this->setMouseTracking(true);
 
-		rectangle.set(0.2, 0.2);
+		rectangle.set(0.5, 0.5);
 		land.set(18, 0.2);
 		polygon.append({{3, 0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3}, {2, -3}, {3, 0}});
 		polygon.scale(0.3);
@@ -54,14 +54,14 @@ namespace Physics2D
 		//createBoxesAndGround(12);
 		//testPendulum();
 		//testCollision();
-		 //testJoint();
+		//testJoint();
 		testBroadphase();
 
 		camera.setViewport({ {0, 0}, {1920, 1080} });
 		camera.setAabbVisible(false);
 		camera.setWorld(&m_world);
 		camera.setDbvh(&dbvh);
-		
+		camera.setTree(&tree);
 		connect(&m_timer, &QTimer::timeout, this, &Window::process);
 		m_timer.setInterval(15);
 		m_timer.start();
@@ -84,6 +84,7 @@ namespace Physics2D
 			body->angle() = -360 + QRandomGenerator::global()->bounded(720);
 			body->setMass(400);
 			body->setType(Body::BodyType::Static);
+			
 			dbvh.insert(body);
 		}
 	}
@@ -128,6 +129,9 @@ namespace Physics2D
 
 		m_world.stepPosition(dt);
 		
+		//for(auto& body: m_world.bodyList())
+		//	dbvh.update(body.get());
+		
 		for(auto& body: m_world.bodyList())
 			dbvh.update(body.get());
 		
@@ -143,7 +147,7 @@ namespace Physics2D
 		ground->setMass(Constant::Max);
 		ground->setType(Body::BodyType::Static);
 
-		dbvh.insert(ground);
+		tree.insert(ground);
 		
 		rect = m_world.createBody();
 		rect->setShape(polygon_ptr);
@@ -169,9 +173,9 @@ namespace Physics2D
 		mousePrim.bodyA = rect;
 		MouseJoint* j = m_world.createJoint(mousePrim);
 
-		dbvh.insert(rect);
-		dbvh.insert(rect2);
-		dbvh.insert(rect3);
+		tree.insert(rect);
+		tree.insert(rect2);
+		tree.insert(rect3);
 		camera.setTargetBody(rect);
 
 		//rect->velocity() += {10, 0};
@@ -186,7 +190,7 @@ namespace Physics2D
 		ground->setMass(Constant::Max);
 		ground->setType(Body::BodyType::Static);
 
-		dbvh.insert(ground);
+		tree.insert(ground);
 		
 		rect = m_world.createBody();
 		rect->setShape(rectangle_ptr);
@@ -201,8 +205,8 @@ namespace Physics2D
 		rect2->angle() = 0;
 		rect2->setMass(200);
 		rect2->setType(Body::BodyType::Static);
-		dbvh.insert(rect2);
-		dbvh.insert(rect);
+		tree.insert(rect2);
+		tree.insert(rect);
 		//rect->velocity().set(0.5, 0);
 		//rect2->velocity().set(-0.5, 0);
 
@@ -447,6 +451,7 @@ namespace Physics2D
 			body->angle() = 0;
 			body->setMass(400);
 			body->setType(Body::BodyType::Static);
+			dbvh.insert(body);
 		}
 
 

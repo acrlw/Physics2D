@@ -8,12 +8,6 @@ namespace Physics2D
 	class DBVH
 	{
 		public:
-			struct Pair
-			{
-				Pair(const AABB& aabb, Body* source = nullptr): body(source), value(aabb){}
-				Body* body = nullptr;
-				AABB value;
-			};
 			struct Node
 			{
 				Node(const Pair& pair) : pair(pair){}
@@ -56,7 +50,7 @@ namespace Physics2D
 			std::map<Body*, Node*> m_leaves;
 			Node* m_root = nullptr;
 			real m_profile = 0;
-			real m_leafFactor = 0.5;
+			real m_leafFactor = 0.1;
 	};
 }
 #endif

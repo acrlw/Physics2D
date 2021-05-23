@@ -33,15 +33,11 @@ namespace Physics2D
 		if (node == nullptr)
 			return;
 		AABB aabb = AABB::fromBody(node->pair.body);
-		aabb.width += m_leafFactor;
-		aabb.height += m_leafFactor;
-		node->pair.value = aabb;
+		aabb.expand(m_leafFactor);
+		node->pair.aabb = aabb;
 
-		auto getCost = [&](Node*& node, Node* target, const AABB& aabb)
+		auto getCost = [&](Node* target, const AABB& aabb)
 		{
-			if (node->isLeaf())
-				return std::make_tuple(node, AABB::unite(node->pair.value, aabb).surfaceArea());
-
 			Node* lowCostNode = nullptr;
 			real costValue = Constant::Max;
 			for (auto const& [key, val] : m_leaves)
@@ -58,7 +54,7 @@ namespace Physics2D
 				}
 			}
 
-			return std::make_tuple(lowCostNode, costValue);
+			return lowCostNode;
 		};
 
 		if (m_root == nullptr)
@@ -76,13 +72,8 @@ namespace Physics2D
 
 		if (m_root->isRoot())
 		{
-			auto [leftTarget, leftLowestCost] = getCost(m_root->left, node, aabb);
-			auto [rightTarget, rightLowestCost] = getCost(m_root->right, node, aabb);
-			
-			if (leftLowestCost < rightLowestCost)
-				merge(leftTarget, node);
-			else
-				merge(rightTarget, node);
+			auto target = getCost(node, aabb);
+			merge(target, node);
 			balance(m_root);
 
 			for (auto const& [key, val] : m_leaves)
@@ -104,11 +95,8 @@ namespace Physics2D
 		aabb.expand(m_leafFactor);
 		Pair pair(aabb, body);
 		
-		auto getCost = [&](Node*& node, const AABB& aabb)
+		auto getCost = [&](const AABB& aabb)
 		{
-			if (node->isLeaf())
-				return std::make_tuple(node, AABB::unite(node->pair.value, aabb).surfaceArea());
-			
 			Node* lowCostNode = nullptr;
 			real costValue = Constant::Max;
 			for (auto const& [key, val] : m_leaves)
@@ -123,7 +111,7 @@ namespace Physics2D
 				}
 			}
 
-			return std::make_tuple(lowCostNode, costValue);
+			return lowCostNode;
 		};
 
 		if (m_root == nullptr)
@@ -142,13 +130,8 @@ namespace Physics2D
 
 		if (m_root->isRoot())
 		{
-			auto [leftTarget, leftLowestCost] = getCost(m_root->left, pair.value);
-			auto [rightTarget, rightLowestCost] = getCost(m_root->right, pair.value);
-			
-			if (leftLowestCost < rightLowestCost)
-				merge(leftTarget, pair);
-			else
-				merge(rightTarget, pair);
+			auto target = getCost(pair.aabb);
+			merge(target, pair);
 			
 			balance(m_root);
 
@@ -160,12 +143,20 @@ namespace Physics2D
 	}
 	void DBVH::update(Body* body)
 	{
-		AABB thin = AABB::fromBody(body, 1.2);
-		if(!thin.isSubset(m_leaves[body]->pair.value))
+		assert(body != nullptr);
+
+		auto iter = m_leaves.find(body);
+		if (iter == m_leaves.end())
+			return;
+		
+		AABB thin = AABB::fromBody(body);
+		thin.expand(0.05);
+		if(!thin.isSubset(iter->second->pair.aabb))
 		{
 			Node* node = extract(body);
 			insert(node);
 		}
+
 	}
 	DBVH::Node* DBVH::extract(Body* body)
 	{
@@ -184,7 +175,7 @@ namespace Physics2D
 
 			parent->swap(branch, child);
 			branch->parent = nullptr;
-			branch->pair.value.clear();
+			branch->pair.aabb.clear();
 			delete branch;
 			return child;
 		};
@@ -212,7 +203,7 @@ namespace Physics2D
 			return;
 
 		target->pair.body = nullptr;
-		target->pair.value.clear();
+		target->pair.aabb.clear();
 		delete target;
 		m_leaves.erase(body);
 	}
@@ -229,7 +220,7 @@ namespace Physics2D
 
 		
 		node->pair.body = nullptr;
-		node->pair.value = AABB::unite(pair.value, node->pair.value);
+		node->pair.aabb = AABB::unite(pair.aabb, node->pair.aabb);
 		node->left = copy;
 		node->right = newNode;
 		copy->parent = node;
@@ -247,7 +238,7 @@ namespace Physics2D
 		if (target->isLeaf())
 			m_leaves[target->pair.body] = copy;
 		target->pair.body = nullptr;
-		target->pair.value = AABB::unite(copy->pair.value, source->pair.value);
+		target->pair.aabb = AABB::unite(copy->pair.aabb, source->pair.aabb);
 		target->left = copy;
 		target->right = source;
 		copy->parent = target;
@@ -261,7 +252,7 @@ namespace Physics2D
 			return;
 
 		if (parent->isBranch() || parent->isRoot())
-			parent->pair.value = AABB::unite(parent->left->pair.value, parent->right->pair.value);
+			parent->pair.aabb = AABB::unite(parent->left->pair.aabb, parent->right->pair.aabb);
 
 		
 		update(parent->parent);
@@ -360,6 +351,8 @@ namespace Physics2D
 			const int leftRightHeight = height(node->left->right);
 			if (leftLeftHeight < leftRightHeight) //LR case
 				RR(node->left->right);
+			else
+				LL(node->left->left);
 			LL(node->left);
 		}
 		else //right unbalance
@@ -368,6 +361,8 @@ namespace Physics2D
 			const int rightLeftHeight = height(node->right->left);
 			if (rightRightHeight < rightLeftHeight) //RL case
 				LL(node->right->left);
+			else
+				RR(node->right->right);
 			RR(node->right);
 		}
 		balance(node->left);
@@ -381,7 +376,7 @@ namespace Physics2D
 		if (node == nullptr || node->isLeaf())
 			return;
 
-		bool result = AABB::collide(node->left->pair.value, node->right->pair.value);
+		bool result = AABB::collide(node->left->pair.aabb, node->right->pair.aabb);
 		m_profile++;
 		if (result)
 			generate(node->left, node->right, pairs);
@@ -395,7 +390,7 @@ namespace Physics2D
 		if (left == nullptr || right == nullptr)
 			return;
 
-		bool result = left->pair.value.collide(right->pair.value) || left->pair.value.isSubset(right->pair.value);
+		bool result = left->pair.aabb.collide(right->pair.aabb) || left->pair.aabb.isSubset(right->pair.aabb);
 		m_profile++;
 		
 		if (!result)
@@ -446,9 +441,9 @@ namespace Physics2D
 			return 0;
 		
 		if (node->isLeaf())
-			return AABB::unite(node->pair.value, aabb).surfaceArea();
+			return AABB::unite(node->pair.aabb, aabb).surfaceArea();
 
-		return AABB::unite(node->pair.value, aabb).surfaceArea() - node->pair.value.surfaceArea();
+		return AABB::unite(node->pair.aabb, aabb).surfaceArea() - node->pair.aabb.surfaceArea();
 	}
 
 	void DBVH::totalCost(Node* node, const AABB& aabb, real& cost)const
@@ -470,13 +465,13 @@ namespace Physics2D
 		{
 			left = nullptr;
 			node->parent = nullptr;
-			pair.value = right->pair.value;
+			pair.aabb = right->pair.aabb;
 		}
 		else if(node == right)
 		{
 			right = nullptr;
 			node->parent = nullptr;
-			pair.value = left->pair.value;
+			pair.aabb = left->pair.aabb;
 		}
 	}
 

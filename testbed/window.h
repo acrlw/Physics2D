@@ -17,6 +17,8 @@
 #include <include/collision/algorithm/sat.h>
 #include <include/collision/broadphase/dbvh.h>
 
+
+#include "include/collision/broadphase/tree.h"
 #include "include/utils/camera.h"
 
 namespace Physics2D
@@ -96,6 +98,8 @@ namespace Physics2D
 		bool cameraTransform = false;
 		bool isStop = false;
 		Body* selectedBody = nullptr;
+
+		Tree tree;
 	};
 }
 #endif

@@ -1,7 +1,7 @@
 #include "include/collision/broadphase/tree.h"
 namespace Physics2D
 {
-	Tree::Node::Node(Body* b, int i):body(b), index(i)
+	Tree::Node::Node(int i):index(i)
 	{
 		left = 2 * i + 1;
 		right = 2 * i + 2;
@@ -9,13 +9,11 @@ namespace Physics2D
 	}
 	bool Tree::Node::isEmpty() const
 	{
-		return aabb.isEmpty();
+		return pair.aabb.isEmpty();
 	}
 	void Tree::Node::clear()
 	{
-		parent = -1;
-		body = nullptr;
-		aabb.clear();
+		pair.clear();
 	}
 	void Tree::insert(Body* body)
 	{
@@ -23,23 +21,19 @@ namespace Physics2D
 		
 		if(std::find_if(m_tree.begin(), m_tree.end(), [body](const Node& node)
 			{
-				return node.body == body;
+				return node.pair.body == body;
 			}) != m_tree.end())
 			return;
 
-		auto assignNode = [&](int index, Body* body)
+		Pair pair;
+		AABB aabb = AABB::fromBody(body);
+		aabb.expand(m_leafFactor);
+		pair.body = body;
+		pair.aabb = aabb;
+		
+		
+		auto getCost = [&](const AABB& aabb)
 		{
-			assert(index < m_tree.size());
-			m_tree[index].body = body;
-			AABB aabb = AABB::fromBody(body);
-			aabb.expand(m_leafFactor);
-			m_tree[index].aabb = aabb;
-		};
-		auto getCost = [&](int index, const AABB& aabb)
-		{
-			if(isLeaf(index))
-				return std::make_tuple(index, AABB::unite(m_tree[index].aabb, aabb).surfaceArea());
-
 			int targetIndex = -1;
 			real minimumCost = Constant::Max;
 			for(auto&[body, leafIndex]: m_leaves)
@@ -51,51 +45,153 @@ namespace Physics2D
 					minimumCost = cost;
 				}
 			}
-			return std::make_tuple(targetIndex, minimumCost);
+			return targetIndex;
 		};
 
 		
 		if(m_leaves.empty())
 		{
 			expand(1);
-			assignNode(0, body);
+			m_tree[0].pair = pair;
+			m_tree[0].parent = -1;
 			m_leaves[body] = 0;
 			return;
 		}
-		
 
+		if(m_leaves.size() == 1)
+		{
+			expand(1);
+			merge(0, pair);
+			return;
+		}
+		//get target leaf node
+		const int targetIndex = getCost(pair.aabb);
+		if (2 * targetIndex + 2 >= m_tree.size())
+			expand(1);
+
+		merge(targetIndex, pair);
+		//m_leaves[body] = m_tree[targetIndex].right;
+		
+		for (auto& [body, index] : m_leaves)
+			update(index);
 		
 	}
 
 	void Tree::erase(Body* body)
 	{
-		
-	}
+		if (body == nullptr)
+			return;
 
-	void Tree::extract(Body* body)
-	{
+		Node& target = m_tree[m_leaves[body]];
+		Node& parent = m_tree[target.parent];
+		Node& child = target.index == parent.left ? m_tree[parent.right] : m_tree[parent.left];
 		
+		m_leaves.erase(target.pair.body);
+		target.clear();
+		parent.pair = child.pair;
+		child.clear();
+		m_leaves[parent.pair.body] = parent.index;
+	}
+	void Tree::update(int targetIndex)
+	{
+		if (targetIndex > m_tree.size())
+			return;
+
+		Node& target = m_tree[targetIndex];
+		if (target.right >= m_tree.size())
+			return;
+		Node& left = m_tree[target.left];
+		Node& right = m_tree[target.right];
+		if (!left.isEmpty() && !right.isEmpty())
+			target.pair.aabb = AABB::unite(left.pair.aabb, right.pair.aabb);
+
+		update(target.parent);
 	}
 
 	void Tree::update(Body* body)
 	{
+		assert(body != nullptr);
+		auto iter = m_leaves.find(body);
+		if (iter == m_leaves.end())
+			return;
 		
+		AABB thin = AABB::fromBody(body);
+		thin.expand(0.2);
+		if (!thin.isSubset(m_tree[iter->second].pair.aabb))
+		{
+			erase(body);
+			insert(body);
+		}
+	}
+
+	std::vector<Tree::Node> Tree::tree()
+	{
+		return m_tree;
 	}
 
 	void Tree::balance(int targetIndex)
 	{
-	}
+		if (targetIndex < 0)
+			return;
 
-	void Tree::update(int targetIndex)
+		return;
+		Node& target = m_tree[targetIndex];
+		Node& leftChild = m_tree[target.left];
+		Node& rightChild = m_tree[target.right];
+		const int leftHeight = height(target.left);
+		const int rightHeight = height(target.right);
+
+		auto LL = [&](int index)
+		{
+
+		};
+		auto RR = [&](int index)
+		{
+
+		};
+		if (leftHeight > rightHeight) //left unbalance
+		{
+			const int leftLeftHeight = height(leftChild.left);
+			const int leftRightHeight = height(leftChild.right);
+			if (leftLeftHeight < leftRightHeight) //LR case
+				RR(leftChild.right);
+			LL(target.left);
+		}
+		else //right unbalance
+		{
+			const int rightRightHeight = height(rightChild.right);
+			const int rightLeftHeight = height(rightChild.left);
+			if (rightRightHeight < rightLeftHeight) //RL case
+				LL(rightChild.left);
+			RR(target.right);
+		}
+		balance(target.left);
+		balance(target.right);
+		balance(target.parent);
+		
+	}
+	int Tree::level()
 	{
+		if (m_tree.empty())
+			return 0;
+		return static_cast<int>(std::floor(log2(m_tree.size()))) + 1;
 	}
-
+	int Tree::height(int index)
+	{
+		return index >= m_tree.size() || m_tree[index].isEmpty() ? 0 : Math::max(height(m_tree[index].left), height(m_tree[index].right) + 1);
+	}
 	void Tree::expand(int levels)
 	{
+		//expand tree 'levels' level
 		if(m_tree.empty())
 		{
-			
+			m_tree.emplace_back(Node(0));
+			return;
 		}
+		int targetLevel = level() + 1;
+		int start = m_tree.size();
+		for(int i = 0;i < pow(2, targetLevel - 1);i++)
+			m_tree.emplace_back(Node(start + i));
 	}
 
 	int Tree::allocateNode()
@@ -112,6 +208,8 @@ namespace Physics2D
 	{
 		assert(targetIndex < m_tree.size());
 		const Node& target = m_tree[targetIndex];
+		if (target.left > m_tree.size() || target.right > m_tree.size())
+			return true;
 		return m_tree[target.left].isEmpty() && m_tree[target.right].isEmpty();
 	}
 
@@ -145,27 +243,34 @@ namespace Physics2D
 		m_tree[sourceIndex].clear();
 
 		Node& target = m_tree[targetIndex];
-		target.aabb = m_tree[child].aabb;
-		target.body = m_tree[child].body;
+		target.pair = m_tree[child].pair;
 		m_tree[child].clear();
 
 		return result;
 	}
 
-	void Tree::merge(int targetIndex, const Node& node)
+	void Tree::merge(int targetIndex, const Pair& pair)
 	{
 		assert(targetIndex < m_tree.size());
 		//make it parent node
 		Node& targetNode = m_tree[targetIndex];
 		Node& leftChild = m_tree[targetNode.left];
 		Node& rightChild = m_tree[targetNode.right];
-		leftChild.body = targetNode.body;
-		leftChild.aabb = targetNode.aabb;
-		rightChild.body = node.body;
-		rightChild.aabb = node.aabb;
+
+		leftChild.pair = targetNode.pair;
+		rightChild.pair = pair;
+
+		targetNode.pair.body = nullptr;
+		targetNode.pair.aabb = AABB::unite(leftChild.pair.aabb, rightChild.pair.aabb);
+
+		if(leftChild.pair.body != nullptr)
+			m_leaves[leftChild.pair.body] = leftChild.index;
+
+		if (rightChild.pair.body != nullptr)
+			m_leaves[rightChild.pair.body] = rightChild.index;
 		
-		targetNode.body = nullptr;
-		targetNode.aabb = AABB::unite(leftChild.aabb, rightChild.aabb);
+
+		
 	}
 	real Tree::deltaCost(int nodeIndex, const AABB& aabb) const
 	{
@@ -174,9 +279,9 @@ namespace Physics2D
 			return 0;
 		
 		if (isLeaf(nodeIndex))
-			return AABB::unite(m_tree[nodeIndex].aabb, aabb).surfaceArea();
+			return AABB::unite(m_tree[nodeIndex].pair.aabb, aabb).surfaceArea();
 
-		return AABB::unite(m_tree[nodeIndex].aabb, aabb).surfaceArea() - m_tree[nodeIndex].aabb.surfaceArea();
+		return AABB::unite(m_tree[nodeIndex].pair.aabb, aabb).surfaceArea() - m_tree[nodeIndex].pair.aabb.surfaceArea();
 	}
 	real Tree::totalCost(int nodeIndex, const AABB& aabb) const
 	{

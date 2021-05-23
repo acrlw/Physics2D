@@ -84,12 +84,16 @@ namespace Physics2D::Utils
 			{
 				QPen pen(Qt::cyan, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 				for(auto [body, node]: m_dbvh->leaves())
-					RendererQtImpl::renderAABB(painter, this, node->pair.value, pen);
+					RendererQtImpl::renderAABB(painter, this, node->pair.aabb, pen);
 			}
 			if(m_dbvhVisible)
 			{
 				DBVH::Node* root = m_dbvh->root();
 				drawDbvh(root, painter);
+			}
+			if (m_treeVisible)
+			{
+				drawTree(painter);
 			}
 		}
 	}
@@ -234,6 +238,16 @@ namespace Physics2D::Utils
 		m_dbvh = dbvh;
 	}
 
+	Tree* Camera::tree() const
+	{
+		return m_tree;
+	}
+
+	void Camera::setTree(Tree* tree)
+	{
+		m_tree = tree;
+	}
+
 	bool Camera::visible() const
 	{
 		return m_visible;
@@ -242,6 +256,16 @@ namespace Physics2D::Utils
 	void Camera::setVisible(bool visible)
 	{
 		m_visible = visible;
+	}
+
+	bool Camera::treeVisible() const
+	{
+		return m_treeVisible;
+	}
+
+	void Camera::setTreeVisible(bool visible)
+	{
+		m_treeVisible = visible;
 	}
 
 	void Camera::drawDbvh(DBVH::Node* node, QPainter* painter)
@@ -254,7 +278,22 @@ namespace Physics2D::Utils
 
 		QPen pen(Qt::cyan, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 		if (!node->isLeaf())
-			RendererQtImpl::renderAABB(painter, this, node->pair.value, pen);
+			RendererQtImpl::renderAABB(painter, this, node->pair.aabb, pen);
+	}
+	void Camera::drawTree(QPainter* painter)
+	{
+		if (m_tree == nullptr)
+			return;
+		QPen pen(Qt::cyan, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		for(auto& node: m_tree->tree())
+		{
+			if(!node.isEmpty())
+			{
+
+				RendererQtImpl::renderAABB(painter, this, node.pair.aabb, pen);
+			}
+			
+		}
 	}
 	real Camera::Viewport::width()
 	{

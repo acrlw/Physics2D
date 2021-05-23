@@ -15,11 +15,7 @@ namespace Physics2D
 	{
 		expand(*this, factor);
 	}
-
-	void AABB::scale(const real& factor)
-	{
-		scale(*this, factor);
-	}
+	
 
 	void AABB::clear()
 	{
@@ -137,8 +133,7 @@ namespace Physics2D
 			}
 		}
 		aabb.position += shape.transform;
-		aabb.width *= factor;
-		aabb.height *= factor;
+		aabb.expand(factor);
 		return aabb;
 	}
 
@@ -208,13 +203,8 @@ namespace Physics2D
 		aabb.width = high_x - low_x;
 		aabb.height = high_y - low_y;
 
-		aabb.scale(factor);
+		aabb.expand(factor);
 		return aabb;
-	}
-	void AABB::scale(AABB& aabb, const real& factor)
-	{
-		aabb.width *= factor;
-		aabb.height *= factor;
 	}
 	//b is a subset of a
 	bool AABB::isSubset(const AABB& a, const AABB& b)
@@ -240,5 +230,11 @@ namespace Physics2D
 	{
 		aabb.width += factor;
 		aabb.height += factor;
+	}
+	void Pair::clear()
+	{
+		body = nullptr;
+		aabb.clear();
+		
 	}
 }

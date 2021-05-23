@@ -16,7 +16,6 @@ namespace Physics2D
 		Vector2 position;
 		bool collide(const AABB& other) const;
 		void expand(const real& factor);
-		void scale(const real& factor);
 		void clear();
 		AABB& unite(const AABB& other);
 		real surfaceArea()const;
@@ -29,8 +28,8 @@ namespace Physics2D
 		/// <param name="shape">shape source</param>
 		/// <param name="factor">AABB scale factor. Default factor 1 means making tight AABB</param>
 		/// <returns></returns>
-		static AABB fromShape(const ShapePrimitive& shape, const real& factor = 1);
-		static AABB fromBody(Body* body, const real& factor = 1);
+		static AABB fromShape(const ShapePrimitive& shape, const real& factor = 0);
+		static AABB fromBody(Body* body, const real& factor = 0);
 		/// <summary>
 		/// Check if two aabbs are overlapping
 		/// </summary>
@@ -44,13 +43,7 @@ namespace Physics2D
 		/// <param name="src"></param>
 		/// <param name="target"></param>
 		/// <returns></returns>
-		static AABB unite(const AABB& src, const AABB& target, const real& factor = 1);
-		/// <summary>
-		/// Scale width and height of aabb
-		/// </summary>
-		/// <param name="aabb"></param>
-		/// <param name="factor"></param>
-		static void scale(AABB& aabb, const real& factor = 1);
+		static AABB unite(const AABB& src, const AABB& target, const real& factor = 0);
 		/// <summary>
 		/// Check if b is subset of a
 		/// </summary>
@@ -59,10 +52,18 @@ namespace Physics2D
 		/// <returns></returns>
 		static bool isSubset(const AABB& a, const AABB& b);
 
-		static void expand(AABB& aabb, const real& factor = 0.5);
+		static void expand(AABB& aabb, const real& factor = 0.0);
 		
 	};
 
+	struct Pair
+	{
+		Pair() {}
+		Pair(const AABB& aabb, Body* source = nullptr) : body(source), aabb(aabb) {}
+		Body* body = nullptr;
+		AABB aabb;
+		void clear();
+	};
 	inline bool AABB::isEmpty() const
 	{
 		return realEqual(width, 0) && realEqual(height, 0) && position.fuzzyEqual({ 0, 0 });
