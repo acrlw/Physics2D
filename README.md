@@ -34,7 +34,7 @@ cmake CMakeLists.txt
   - DBVH
   - Joint
 - Basic 2D Camera
-  - Scale Viewport
+  - Zooming
   - Smooth Transition
   - Tracing Specified Body
 - Simple 2D Geometry Algorithm
