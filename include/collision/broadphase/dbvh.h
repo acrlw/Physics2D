@@ -46,6 +46,7 @@ namespace Physics2D
 			real deltaCost(Node* node, const AABB& aabb)const;
 			void totalCost(Node* node, const AABB& aabb, real& cost)const;
 			Node* merge(Node* node, const Pair& pair);
+			void merge(Node* target, Node* source);
 			void update(Node* parent);
 			void balance(Node* node);
 			void generate(Node* node, std::vector<std::pair<Body*, Body*>>& pairs);

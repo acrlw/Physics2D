@@ -30,11 +30,68 @@ namespace Physics2D
 
 	void DBVH::insert(Node* node)
 	{
+		if (node == nullptr)
+			return;
 		AABB aabb = AABB::fromBody(node->pair.body);
 		aabb.width += m_leafFactor;
 		aabb.height += m_leafFactor;
 		node->pair.value = aabb;
-		
+
+		auto getCost = [&](Node*& node, Node* target, const AABB& aabb)
+		{
+			if (node->isLeaf())
+				return std::make_tuple(node, AABB::unite(node->pair.value, aabb).surfaceArea());
+
+			Node* lowCostNode = nullptr;
+			real costValue = Constant::Max;
+			for (auto const& [key, val] : m_leaves)
+			{
+				assert(val != nullptr);
+				if(val == target)
+					continue;
+				real cost = 0;
+				totalCost(val, aabb, cost);
+				if (costValue > cost)
+				{
+					costValue = cost;
+					lowCostNode = val;
+				}
+			}
+
+			return std::make_tuple(lowCostNode, costValue);
+		};
+
+		if (m_root == nullptr)
+		{
+			m_root = node;
+			return;
+		}
+
+		if (m_root->isLeaf() && m_root->isRoot())
+		{
+			merge(m_root, node);
+			update(m_root);
+			return;
+		}
+
+		if (m_root->isRoot())
+		{
+			auto [leftTarget, leftLowestCost] = getCost(m_root->left, node, aabb);
+			auto [rightTarget, rightLowestCost] = getCost(m_root->right, node, aabb);
+			
+			if (leftLowestCost < rightLowestCost)
+				merge(leftTarget, node);
+			else
+				merge(rightTarget, node);
+			balance(m_root);
+
+			for (auto const& [key, val] : m_leaves)
+			{
+				if (val == node)
+					continue;
+				update(val);
+			}
+		}
 	}
 
 	void DBVH::insert(Body* body)
@@ -84,18 +141,12 @@ namespace Physics2D
 		{
 			auto [leftTarget, leftLowestCost] = getCost(m_root->left, pair.value);
 			auto [rightTarget, rightLowestCost] = getCost(m_root->right, pair.value);
-			Node* target1 = nullptr;
-			Node* target2 = nullptr;
+			
 			if (leftLowestCost < rightLowestCost)
-			{
-				target1 = merge(leftTarget, pair);
-				target2 = leftTarget;
-			}
+				merge(leftTarget, pair);
 			else
-			{
-				target1 = merge(rightTarget, pair);
-				target2 = rightTarget;
-			}
+				merge(rightTarget, pair);
+			
 			balance(m_root);
 
 			for (auto const& [key, val] : m_leaves)
@@ -109,8 +160,8 @@ namespace Physics2D
 		AABB thin = AABB::fromBody(body, 1.2);
 		if(!thin.isSubset(m_leaves[body]->pair.value))
 		{
-			erase(body);
-			insert(body);
+			Node* node = extract(body);
+			insert(node);
 		}
 	}
 	DBVH::Node* DBVH::extract(Body* body)
@@ -182,6 +233,23 @@ namespace Physics2D
 		newNode->parent = node;
 
 		return newNode;
+	}
+
+	void DBVH::merge(Node* target, Node* source)
+	{
+		assert(target != nullptr && source != nullptr);
+		assert(source->isLeaf());
+		
+		Node* copy = new Node(target->pair);
+		if (target->isLeaf())
+			m_leaves[target->pair.body] = copy;
+		target->pair.body = nullptr;
+		target->pair.value = AABB::unite(copy->pair.value, source->pair.value);
+		target->left = copy;
+		target->right = source;
+		copy->parent = target;
+		source->parent = target;
+		
 	}
 
 	void DBVH::update(Node* parent)

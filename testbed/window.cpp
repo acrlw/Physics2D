@@ -14,7 +14,7 @@ namespace Physics2D
 		this->resize(1920, 1080);
 		this->setMouseTracking(true);
 
-		rectangle.set(1, 1);
+		rectangle.set(0.2, 0.2);
 		land.set(18, 0.2);
 		polygon.append({{3, 0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3}, {2, -3}, {3, 0}});
 		polygon.scale(0.3);
@@ -54,8 +54,8 @@ namespace Physics2D
 		//createBoxesAndGround(12);
 		//testPendulum();
 		//testCollision();
-		 testJoint();
-		//testBroadphase();
+		 //testJoint();
+		testBroadphase();
 
 		camera.setViewport({ {0, 0}, {1920, 1080} });
 		camera.setAabbVisible(false);
@@ -255,34 +255,34 @@ namespace Physics2D
 		QPainter painter(this);
 		//prepare for background, origin and clipping boundary
 		camera.render(&painter);
-		QPen bodyA(QColor(255, 0, 0, 100), 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		QPen bodyB(QColor(0, 0, 255, 100), 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		QPen pointA(QColor(255, 0, 0, 255), 10, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		QPen pointB(QColor(0, 0, 255, 255), 10, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		
-		auto list = dbvh.generatePairs();
-		for (auto& pair : list)
-		{
-			Collision result = Detector::detect(pair.first, pair.second);
-			if (result.isColliding)
-			{
-				ShapePrimitive primitive;
-				primitive.shape = result.bodyA->shape();
-				primitive.rotation = result.bodyA->angle();
-				primitive.transform = result.bodyA->position();
-				RendererQtImpl::renderShape(&painter, &camera, primitive, bodyA);
-				
-				primitive.shape = result.bodyB->shape();
-				primitive.rotation = result.bodyB->angle();
-				primitive.transform = result.bodyB->position();
-				RendererQtImpl::renderShape(&painter, &camera, primitive, bodyB);
-				for(auto& pair: result.contactList)
-				{
-					RendererQtImpl::renderPoint(&painter, &camera, pair.pointA, pointA);
-					RendererQtImpl::renderPoint(&painter, &camera, pair.pointB, pointB);
-				}
-			}
-		}
+		//QPen bodyA(QColor(255, 0, 0, 100), 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		//QPen bodyB(QColor(0, 0, 255, 100), 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		//QPen pointA(QColor(255, 0, 0, 255), 10, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		//QPen pointB(QColor(0, 0, 255, 255), 10, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		//
+		//auto list = dbvh.generatePairs();
+		//for (auto& pair : list)
+		//{
+		//	Collision result = Detector::detect(pair.first, pair.second);
+		//	if (result.isColliding)
+		//	{
+		//		ShapePrimitive primitive;
+		//		primitive.shape = result.bodyA->shape();
+		//		primitive.rotation = result.bodyA->angle();
+		//		primitive.transform = result.bodyA->position();
+		//		RendererQtImpl::renderShape(&painter, &camera, primitive, bodyA);
+		//		
+		//		primitive.shape = result.bodyB->shape();
+		//		primitive.rotation = result.bodyB->angle();
+		//		primitive.transform = result.bodyB->position();
+		//		RendererQtImpl::renderShape(&painter, &camera, primitive, bodyB);
+		//		for(auto& pair: result.contactList)
+		//		{
+		//			RendererQtImpl::renderPoint(&painter, &camera, pair.pointA, pointA);
+		//			RendererQtImpl::renderPoint(&painter, &camera, pair.pointB, pointB);
+		//		}
+		//	}
+		//}
 	}
 
 	void Window::resizeEvent(QResizeEvent* e)
