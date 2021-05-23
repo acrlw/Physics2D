@@ -26,8 +26,8 @@ cmake CMakeLists.txt
 - Rigid Body Dynamics Simulation
 - Axis-Aligned Bounding Box
 - Dynamic Bounding Volume Tree
-  - Tree Structure
-  - Dynamic Array Structure
+  - Dynamic Tree
+  - Dynamic Array
 - Basic Debug Drawing
   - Rigid Body
   - AABB
