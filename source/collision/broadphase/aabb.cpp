@@ -11,6 +11,11 @@ namespace Physics2D
 		return collide(*this, other);
 	}
 
+	void AABB::expand(const real& factor)
+	{
+		expand(*this, factor);
+	}
+
 	void AABB::scale(const real& factor)
 	{
 		scale(*this, factor);
@@ -230,5 +235,10 @@ namespace Physics2D
 		const real b_high_y = (b.height * 0.5) + b.position.y;
 
 		return a_high_x >= b_high_x && b_low_x >= a_low_x && a_high_y >= b_high_y && b_low_y >= a_low_y;
+	}
+	void AABB::expand(AABB& aabb, const real& factor)
+	{
+		aabb.width += factor;
+		aabb.height += factor;
 	}
 }

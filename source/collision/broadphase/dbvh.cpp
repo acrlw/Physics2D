@@ -96,9 +96,12 @@ namespace Physics2D
 
 	void DBVH::insert(Body* body)
 	{
+		if (auto iter = m_leaves.find(body); 
+			iter != m_leaves.end())
+			return;
+		
 		AABB aabb = AABB::fromBody(body);
-		aabb.width += m_leafFactor;
-		aabb.height += m_leafFactor;
+		aabb.expand(m_leafFactor);
 		Pair pair(aabb, body);
 		
 		auto getCost = [&](Node*& node, const AABB& aabb)

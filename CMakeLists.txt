@@ -77,7 +77,7 @@ add_executable(physics-engine
     "include/dynamics/joint/point.h"
     "include/dynamics/joint/distance.h"
     "include/dynamics/joint/angle.h"
-    "include/dynamics/joint/joints.h"    "include/dynamics/constraint/contact.h"  "include/utils/camera.h" "source/utils/camera.cpp")
+    "include/dynamics/joint/joints.h"    "include/dynamics/constraint/contact.h"  "include/utils/camera.h" "source/utils/camera.cpp" "include/collision/broadphase/tree.h" "source/collision/broadphase/tree.cpp")
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 find_package(fmt CONFIG REQUIRED)

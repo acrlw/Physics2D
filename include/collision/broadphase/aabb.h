@@ -15,6 +15,7 @@ namespace Physics2D
 		real height = 0;
 		Vector2 position;
 		bool collide(const AABB& other) const;
+		void expand(const real& factor);
 		void scale(const real& factor);
 		void clear();
 		AABB& unite(const AABB& other);
@@ -57,6 +58,8 @@ namespace Physics2D
 		/// <param name="b"></param>
 		/// <returns></returns>
 		static bool isSubset(const AABB& a, const AABB& b);
+
+		static void expand(AABB& aabb, const real& factor = 0.5);
 		
 	};
 
