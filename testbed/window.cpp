@@ -14,7 +14,7 @@ namespace Physics2D
 		this->resize(1920, 1080);
 		this->setMouseTracking(true);
 
-		rectangle.set(0.5, 0.5);
+		rectangle.set(0.1, 0.1);
 		land.set(18, 0.2);
 		polygon.append({{3, 0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3}, {2, -3}, {3, 0}});
 		polygon.scale(0.3);
@@ -51,7 +51,7 @@ namespace Physics2D
 		m_world.setAirFrictionCoefficient(0.8f);
 		m_world.setAngularVelocityDamping(0.8f);
 		//createStackBox(6, 1.1, 1.1);
-		//createBoxesAndGround(12);
+		//createBoxesAndGround(6);
 		//testPendulum();
 		//testCollision();
 		//testJoint();
@@ -62,6 +62,9 @@ namespace Physics2D
 		camera.setWorld(&m_world);
 		camera.setDbvh(&dbvh);
 		camera.setTree(&tree);
+		camera.setDbvhVisible(true);
+		camera.setTreeVisible(false);
+		camera.setAxisVisible(false);
 		connect(&m_timer, &QTimer::timeout, this, &Window::process);
 		m_timer.setInterval(15);
 		m_timer.start();
@@ -173,9 +176,9 @@ namespace Physics2D
 		mousePrim.bodyA = rect;
 		MouseJoint* j = m_world.createJoint(mousePrim);
 
-		tree.insert(rect);
-		tree.insert(rect2);
-		tree.insert(rect3);
+		dbvh.insert(rect);
+		dbvh.insert(rect2);
+		dbvh.insert(rect3);
 		camera.setTargetBody(rect);
 
 		//rect->velocity() += {10, 0};
@@ -446,9 +449,9 @@ namespace Physics2D
 		for (real j = 0; j < count; j++)
 		{
 			Body* body = m_world.createBody();
-			body->position().set({1, -6 + j * 1.2});
+			body->position().set({1 + j * 1.2, -6 + j * 1.2});
 			body->setShape(rectangle_ptr);
-			body->angle() = 0;
+			body->angle() = 45;
 			body->setMass(400);
 			body->setType(Body::BodyType::Static);
 			dbvh.insert(body);

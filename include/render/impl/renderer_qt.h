@@ -185,8 +185,8 @@ namespace Physics2D
 			QColor colorY("#FFEB3B");
 			QPen xAxis(colorX, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 			QPen yAxis(colorY, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-			Vector2 xP(0.5, 0);
-			Vector2 yP(0, 0.5);
+			Vector2 xP(0.1, 0);
+			Vector2 yP(0, 0.1);
 			xP = Matrix2x2(shape.rotation).multiply(xP) + shape.transform;
 			yP = Matrix2x2(shape.rotation).multiply(yP) + shape.transform;
 			renderLine(painter, camera, shape.transform, xP, xAxis);

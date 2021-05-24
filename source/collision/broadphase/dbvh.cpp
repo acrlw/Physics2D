@@ -135,10 +135,9 @@ namespace Physics2D
 			
 			balance(m_root);
 
-			for (auto const& [key, val] : m_leaves)
-			{
-				update(val);
-			}
+			update(target);
+			//for (auto const& [key, val] : m_leaves)
+			//	update(val);
 		}
 	}
 	void DBVH::update(Body* body)
@@ -193,6 +192,7 @@ namespace Physics2D
 		Node* child = moveup(parent);
 		
 		balance(child->parent);
+		update(child->parent);
 		return source;
 	}
 	void DBVH::erase(Body* body)
@@ -206,6 +206,13 @@ namespace Physics2D
 		target->pair.aabb.clear();
 		delete target;
 		m_leaves.erase(body);
+	}
+	DBVH::Node* DBVH::raycast(const Vector2& start, const Vector2& direction)
+	{
+		if (m_root == nullptr)
+			return nullptr;
+
+		
 	}
 	DBVH::Node* DBVH::merge(Node* node, const Pair& pair)
 	{

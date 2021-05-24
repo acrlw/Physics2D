@@ -231,6 +231,10 @@ namespace Physics2D
 		aabb.width += factor;
 		aabb.height += factor;
 	}
+	std::optional<Vector2> AABB::raycast(const AABB& aabb, const Vector2& start, const Vector2& direction)
+	{
+		return std::optional<Vector2>();
+	}
 	void Pair::clear()
 	{
 		body = nullptr;

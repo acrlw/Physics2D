@@ -29,7 +29,7 @@ namespace Physics2D
 			void update(Body* body);
 			Node* extract(Body* body);
 			void erase(Body* body);
-			
+			Node* raycast(const Vector2& start, const Vector2& direction);
 			Node* root()const;
 			std::vector<std::pair<Body*, Body*>> generatePairs();
 

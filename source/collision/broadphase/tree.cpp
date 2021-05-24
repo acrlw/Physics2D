@@ -131,43 +131,6 @@ namespace Physics2D
 
 	void Tree::balance(int targetIndex)
 	{
-		if (targetIndex < 0)
-			return;
-
-		return;
-		Node& target = m_tree[targetIndex];
-		Node& leftChild = m_tree[target.left];
-		Node& rightChild = m_tree[target.right];
-		const int leftHeight = height(target.left);
-		const int rightHeight = height(target.right);
-
-		auto LL = [&](int index)
-		{
-
-		};
-		auto RR = [&](int index)
-		{
-
-		};
-		if (leftHeight > rightHeight) //left unbalance
-		{
-			const int leftLeftHeight = height(leftChild.left);
-			const int leftRightHeight = height(leftChild.right);
-			if (leftLeftHeight < leftRightHeight) //LR case
-				RR(leftChild.right);
-			LL(target.left);
-		}
-		else //right unbalance
-		{
-			const int rightRightHeight = height(rightChild.right);
-			const int rightLeftHeight = height(rightChild.left);
-			if (rightRightHeight < rightLeftHeight) //RL case
-				LL(rightChild.left);
-			RR(target.right);
-		}
-		balance(target.left);
-		balance(target.right);
-		balance(target.parent);
 		
 	}
 	int Tree::level()
@@ -182,7 +145,6 @@ namespace Physics2D
 	}
 	void Tree::expand(int levels)
 	{
-		//expand tree 'levels' level
 		if(m_tree.empty())
 		{
 			m_tree.emplace_back(Node(0));

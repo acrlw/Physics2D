@@ -22,6 +22,7 @@ namespace Physics2D
 		real volume()const;
 		bool isSubset(const AABB& other)const;
 		bool isEmpty()const;
+		std::optional<Vector2> raycast(const Vector2& start, const Vector2& direction)const;
 		/// <summary>
 		/// Create AABB from shape.
 		/// </summary>
@@ -53,6 +54,8 @@ namespace Physics2D
 		static bool isSubset(const AABB& a, const AABB& b);
 
 		static void expand(AABB& aabb, const real& factor = 0.0);
+
+		static std::optional<Vector2> raycast(const AABB& aabb, const Vector2& start, const Vector2& direction);
 		
 	};
 
@@ -67,6 +70,10 @@ namespace Physics2D
 	inline bool AABB::isEmpty() const
 	{
 		return realEqual(width, 0) && realEqual(height, 0) && position.fuzzyEqual({ 0, 0 });
+	}
+	inline std::optional<Vector2> AABB::raycast(const Vector2& start, const Vector2& direction) const
+	{
+		return raycast(*this, start, direction);
 	}
 }
 #endif
