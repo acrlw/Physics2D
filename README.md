@@ -61,5 +61,7 @@ cmake CMakeLists.txt
   - Weld
   - Distance
 - Non-Fit Polygon
+- Finite Element Method
+- Mass-Spring System
 - Continuous Collision Detection
 - Test Demo
