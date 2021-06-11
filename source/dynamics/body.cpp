@@ -211,4 +211,10 @@ namespace Physics2D {
 			m_invInertia = !realEqual(m_inertia, 0) ? 1.0 / m_inertia : 0;
     }
 
+    void Body::PhysicsAttribute::step(const real& dt)
+    {
+        position += velocity * dt;
+        angle += angularVelocity * dt;
+    }
+
 }

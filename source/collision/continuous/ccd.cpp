@@ -42,10 +42,9 @@ namespace Physics2D
 		body->setPhysicsAttribute(start);
 		return std::make_tuple(trajectory, result);
 	}
-	std::optional<real> CCD::findBroadphaseRoot(Body* body1, Body* body2,const BroadphaseTrajectory& trajectory1, const BroadphaseTrajectory& trajectory2, const real& dt)
+	std::optional<size_t> CCD::findBroadphaseRoot(Body* body1, const BroadphaseTrajectory& trajectory1, Body* body2, const BroadphaseTrajectory& trajectory2, const real& dt)
 	{
-		AABBShot tNot1, tNot2;
-		AABBShot tOverlap1, tOverlap2;
+		assert(body1 != nullptr && body2 != nullptr);
 		bool isBody1CCD = trajectory1.size() > 2;
 		bool isBody2CCD = trajectory2.size() > 2;
 		if (isBody1CCD && isBody2CCD)
@@ -54,11 +53,21 @@ namespace Physics2D
 			AABB traj2 = AABB::unite(trajectory2[0].aabb, trajectory2[trajectory2.size() - 1].aabb);
 			if (!traj1.collide(traj2))
 				return std::nullopt;
-
-			for (auto i = 0; i < trajectory1.size(); i++)
+			size_t length = trajectory1.size() > trajectory2.size() ? trajectory2.size() : trajectory1.size();
+			size_t targetIndex = -1;
+			for (auto i = 0; i < length; i++)
 			{
-
+				AABB temp1 = AABB::unite(trajectory1[i].aabb, trajectory1[i + 1].aabb);
+				AABB temp2 = AABB::unite(trajectory2[i].aabb, trajectory2[i + 1].aabb);
+				if (temp1.collide(temp2))
+				{
+					targetIndex = i;
+					break;
+				}
 			}
+
+			return targetIndex == -1 ? std::nullopt : 
+				std::optional(targetIndex);
 		}
 		else if (!isBody1CCD || !isBody2CCD)
 		{
@@ -90,27 +99,105 @@ namespace Physics2D
 					break;
 				}
 			}
-			if (targetIndex == -1)
-				return std::nullopt;
-
-			bool isForwardCollide = trajDynamic->at(targetIndex).aabb.collide(traj1);
-			bool isBackwardCollide = trajDynamic->at(targetIndex + 1).aabb.collide(traj1);
-			if (!isForwardCollide && isBackwardCollide)
-			{
-
-			}
-			if (isForwardCollide && isBackwardCollide)
-			{
-
-			}
-
-		}
-		
+			return targetIndex == -1 ? std::nullopt :
+				std::optional(targetIndex);
+		}		
 		return std::nullopt;
 		
 	}
-	void CCD::findNarrowphaseRoot(Body* body1, Body* body2)
+	std::optional<real> CCD::findNarrowphaseRoot(Body* body1, const BroadphaseTrajectory& trajectory1, Body* body2, const BroadphaseTrajectory& trajectory2, const size_t& index, const real& dt)
 	{
+		assert(body1 != nullptr && body2 != nullptr);
+		bool isBody1CCD = trajectory1.size() > 2;
+		bool isBody2CCD = trajectory2.size() > 2;
+		if (isBody1CCD && isBody2CCD)
+		{
+			const size_t startIterTime = trajectory1[index].time;
+			const Body::PhysicsAttribute origin1 = body1->physicsAttribute();
+			const Body::PhysicsAttribute origin2 = body2->physicsAttribute();
+			body1->setPhysicsAttribute(trajectory1[index].attribute);
+			body2->setPhysicsAttribute(trajectory2[index].attribute);
+
+			const real slice = 40.0;
+			real step = dt / slice;
+			real lastTimestep = startIterTime;
+			real index = 0;
+			while (true)
+			{
+				body1->stepPosition(step);
+				body2->stepPosition(step);
+				auto result = Detector::detect(body1, body2);
+				if (!result.isColliding)
+					continue;
+
+			}
+		}
+		else if (!isBody1CCD || !isBody2CCD)
+		{
+			Body* staticBody = nullptr;
+			Body* dynamicBody = nullptr;
+			Body::PhysicsAttribute origin1 = body1->physicsAttribute();
+			Body::PhysicsAttribute origin2 = body2->physicsAttribute();
+			Body::PhysicsAttribute startDynamicAttribute;
+			real startTimestep = 0;
+			real endTimestep = 0;
+			if (isBody1CCD)
+			{
+				dynamicBody = body1;
+				body1->setPhysicsAttribute(trajectory1[index].attribute);
+				startDynamicAttribute = trajectory1[index].attribute;
+
+				startTimestep = trajectory1[index].time;
+				endTimestep = trajectory1[index + 1].time;
+			}
+			else if (isBody2CCD)
+			{
+				dynamicBody = body2;
+				body2->setPhysicsAttribute(trajectory2[index].attribute);
+				startDynamicAttribute = trajectory2[index].attribute;
+
+				startTimestep = trajectory2[index].time;
+				endTimestep = trajectory2[index + 1].time;
+			}
+
+			const real slice = 100.0;
+			real step = dt / slice;
+			real steps = 0;
+			real epsilon = 0.01;
+			Body::PhysicsAttribute lastAttribute;
+			
+			while (true)
+			{
+				lastAttribute = dynamicBody->physicsAttribute();
+				dynamicBody->stepPosition(step);
+				steps += step;
+				auto result = Detector::detect(body1, body2);
+				if (result.isColliding)
+				{
+					if (std::abs(result.penetration) < epsilon)
+					{
+						body1->setPhysicsAttribute(origin1);
+						body2->setPhysicsAttribute(origin2);
+						return std::optional(startTimestep + steps);
+					}
+
+					steps -= step;
+					dynamicBody->setPhysicsAttribute(lastAttribute);
+					step /= 2.0;
+					continue;
+				}
+				if (startTimestep + steps > endTimestep)
+				{
+					steps = 0;
+					step /= 2.0;
+					dynamicBody->setPhysicsAttribute(startDynamicAttribute);
+					continue;
+				}
+			}
+
+		}
+
+		return std::nullopt;
 	}
 	void CCD::queryNodes(DBVH::Node* node, const AABB& aabb, std::vector<DBVH::Node*>& nodes)
 	{

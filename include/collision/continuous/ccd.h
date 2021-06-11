@@ -1,6 +1,6 @@
 #ifndef PHYSICS2D_COLLISION_CCD_H
 #define PHYSICS2D_COLLISION_CCD_H
-#include "include/collision/algorithm/gjk.h"
+#include "include/collision/detector.h"
 #include "include/collision/broadphase/dbvh.h"
 #include "include/dynamics/body.h"
 namespace Physics2D
@@ -30,8 +30,8 @@ namespace Physics2D
 		
 		static std::tuple<bool, CCD::BroadphaseTrajectory> queryLeaf(DBVH::Node* root, Body* body, const real& dt);
 		static std::tuple<std::vector<AABBShot>, AABB> buildTrajectoryAABB(Body* body, const real& dt);
-		static std::optional<real> findBroadphaseRoot(Body* body1, Body* body2, const BroadphaseTrajectory& trajectory1, const BroadphaseTrajectory& trajectory2, const real& dt);
-		static void findNarrowphaseRoot(Body* body1, Body* body2);
+		static std::optional<size_t> findBroadphaseRoot(Body* body1, const BroadphaseTrajectory& trajectory1, Body* body2, const BroadphaseTrajectory& trajectory2, const real& dt);
+		static std::optional<real> findNarrowphaseRoot(Body* body1, const BroadphaseTrajectory& trajectory1, Body* body2, const BroadphaseTrajectory& trajectory2, const size_t& index, const real& dt);
 	private:
 		
 		static void queryNodes(DBVH::Node* node, const AABB& aabb, std::vector<DBVH::Node*>& nodes);

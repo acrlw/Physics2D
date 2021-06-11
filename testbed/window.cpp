@@ -14,10 +14,10 @@ namespace Physics2D
 		this->resize(1920, 1080);
 		this->setMouseTracking(true);
 
-		rectangle.set(0.2, 0.1);
+		rectangle.set(0.3, 0.1);
 		land.set(18, 0.2);
 		polygon.append({{3, 0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3}, {2, -3}, {3, 0}});
-		polygon.scale(0.3);
+		polygon.scale(0.15);
 		ellipse.set({-5, 4}, {5, -4});
 		ellipse.scale(0.1);
 		circle.setRadius(0.5);
@@ -65,7 +65,7 @@ namespace Physics2D
 		camera.setAabbVisible(true);
 		camera.setDbvhVisible(false);
 		camera.setTreeVisible(false);
-		camera.setAxisVisible(false);
+		camera.setAxisVisible(true);
 		connect(&m_timer, &QTimer::timeout, this, &Window::process);
 		m_timer.setInterval(15);
 		m_timer.start();
@@ -97,23 +97,23 @@ namespace Physics2D
 	void Window::testCCD()
 	{
 		rect = m_world.createBody();
-		rect->setShape(land_ptr);
-		rect->position().set({ 8, 0 });
+		rect->setShape(polygon_ptr);
+		rect->position().set({ 8, -6 });
 		rect->setMass(Constant::Max);
 		rect->angle() = 90;
 		rect->setType(Body::BodyType::Dynamic);
 
 		rect2 = m_world.createBody();
 		rect2->setShape(rectangle_ptr);
-		rect2->position().set({ -9, -6 });
+		rect2->position().set({ -5.5, -6 });
 		rect2->angle() = 90;
 		rect2->setMass(200);
 		rect2->setType(Body::BodyType::Bullet);
-		rect2->velocity() = { 1200, 0 };
-		rect2->angularVelocity() = 8640;
+		rect2->velocity() = { 15000, 0 };
+		rect2->angularVelocity() = 80000;
 
 		rect3 = m_world.createBody();
-		rect3->setShape(rectangle_ptr);
+		rect3->setShape(polygon_ptr);
 		rect3->position().set({ 0, 0 });
 		rect3->angle() = 180;
 		rect3->setMass(200);
@@ -136,37 +136,10 @@ namespace Physics2D
 		const real dt = 1.0 / 60.0;
 		const real inv_dt = 60;
 
-
-		//if (rect->position().x > 6.0)
-		//	rect->forces() += {-60, 0};
-		//else if (rect->position().x < -6.0)
-		//	rect->forces() += {60, 0};
 		
 		m_world.stepVelocity(dt);
-
-
-
-
-		//DistanceConstraintPrimitive primitive;
-		//primitive.distance = 6;
-		//primitive.sourcePoint.set(0.0, 0.0);
-		//primitive.targetPoint.set(2.0, 2.0);
-		//primitive.source = rect;
-		//primitive.stiffness = 1.0;
-		//DistanceConstraintSolver sol;
-		//sol.add(primitive);
-		//sol.solve(dt);
-		
-		//for(auto& joint: m_world.jointList())
-		//	joint->prepare(dt);
-
-		//for (auto& joint : m_world.jointList())
-		//	fmt::print("impulse:{}\n", joint->solveVelocity(dt));
-
 		m_world.stepPosition(dt);
 		
-		//for(auto& body: m_world.bodyList())
-		//	dbvh.update(body.get());
 		
 		for(auto& body: m_world.bodyList())
 			dbvh.update(body.get());
@@ -280,7 +253,7 @@ namespace Physics2D
 		rect->setShape(circle_ptr);
 		rect->position().set({0, 4});
 		rect->angle() = 0;
-		rect->setMass(DBL_MAX);
+		rect->setMass(Constant::Max);
 		rect->setType(Body::BodyType::Kinematic);
 
 		rect2 = m_world.createBody();
@@ -297,44 +270,37 @@ namespace Physics2D
 		//prepare for background, origin and clipping boundary
 		camera.render(&painter);
 		real dt = 1.0 / 60;
-		auto [trajectory, aabb] = CCD::buildTrajectoryAABB(rect2, dt);
+		auto [trajectory1, aabb1] = CCD::buildTrajectoryAABB(rect, dt);
+		auto [trajectory2, aabb2] = CCD::buildTrajectoryAABB(rect2, dt);
 		QPen pen(Qt::cyan, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		for(auto& elem: trajectory)
+		QPen pen2(Qt::red, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		for(auto& elem: trajectory2)
 		{
 			RendererQtImpl::renderAABB(&painter, &camera, elem.aabb, pen);
-			
 		}
-		RendererQtImpl::renderAABB(&painter, &camera, aabb, pen);
+		RendererQtImpl::renderAABB(&painter, &camera, aabb2, pen);
+
+		auto result = CCD::findBroadphaseRoot(rect, trajectory1, rect2, trajectory2, dt);
+		if (result.has_value())
+		{
+			//RendererQtImpl::renderAABB(&painter, &camera, trajectory2[result.value()].aabb, pen2);
+			//RendererQtImpl::renderAABB(&painter, &camera, trajectory2[result.value() + 1].aabb, pen2);
+
+			auto toi = CCD::findNarrowphaseRoot(rect, trajectory1, rect2, trajectory2, result.value(), dt);
+			if (toi.has_value())
+			{
+				fmt::print("toi:{}\n", toi.value());
+				Body::PhysicsAttribute origin = rect2->physicsAttribute();
+				rect2->stepPosition(toi.value());
+				ShapePrimitive primitive;
+				primitive.shape = rect2->shape();
+				primitive.rotation = rect2->angle();
+				primitive.transform = rect2->position();
+				RendererQtImpl::renderShape(&painter, &camera, primitive, pen2);
+				rect2->setPhysicsAttribute(origin);
+			}
+		}
 		
-		//AABB aabb = CCD::buildTrajectoryAABB(rect2, dt);
-		//QPen bodyA(QColor(255, 0, 0, 100), 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		//QPen bodyB(QColor(0, 0, 255, 100), 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		//QPen pointA(QColor(255, 0, 0, 255), 10, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		//QPen pointB(QColor(0, 0, 255, 255), 10, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		//
-		//auto list = dbvh.generatePairs();
-		//for (auto& pair : list)
-		//{
-		//	Collision result = Detector::detect(pair.first, pair.second);
-		//	if (result.isColliding)
-		//	{
-		//		ShapePrimitive primitive;
-		//		primitive.shape = result.bodyA->shape();
-		//		primitive.rotation = result.bodyA->angle();
-		//		primitive.transform = result.bodyA->position();
-		//		RendererQtImpl::renderShape(&painter, &camera, primitive, bodyA);
-		//		
-		//		primitive.shape = result.bodyB->shape();
-		//		primitive.rotation = result.bodyB->angle();
-		//		primitive.transform = result.bodyB->position();
-		//		RendererQtImpl::renderShape(&painter, &camera, primitive, bodyB);
-		//		for(auto& pair: result.contactList)
-		//		{
-		//			RendererQtImpl::renderPoint(&painter, &camera, pair.pointA, pointA);
-		//			RendererQtImpl::renderPoint(&painter, &camera, pair.pointB, pointB);
-		//		}
-		//	}
-		//}
 	}
 
 	void Window::resizeEvent(QResizeEvent* e)

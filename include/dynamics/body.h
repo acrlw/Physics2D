@@ -25,6 +25,7 @@ namespace Physics2D
                 Vector2 velocity;
                 real angle = 0;
                 real angularVelocity = 0;
+                void step(const real& dt);
             };
             Body() = default;
             Vector2& position();

@@ -31,28 +31,28 @@ namespace Physics2D
 
 
 		
-		auto [direction, simplex] = MPR::discover(shapeA, shapeB);
-		auto [isColliding, portal] = MPR::refine(shapeA, shapeB, simplex, direction);
-		if (shapeA.transform.fuzzyEqual(shapeB.transform) && !isColliding)
-			isColliding = simplex.containOrigin(true);
-
-		result.isColliding = isColliding;
-		
-		//auto [isColliding, simplex] = GJK::gjk(shapeA, shapeB);
-		//
-		//if(shapeA.transform.fuzzyEqual(shapeB.transform) && !isColliding)
+		//auto [direction, simplex] = MPR::discover(shapeA, shapeB);
+		//auto [isColliding, portal] = MPR::refine(shapeA, shapeB, simplex, direction);
+		//if (shapeA.transform.fuzzyEqual(shapeB.transform) && !isColliding)
 		//	isColliding = simplex.containOrigin(true);
-		//
+
 		//result.isColliding = isColliding;
+		
+		auto [isColliding, simplex] = GJK::gjk(shapeA, shapeB);
+		
+		if(shapeA.transform.fuzzyEqual(shapeB.transform) && !isColliding)
+			isColliding = simplex.containOrigin(true);
+		
+		result.isColliding = isColliding;
 		
 		if (isColliding)
 		{
 
-			portal.vertices.erase(portal.vertices.begin());
-			PenetrationSource source = GJK::dumpSource(portal);
+			//portal.vertices.erase(portal.vertices.begin());
+			//PenetrationSource source = GJK::dumpSource(portal);
 			
-			//simplex = GJK::epa(shapeA, shapeB, simplex);
-			//PenetrationSource source = GJK::dumpSource(simplex);
+			simplex = GJK::epa(shapeA, shapeB, simplex);
+			PenetrationSource source = GJK::dumpSource(simplex);
 			
 
 			const auto info = GJK::dumpInfo(source);
