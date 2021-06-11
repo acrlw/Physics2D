@@ -17,6 +17,7 @@ namespace Physics2D::Utils
         struct Viewport
         {
             Viewport() = default;
+            Viewport(const Vector2& top_left, const Vector2& bottom_right) : topLeft(top_left), bottomRight(bottom_right){}
             Vector2 topLeft = {0, 0};
             Vector2 bottomRight= {800, 600};
             real width();
@@ -88,6 +89,10 @@ namespace Physics2D::Utils
 		
 		real m_meterToPixel = 50.0;
 		real m_pixelToMeter = 0.02;
+
+        real m_targetMeterToPixel = 50.0;
+        real m_targetPixelToMeter = 0.02;
+		
         Vector2 m_transform;
         Vector2 m_origin;
         Viewport m_viewport;

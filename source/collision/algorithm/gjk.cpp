@@ -28,6 +28,7 @@ namespace Physics2D
 					(a >= 0 && b >= 0 && c >= 0))
 					return true;
 				return false;
+
 			}
 		case 2:
 			{
@@ -37,6 +38,7 @@ namespace Physics2D
 					Vector2 ob = simplex.vertices[1].result * -1;
 					return GeometryAlgorithm2D::isPointOnSegment(oa, ob, { 0, 0 });
 				}
+
 			}
 		default:
 			return false;
@@ -179,7 +181,7 @@ namespace Physics2D
 
 	std::tuple<size_t, size_t> GJK::findEdgeClosestToOrigin(const Simplex& simplex)
 	{
-		real min_dist = INT_MAX;
+		real min_dist = Constant::Max;
 
 		size_t index1 = 0;
 		size_t index2 = 0;

@@ -14,7 +14,7 @@ namespace Physics2D
 		this->resize(1920, 1080);
 		this->setMouseTracking(true);
 
-		rectangle.set(0.1, 0.1);
+		rectangle.set(0.2, 0.1);
 		land.set(18, 0.2);
 		polygon.append({{3, 0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3}, {2, -3}, {3, 0}});
 		polygon.scale(0.3);
@@ -30,7 +30,7 @@ namespace Physics2D
 		ellipse_ptr = std::make_shared<Ellipse>(ellipse);
 		circle_ptr = std::make_shared<Circle>(circle);
 		edge_ptr = std::make_shared<Edge>(edge);
-
+		
 		distancePrim.minDistance = 1;
 		distancePrim.maxDistance = 1.5;
 		distancePrim.localPointA.set(0, 0);
@@ -55,19 +55,21 @@ namespace Physics2D
 		//testPendulum();
 		//testCollision();
 		//testJoint();
-		testBroadphase();
-
-		camera.setViewport({ {0, 0}, {1920, 1080} });
-		camera.setAabbVisible(false);
+		//testBroadphase();
+		testCCD();
+		Utils::Camera::Viewport viewport((0, 0), (1920, 1080));
+		camera.setViewport(viewport);
 		camera.setWorld(&m_world);
 		camera.setDbvh(&dbvh);
 		camera.setTree(&tree);
-		camera.setDbvhVisible(true);
+		camera.setAabbVisible(true);
+		camera.setDbvhVisible(false);
 		camera.setTreeVisible(false);
 		camera.setAxisVisible(false);
 		connect(&m_timer, &QTimer::timeout, this, &Window::process);
 		m_timer.setInterval(15);
 		m_timer.start();
+
 		
 	}
 
@@ -90,6 +92,37 @@ namespace Physics2D
 			
 			dbvh.insert(body);
 		}
+	}
+
+	void Window::testCCD()
+	{
+		rect = m_world.createBody();
+		rect->setShape(land_ptr);
+		rect->position().set({ 8, 0 });
+		rect->setMass(Constant::Max);
+		rect->angle() = 90;
+		rect->setType(Body::BodyType::Dynamic);
+
+		rect2 = m_world.createBody();
+		rect2->setShape(rectangle_ptr);
+		rect2->position().set({ -9, -6 });
+		rect2->angle() = 90;
+		rect2->setMass(200);
+		rect2->setType(Body::BodyType::Bullet);
+		rect2->velocity() = { 1200, 0 };
+		rect2->angularVelocity() = 8640;
+
+		rect3 = m_world.createBody();
+		rect3->setShape(rectangle_ptr);
+		rect3->position().set({ 0, 0 });
+		rect3->angle() = 180;
+		rect3->setMass(200);
+		rect3->setType(Body::BodyType::Dynamic);
+		//rect3->angularVelocity() = 360;
+		
+		dbvh.insert(rect);
+		dbvh.insert(rect2);
+		dbvh.insert(rect3);
 	}
 
 
@@ -137,6 +170,7 @@ namespace Physics2D
 		
 		for(auto& body: m_world.bodyList())
 			dbvh.update(body.get());
+
 		
 		repaint();
 	}
@@ -193,7 +227,7 @@ namespace Physics2D
 		ground->setMass(Constant::Max);
 		ground->setType(Body::BodyType::Static);
 
-		tree.insert(ground);
+		dbvh.insert(ground);
 		
 		rect = m_world.createBody();
 		rect->setShape(rectangle_ptr);
@@ -208,8 +242,8 @@ namespace Physics2D
 		rect2->angle() = 0;
 		rect2->setMass(200);
 		rect2->setType(Body::BodyType::Static);
-		tree.insert(rect2);
-		tree.insert(rect);
+		dbvh.insert(rect2);
+		dbvh.insert(rect);
 		//rect->velocity().set(0.5, 0);
 		//rect2->velocity().set(-0.5, 0);
 
@@ -262,6 +296,17 @@ namespace Physics2D
 		QPainter painter(this);
 		//prepare for background, origin and clipping boundary
 		camera.render(&painter);
+		real dt = 1.0 / 60;
+		auto [trajectory, aabb] = CCD::buildTrajectoryAABB(rect2, dt);
+		QPen pen(Qt::cyan, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		for(auto& elem: trajectory)
+		{
+			RendererQtImpl::renderAABB(&painter, &camera, elem.aabb, pen);
+			
+		}
+		RendererQtImpl::renderAABB(&painter, &camera, aabb, pen);
+		
+		//AABB aabb = CCD::buildTrajectoryAABB(rect2, dt);
 		//QPen bodyA(QColor(255, 0, 0, 100), 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 		//QPen bodyB(QColor(0, 0, 255, 100), 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 		//QPen pointA(QColor(255, 0, 0, 255), 10, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);

@@ -22,6 +22,7 @@ namespace Physics2D
 		real volume()const;
 		bool isSubset(const AABB& other)const;
 		bool isEmpty()const;
+		bool operator==(const AABB& other)const;
 		std::optional<Vector2> raycast(const Vector2& start, const Vector2& direction)const;
 		/// <summary>
 		/// Create AABB from shape.

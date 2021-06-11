@@ -20,6 +20,7 @@
 
 #include "include/collision/broadphase/tree.h"
 #include "include/utils/camera.h"
+#include "include/collision/continuous/ccd.h"
 
 namespace Physics2D
 {
@@ -53,6 +54,7 @@ namespace Physics2D
 		void testDistanceJoint();
 		void testPendulum();
 		void testBroadphase();
+		void testCCD();
 		World m_world;
 		Rectangle rectangle;
 		Rectangle land;

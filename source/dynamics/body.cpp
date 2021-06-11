@@ -121,6 +121,25 @@ namespace Physics2D {
         return m_invInertia;
     }
 
+    Body::PhysicsAttribute Body::physicsAttribute() const
+    {
+        return {m_position, m_velocity, m_angle, m_angularVelocity};
+    }
+
+    void Body::setPhysicsAttribute(const PhysicsAttribute& info)
+    {
+        m_position = info.position;
+        m_angle = info.angle;
+        m_velocity = info.velocity;
+        m_angularVelocity = info.angularVelocity;
+    }
+
+    void Body::stepPosition(const real& dt)
+    {
+        m_position += m_velocity * dt;
+        m_angle += m_angularVelocity * dt;
+    }
+
     void Body::applyImpulse(const Vector2& impulse, const Vector2& r)
     {
         m_velocity += m_invMass * impulse;

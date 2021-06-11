@@ -45,6 +45,12 @@ namespace Physics2D
 		return isSubset(other, *this);
 	}
 
+	bool AABB::operator==(const AABB& other) const
+	{
+		return position.fuzzyEqual(other.position) &&
+			realEqual(width, other.width) && realEqual(height, other.height);
+	}
+
 	AABB AABB::fromShape(const ShapePrimitive& shape, const real& factor)
 	{
 		AABB aabb;

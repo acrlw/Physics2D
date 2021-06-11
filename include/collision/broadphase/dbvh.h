@@ -32,8 +32,8 @@ namespace Physics2D
 			Node* raycast(const Vector2& start, const Vector2& direction);
 			Node* root()const;
 			std::vector<std::pair<Body*, Body*>> generatePairs();
-
 			std::map<Body*, Node*>& leaves();
+			
 		private:
 			void insert(Node* node);
 			void cleanUp(Node* node);

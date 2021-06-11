@@ -38,7 +38,8 @@ namespace Physics2D
 		const real Pi = 3.141592653589793238463;
 		const real ReciprocalOfPi = 0.3183098861837907;
 		const real GeometryEpsilon = 0.0001;
-		
+		const real MaxVelocity = 1000.0;
+		const real MaxAngularVelocity = 1000.0;
 
 	}
 }

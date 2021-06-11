@@ -18,6 +18,14 @@ namespace Physics2D
                 Dynamic,
                 Bullet
                 };
+
+            struct PhysicsAttribute
+            {
+                Vector2 position;
+                Vector2 velocity;
+                real angle = 0;
+                real angularVelocity = 0;
+            };
             Body() = default;
             Vector2& position();
 
@@ -54,10 +62,16 @@ namespace Physics2D
             real inverseMass()const;
             real inverseInertia()const;
 
+            PhysicsAttribute physicsAttribute()const;
+            void setPhysicsAttribute(const PhysicsAttribute& info);
+
+            void stepPosition(const real& dt);
+
             void applyImpulse(const Vector2& impulse, const Vector2& r);
             Vector2 toLocalPoint(const Vector2& point)const;
             Vector2 toWorldPoint(const Vector2& point)const;
             Vector2 toActualPoint(const Vector2& point)const;
+
         private:
             void calcInertia();
 

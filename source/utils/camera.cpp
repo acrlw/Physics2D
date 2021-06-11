@@ -10,13 +10,22 @@ namespace Physics2D::Utils
 		{
 			assert(painter != nullptr && m_world != nullptr);
 
+			real dt = 1.0 / 15.0;
+			
+			real scale = m_targetMeterToPixel - m_meterToPixel;
+			if (abs(scale) < 0.1 || m_meterToPixel < 1.0)
+				m_meterToPixel = m_targetMeterToPixel;
+			else
+				m_meterToPixel -= (1.0 - std::exp(dt)) * scale;
+			m_pixelToMeter = 1.0 / m_meterToPixel;
 
 			if (m_targetBody != nullptr)
 			{
-				real dt = 1.0 / 30.0;
 				Vector2 real_origin(m_origin.x + m_transform.x, m_origin.y - m_transform.y);
 				Vector2 target(-m_targetBody->position().x, m_targetBody->position().y);
 				target = worldToScreen(target) - real_origin;
+
+				Vector2 c = target - m_transform;
 				
 				//lerp
 				//if (c.lengthSquare() < 0.1)
@@ -25,13 +34,13 @@ namespace Physics2D::Utils
 				//	m_transform += c * 0.02;
 
 				//exp
-				Vector2 c = target - m_transform;
 				if (c.lengthSquare() < 0.1)
 					m_transform = target;
 				else
 					m_transform -= (1.0 - std::exp(dt)) * c;
 				
 				//real frames = m_easingTime * 60;
+				
 				
 			}
 
@@ -147,12 +156,12 @@ namespace Physics2D::Utils
 	{
 		if (meterToPixel < 1.0)
 		{
-			m_meterToPixel = 1.0;
-			m_pixelToMeter = 1.0;
+			m_targetMeterToPixel = 1.0;
+			m_targetPixelToMeter = 1.0;
 			return;
 		}
-		m_meterToPixel = meterToPixel;
-		m_pixelToMeter = 1.0 / meterToPixel;
+		m_targetMeterToPixel = meterToPixel;
+		m_targetPixelToMeter = 1.0 / meterToPixel;
 	}
 
 	Vector2 Camera::transform() const
