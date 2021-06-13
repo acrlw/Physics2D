@@ -2,7 +2,7 @@
 
 namespace Physics2D
 {
-	std::tuple<CCD::BroadphaseTrajectory, AABB> CCD::buildTrajectoryAABB(Body* body, const real& dt)
+	std::tuple<CCD::BroadphaseTrajectory, AABB> CCD::buildTrajectoryAABB(Body* body, const Vector2& target, const real& dt)
 	{
 		assert(body != nullptr);
 		//start-end
@@ -22,13 +22,13 @@ namespace Physics2D
 			return std::make_tuple(trajectory, result);
 		}
 		
-		
+
 		result.unite(startBox).unite(endBox);
 		
 		body->setPhysicsAttribute(start);
 		
 		//slice until result does not increase
-		real slice = 20.0;
+		real slice = 150.0;
 		real step = dt / slice;
 		//body->setPhysicsInfo(start);
 		for(real i = dt / slice;i <= dt;)
@@ -38,6 +38,8 @@ namespace Physics2D
 			trajectory.emplace_back(AABBShot{aabb, body->physicsAttribute(), i});
 			result.unite(aabb);
 			i += step;
+			if ((aabb.position - target).lengthSquare() >= (target - start.position).lengthSquare())
+				break;
 		}
 		body->setPhysicsAttribute(start);
 		return std::make_tuple(trajectory, result);
@@ -139,6 +141,8 @@ namespace Physics2D
 			Body::PhysicsAttribute origin1 = body1->physicsAttribute();
 			Body::PhysicsAttribute origin2 = body2->physicsAttribute();
 			Body::PhysicsAttribute startDynamicAttribute;
+			Body::PhysicsAttribute startStaticAttribute;
+			const BroadphaseTrajectory* dynamicTraj;
 			real startTimestep = 0;
 			real endTimestep = 0;
 			if (isBody1CCD)
@@ -146,18 +150,41 @@ namespace Physics2D
 				dynamicBody = body1;
 				body1->setPhysicsAttribute(trajectory1[index].attribute);
 				startDynamicAttribute = trajectory1[index].attribute;
-
+				dynamicTraj = &trajectory1;
 				startTimestep = trajectory1[index].time;
 				endTimestep = trajectory1[index + 1].time;
+				startStaticAttribute = trajectory2[0].attribute;
 			}
 			else if (isBody2CCD)
 			{
 				dynamicBody = body2;
 				body2->setPhysicsAttribute(trajectory2[index].attribute);
 				startDynamicAttribute = trajectory2[index].attribute;
+				dynamicTraj = &trajectory2;
 
 				startTimestep = trajectory2[index].time;
 				endTimestep = trajectory2[index + 1].time;
+				startStaticAttribute = trajectory1[0].attribute;
+			}
+
+			real lastDistance = 0.0;
+			real thisDistance = 0.0;
+			size_t idx = index;
+			while (idx++ < dynamicTraj->size())
+			{
+				if (Detector::collide(body1, body2))
+					break;
+				thisDistance = (dynamicTraj->at(idx).attribute.position - startStaticAttribute.position).lengthSquare();
+
+				if (lastDistance == 0.0 || lastDistance > thisDistance)
+					lastDistance = thisDistance;
+
+				if (lastDistance < thisDistance)
+				{
+					body1->setPhysicsAttribute(origin1);
+					body2->setPhysicsAttribute(origin2);
+					return std::nullopt;
+				}
 			}
 
 			const real slice = 100.0;
@@ -165,7 +192,7 @@ namespace Physics2D
 			real steps = 0;
 			real epsilon = 0.01;
 			Body::PhysicsAttribute lastAttribute;
-			
+			dynamicBody->setPhysicsAttribute(dynamicTraj->at(idx - 1).attribute);
 			while (true)
 			{
 				lastAttribute = dynamicBody->physicsAttribute();
@@ -186,11 +213,14 @@ namespace Physics2D
 					step /= 2.0;
 					continue;
 				}
+
 				if (startTimestep + steps > endTimestep)
 				{
 					steps = 0;
 					step /= 2.0;
 					dynamicBody->setPhysicsAttribute(startDynamicAttribute);
+					lastDistance = 0.0;
+					thisDistance = 0.0;
 					continue;
 				}
 			}
@@ -217,8 +247,8 @@ namespace Physics2D
 	std::tuple<bool, CCD::BroadphaseTrajectory> CCD::queryLeaf(DBVH::Node* node, Body* body, const real& dt)
 	{
 		assert(node != nullptr && node->isLeaf());
-		auto [trajectoryA, aabbA] = buildTrajectoryAABB(body, dt);
-		auto [trajectoryB, aabbB] = buildTrajectoryAABB(node->pair.body, dt);
+		auto [trajectoryA, aabbA] = buildTrajectoryAABB(body, node->pair.body->position(), dt);
+		auto [trajectoryB, aabbB] = buildTrajectoryAABB(node->pair.body, body->position(), dt);
 
 		return std::make_tuple(aabbA.collide(aabbB), trajectoryB);
 

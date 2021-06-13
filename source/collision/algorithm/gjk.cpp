@@ -57,12 +57,12 @@ namespace Physics2D
 
 	bool Simplex::fuzzyContains(const Minkowski& minkowski, const real& epsilon)
 	{
-		auto result = std::find_if(std::begin(vertices), std::end(vertices),
-		                           [=](const Minkowski& element)
-		                           {
-			                           return (minkowski.result - element.result).lengthSquare() < epsilon;
-		                           });
-		return result != std::end(vertices);
+		return std::find_if(std::begin(vertices), std::end(vertices),
+			[=](const Minkowski& element)
+			{
+				return (minkowski.result - element.result).lengthSquare() < epsilon;
+			}) 
+			!= std::end(vertices);
 	}
 
 	Vector2 Simplex::lastVertex() const
@@ -147,10 +147,7 @@ namespace Physics2D
 			//new minkowski point
 			p = support(shapeA, shapeB, normal);
 
-			if (simplex.contains(p))
-				break;
-
-			if (simplex.fuzzyContains(p, epsilon))
+			if (simplex.contains(p) || simplex.fuzzyContains(p, epsilon))
 				break;
 
 			simplex.insert(index1, p);
@@ -164,8 +161,7 @@ namespace Physics2D
 		PenetrationInfo result;
 		Vector2 edge1 = source.a1 - source.b1;
 		Vector2 edge2 = source.a2 - source.b2;
-		Vector2 normal = calculateDirectionByEdge(edge1, edge2, false).
-			normal();
+		Vector2 normal = calculateDirectionByEdge(edge1, edge2, false).normal();
 		real originToEdge = abs(normal.dot(edge1));
 		result.normal = normal * -1;
 		result.penetration = originToEdge;
@@ -174,9 +170,7 @@ namespace Physics2D
 
 	Minkowski GJK::support(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB, const Vector2& direction)
 	{
-		Vector2 p1 = findFarthestPoint(shapeA, direction);
-		Vector2 p2 = findFarthestPoint(shapeB, direction * -1);
-		return Minkowski(p1, p2);
+		return Minkowski(findFarthestPoint(shapeA, direction), findFarthestPoint(shapeB, direction * -1));
 	}
 
 	std::tuple<size_t, size_t> GJK::findEdgeClosestToOrigin(const Simplex& simplex)
@@ -281,7 +275,7 @@ namespace Physics2D
 	{
 		switch (simplex.vertices.size())
 		{
-		case 4: //only adjust for triangle from gjk
+		case 4: //only adjust triangle from gjk
 			{
 				int32_t index = -1;
 

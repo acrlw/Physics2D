@@ -2,6 +2,32 @@
 
 namespace Physics2D
 {
+	bool Detector::collide(Body* bodyA, Body* bodyB)
+	{
+		assert(bodyA != nullptr && bodyB != nullptr);
+
+		ShapePrimitive shapeA, shapeB;
+		shapeA.shape = bodyA->shape();
+		shapeA.rotation = bodyA->angle();
+		shapeA.transform = bodyA->position();
+
+		shapeB.shape = bodyB->shape();
+		shapeB.rotation = bodyB->angle();
+		shapeB.transform = bodyB->position();
+
+		AABB a = AABB::fromShape(shapeA);
+		AABB b = AABB::fromShape(shapeB);
+		if (!a.collide(b))
+			return false;
+
+
+		auto [isColliding, simplex] = GJK::gjk(shapeA, shapeB);
+
+		if (shapeA.transform.fuzzyEqual(shapeB.transform) && !isColliding)
+			isColliding = simplex.containOrigin(true);
+
+		return isColliding;
+	}
 	Collision Detector::detect(Body* bodyA, Body* bodyB)
 	{
 		Collision result;

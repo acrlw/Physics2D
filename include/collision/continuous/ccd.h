@@ -29,7 +29,7 @@ namespace Physics2D
 
 		
 		static std::tuple<bool, CCD::BroadphaseTrajectory> queryLeaf(DBVH::Node* root, Body* body, const real& dt);
-		static std::tuple<std::vector<AABBShot>, AABB> buildTrajectoryAABB(Body* body, const real& dt);
+		static std::tuple<std::vector<AABBShot>, AABB> buildTrajectoryAABB(Body* body, const Vector2& target, const real& dt);
 		static std::optional<size_t> findBroadphaseRoot(Body* body1, const BroadphaseTrajectory& trajectory1, Body* body2, const BroadphaseTrajectory& trajectory2, const real& dt);
 		static std::optional<real> findNarrowphaseRoot(Body* body1, const BroadphaseTrajectory& trajectory1, Body* body2, const BroadphaseTrajectory& trajectory2, const size_t& index, const real& dt);
 	private:
