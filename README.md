@@ -23,6 +23,9 @@ cmake CMakeLists.txt
     - polygon
     - line
     - point
+- Continuous Collision Detection
+  - Sampling the trajectory of body
+  - Time of Impact
 - Rigid Body Dynamics Simulation
 - Axis-Aligned Bounding Box
 - Dynamic Bounding Volume Tree
@@ -63,5 +66,4 @@ cmake CMakeLists.txt
 - Non-Fit Polygon
 - Finite Element Method
 - Mass-Spring System
-- Continuous Collision Detection
 - Test Demo
