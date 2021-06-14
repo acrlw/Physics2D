@@ -3,7 +3,7 @@ Simple 2D physics engine for tutoring
 # Build
 cmake CMakeLists.txt
 # Requirement
-- C++ 17
+- C++ 20
 - vcpkg
   - Qt
   - fmt
@@ -18,13 +18,13 @@ cmake CMakeLists.txt
   - Distance
   - Contact Pair
   - Support Mapping
-    - ellipse
-    - circle
-    - polygon
-    - line
-    - point
+    - Ellipse
+    - Circle
+    - Polygon
+    - Line
+    - Point
 - Continuous Collision Detection
-  - Sampling the trajectory of body
+  - Sampling The Trajectory of Body
   - Time of Impact
 - Rigid Body Dynamics Simulation
 - Axis-Aligned Bounding Box
@@ -41,18 +41,22 @@ cmake CMakeLists.txt
   - Smooth Transition
   - Tracing Specified Body
 - Simple 2D Geometry Algorithm
-  - raycast
-  - graham scan convex hull
-  - mass menter of polygon
-  - triangle incenter
-  - triangle centroid
-  - triangle circumcenter
-  - line segment intersection
-  - circumcircle of triangle
-  - inscribed circle of triangle
-  - convexity of polygon
-  - the nearest points on line segment and ellipse
-  - point on ellipse which is the nearest point to the target point
+  - Intersection
+    - Raycast
+    - Line Segment
+  - Convexity
+    - Graham Scan
+    - Convexity Test
+  - Center
+    - Incenter
+    - Centroid
+    - Circumcenter
+  - Circle
+    - Circumcircle
+    - Inscribed-circle
+  - Ellipse
+    - Support Mapping
+    - Nearest Point
 
 # Future
 - Sequential Impulse Solver
