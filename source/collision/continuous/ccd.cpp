@@ -28,7 +28,7 @@ namespace Physics2D
 		body->setPhysicsAttribute(start);
 		
 		//slice until result does not increase
-		real slice = 150.0;
+		real slice = 40;
 		real step = dt / slice;
 		//body->setPhysicsInfo(start);
 		for(real i = dt / slice;i <= dt;)
@@ -44,7 +44,7 @@ namespace Physics2D
 		body->setPhysicsAttribute(start);
 		return std::make_tuple(trajectory, result);
 	}
-	std::optional<size_t> CCD::findBroadphaseRoot(Body* body1, const BroadphaseTrajectory& trajectory1, Body* body2, const BroadphaseTrajectory& trajectory2, const real& dt)
+	std::optional<CCD::IndexSection> CCD::findBroadphaseRoot(Body* body1, const BroadphaseTrajectory& trajectory1, Body* body2, const BroadphaseTrajectory& trajectory2, const real& dt)
 	{
 		assert(body1 != nullptr && body2 != nullptr);
 		bool isBody1CCD = trajectory1.size() > 2;
@@ -56,20 +56,21 @@ namespace Physics2D
 			if (!traj1.collide(traj2))
 				return std::nullopt;
 			size_t length = trajectory1.size() > trajectory2.size() ? trajectory2.size() : trajectory1.size();
-			size_t targetIndex = -1;
-			for (auto i = 0; i < length; i++)
+			IndexSection result;
+
+			for (auto i = 0; i < length - 1; i++)
 			{
 				AABB temp1 = AABB::unite(trajectory1[i].aabb, trajectory1[i + 1].aabb);
 				AABB temp2 = AABB::unite(trajectory2[i].aabb, trajectory2[i + 1].aabb);
 				if (temp1.collide(temp2))
 				{
-					targetIndex = i;
+					result.forward = i;
 					break;
 				}
 			}
 
-			return targetIndex == -1 ? std::nullopt : 
-				std::optional(targetIndex);
+			return result.forward == -1 ? std::nullopt :
+				std::optional(result);
 		}
 		else if (!isBody1CCD || !isBody2CCD)
 		{
@@ -91,48 +92,59 @@ namespace Physics2D
 			if (!traj1.collide(traj2))
 				return std::nullopt;
 			
-			int targetIndex = -1;
-			for (auto i = 0; i < trajDynamic->size() - 1; i++)
+			IndexSection result;
+			size_t length = trajDynamic->size();
+			bool forwardFound = false;
+			bool backwardFound = false;
+			for (size_t i = 0, j = length - 1; i < length - 1; i++, j--)
 			{
-				AABB temp = AABB::unite(trajDynamic->at(i).aabb, trajDynamic->at(i + 1).aabb);
-				if (temp.collide(traj1))
+				AABB tempForward = AABB::unite(trajDynamic->at(i).aabb, trajDynamic->at(i + 1).aabb);
+				AABB tempBackward = AABB::unite(trajDynamic->at(j).aabb, trajDynamic->at(j - 1).aabb);
+				if (tempForward.collide(traj1) && !forwardFound)
 				{
-					targetIndex = i;
-					break;
+					result.forward = i;
+					forwardFound = true;
 				}
+				if (tempBackward.collide(traj1) && !backwardFound)
+				{
+					result.backward = j;
+					backwardFound = true;
+				}
+				if (forwardFound && backwardFound)
+					break;
 			}
-			return targetIndex == -1 ? std::nullopt :
-				std::optional(targetIndex);
+			return result.forward == -1 ? std::nullopt :
+				std::optional(result);
 		}		
 		return std::nullopt;
 		
 	}
-	std::optional<real> CCD::findNarrowphaseRoot(Body* body1, const BroadphaseTrajectory& trajectory1, Body* body2, const BroadphaseTrajectory& trajectory2, const size_t& index, const real& dt)
+	std::optional<real> CCD::findNarrowphaseRoot(Body* body1, const BroadphaseTrajectory& trajectory1, Body* body2, const BroadphaseTrajectory& trajectory2, const IndexSection& index, const real& dt)
 	{
+		/*
+			TODO:
+			Bilateral Advancement:
+			1. Narrowing
+				Find AABB of t_n not collide but t_n+1 collide
+				Reverse iterating trajectory, find t_k not collide but t_k-1 collide
+			2. Resampling
+				Resampling the actual trajectory
+			3. Forwarding
+				Find the earliest time of impact by traversing each timestep
+			4. Retracing
+				If collision is found, check the penetration length less than epsilon
+					true:	return time of impact
+					false:	set this timestep as the end of trajectory, return to last timestep,
+							shortening time slice, retracing trajectory of body.
+			5. Exiting
+				Reach to the end of trajectory, return nullopt
+		*/
 		assert(body1 != nullptr && body2 != nullptr);
 		bool isBody1CCD = trajectory1.size() > 2;
 		bool isBody2CCD = trajectory2.size() > 2;
 		if (isBody1CCD && isBody2CCD)
 		{
-			const size_t startIterTime = trajectory1[index].time;
-			const Body::PhysicsAttribute origin1 = body1->physicsAttribute();
-			const Body::PhysicsAttribute origin2 = body2->physicsAttribute();
-			body1->setPhysicsAttribute(trajectory1[index].attribute);
-			body2->setPhysicsAttribute(trajectory2[index].attribute);
 
-			const real slice = 40.0;
-			real step = dt / slice;
-			real lastTimestep = startIterTime;
-			real index = 0;
-			while (true)
-			{
-				body1->stepPosition(step);
-				body2->stepPosition(step);
-				auto result = Detector::detect(body1, body2);
-				if (!result.isColliding)
-					continue;
-
-			}
 		}
 		else if (!isBody1CCD || !isBody2CCD)
 		{
@@ -143,61 +155,67 @@ namespace Physics2D
 			Body::PhysicsAttribute startDynamicAttribute;
 			Body::PhysicsAttribute startStaticAttribute;
 			const BroadphaseTrajectory* dynamicTraj;
+
 			real startTimestep = 0;
 			real endTimestep = 0;
 			if (isBody1CCD)
 			{
 				dynamicBody = body1;
-				body1->setPhysicsAttribute(trajectory1[index].attribute);
-				startDynamicAttribute = trajectory1[index].attribute;
+				body1->setPhysicsAttribute(trajectory1[index.forward].attribute);
+				startDynamicAttribute = trajectory1[index.forward].attribute;
 				dynamicTraj = &trajectory1;
-				startTimestep = trajectory1[index].time;
-				endTimestep = trajectory1[index + 1].time;
+				startTimestep = trajectory1[index.forward].time;
+				endTimestep = trajectory1[index.backward].time;
 				startStaticAttribute = trajectory2[0].attribute;
 			}
 			else if (isBody2CCD)
 			{
 				dynamicBody = body2;
-				body2->setPhysicsAttribute(trajectory2[index].attribute);
-				startDynamicAttribute = trajectory2[index].attribute;
+				body2->setPhysicsAttribute(trajectory2[index.forward].attribute);
+				startDynamicAttribute = trajectory2[index.forward].attribute;
 				dynamicTraj = &trajectory2;
 
-				startTimestep = trajectory2[index].time;
-				endTimestep = trajectory2[index + 1].time;
+				startTimestep = trajectory2[index.forward].time;
+				endTimestep = trajectory2[index.backward].time;
 				startStaticAttribute = trajectory1[0].attribute;
 			}
-
-			real lastDistance = 0.0;
-			real thisDistance = 0.0;
-			size_t idx = index;
-			while (idx++ < dynamicTraj->size())
-			{
-				if (Detector::collide(body1, body2))
-					break;
-				thisDistance = (dynamicTraj->at(idx).attribute.position - startStaticAttribute.position).lengthSquare();
-
-				if (lastDistance == 0.0 || lastDistance > thisDistance)
-					lastDistance = thisDistance;
-
-				if (lastDistance < thisDistance)
-				{
-					body1->setPhysicsAttribute(origin1);
-					body2->setPhysicsAttribute(origin2);
-					return std::nullopt;
-				}
-			}
-
-			const real slice = 100.0;
-			real step = dt / slice;
-			real steps = 0;
-			real epsilon = 0.01;
+			const real slice = 10.0;
+			real step = (endTimestep - startTimestep) / slice;
+			real forwardSteps = 0;
+			real backwardSteps = 0;
 			Body::PhysicsAttribute lastAttribute;
-			dynamicBody->setPhysicsAttribute(dynamicTraj->at(idx - 1).attribute);
-			while (true)
+			//forwarding
+			bool isFound = false;
+			while (startTimestep + forwardSteps <= endTimestep)
 			{
 				lastAttribute = dynamicBody->physicsAttribute();
 				dynamicBody->stepPosition(step);
-				steps += step;
+				forwardSteps += step;
+				bool result = Detector::collide(body1, body2);
+				if (result)
+				{
+					forwardSteps -= step;
+					dynamicBody->setPhysicsAttribute(lastAttribute);
+					isFound = true;
+					break;
+				}
+			}
+
+			if (!isFound)
+			{
+				body1->setPhysicsAttribute(origin1);
+				body2->setPhysicsAttribute(origin2);
+				return std::nullopt;
+			}
+
+			//retracing
+			step /= 2.0;
+			real epsilon = 0.01;
+			while (startTimestep + forwardSteps <= endTimestep)
+			{
+				lastAttribute = dynamicBody->physicsAttribute();
+				dynamicBody->stepPosition(step);
+				forwardSteps += step;
 				auto result = Detector::detect(body1, body2);
 				if (result.isColliding)
 				{
@@ -205,26 +223,15 @@ namespace Physics2D
 					{
 						body1->setPhysicsAttribute(origin1);
 						body2->setPhysicsAttribute(origin2);
-						return std::optional(startTimestep + steps);
+						return std::optional(startTimestep + forwardSteps);
 					}
 
-					steps -= step;
+					forwardSteps -= step;
 					dynamicBody->setPhysicsAttribute(lastAttribute);
 					step /= 2.0;
 					continue;
 				}
-
-				if (startTimestep + steps > endTimestep)
-				{
-					steps = 0;
-					step /= 2.0;
-					dynamicBody->setPhysicsAttribute(startDynamicAttribute);
-					lastDistance = 0.0;
-					thisDistance = 0.0;
-					continue;
-				}
 			}
-
 		}
 
 		return std::nullopt;

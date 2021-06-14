@@ -24,14 +24,19 @@ namespace Physics2D
 			Body::PhysicsAttribute attribute;
 			real time = 0;
 		};
+		struct IndexSection
+		{
+			size_t forward = -1;
+			size_t backward = -1;
+		};
 		typedef std::vector<AABBShot> BroadphaseTrajectory;
 		typedef std::vector<ShapeShot> NarrowphaseTrajectory;
 
 		
 		static std::tuple<bool, CCD::BroadphaseTrajectory> queryLeaf(DBVH::Node* root, Body* body, const real& dt);
 		static std::tuple<std::vector<AABBShot>, AABB> buildTrajectoryAABB(Body* body, const Vector2& target, const real& dt);
-		static std::optional<size_t> findBroadphaseRoot(Body* body1, const BroadphaseTrajectory& trajectory1, Body* body2, const BroadphaseTrajectory& trajectory2, const real& dt);
-		static std::optional<real> findNarrowphaseRoot(Body* body1, const BroadphaseTrajectory& trajectory1, Body* body2, const BroadphaseTrajectory& trajectory2, const size_t& index, const real& dt);
+		static std::optional<IndexSection> findBroadphaseRoot(Body* body1, const BroadphaseTrajectory& trajectory1, Body* body2, const BroadphaseTrajectory& trajectory2, const real& dt);
+		static std::optional<real> findNarrowphaseRoot(Body* body1, const BroadphaseTrajectory& trajectory1, Body* body2, const BroadphaseTrajectory& trajectory2, const IndexSection& index, const real& dt);
 	private:
 		
 		static void queryNodes(DBVH::Node* node, const AABB& aabb, std::vector<DBVH::Node*>& nodes);
