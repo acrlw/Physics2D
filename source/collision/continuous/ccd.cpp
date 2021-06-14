@@ -181,7 +181,7 @@ namespace Physics2D
 				startStaticAttribute = trajectory1[0].attribute;
 			}
 			//slice maybe 25~70. It depends on how thin the sticks you set
-			const real slice = 70.0;
+			const real slice = 30.0;
 			real step = (endTimestep - startTimestep) / slice;
 			real forwardSteps = 0;
 			real backwardSteps = 0;

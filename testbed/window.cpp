@@ -14,12 +14,12 @@ namespace Physics2D
 		this->resize(1920, 1080);
 		this->setMouseTracking(true);
 
-		rectangle.set(0.01, 5);
+		rectangle.set(0.2, 5);
 		land.set(18, 0.2);
 		polygon.append({{3, 0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3}, {2, -3}, {3, 0}});
 		polygon.scale(0.05);
 		ellipse.set({-5, 4}, {5, -4});
-		ellipse.scale(0.01);
+		ellipse.scale(0.05);
 		circle.setRadius(0.5);
 		//circle.scale(7);
 		edge.set({-18, 0}, {18, 0});
@@ -65,7 +65,7 @@ namespace Physics2D
 		camera.setAabbVisible(true);
 		camera.setDbvhVisible(false);
 		camera.setTreeVisible(false);
-		camera.setAxisVisible(true);
+		camera.setAxisVisible(false);
 		connect(&m_timer, &QTimer::timeout, this, &Window::process);
 		m_timer.setInterval(15);
 		m_timer.start();
@@ -274,12 +274,12 @@ namespace Physics2D
 		auto [trajectory2, aabb2] = CCD::buildTrajectoryAABB(rect2, rect->position(), dt);
 		QPen pen(Qt::cyan, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 		QPen pen2(Qt::red, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		for(auto& elem: trajectory2)
-		{
+		//for(auto& elem: trajectory2)
+		//{
 			//RendererQtImpl::renderAABB(&painter, &camera, elem.aabb, pen);
 
 			Body::PhysicsAttribute origin = rect2->physicsAttribute();
-			rect2->stepPosition(elem.time);
+			rect2->stepPosition(trajectory2[trajectory2.size() - 1].time);
 			ShapePrimitive primitive;
 			primitive.shape = rect2->shape();
 			primitive.rotation = rect2->angle();
@@ -287,8 +287,8 @@ namespace Physics2D
 			RendererQtImpl::renderShape(&painter, &camera, primitive, pen);
 			rect2->setPhysicsAttribute(origin);
 
-		}
-		RendererQtImpl::renderAABB(&painter, &camera, aabb2, pen);
+		//}
+		//RendererQtImpl::renderAABB(&painter, &camera, aabb2, pen);
 
 		auto result = CCD::findBroadphaseRoot(rect, trajectory1, rect2, trajectory2, dt);
 		if (result.has_value())

@@ -419,11 +419,8 @@ namespace Physics2D
 	}
 	bool GeometryAlgorithm2D::triangleContainsOrigin(const Vector2& a, const Vector2& b, const Vector2& c)
 	{
-		if ((b - a).cross(-a) > 0.0 &&
+		return ((b - a).cross(-a) > 0.0 &&
 			(c - b).cross(-b) > 0.0 &&
-			(a - c).cross(-c) > 0.0)
-			return true;
-		
-		return false;
+			(a - c).cross(-c) > 0.0);
 	}
 }
