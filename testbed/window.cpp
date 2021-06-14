@@ -4,7 +4,7 @@
 #include "include/dynamics/constraint/constraint.h"
 #include "include/dynamics/constraint/contact.h"
 #include "include/render/renderer.h"
-
+#include <iostream>
 namespace Physics2D
 {
 	Window::Window(QWidget* parent)
@@ -14,7 +14,7 @@ namespace Physics2D
 		this->resize(1920, 1080);
 		this->setMouseTracking(true);
 
-		rectangle.set(0.2, 0.2);
+		rectangle.set(0.01, 5);
 		land.set(18, 0.2);
 		polygon.append({{3, 0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3}, {2, -3}, {3, 0}});
 		polygon.scale(0.05);
@@ -97,8 +97,8 @@ namespace Physics2D
 	void Window::testCCD()
 	{
 		rect = m_world.createBody();
-		rect->setShape(land_ptr);
-		rect->position().set({ 8, -6 });
+		rect->setShape(ellipse_ptr);
+		rect->position().set({ 3, -4.5 });
 		rect->setMass(Constant::Max);
 		rect->angle() = 90;
 		rect->setType(Body::BodyType::Dynamic);
@@ -109,8 +109,8 @@ namespace Physics2D
 		rect2->angle() = 90;
 		rect2->setMass(200);
 		rect2->setType(Body::BodyType::Bullet);
-		rect2->velocity() = { 2000, 0 };
-		rect2->angularVelocity() = 15000;
+		rect2->velocity() = { 1000, 0 };
+		rect2->angularVelocity() = 90000;
 
 		rect3 = m_world.createBody();
 		rect3->setShape(polygon_ptr);
@@ -293,14 +293,11 @@ namespace Physics2D
 		auto result = CCD::findBroadphaseRoot(rect, trajectory1, rect2, trajectory2, dt);
 		if (result.has_value())
 		{
-			//RendererQtImpl::renderAABB(&painter, &camera, trajectory2[result.value().forward].aabb, pen2);
-			//RendererQtImpl::renderAABB(&painter, &camera, trajectory2[result.value().forward + 1].aabb, pen2);
-			//RendererQtImpl::renderAABB(&painter, &camera, trajectory2[result.value().backward].aabb, pen2);
-			//RendererQtImpl::renderAABB(&painter, &camera, trajectory2[result.value().backward + 1].aabb, pen2);
 
 			auto toi = CCD::findNarrowphaseRoot(rect, trajectory1, rect2, trajectory2, result.value(), dt);
 			if (toi.has_value())
 			{
+				//std::cout << "toi: " << toi.value() << std::endl;
 				fmt::print("toi:{}\n", toi.value());
 				Body::PhysicsAttribute origin = rect2->physicsAttribute();
 				rect2->stepPosition(toi.value());

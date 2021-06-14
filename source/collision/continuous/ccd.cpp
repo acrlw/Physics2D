@@ -144,6 +144,7 @@ namespace Physics2D
 		bool isBody2CCD = trajectory2.size() > 2;
 		if (isBody1CCD && isBody2CCD)
 		{
+			return std::nullopt;
 
 		}
 		else if (!isBody1CCD || !isBody2CCD)
@@ -179,7 +180,8 @@ namespace Physics2D
 				endTimestep = trajectory2[index.backward].time;
 				startStaticAttribute = trajectory1[0].attribute;
 			}
-			const real slice = 10.0;
+			//slice maybe 25~70. It depends on how thin the sticks you set
+			const real slice = 70.0;
 			real step = (endTimestep - startTimestep) / slice;
 			real forwardSteps = 0;
 			real backwardSteps = 0;
