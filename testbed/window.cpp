@@ -19,7 +19,7 @@ namespace Physics2D
 		polygon.append({{3, 0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3}, {2, -3}, {3, 0}});
 		polygon.scale(0.05);
 		ellipse.set({-5, 4}, {5, -4});
-		ellipse.scale(0.05);
+		ellipse.scale(0.15);
 		circle.setRadius(0.5);
 		//circle.scale(7);
 		edge.set({-18, 0}, {18, 0});

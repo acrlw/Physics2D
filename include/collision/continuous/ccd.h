@@ -17,20 +17,12 @@ namespace Physics2D
 			Body::PhysicsAttribute attribute;
 			real time = 0;
 		};
-		struct ShapeShot
-		{
-			ShapeShot() = default;
-			Shape* shape = nullptr;
-			Body::PhysicsAttribute attribute;
-			real time = 0;
-		};
 		struct IndexSection
 		{
-			size_t forward = -1;
-			size_t backward = -1;
+			int forward = -1;
+			int backward = -1;
 		};
 		typedef std::vector<AABBShot> BroadphaseTrajectory;
-		typedef std::vector<ShapeShot> NarrowphaseTrajectory;
 
 		
 		static std::tuple<bool, CCD::BroadphaseTrajectory> queryLeaf(DBVH::Node* root, Body* body, const real& dt);

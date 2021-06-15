@@ -5,7 +5,6 @@ namespace Physics2D
 	std::tuple<CCD::BroadphaseTrajectory, AABB> CCD::buildTrajectoryAABB(Body* body, const Vector2& target, const real& dt)
 	{
 		assert(body != nullptr);
-		//start-end
 		std::vector<AABBShot> trajectory;
 		AABB result;
 		AABB startBox = AABB::fromBody(body);
@@ -27,10 +26,8 @@ namespace Physics2D
 		
 		body->setPhysicsAttribute(start);
 		
-		//slice until result does not increase
 		real slice = 40;
 		real step = dt / slice;
-		//body->setPhysicsInfo(start);
 		for(real i = dt / slice;i <= dt;)
 		{
 			body->stepPosition(step);
@@ -121,24 +118,6 @@ namespace Physics2D
 	}
 	std::optional<real> CCD::findNarrowphaseRoot(Body* body1, const BroadphaseTrajectory& trajectory1, Body* body2, const BroadphaseTrajectory& trajectory2, const IndexSection& index, const real& dt)
 	{
-		/*
-			TODO:
-			Bilateral Advancement:
-			1. Narrowing
-				Find AABB of t_n not collide but t_n+1 collide
-				Reverse iterating trajectory, find t_k not collide but t_k-1 collide
-			2. Resampling
-				Resampling the actual trajectory
-			3. Forwarding
-				Find the earliest time of impact by traversing each timestep
-			4. Retracing
-				If collision is found, check the penetration length less than epsilon
-					true:	return time of impact
-					false:	set this timestep as the end of trajectory, return to last timestep,
-							shortening time slice, retracing trajectory of body.
-			5. Exiting
-				Reach to the end of trajectory, return nullopt
-		*/
 		assert(body1 != nullptr && body2 != nullptr);
 		bool isBody1CCD = trajectory1.size() > 2;
 		bool isBody2CCD = trajectory2.size() > 2;
@@ -149,13 +128,9 @@ namespace Physics2D
 		}
 		else if (!isBody1CCD || !isBody2CCD)
 		{
-			Body* staticBody = nullptr;
 			Body* dynamicBody = nullptr;
 			Body::PhysicsAttribute origin1 = body1->physicsAttribute();
 			Body::PhysicsAttribute origin2 = body2->physicsAttribute();
-			Body::PhysicsAttribute startDynamicAttribute;
-			Body::PhysicsAttribute startStaticAttribute;
-			const BroadphaseTrajectory* dynamicTraj;
 
 			real startTimestep = 0;
 			real endTimestep = 0;
@@ -163,28 +138,20 @@ namespace Physics2D
 			{
 				dynamicBody = body1;
 				body1->setPhysicsAttribute(trajectory1[index.forward].attribute);
-				startDynamicAttribute = trajectory1[index.forward].attribute;
-				dynamicTraj = &trajectory1;
 				startTimestep = trajectory1[index.forward].time;
 				endTimestep = trajectory1[index.backward].time;
-				startStaticAttribute = trajectory2[0].attribute;
 			}
 			else if (isBody2CCD)
 			{
 				dynamicBody = body2;
 				body2->setPhysicsAttribute(trajectory2[index.forward].attribute);
-				startDynamicAttribute = trajectory2[index.forward].attribute;
-				dynamicTraj = &trajectory2;
-
 				startTimestep = trajectory2[index.forward].time;
 				endTimestep = trajectory2[index.backward].time;
-				startStaticAttribute = trajectory1[0].attribute;
 			}
 			//slice maybe 25~70. It depends on how thin the sticks you set
 			const real slice = 30.0;
 			real step = (endTimestep - startTimestep) / slice;
 			real forwardSteps = 0;
-			real backwardSteps = 0;
 			Body::PhysicsAttribute lastAttribute;
 			//forwarding
 			bool isFound = false;
@@ -193,8 +160,7 @@ namespace Physics2D
 				lastAttribute = dynamicBody->physicsAttribute();
 				dynamicBody->stepPosition(step);
 				forwardSteps += step;
-				bool result = Detector::collide(body1, body2);
-				if (result)
+				if (const bool result = Detector::collide(body1, body2); result)
 				{
 					forwardSteps -= step;
 					dynamicBody->setPhysicsAttribute(lastAttribute);
@@ -212,14 +178,13 @@ namespace Physics2D
 
 			//retracing
 			step /= 2.0;
-			real epsilon = 0.01;
+			const real epsilon = 0.01;
 			while (startTimestep + forwardSteps <= endTimestep)
 			{
 				lastAttribute = dynamicBody->physicsAttribute();
 				dynamicBody->stepPosition(step);
 				forwardSteps += step;
-				auto result = Detector::detect(body1, body2);
-				if (result.isColliding)
+				if (const auto result = Detector::detect(body1, body2); result.isColliding)
 				{
 					if (std::abs(result.penetration) < epsilon)
 					{
@@ -231,7 +196,6 @@ namespace Physics2D
 					forwardSteps -= step;
 					dynamicBody->setPhysicsAttribute(lastAttribute);
 					step /= 2.0;
-					continue;
 				}
 			}
 		}
