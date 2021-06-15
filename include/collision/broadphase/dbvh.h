@@ -33,7 +33,8 @@ namespace Physics2D
 			Node* root()const;
 			std::vector<std::pair<Body*, Body*>> generatePairs();
 			std::map<Body*, Node*>& leaves();
-			
+			void query(const AABB& sourceAABB, std::vector<Node*>& nodes, Body* skipBody = nullptr)const;
+			static void queryNodes(Node* node, const AABB& sourceAABB, std::vector<Node*>& nodes, Body* skipBody = nullptr);
 		private:
 			void insert(Node* node);
 			void cleanUp(Node* node);

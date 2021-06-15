@@ -239,27 +239,6 @@ namespace Physics2D
 
 		return std::nullopt;
 	}
-	void CCD::queryNodes(DBVH::Node* node, const AABB& aabb, std::vector<DBVH::Node*>& nodes, Body* body)
-	{
-		if (node == nullptr || !aabb.collide(node->pair.aabb))
-			return;
-
-		//skip query itself
-		if (body != nullptr)
-			if (node->pair.body == body)
-				return;
-		
-		if (node->isBranch() || node->isRoot())
-		{
-			queryNodes(node->left, aabb, nodes, body);
-			queryNodes(node->right, aabb, nodes, body);
-			return;
-		}
-
-		if (node->isLeaf())
-			nodes.emplace_back(node);
-	}
-
 	std::optional<std::vector<CCD::CCDPair>> CCD::query(DBVH::Node* root, Body* body, const real& dt)
 	{
 		std::vector<CCDPair> finalList;
@@ -267,7 +246,7 @@ namespace Physics2D
 		assert(root->isRoot() && body != nullptr);
 		auto [trajectoryCCD, aabbCCD] = buildTrajectoryAABB(body, dt);
 		std::vector<DBVH::Node*> potential;
-		queryNodes(root, aabbCCD, potential, body);
+		DBVH::queryNodes(root, aabbCCD, potential, body);
 		for(DBVH::Node * element: potential)
 		{
 			auto [trajectoryElement, aabbElement] = buildTrajectoryAABB(element->pair.body, dt);
@@ -293,14 +272,5 @@ namespace Physics2D
 		}
 		return finalToi > 0.0 ? std::optional(finalList)
 			: std::nullopt;
-	}
-	std::tuple<bool, CCD::BroadphaseTrajectory> CCD::queryLeaf(DBVH::Node* node, Body* body, const real& dt)
-	{
-		assert(node != nullptr && node->isLeaf());
-		auto [trajectoryA, aabbA] = buildTrajectoryAABB(body, node->pair.body->position(), dt);
-		auto [trajectoryB, aabbB] = buildTrajectoryAABB(node->pair.body, body->position(), dt);
-
-		return std::make_tuple(aabbA.collide(aabbB), trajectoryB);
-
 	}
 }

@@ -28,6 +28,32 @@ namespace Physics2D
 		return m_leaves;
 	}
 
+	void DBVH::query(const AABB& sourceAABB, std::vector<Node*>& nodes, Body* skipBody)const
+	{
+		queryNodes(m_root, sourceAABB, nodes, skipBody);
+	}
+
+	void DBVH::queryNodes(Node* node, const AABB& aabb, std::vector<Node*>& nodes, Body* skipBody)
+	{
+		if (node == nullptr || !aabb.collide(node->pair.aabb))
+			return;
+
+		//skip query
+		if (skipBody != nullptr)
+			if (node->pair.body == skipBody)
+				return;
+
+		if (node->isBranch() || node->isRoot())
+		{
+			queryNodes(node->left, aabb, nodes, skipBody);
+			queryNodes(node->right, aabb, nodes, skipBody);
+			return;
+		}
+
+		if (node->isLeaf())
+			nodes.emplace_back(node);
+	}
+
 	void DBVH::insert(Node* node)
 	{
 		if (node == nullptr)
