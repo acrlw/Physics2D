@@ -260,10 +260,10 @@ namespace Physics2D
 			nodes.emplace_back(node);
 	}
 
-	std::optional<std::tuple<real, Body*>> CCD::query(DBVH::Node* root, Body* body, const real& dt)
+	std::optional<std::vector<CCD::CCDPair>> CCD::query(DBVH::Node* root, Body* body, const real& dt)
 	{
-		real finalTOI = 0.0;
-		Body* finalBody = nullptr;
+		std::vector<CCDPair> finalList;
+		real finalToi = 0.0;
 		assert(root->isRoot() && body != nullptr);
 		auto [trajectoryCCD, aabbCCD] = buildTrajectoryAABB(body, dt);
 		std::vector<DBVH::Node*> potential;
@@ -276,14 +276,22 @@ namespace Physics2D
 			if(result.has_value())
 			{
 				auto toi = findNarrowphaseRoot(body, newCCDTrajectory, element->pair.body, trajectoryElement, result.value(), dt);
-				if (toi.has_value() && (finalTOI == 0.0 || finalTOI > toi.value()))
+				if (toi.has_value())
 				{
-					finalTOI = toi.value();
-					finalBody = element->pair.body;
+					if(finalToi == 0.0 || finalToi > toi.value())
+					{
+						finalToi = toi.value();
+						finalList.clear();
+						finalList.emplace_back(CCDPair(finalToi, element->pair.body));
+						continue;
+					}
+					if(fuzzyRealEqual(finalToi, toi.value(), Constant::Epsilon))
+						finalList.emplace_back(CCDPair(finalToi, element->pair.body));
+					
 				}
 			}
 		}
-		return finalBody != nullptr ? std::optional(std::make_tuple(finalTOI, finalBody))
+		return finalToi > 0.0 ? std::optional(finalList)
 			: std::nullopt;
 	}
 	std::tuple<bool, CCD::BroadphaseTrajectory> CCD::queryLeaf(DBVH::Node* node, Body* body, const real& dt)

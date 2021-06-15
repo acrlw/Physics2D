@@ -14,7 +14,7 @@ namespace Physics2D
 		this->resize(1920, 1080);
 		this->setMouseTracking(true);
 
-		rectangle.set(0.2, 8);
+		rectangle.set(1, 1);
 		land.set(18, 0.2);
 		polygon.append({{3, 0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3}, {2, -3}, {3, 0}});
 		polygon.scale(0.05);
@@ -97,8 +97,8 @@ namespace Physics2D
 	void Window::testCCD()
 	{
 		rect = m_world.createBody();
-		rect->setShape(ellipse_ptr);
-		rect->position().set({ 3, -4.5 });
+		rect->setShape(rectangle_ptr);
+		rect->position().set({ 8, -5.4 });
 		rect->setMass(Constant::Max);
 		rect->angle() = 90;
 		rect->setType(Body::BodyType::Dynamic);
@@ -109,12 +109,12 @@ namespace Physics2D
 		rect2->angle() = 90;
 		rect2->setMass(200);
 		rect2->setType(Body::BodyType::Bullet);
-		rect2->velocity() = { 1000, 100 };
-		rect2->angularVelocity() = 80000;
+		rect2->velocity() = { 1000, 0 };
+		rect2->angularVelocity() = 0;
 
 		rect3 = m_world.createBody();
-		rect3->setShape(polygon_ptr);
-		rect3->position().set({ -2, -7 });
+		rect3->setShape(rectangle_ptr);
+		rect3->position().set({ 8, -6.6 });
 		rect3->angle() = 180;
 		rect3->setMass(200);
 		rect3->setType(Body::BodyType::Dynamic);
@@ -275,16 +275,19 @@ namespace Physics2D
 		//fmt::print("toi exist:{}\n", result.has_value());
 		if (result.has_value())
 		{
-			auto [toi, finalBody] = result.value();
-			fmt::print("toi:{}\n", toi);
-			Body::PhysicsAttribute origin = rect2->physicsAttribute();
-			rect2->stepPosition(toi);
-			ShapePrimitive primitive;
-			primitive.shape = rect2->shape();
-			primitive.rotation = rect2->angle();
-			primitive.transform = rect2->position();
-			RendererQtImpl::renderShape(&painter, &camera, primitive, pen2);
-			rect2->setPhysicsAttribute(origin);
+			auto list = result.value();
+			for(auto& pair: list)
+			{
+				fmt::print("toi:{}\n", pair.toi);
+				Body::PhysicsAttribute origin = rect2->physicsAttribute();
+				rect2->stepPosition(pair.toi);
+				ShapePrimitive primitive;
+				primitive.shape = rect2->shape();
+				primitive.rotation = rect2->angle();
+				primitive.transform = rect2->position();
+				RendererQtImpl::renderShape(&painter, &camera, primitive, pen2);
+				rect2->setPhysicsAttribute(origin);
+			}
 		}
 	}
 
