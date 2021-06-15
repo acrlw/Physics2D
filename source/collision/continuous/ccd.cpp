@@ -41,6 +41,43 @@ namespace Physics2D
 		body->setPhysicsAttribute(start);
 		return std::make_tuple(trajectory, result);
 	}
+	std::tuple<CCD::BroadphaseTrajectory, AABB> CCD::buildTrajectoryAABB(Body* body, const real& dt)
+	{
+		assert(body != nullptr);
+		std::vector<AABBShot> trajectory;
+		AABB result;
+		AABB startBox = AABB::fromBody(body);
+		Body::PhysicsAttribute start = body->physicsAttribute();
+		body->stepPosition(dt);
+
+		Body::PhysicsAttribute end = body->physicsAttribute();
+		AABB endBox = AABB::fromBody(body);
+
+		if (startBox == endBox && start.velocity.lengthSquare() < Constant::MaxVelocity && abs(start.angularVelocity) < Constant::MaxAngularVelocity)
+		{
+			trajectory.emplace_back(AABBShot(startBox, body->physicsAttribute(), 0));
+			trajectory.emplace_back(AABBShot(endBox, body->physicsAttribute(), dt));
+			return std::make_tuple(trajectory, result);
+		}
+
+
+		result.unite(startBox).unite(endBox);
+
+		body->setPhysicsAttribute(start);
+
+		real slice = 40;
+		real step = dt / slice;
+		for (real i = dt / slice; i <= dt;)
+		{
+			body->stepPosition(step);
+			AABB aabb = AABB::fromBody(body);
+			trajectory.emplace_back(AABBShot{ aabb, body->physicsAttribute(), i });
+			result.unite(aabb);
+			i += step;
+		}
+		body->setPhysicsAttribute(start);
+		return std::make_tuple(trajectory, result);
+	}
 	std::optional<CCD::IndexSection> CCD::findBroadphaseRoot(Body* body1, const BroadphaseTrajectory& trajectory1, Body* body2, const BroadphaseTrajectory& trajectory2, const real& dt)
 	{
 		assert(body1 != nullptr && body2 != nullptr);
@@ -202,20 +239,52 @@ namespace Physics2D
 
 		return std::nullopt;
 	}
-	void CCD::queryNodes(DBVH::Node* node, const AABB& aabb, std::vector<DBVH::Node*>& nodes)
+	void CCD::queryNodes(DBVH::Node* node, const AABB& aabb, std::vector<DBVH::Node*>& nodes, Body* body)
 	{
 		if (node == nullptr || !aabb.collide(node->pair.aabb))
 			return;
 
-		if (node->isBranch())
+		//skip query itself
+		if (body != nullptr)
+			if (node->pair.body == body)
+				return;
+		
+		if (node->isBranch() || node->isRoot())
 		{
-			queryNodes(node->left, aabb, nodes);
-			queryNodes(node->right, aabb, nodes);
+			queryNodes(node->left, aabb, nodes, body);
+			queryNodes(node->right, aabb, nodes, body);
 			return;
 		}
 
 		if (node->isLeaf())
 			nodes.emplace_back(node);
+	}
+
+	std::optional<std::tuple<real, Body*>> CCD::query(DBVH::Node* root, Body* body, const real& dt)
+	{
+		real finalTOI = 0.0;
+		Body* finalBody = nullptr;
+		assert(root->isRoot() && body != nullptr);
+		auto [trajectoryCCD, aabbCCD] = buildTrajectoryAABB(body, dt);
+		std::vector<DBVH::Node*> potential;
+		queryNodes(root, aabbCCD, potential, body);
+		for(DBVH::Node * element: potential)
+		{
+			auto [trajectoryElement, aabbElement] = buildTrajectoryAABB(element->pair.body, dt);
+			auto [newCCDTrajectory, newAABB] = buildTrajectoryAABB(body, element->pair.body->position(), dt);
+			auto result = findBroadphaseRoot(body, newCCDTrajectory, element->pair.body, trajectoryElement, dt);
+			if(result.has_value())
+			{
+				auto toi = findNarrowphaseRoot(body, newCCDTrajectory, element->pair.body, trajectoryElement, result.value(), dt);
+				if (toi.has_value() && (finalTOI == 0.0 || finalTOI > toi.value()))
+				{
+					finalTOI = toi.value();
+					finalBody = element->pair.body;
+				}
+			}
+		}
+		return finalBody != nullptr ? std::optional(std::make_tuple(finalTOI, finalBody))
+			: std::nullopt;
 	}
 	std::tuple<bool, CCD::BroadphaseTrajectory> CCD::queryLeaf(DBVH::Node* node, Body* body, const real& dt)
 	{

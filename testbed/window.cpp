@@ -14,7 +14,7 @@ namespace Physics2D
 		this->resize(1920, 1080);
 		this->setMouseTracking(true);
 
-		rectangle.set(0.2, 5);
+		rectangle.set(0.2, 8);
 		land.set(18, 0.2);
 		polygon.append({{3, 0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3}, {2, -3}, {3, 0}});
 		polygon.scale(0.05);
@@ -109,12 +109,12 @@ namespace Physics2D
 		rect2->angle() = 90;
 		rect2->setMass(200);
 		rect2->setType(Body::BodyType::Bullet);
-		rect2->velocity() = { 1000, 0 };
-		rect2->angularVelocity() = 90000;
+		rect2->velocity() = { 1000, 100 };
+		rect2->angularVelocity() = 80000;
 
 		rect3 = m_world.createBody();
 		rect3->setShape(polygon_ptr);
-		rect3->position().set({ 0, 0 });
+		rect3->position().set({ -2, -7 });
 		rect3->angle() = 180;
 		rect3->setMass(200);
 		rect3->setType(Body::BodyType::Dynamic);
@@ -267,49 +267,25 @@ namespace Physics2D
 	void Window::paintEvent(QPaintEvent*)
 	{
 		QPainter painter(this);
-		//prepare for background, origin and clipping boundary
 		camera.render(&painter);
 		real dt = 1.0 / 60;
-		auto [trajectory1, aabb1] = CCD::buildTrajectoryAABB(rect, rect2->position(), dt);
-		auto [trajectory2, aabb2] = CCD::buildTrajectoryAABB(rect2, rect->position(), dt);
 		QPen pen(Qt::cyan, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 		QPen pen2(Qt::red, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		//for(auto& elem: trajectory2)
-		//{
-			//RendererQtImpl::renderAABB(&painter, &camera, elem.aabb, pen);
-
+		auto result = CCD::query(dbvh.root(), rect2, dt);
+		//fmt::print("toi exist:{}\n", result.has_value());
+		if (result.has_value())
+		{
+			auto [toi, finalBody] = result.value();
+			fmt::print("toi:{}\n", toi);
 			Body::PhysicsAttribute origin = rect2->physicsAttribute();
-			rect2->stepPosition(trajectory2[trajectory2.size() - 1].time);
+			rect2->stepPosition(toi);
 			ShapePrimitive primitive;
 			primitive.shape = rect2->shape();
 			primitive.rotation = rect2->angle();
 			primitive.transform = rect2->position();
-			RendererQtImpl::renderShape(&painter, &camera, primitive, pen);
+			RendererQtImpl::renderShape(&painter, &camera, primitive, pen2);
 			rect2->setPhysicsAttribute(origin);
-
-		//}
-		//RendererQtImpl::renderAABB(&painter, &camera, aabb2, pen);
-
-		auto result = CCD::findBroadphaseRoot(rect, trajectory1, rect2, trajectory2, dt);
-		if (result.has_value())
-		{
-
-			auto toi = CCD::findNarrowphaseRoot(rect, trajectory1, rect2, trajectory2, result.value(), dt);
-			if (toi.has_value())
-			{
-				//std::cout << "toi: " << toi.value() << std::endl;
-				fmt::print("toi:{}\n", toi.value());
-				Body::PhysicsAttribute origin = rect2->physicsAttribute();
-				rect2->stepPosition(toi.value());
-				ShapePrimitive primitive;
-				primitive.shape = rect2->shape();
-				primitive.rotation = rect2->angle();
-				primitive.transform = rect2->position();
-				RendererQtImpl::renderShape(&painter, &camera, primitive, pen2);
-				rect2->setPhysicsAttribute(origin);
-			}
 		}
-		
 	}
 
 	void Window::resizeEvent(QResizeEvent* e)
