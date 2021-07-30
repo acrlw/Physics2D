@@ -14,6 +14,7 @@ namespace Physics2D
                 Polygon,
                 Circle,
                 Ellipse,
+            	Capsule,
                 Edge,
                 Curve
                 };
@@ -178,5 +179,22 @@ namespace Physics2D
             Vector2 m_control2;
             Vector2 m_endPoint;
     };
+	class Capsule : public Shape
+	{
+	public:
+        Capsule();
+		bool contains(const Vector2& point, const real& epsilon) override;
+		void scale(const real& factor) override;
+        Vector2 center() const override;
+        void set(real width, real height);
+        void setWidth(real width);
+        void setHeight(real height);
+        real width()const;
+        real height()const;
+	private:
+        real m_width;
+        real m_height;
+	};
+
 }
 #endif

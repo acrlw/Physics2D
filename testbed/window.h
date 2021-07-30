@@ -55,6 +55,7 @@ namespace Physics2D
 		void testPendulum();
 		void testBroadphase();
 		void testCCD();
+		void testCapsule();
 		World m_world;
 		Rectangle rectangle;
 		Rectangle land;
@@ -63,6 +64,7 @@ namespace Physics2D
 		Curve curve;
 		Polygon polygon;
 		Circle circle;
+		Capsule capsule;
 		real m_angle = 0;
 		Body* m_lastBody = nullptr;
 		QTimer m_timer;
@@ -95,6 +97,7 @@ namespace Physics2D
 		std::shared_ptr<Rectangle> land_ptr;
 		std::shared_ptr<Rectangle> rectangle_ptr;
 		std::shared_ptr<Circle> circle_ptr;
+		std::shared_ptr<Capsule> capsule_ptr;
 
 		Utils::Camera camera;
 		bool cameraTransform = false;

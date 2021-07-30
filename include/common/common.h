@@ -9,6 +9,7 @@
 #include <optional>
 #include <algorithm>
 #include <functional>
+#include <memory>
 #include <map>
 namespace Physics2D
 {

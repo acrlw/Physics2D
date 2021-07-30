@@ -221,47 +221,66 @@ namespace Physics2D
 		switch (shape.shape->type())
 		{
 		case Shape::Type::Polygon:
+		{
+			const Polygon* polygon = dynamic_cast<const Polygon*>(shape.shape.get());
+			Vector2 p0 = polygon->vertices()[0];
+			real max = 0;
+			target = polygon->vertices()[0];
+			for (const Vector2& vertex : polygon->vertices())
 			{
-				const Polygon* polygon = dynamic_cast<const Polygon*>(shape.shape.get());
-				Vector2 p0 = polygon->vertices()[0];
-				real max = 0;
-				target = polygon->vertices()[0];
-				for (const Vector2& vertex : polygon->vertices())
-				{
-					real result = Vector2::dotProduct(vertex - p0, rot_dir);
+				real result = Vector2::dotProduct(vertex - p0, rot_dir);
 
-					if (max < result)
-					{
-						max = result;
-						target = vertex;
-					}
+				if (max < result)
+				{
+					max = result;
+					target = vertex;
 				}
-				break;
 			}
+			break;
+		}
 		case Shape::Type::Circle:
-			{
-				const Circle* circle = dynamic_cast<const Circle*>(shape.shape.get());
-				target = direction.normal() * circle->radius() + shape.transform;
-				return target;
-			}
+		{
+			const Circle* circle = dynamic_cast<const Circle*>(shape.shape.get());
+			target = direction.normal() * circle->radius() + shape.transform;
+			return target;
+		}
 		case Shape::Type::Ellipse:
-			{
-				const Ellipse* ellipse = dynamic_cast<const Ellipse*>(shape.shape.get());
-				target = GeometryAlgorithm2D::calculateEllipseProjectionPoint(ellipse->A(), ellipse->B(), rot_dir);
-				break;
-			}
+		{
+			const Ellipse* ellipse = dynamic_cast<const Ellipse*>(shape.shape.get());
+			target = GeometryAlgorithm2D::calculateEllipseProjectionPoint(ellipse->A(), ellipse->B(), rot_dir);
+			break;
+		}
 		case Shape::Type::Edge:
-			{
-				const Edge* edge = dynamic_cast<const Edge*>(shape.shape.get());
-				real dot1 = Vector2::dotProduct(edge->startPoint(), direction);
-				real dot2 = Vector2::dotProduct(edge->endPoint(), direction);
-				target = dot1 > dot2 ? edge->startPoint() : edge->endPoint();
-				break;
-			}
+		{
+			const Edge* edge = dynamic_cast<const Edge*>(shape.shape.get());
+			real dot1 = Vector2::dotProduct(edge->startPoint(), direction);
+			real dot2 = Vector2::dotProduct(edge->endPoint(), direction);
+			target = dot1 > dot2 ? edge->startPoint() : edge->endPoint();
+			break;
+		}
 		case Shape::Type::Point:
+		{
+			return dynamic_cast<const Point*>(shape.shape.get())->position();
+		}
+		case Shape::Type::Capsule:
+		{
+			const Capsule* capsule = dynamic_cast<const Capsule*>(shape.shape.get());
+			if(capsule->width() >= capsule->height()) // Horizontal
 			{
-				return dynamic_cast<const Point*>(shape.shape.get())->position();
+				real radius = capsule->height() / 2;
+				real offset = rot_dir.x >= 0 ? capsule->width() / 2 - radius : radius - capsule->width() / 2;
+				target = rot_dir.normal() * radius;
+				target.x += offset;
 			}
+			else // Vertical
+			{
+				real radius = capsule->width() / 2;
+				real offset = rot_dir.x >= 0 ? capsule->height() / 2 - radius : radius - capsule->height() / 2;
+				target = rot_dir.normal() * radius;
+				target.y += offset;
+			}
+			break;
+		}
 		default:
 			break;
 		}

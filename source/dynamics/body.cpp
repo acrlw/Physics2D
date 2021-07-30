@@ -164,46 +164,71 @@ namespace Physics2D {
     void Body::calcInertia()
     {
         switch (m_shape->type()) {
-            case Shape::Type::Circle:
+        case Shape::Type::Circle:
+        {
+            const Circle* circle = dynamic_cast<Circle*>(m_shape.get());
+
+            m_inertia = m_mass * circle->radius() * circle->radius() * (0.5f);
+            break;
+        }
+        case Shape::Type::Polygon:
+        {
+            const Polygon* polygon = dynamic_cast<Polygon*>(m_shape.get());
+
+            const Vector2 center = polygon->center();
+            real sum1 = 0.0f;
+            real sum2 = 0.0f;
+
+            for (uint32_t i = 0; i < polygon->vertices().size() - 1; i++)
             {
-                const Circle * circle = dynamic_cast<Circle*>(m_shape.get());
-
-                m_inertia = m_mass * circle->radius() * circle->radius() * (0.5f);
-                break;
+                Vector2 n1 = polygon->vertices()[i] - center;
+                Vector2 n2 = polygon->vertices()[i + 1] - center;
+                real cross = abs(n1.cross(n2));
+                real dot = n2.dot(n2) + n2.dot(n1) + n1.dot(n1);
+                sum1 += cross * dot;
+                sum2 += cross;
             }
-            case Shape::Type::Polygon:
+
+            m_inertia = (m_mass * (1.0f / 6.0f)) * sum1 / sum2;
+            break;
+        }
+        case Shape::Type::Ellipse:
+        {
+            const Ellipse* ellipse = dynamic_cast<Ellipse*>(m_shape.get());
+
+            const real a = ellipse->A();
+            const real b = ellipse->B();
+            m_inertia = m_mass * (a * a + b * b) * (1.0f / 5.0f);
+
+            break;
+        }
+        case Shape::Type::Capsule:
+        {
+            const Capsule* capsule = dynamic_cast<Capsule*>(m_shape.get());
+            real r = 0, h = 0, massS = 0, inertiaS = 0, massC = 0, inertiaC = 0, volume = 0;
+        	
+        	if(capsule->width() >= capsule->height())//Horizontal
+        	{
+                r = capsule->height() / 2;
+                h = capsule->width() - capsule->height();
+        	}
+            else//Vertical
             {
-                const Polygon * polygon = dynamic_cast<Polygon*>(m_shape.get());
-
-                const Vector2 center = polygon->center();
-                real sum1 = 0.0f;
-                real sum2 = 0.0f;
-
-                for (uint32_t i = 0; i < polygon->vertices().size() - 1; i++)
-                {
-                    Vector2 n1 = polygon->vertices()[i] - center;
-                    Vector2 n2 = polygon->vertices()[i + 1] - center;
-                    real cross = abs(n1.cross(n2));
-                    real dot = n2.dot(n2) + n2.dot(n1) + n1.dot(n1);
-                    sum1 += cross * dot;
-                    sum2 += cross;
-                }
-
-                m_inertia = (m_mass * (1.0f / 6.0f)) * sum1 / sum2;
-                break;
+                r = capsule->width() / 2;
+                h = capsule->height() - capsule->width();
             }
-            case Shape::Type::Ellipse:
-            {
-                const Ellipse * ellipse = dynamic_cast<Ellipse*>(m_shape.get());
-
-                const real a = ellipse->A();
-                const real b = ellipse->B();
-                m_inertia = m_mass * (a*a + b*b) * (1.0f / 5.0f);
-
-                break;
-            }
-            default:
-                break;
+        		
+            volume = Constant::Pi * r * r + h * 2 * r;
+            real rho = m_mass / volume;
+            massS = rho * Constant::Pi * r * r;
+            massC = rho * h * 2 * r;
+            inertiaC = (1.0 / 12.0) * massC * (h * h + (2 * r) * (2 * r));
+            inertiaS = massS * r * r * 0.5;
+            m_inertia = inertiaC + inertiaS + massS * (3 * r + 2 * h) * h / 8.0;
+            break;
+        }
+        default:
+            break;
         }
         if (realEqual(m_mass, Constant::Max))
             m_invInertia = 0;

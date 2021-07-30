@@ -124,6 +124,36 @@ namespace Physics2D
 			center.setWidth(2);
 			renderAngleLine(painter, camera, shape, center);
 		}
+
+		static void renderCapsule(QPainter* painter, Utils::Camera* camera, const ShapePrimitive& shape, const QPen& pen)
+		{
+			assert(painter != nullptr && camera != nullptr);
+			assert(shape.shape->type() == Shape::Type::Capsule);
+			const Capsule* capsule = dynamic_cast<Capsule*>(shape.shape.get());
+			const Vector2 screen_p = camera->worldToScreen(shape.transform);
+			renderPoint(painter, camera, shape.transform, pen);
+
+			QColor color = pen.color();
+			color.setAlphaF(0.15f);
+			QBrush brush(color);
+			QPainterPath path;
+			QRectF rect(-capsule->width() / 2 * camera->meterToPixel(), -capsule->height() / 2 * camera->meterToPixel(), capsule->width() * camera->meterToPixel(), capsule->height() * camera->meterToPixel());
+			real shortest = Math::min(capsule->width(), capsule->height()) * camera->meterToPixel() / 2;
+			path.addRoundedRect(rect, shortest, shortest);
+			painter->translate(screen_p.x, screen_p.y);
+			painter->rotate(-shape.rotation);
+
+			painter->setPen(pen);
+			painter->drawPath(path);
+			painter->fillPath(path, brush);
+			painter->rotate(shape.rotation);
+			painter->translate(-screen_p.x, -screen_p.y);
+
+
+			QPen center = pen;
+			center.setWidth(2);
+			renderAngleLine(painter, camera, shape, center);
+		}
 		static void renderEllipse(QPainter* painter, Utils::Camera* camera, const ShapePrimitive& shape, const QPen& pen)
 		{
 			assert(painter != nullptr && camera != nullptr);
@@ -372,7 +402,12 @@ namespace Physics2D
 				renderEdge(painter, camera, shape, pen);
 				break;
 			}
-			default: 
+			case Shape::Type::Capsule:
+			{
+				renderCapsule(painter, camera, shape, pen);
+				break;
+			}
+			default:
 				break;
 			}
 		}

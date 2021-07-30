@@ -20,9 +20,10 @@ namespace Physics2D
 		polygon.scale(0.05);
 		ellipse.set({-5, 4}, {5, -4});
 		ellipse.scale(0.15);
-		circle.setRadius(0.5);
+		circle.setRadius(1);
 		//circle.scale(7);
 		edge.set({-18, 0}, {18, 0});
+		capsule.set(4, 2);
 
 		rectangle_ptr = std::make_shared<Rectangle>(rectangle);
 		land_ptr = std::make_shared<Rectangle>(land);
@@ -30,6 +31,7 @@ namespace Physics2D
 		ellipse_ptr = std::make_shared<Ellipse>(ellipse);
 		circle_ptr = std::make_shared<Circle>(circle);
 		edge_ptr = std::make_shared<Edge>(edge);
+		capsule_ptr = std::make_shared<Capsule>(capsule);
 		
 		distancePrim.minDistance = 1;
 		distancePrim.maxDistance = 1.5;
@@ -56,17 +58,18 @@ namespace Physics2D
 		//testCollision();
 		//testJoint();
 		//testBroadphase();
-		testCCD();
-		Utils::Camera::Viewport viewport((0, 0), (1920, 1080));
-		camera.setViewport(viewport);
+		//testCCD();
+		testCapsule();
+		camera.setViewport(Utils::Camera::Viewport((0, 0), (1920, 1080)));
 		camera.setWorld(&m_world);
 		camera.setDbvh(&dbvh);
 		camera.setTree(&tree);
 		camera.setAabbVisible(true);
-		camera.setDbvhVisible(false);
+		camera.setDbvhVisible(true);
 		camera.setTreeVisible(false);
 		camera.setAxisVisible(false);
 		connect(&m_timer, &QTimer::timeout, this, &Window::process);
+		
 		m_timer.setInterval(15);
 		m_timer.start();
 
@@ -123,6 +126,26 @@ namespace Physics2D
 		dbvh.insert(rect);
 		dbvh.insert(rect2);
 		dbvh.insert(rect3);
+	}
+
+	void Window::testCapsule()
+	{
+		rect = m_world.createBody();
+		rect->setShape(capsule_ptr);
+		rect->position().set({ 0, 0 });
+		rect->angle() = 73;
+		rect->setMass(1000);
+		rect->setType(Body::BodyType::Static);
+
+		rect2 = m_world.createBody();
+		rect2->setShape(capsule_ptr);
+		rect2->position().set(4, 0.5);
+		rect2->angle() = -37;
+		rect2->setMass(1000);
+		rect2->setType(Body::BodyType::Static);
+		
+		dbvh.insert(rect);
+		dbvh.insert(rect2);
 	}
 
 
@@ -269,26 +292,48 @@ namespace Physics2D
 		QPainter painter(this);
 		camera.render(&painter);
 		real dt = 1.0 / 60;
-		QPen pen(Qt::cyan, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+
 		QPen pen2(Qt::red, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		auto result = CCD::query(dbvh.root(), rect2, dt);
-		//fmt::print("toi exist:{}\n", result.has_value());
-		if (result.has_value())
+		
+		
+		auto result = Detector::detect(rect, rect2);
+		if(result.isColliding)
 		{
-			auto list = result.value();
-			for(auto& pair: list)
-			{
-				fmt::print("toi:{}\n", pair.toi);
-				Body::PhysicsAttribute origin = rect2->physicsAttribute();
-				rect2->stepPosition(pair.toi);
-				ShapePrimitive primitive;
-				primitive.shape = rect2->shape();
-				primitive.rotation = rect2->angle();
-				primitive.transform = rect2->position();
-				RendererQtImpl::renderShape(&painter, &camera, primitive, pen2);
-				rect2->setPhysicsAttribute(origin);
-			}
+
+			//ShapePrimitive primitive;
+			//primitive.shape = rect->shape();
+			//primitive.rotation = rect->angle();
+			//primitive.transform = rect->position();
+			//RendererQtImpl::renderShape(&painter, &camera, primitive, pen2);
+
+
+			//primitive.shape = rect2->shape();
+			//primitive.rotation = rect2->angle();
+			//primitive.transform = rect2->position();
+			//RendererQtImpl::renderShape(&painter, &camera, primitive, pen2);
+
+			RendererQtImpl::renderLine(&painter, &camera, result.contactList[0].pointA, result.contactList[0].pointB, pen2);
 		}
+		
+		//QPen pen(Qt::cyan, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		//auto result = CCD::query(dbvh.root(), rect2, dt);
+		////fmt::print("toi exist:{}\n", result.has_value());
+		//if (result.has_value())
+		//{
+		//	auto list = result.value();
+		//	for(auto& pair: list)
+		//	{
+		//		fmt::print("toi:{}\n", pair.toi);
+		//		Body::PhysicsAttribute origin = rect2->physicsAttribute();
+		//		rect2->stepPosition(pair.toi);
+		//		ShapePrimitive primitive;
+		//		primitive.shape = rect2->shape();
+		//		primitive.rotation = rect2->angle();
+		//		primitive.transform = rect2->position();
+		//		RendererQtImpl::renderShape(&painter, &camera, primitive, pen2);
+		//		rect2->setPhysicsAttribute(origin);
+		//	}
+		//}
 	}
 
 	void Window::resizeEvent(QResizeEvent* e)
@@ -309,7 +354,9 @@ namespace Physics2D
 		}
 		for(auto& body: m_world.bodyList())
 		{
-			if(body->shape()->contains(mousePos - body->position()) && selectedBody == nullptr)
+			Vector2 point = mousePos - body->position();
+			point = Matrix2x2(-body->angle()).multiply(point);
+			if(body->shape()->contains(point) && selectedBody == nullptr)
 			{
 				selectedBody = body.get();
 				break;
@@ -385,6 +432,11 @@ namespace Physics2D
 			isStop = !isStop;
 			break;
 		}
+		case Qt::Key_R:
+			{
+			rect->angle() -= 10;
+			break;
+			}
 		case Qt::Key_L:
 		{
 			if (camera.targetBody() != nullptr)

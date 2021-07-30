@@ -241,8 +241,7 @@ namespace Physics2D
 	}
 	std::optional<std::vector<CCD::CCDPair>> CCD::query(DBVH::Node* root, Body* body, const real& dt)
 	{
-		std::vector<CCDPair> finalList;
-		real finalToi = 0.0;
+		std::vector<CCDPair> queryList;
 		assert(root->isRoot() && body != nullptr);
 		auto [trajectoryCCD, aabbCCD] = buildTrajectoryAABB(body, dt);
 		std::vector<DBVH::Node*> potential;
@@ -256,21 +255,10 @@ namespace Physics2D
 			{
 				auto toi = findNarrowphaseRoot(body, newCCDTrajectory, element->pair.body, trajectoryElement, result.value(), dt);
 				if (toi.has_value())
-				{
-					if(finalToi == 0.0 || finalToi > toi.value())
-					{
-						finalToi = toi.value();
-						finalList.clear();
-						finalList.emplace_back(CCDPair(finalToi, element->pair.body));
-						continue;
-					}
-					if(fuzzyRealEqual(finalToi, toi.value(), Constant::Epsilon))
-						finalList.emplace_back(CCDPair(finalToi, element->pair.body));
-					
-				}
+					queryList.emplace_back(CCDPair(toi.value(), element->pair.body));
 			}
 		}
-		return finalToi > 0.0 ? std::optional(finalList)
+		return !queryList.empty() ? std::optional(queryList)
 			: std::nullopt;
 	}
 }

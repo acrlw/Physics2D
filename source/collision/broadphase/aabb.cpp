@@ -1,6 +1,7 @@
 #include "include/collision/broadphase/aabb.h"
 
 
+#include "include/collision/algorithm/gjk.h"
 #include "include/dynamics/body.h"
 #include "include/geometry/algorithm/2d.h"
 
@@ -56,87 +57,98 @@ namespace Physics2D
 		AABB aabb;
 		switch (shape.shape->type())
 		{
-			case Shape::Type::Polygon:
+		case Shape::Type::Polygon:
+		{
+			const Polygon* polygon = dynamic_cast<Polygon*>(shape.shape.get());
+			real max_x = Constant::NegativeMin, max_y = Constant::NegativeMin, min_x = Constant::Max, min_y = Constant::Max;
+			for (const Vector2& v : polygon->vertices())
 			{
-				const Polygon* polygon = dynamic_cast<Polygon*>(shape.shape.get());
-				real max_x = Constant::NegativeMin, max_y = Constant::NegativeMin, min_x = Constant::Max, min_y = Constant::Max;
-				for(const Vector2& v: polygon->vertices())
-				{
-					const Vector2 vertex = Matrix2x2(shape.rotation).multiply(v);
-					if (max_x < vertex.x)
-						max_x = vertex.x;
-					
-					if (min_x > vertex.x)
-						min_x = vertex.x;
+				const Vector2 vertex = Matrix2x2(shape.rotation).multiply(v);
+				if (max_x < vertex.x)
+					max_x = vertex.x;
 
-					if (max_y < vertex.y)
-						max_y = vertex.y;
+				if (min_x > vertex.x)
+					min_x = vertex.x;
 
-					if (min_y > vertex.y)
-						min_y = vertex.y;
-				}
-				aabb.width = abs(max_x - min_x);
-				aabb.height = abs(max_y - min_y);
-				aabb.position.set((max_x + min_x) * 0.5, (max_y + min_y) * 0.5);
-				break;
-			}
-			case Shape::Type::Ellipse:
-			{
-				const Ellipse* ellipse = dynamic_cast<Ellipse*>(shape.shape.get());
+				if (max_y < vertex.y)
+					max_y = vertex.y;
 
-				Vector2 top_dir{ 0, 1 };
-				Vector2 left_dir{ -1, 0 };
-				Vector2 bottom_dir{ 0, -1 };
-				Vector2 right_dir{ 1, 0 };
-					
-				top_dir = Matrix2x2(-shape.rotation).multiply(top_dir);
-				left_dir = Matrix2x2(-shape.rotation).multiply(left_dir);
-				bottom_dir = Matrix2x2(-shape.rotation).multiply(bottom_dir);
-				right_dir = Matrix2x2(-shape.rotation).multiply(right_dir);
-					
-				Vector2 top = GeometryAlgorithm2D::calculateEllipseProjectionPoint(ellipse->A(), ellipse->B(), top_dir);
-				Vector2 left = GeometryAlgorithm2D::calculateEllipseProjectionPoint(ellipse->A(), ellipse->B(), left_dir);
-				Vector2 bottom = GeometryAlgorithm2D::calculateEllipseProjectionPoint(ellipse->A(), ellipse->B(), bottom_dir);
-				Vector2 right = GeometryAlgorithm2D::calculateEllipseProjectionPoint(ellipse->A(), ellipse->B(), right_dir);
-					
-				top = Matrix2x2(shape.rotation).multiply(top);
-				left = Matrix2x2(shape.rotation).multiply(left);
-				bottom = Matrix2x2(shape.rotation).multiply(bottom);
-				right = Matrix2x2(shape.rotation).multiply(right);
-					
-				aabb.height = abs(top.y - bottom.y);
-				aabb.width = abs(right.x - left.x);
-				break;
+				if (min_y > vertex.y)
+					min_y = vertex.y;
 			}
-			case Shape::Type::Circle:
-			{
-				const Circle* circle = dynamic_cast<Circle*>(shape.shape.get());
-				aabb.width = circle->radius() * 2;
-				aabb.height = circle->radius() * 2;
-				break;
-			}
-			case Shape::Type::Edge:
-			{
-				const Edge* edge = dynamic_cast<Edge*>(shape.shape.get());
-				aabb.width = abs(edge->startPoint().x - edge->endPoint().x);
-				aabb.height = abs(edge->startPoint().y - edge->endPoint().y);
-				aabb.position.set(edge->startPoint().x + edge->endPoint().x, edge->startPoint().y + edge->endPoint().y);
-				aabb.position *= 0.5;
-				break;
-			}
-			case Shape::Type::Curve:
-			{
-				const Curve* curve = dynamic_cast<Curve*>(shape.shape.get());
-				
-				break;
-			}
-			case Shape::Type::Point:
-			{
-				const Point* curve = dynamic_cast<Point*>(shape.shape.get());
-				aabb.width = 1;
-				aabb.height = 1;
-				break;
-			}
+			aabb.width = abs(max_x - min_x);
+			aabb.height = abs(max_y - min_y);
+			aabb.position.set((max_x + min_x) * 0.5, (max_y + min_y) * 0.5);
+			break;
+		}
+		case Shape::Type::Ellipse:
+		{
+			const Ellipse* ellipse = dynamic_cast<Ellipse*>(shape.shape.get());
+
+			Vector2 top_dir{ 0, 1 };
+			Vector2 left_dir{ -1, 0 };
+			Vector2 bottom_dir{ 0, -1 };
+			Vector2 right_dir{ 1, 0 };
+
+			top_dir = Matrix2x2(-shape.rotation).multiply(top_dir);
+			left_dir = Matrix2x2(-shape.rotation).multiply(left_dir);
+			bottom_dir = Matrix2x2(-shape.rotation).multiply(bottom_dir);
+			right_dir = Matrix2x2(-shape.rotation).multiply(right_dir);
+
+			Vector2 top = GeometryAlgorithm2D::calculateEllipseProjectionPoint(ellipse->A(), ellipse->B(), top_dir);
+			Vector2 left = GeometryAlgorithm2D::calculateEllipseProjectionPoint(ellipse->A(), ellipse->B(), left_dir);
+			Vector2 bottom = GeometryAlgorithm2D::calculateEllipseProjectionPoint(ellipse->A(), ellipse->B(), bottom_dir);
+			Vector2 right = GeometryAlgorithm2D::calculateEllipseProjectionPoint(ellipse->A(), ellipse->B(), right_dir);
+
+			top = Matrix2x2(shape.rotation).multiply(top);
+			left = Matrix2x2(shape.rotation).multiply(left);
+			bottom = Matrix2x2(shape.rotation).multiply(bottom);
+			right = Matrix2x2(shape.rotation).multiply(right);
+
+			aabb.height = abs(top.y - bottom.y);
+			aabb.width = abs(right.x - left.x);
+			break;
+		}
+		case Shape::Type::Circle:
+		{
+			const Circle* circle = dynamic_cast<Circle*>(shape.shape.get());
+			aabb.width = circle->radius() * 2;
+			aabb.height = circle->radius() * 2;
+			break;
+		}
+		case Shape::Type::Edge:
+		{
+			const Edge* edge = dynamic_cast<Edge*>(shape.shape.get());
+			aabb.width = abs(edge->startPoint().x - edge->endPoint().x);
+			aabb.height = abs(edge->startPoint().y - edge->endPoint().y);
+			aabb.position.set(edge->startPoint().x + edge->endPoint().x, edge->startPoint().y + edge->endPoint().y);
+			aabb.position *= 0.5;
+			break;
+		}
+		case Shape::Type::Curve:
+		{
+			const Curve* curve = dynamic_cast<Curve*>(shape.shape.get());
+
+			break;
+		}
+		case Shape::Type::Point:
+		{
+			const Point* curve = dynamic_cast<Point*>(shape.shape.get());
+			aabb.width = 1;
+			aabb.height = 1;
+			break;
+		}
+		case Shape::Type::Capsule:
+		{
+			const Capsule* capsule = dynamic_cast<Capsule*>(shape.shape.get());
+			Vector2 p1 = GJK::findFarthestPoint(shape, { 1, 0 });
+			Vector2 p2 = GJK::findFarthestPoint(shape, { 0, 1 });
+			p1 -= shape.transform;
+			p2 -= shape.transform;
+			aabb.width = p1.x * 2;
+			aabb.height = p2.y * 2;
+			break;
+		}
 		}
 		aabb.position += shape.transform;
 		aabb.expand(factor);

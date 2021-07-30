@@ -8,94 +8,95 @@
 
 namespace Physics2D
 {
-    class Body
-    {
-        public:
-            enum class BodyType
-                {
-                Kinematic,
-                Static,
-                Dynamic,
-                Bullet
-                };
+	class Body
+	{
+	public:
+		enum class BodyType
+		{
+			Kinematic,
+			Static,
+			Dynamic,
+			Bullet
+		};
 
-            struct PhysicsAttribute
-            {
-                Vector2 position;
-                Vector2 velocity;
-                real angle = 0;
-                real angularVelocity = 0;
-                void step(const real& dt);
-            };
-            Body() = default;
-            Vector2& position();
+		struct PhysicsAttribute
+		{
+			Vector2 position;
+			Vector2 velocity;
+			real angle = 0;
+			real angularVelocity = 0;
+			void step(const real& dt);
+		};
 
-            Vector2& velocity();
+		Body() = default;
+		Vector2& position();
 
-            real& angle();
+		Vector2& velocity();
 
-            real& angularVelocity();
+		real& angle();
 
-            Vector2& forces();
-            void clearTorque();
+		real& angularVelocity();
 
-            real& torques();
+		Vector2& forces();
+		void clearTorque();
 
-            std::shared_ptr<Shape> shape() const;
-            void setShape(std::shared_ptr<Shape> shape);
+		real& torques();
 
-            BodyType type() const;
-            void setType(const BodyType &type);
+		std::shared_ptr<Shape> shape() const;
+		void setShape(std::shared_ptr<Shape> shape);
 
-            real mass() const;
-            void setMass(const real &mass);
+		BodyType type() const;
+		void setType(const BodyType& type);
 
-            real inertia() const;
+		real mass() const;
+		void setMass(const real& mass);
 
-            AABB aabb(const real& factor = 1)const;
+		real inertia() const;
 
-            real damping() const;
-            void setDamping(const real &damping);
+		AABB aabb(const real& factor = 1) const;
 
-            bool sleep() const;
-            void setSleep(bool sleep);
+		real damping() const;
+		void setDamping(const real& damping);
 
-            real inverseMass()const;
-            real inverseInertia()const;
+		bool sleep() const;
+		void setSleep(bool sleep);
 
-            PhysicsAttribute physicsAttribute()const;
-            void setPhysicsAttribute(const PhysicsAttribute& info);
+		real inverseMass() const;
+		real inverseInertia() const;
 
-            void stepPosition(const real& dt);
+		PhysicsAttribute physicsAttribute() const;
+		void setPhysicsAttribute(const PhysicsAttribute& info);
 
-            void applyImpulse(const Vector2& impulse, const Vector2& r);
-            Vector2 toLocalPoint(const Vector2& point)const;
-            Vector2 toWorldPoint(const Vector2& point)const;
-            Vector2 toActualPoint(const Vector2& point)const;
+		void stepPosition(const real& dt);
 
-        private:
-            void calcInertia();
+		void applyImpulse(const Vector2& impulse, const Vector2& r);
+		Vector2 toLocalPoint(const Vector2& point) const;
+		Vector2 toWorldPoint(const Vector2& point) const;
+		Vector2 toActualPoint(const Vector2& point) const;
 
-            real m_mass = 0;
-            real m_inertia = 0;
-            real m_invMass = 0;
-            real m_invInertia = 0;
-    	
-            Vector2 m_position;
-            Vector2 m_velocity;
-            real m_angle = 0;
-            real m_angularVelocity = 0;
-    	
-            Vector2 m_forces;
-            real m_torques = 0;
-    	
-            std::shared_ptr<Shape>m_shape;
-            BodyType m_type = BodyType::Static;
-    	
-            bool m_sleep = false;
-            real m_damping = 0.7;
+	private:
+		void calcInertia();
 
-            BodyState m_bodyState;
-    };
+		real m_mass = 0;
+		real m_inertia = 0;
+		real m_invMass = 0;
+		real m_invInertia = 0;
+
+		Vector2 m_position;
+		Vector2 m_velocity;
+		real m_angle = 0;
+		real m_angularVelocity = 0;
+
+		Vector2 m_forces;
+		real m_torques = 0;
+
+		std::shared_ptr<Shape> m_shape;
+		BodyType m_type = BodyType::Static;
+
+		bool m_sleep = false;
+		real m_damping = 0.7;
+
+		BodyState m_bodyState;
+	};
 }
 #endif

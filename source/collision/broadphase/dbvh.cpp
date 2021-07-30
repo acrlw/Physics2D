@@ -173,6 +173,7 @@ namespace Physics2D
 		if (iter == m_leaves.end())
 			return;
 		
+		
 		AABB thin = AABB::fromBody(body);
 		thin.expand(0.05);
 		if(!thin.isSubset(iter->second->pair.aabb))
@@ -210,10 +211,18 @@ namespace Physics2D
 		if (iter == m_leaves.end())
 			return nullptr;
 
+		
+
 		Node* source = iter->second;
 		Node* parent = source->parent;
 		parent->separate(source);
 
+		if (iter->second->isRoot() && iter->second->isLeaf() && m_leaves.size() < 2)
+		{
+			m_root = nullptr;
+			return source;
+		}
+		
 		Node* child = moveup(parent);
 		
 		balance(child->parent);
@@ -490,7 +499,10 @@ namespace Physics2D
 
 	void DBVH::Node::separate(Node* node)
 	{
-		if (node == nullptr || isLeaf())
+		if (node == nullptr)
+			return;
+
+		if (node->isLeaf() && node->isRoot())
 			return;
 
 		if (node == left)
