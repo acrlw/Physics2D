@@ -23,6 +23,7 @@ cmake CMakeLists.txt
     - Polygon
     - Line
     - Point
+    - Capsule
 - Continuous Collision Detection
   - Sampling The Trajectory of Body
   - Time of Impact
