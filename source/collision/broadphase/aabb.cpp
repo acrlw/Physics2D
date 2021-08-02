@@ -145,8 +145,8 @@ namespace Physics2D
 			Vector2 p2 = GJK::findFarthestPoint(shape, { 0, 1 });
 			p1 -= shape.transform;
 			p2 -= shape.transform;
-			aabb.width = p1.x * 2;
-			aabb.height = p2.y * 2;
+			aabb.width = p1.x * 2.0;
+			aabb.height = p2.y * 2.0;
 			break;
 		}
 		}

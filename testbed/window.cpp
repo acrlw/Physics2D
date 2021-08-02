@@ -14,7 +14,7 @@ namespace Physics2D
 		this->resize(1920, 1080);
 		this->setMouseTracking(true);
 
-		rectangle.set(1, 1);
+		rectangle.set(4, 4);
 		land.set(18, 0.2);
 		polygon.append({{3, 0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3}, {2, -3}, {3, 0}});
 		polygon.scale(0.05);
@@ -23,7 +23,7 @@ namespace Physics2D
 		circle.setRadius(1);
 		//circle.scale(7);
 		edge.set({-18, 0}, {18, 0});
-		capsule.set(4, 2);
+		capsule.set(2, 4);
 
 		rectangle_ptr = std::make_shared<Rectangle>(rectangle);
 		land_ptr = std::make_shared<Rectangle>(land);
@@ -47,7 +47,7 @@ namespace Physics2D
 		mousePrim.mousePoint.set(2.0, 2.0);
 
 
-		m_world.setEnableGravity(false);
+		m_world.setEnableGravity(true);
 		m_world.setGravity({0, -9.8});
 		m_world.setLinearVelocityDamping(0.8f);
 		m_world.setAirFrictionCoefficient(0.8f);
@@ -133,19 +133,11 @@ namespace Physics2D
 		rect = m_world.createBody();
 		rect->setShape(capsule_ptr);
 		rect->position().set({ 0, 0 });
-		rect->angle() = 73;
-		rect->setMass(1000);
-		rect->setType(Body::BodyType::Static);
-
-		rect2 = m_world.createBody();
-		rect2->setShape(capsule_ptr);
-		rect2->position().set(4, 0.5);
-		rect2->angle() = -37;
-		rect2->setMass(1000);
-		rect2->setType(Body::BodyType::Static);
+		rect->angle() = 0;
+		rect->setMass(200);
+		rect->setType(Body::BodyType::Dynamic);
 		
 		dbvh.insert(rect);
-		dbvh.insert(rect2);
 	}
 
 
@@ -161,6 +153,17 @@ namespace Physics2D
 
 		
 		m_world.stepVelocity(dt);
+
+		DistanceConstraintPrimitive p;
+		p.distance = 2;
+		p.source = rect;
+		p.sourcePoint.set(0, 1);
+		p.targetPoint.set(2, 0);
+		p.stiffness = 0.9;
+		DistanceConstraintSolver s;
+		s.add(p);
+		s.solve(dt);
+		
 		m_world.stepPosition(dt);
 		
 		
@@ -293,27 +296,27 @@ namespace Physics2D
 		camera.render(&painter);
 		real dt = 1.0 / 60;
 
-		QPen pen2(Qt::red, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		
-		
-		auto result = Detector::detect(rect, rect2);
-		if(result.isColliding)
-		{
+		//QPen pen2(Qt::red, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		//
+		//
+		//auto result = Detector::detect(rect, rect2);
+		//if(result.isColliding)
+		//{
 
-			//ShapePrimitive primitive;
-			//primitive.shape = rect->shape();
-			//primitive.rotation = rect->angle();
-			//primitive.transform = rect->position();
-			//RendererQtImpl::renderShape(&painter, &camera, primitive, pen2);
+		//	//ShapePrimitive primitive;
+		//	//primitive.shape = rect->shape();
+		//	//primitive.rotation = rect->angle();
+		//	//primitive.transform = rect->position();
+		//	//RendererQtImpl::renderShape(&painter, &camera, primitive, pen2);
 
 
-			//primitive.shape = rect2->shape();
-			//primitive.rotation = rect2->angle();
-			//primitive.transform = rect2->position();
-			//RendererQtImpl::renderShape(&painter, &camera, primitive, pen2);
+		//	//primitive.shape = rect2->shape();
+		//	//primitive.rotation = rect2->angle();
+		//	//primitive.transform = rect2->position();
+		//	//RendererQtImpl::renderShape(&painter, &camera, primitive, pen2);
 
-			RendererQtImpl::renderLine(&painter, &camera, result.contactList[0].pointA, result.contactList[0].pointB, pen2);
-		}
+		//	RendererQtImpl::renderLine(&painter, &camera, result.contactList[0].pointA, result.contactList[0].pointB, pen2);
+		//}
 		
 		//QPen pen(Qt::cyan, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 		//auto result = CCD::query(dbvh.root(), rect2, dt);

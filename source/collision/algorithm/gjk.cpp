@@ -275,7 +275,7 @@ namespace Physics2D
 			else // Vertical
 			{
 				real radius = capsule->width() / 2;
-				real offset = rot_dir.x >= 0 ? capsule->height() / 2 - radius : radius - capsule->height() / 2;
+				real offset = rot_dir.y >= 0 ? capsule->height() / 2 - radius : radius - capsule->height() / 2;
 				target = rot_dir.normal() * radius;
 				target.y += offset;
 			}
