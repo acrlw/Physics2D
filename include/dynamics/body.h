@@ -98,7 +98,7 @@ namespace Physics2D
 		BodyType m_type = BodyType::Static;
 
 		bool m_sleep = false;
-		real m_friction = 0.3;
+		real m_friction = 0.4;
 
 		BodyState m_bodyState;
 

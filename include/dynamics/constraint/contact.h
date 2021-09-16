@@ -17,7 +17,7 @@ namespace Physics2D
 		Vector2 vb;
 		Vector2 normal;
 		Vector2 tangent;
-		real bias = 0;
+		real velocityBias = 0;
 		real effectiveMassNormal = 0;
 		real effectiveMassTangent = 0;
 		real accumulatedNormalImpulse = 0;
@@ -27,14 +27,14 @@ namespace Physics2D
 	struct ContactConstraintPoint
 	{
 		ContactConstraintPoint() = default;
-		RelationID relation;
+		RelationID relation = 0;
 		int contactId = RandomGenerator::unique(1, 99999);
 		real friction = 0.2;
 		bool active = true;
 		Vector2 localA;
 		Vector2 localB;
-		Body* bodyA;
-		Body* bodyB;
+		Body* bodyA = nullptr;
+		Body* bodyB = nullptr;
 		VelocityConstraintPoint vcp;
 	};
 	class ContactMaintainer
@@ -43,8 +43,8 @@ namespace Physics2D
 		void solve(real dt);
 		void add(const Collision& collision);
 		std::map<RelationID, std::vector<ContactConstraintPoint>> m_contactTable;
-		void renewCcp(ContactConstraintPoint& ccp, const PointPair& pair, const Collision& collision);
-		real m_maxPenetration = 0.02;
+		void prepare(ContactConstraintPoint& ccp, const PointPair& pair, const Collision& collision);
+		real m_maxPenetration = 0.01;
 		real m_biasFactor = 0.2;
 	private:
 	};

@@ -48,11 +48,12 @@ namespace Physics2D
 
 
 		m_world.setEnableGravity(true);
-		m_world.setGravity({0, -0.5f});
+		m_world.setGravity({0, -0.4f});
 		m_world.setLinearVelocityDamping(0.8f);
 		m_world.setAirFrictionCoefficient(0.8f);
 		m_world.setAngularVelocityDamping(0.8f);
-		m_world.setPositionIteration(6);
+		m_world.setPositionIteration(4);
+		m_world.setVelocityIteration(2);
 		//createStackBox(6, 1.1, 1.1);
 		//createBoxesAndGround(6);
 		//testPendulum();
@@ -228,18 +229,19 @@ namespace Physics2D
 	void Window::testCollision()
 	{
 		ground = m_world.createBody();
-		ground->setShape(land_ptr);
+		ground->setShape(edge_ptr);
 		ground->position().set({ 0, 0 });
 		ground->setMass(Constant::Max);
 		ground->setType(Body::BodyType::Static);
+		ground->setFriction(0.7);
 
 		dbvh.insert(ground);
 		
 		rect = m_world.createBody();
-		rect->setShape(capsule_ptr);
+		rect->setShape(rectangle_ptr);
 		rect->position().set({-5, 2});
-		rect->rotation() = 25;
-		rect->setMass(20);
+		rect->rotation() = 0;
+		rect->setMass(200);
 		rect->setType(Body::BodyType::Dynamic);
 
 		rect2 = m_world.createBody();
