@@ -66,6 +66,7 @@ cmake CMakeLists.txt
 # Future
 - Sequential Impulse Solver
 - Broadphase
+  - Uniform Grid
 - Integrator
   - Verlet
   - Rk4
