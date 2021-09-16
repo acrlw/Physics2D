@@ -27,6 +27,7 @@ cmake CMakeLists.txt
 - Continuous Collision Detection
   - Sampling Trajectory of Body
   - Time of Impact
+- Contact Cache
 - Rigid Body Dynamics Simulation
 - Axis-Aligned Bounding Box
 - Dynamic Bounding Volume Tree
@@ -61,6 +62,9 @@ cmake CMakeLists.txt
 
 # Future
 - Sequential Impulse Solver
+- Integrator
+  - Verlet
+  - Rk4
 - Joint
   - Mouse
   - Prismatic
