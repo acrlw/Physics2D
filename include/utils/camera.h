@@ -76,6 +76,11 @@ namespace Physics2D::Utils
 
         bool treeVisible()const;
         void setTreeVisible(bool visible);
+
+        real deltaTime()const;
+        void setDeltaTime(const real& deltaTime);
+
+		
     private:
         void drawDbvh(DBVH::Node* node, QPainter* painter);
         void drawTree(QPainter* painter);
@@ -90,7 +95,7 @@ namespace Physics2D::Utils
 		real m_meterToPixel = 50.0;
 		real m_pixelToMeter = 0.02;
 
-        real m_targetMeterToPixel = 50.0;
+        real m_targetMeterToPixel = 80.0;
         real m_targetPixelToMeter = 0.02;
 		
         Vector2 m_transform;
@@ -102,7 +107,9 @@ namespace Physics2D::Utils
         Tree* m_tree = nullptr;
 
 		real m_zoomFactor = 1.0;
-        real m_easingTime = 200;
+        real m_restitution = 2;
+        real m_deltaTime = 15.0;
+        
 	};
 }
 #endif

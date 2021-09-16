@@ -58,7 +58,7 @@ namespace Physics2D
 			case Body::BodyType::Dynamic:
 			{
 				body->position() += body->velocity() * dt * m_positionIteration;
-				body->angle() += body->angularVelocity() * dt * m_positionIteration;
+				body->rotation() += body->angularVelocity() * dt * m_positionIteration;
 
 				body->forces().clear();
 				body->clearTorque();
@@ -67,7 +67,7 @@ namespace Physics2D
 			case Body::BodyType::Kinematic:
 			{
 				body->position() += body->velocity() * dt * m_positionIteration;
-				body->angle() += body->angularVelocity() * dt * m_positionIteration;
+				body->rotation() += body->angularVelocity() * dt * m_positionIteration;
 
 				body->forces().clear();
 				body->clearTorque();
@@ -98,12 +98,12 @@ namespace Physics2D
 
 					const real b = body->inverseInertia() * body->torques();
 					const real av = (body->angularVelocity() + b * dt * m_velocityIteration) * m_angularVelocityDamping;
-					const real angle = body->angle() + av * dt * m_positionIteration;
+					const real rotation = body->rotation() + av * dt * m_positionIteration;
 
 					body->velocity() = v;
 					body->position() = p;
 					body->angularVelocity() = av;
-					body->angle() = angle;
+					body->rotation() = rotation;
 
 					body->forces().clear();
 					body->clearTorque();
@@ -247,8 +247,22 @@ namespace Physics2D
 		//Body* body = new Body;
 		auto body = std::make_unique<Body>();
 		Body* temp = body.get();
+		temp->setId(RandomGenerator::unique(1, 9999));
 		m_bodyList.emplace_back(std::move(body));
 		return temp;
+	}
+
+	void World::removeBody(Body* body)
+	{
+		for(auto iter = m_bodyList.begin(); iter != m_bodyList.end(); ++iter)
+		{
+			if(iter->get() == body)
+			{
+				RandomGenerator::pop(body->id());
+				iter->release();
+				m_bodyList.erase(iter);
+			}
+		}
 	}
 
 	AngleJoint* World::createJoint(const AngleJointPrimitive& primitive)

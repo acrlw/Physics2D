@@ -1,7 +1,7 @@
 #include "include/dynamics/body.h"
-
 namespace Physics2D {
-    Vector2& Body::position() 
+
+    Vector2& Body::position()
     {
         return m_position;
     }
@@ -13,9 +13,9 @@ namespace Physics2D {
     }
     
 
-    real& Body::angle() 
+    real& Body::rotation() 
     {
-        return m_angle;
+        return m_rotation;
     }
 
     real& Body::angularVelocity()
@@ -86,19 +86,19 @@ namespace Physics2D {
     {
         ShapePrimitive primitive;
         primitive.transform = m_position;
-        primitive.rotation = m_angle;
+        primitive.rotation = m_rotation;
         primitive.shape = m_shape;
         return AABB::fromShape(primitive, factor);
     }
 
-    real Body::damping() const
+    real Body::friction() const
     {
-        return m_damping;
+        return m_friction;
     }
 
-    void Body::setDamping(const real &damping)
+    void Body::setFriction(const real &friction)
     {
-        m_damping = damping;
+        m_friction = friction;
     }
 
     bool Body::sleep() const
@@ -123,13 +123,13 @@ namespace Physics2D {
 
     Body::PhysicsAttribute Body::physicsAttribute() const
     {
-        return {m_position, m_velocity, m_angle, m_angularVelocity};
+        return {m_position, m_velocity, m_rotation, m_angularVelocity};
     }
 
     void Body::setPhysicsAttribute(const PhysicsAttribute& info)
     {
         m_position = info.position;
-        m_angle = info.angle;
+        m_rotation = info.rotation;
         m_velocity = info.velocity;
         m_angularVelocity = info.angularVelocity;
     }
@@ -137,7 +137,7 @@ namespace Physics2D {
     void Body::stepPosition(const real& dt)
     {
         m_position += m_velocity * dt;
-        m_angle += m_angularVelocity * dt;
+        m_rotation += m_angularVelocity * dt;
     }
 
     void Body::applyImpulse(const Vector2& impulse, const Vector2& r)
@@ -147,19 +147,27 @@ namespace Physics2D {
     }
     Vector2 Body::toLocalPoint(const Vector2& point)const
     {
-        return Matrix2x2(-m_angle).multiply(point - m_position);
+        return Matrix2x2(-m_rotation).multiply(point - m_position);
     }
 
     Vector2 Body::toWorldPoint(const Vector2& point) const
     {
-        return Matrix2x2(m_angle).multiply(point) + m_position;
+        return Matrix2x2(m_rotation).multiply(point) + m_position;
     }
     Vector2 Body::toActualPoint(const Vector2& point) const
     {
-        return Matrix2x2(m_angle).multiply(point);
+        return Matrix2x2(m_rotation).multiply(point);
     }
 
+    int Body::id() const
+    {
+        return m_id;
+    }
 
+    void Body::setId(const int& id)
+    {
+        m_id = id;
+    }
 
     void Body::calcInertia()
     {
@@ -239,7 +247,7 @@ namespace Physics2D {
     void Body::PhysicsAttribute::step(const real& dt)
     {
         position += velocity * dt;
-        angle += angularVelocity * dt;
+        rotation += angularVelocity * dt;
     }
 
 }

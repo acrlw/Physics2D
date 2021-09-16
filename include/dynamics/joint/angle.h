@@ -37,7 +37,7 @@ namespace Physics2D
 			real ii_b = m_primitive.bodyB->inverseInertia();
 			real inv_dt = 1.0 / dt;
 			m_primitive.effectiveMass = 1.0 / (ii_a + ii_b);
-			real c = m_primitive.bodyA->angle() - m_primitive.bodyB->angle() - m_primitive.referenceAngle;
+			real c = m_primitive.bodyA->rotation() - m_primitive.bodyB->rotation() - m_primitive.referenceAngle;
 			m_primitive.bias = -m_factor * inv_dt * c;
 			
 

@@ -10,13 +10,13 @@ namespace Physics2D::Utils
 		{
 			assert(painter != nullptr && m_world != nullptr);
 
-			real dt = 1.0 / 15.0;
+			real inv_dt = 1.0 / m_deltaTime;
 			
 			real scale = m_targetMeterToPixel - m_meterToPixel;
 			if (abs(scale) < 0.1 || m_meterToPixel < 1.0)
 				m_meterToPixel = m_targetMeterToPixel;
 			else
-				m_meterToPixel -= (1.0 - std::exp(dt)) * scale;
+				m_meterToPixel -= (1.0 - std::exp(m_restitution * inv_dt)) * scale;
 			m_pixelToMeter = 1.0 / m_meterToPixel;
 
 			if (m_targetBody != nullptr)
@@ -37,9 +37,9 @@ namespace Physics2D::Utils
 				if (c.lengthSquare() < 0.1)
 					m_transform = target;
 				else
-					m_transform -= (1.0 - std::exp(dt)) * c;
+					m_transform -= (1.0 - std::exp(m_restitution * inv_dt)) * c;
 				
-				//real frames = m_easingTime * 60;
+				//real frames = m_easingTime * inv_dt;
 				
 				
 			}
@@ -62,7 +62,7 @@ namespace Physics2D::Utils
 				{
 					ShapePrimitive primitive;
 					primitive.shape = body->shape();
-					primitive.rotation = body->angle();
+					primitive.rotation = body->rotation();
 					primitive.transform = body->position();
 					RendererQtImpl::renderShape(painter, this, primitive, pen);
 				}
@@ -275,6 +275,16 @@ namespace Physics2D::Utils
 	void Camera::setTreeVisible(bool visible)
 	{
 		m_treeVisible = visible;
+	}
+
+	real Camera::deltaTime() const
+	{
+		return m_deltaTime;
+	}
+
+	void Camera::setDeltaTime(const real& deltaTime)
+	{
+		m_deltaTime = deltaTime;
 	}
 
 	void Camera::drawDbvh(DBVH::Node* node, QPainter* painter)

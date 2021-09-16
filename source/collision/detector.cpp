@@ -2,17 +2,19 @@
 
 namespace Physics2D
 {
+
+
 	bool Detector::collide(Body* bodyA, Body* bodyB)
 	{
 		assert(bodyA != nullptr && bodyB != nullptr);
 
 		ShapePrimitive shapeA, shapeB;
 		shapeA.shape = bodyA->shape();
-		shapeA.rotation = bodyA->angle();
+		shapeA.rotation = bodyA->rotation();
 		shapeA.transform = bodyA->position();
 
 		shapeB.shape = bodyB->shape();
-		shapeB.rotation = bodyB->angle();
+		shapeB.rotation = bodyB->rotation();
 		shapeB.transform = bodyB->position();
 
 		AABB a = AABB::fromShape(shapeA);
@@ -43,11 +45,11 @@ namespace Physics2D
 
 		ShapePrimitive shapeA, shapeB;
 		shapeA.shape = bodyA->shape();
-		shapeA.rotation = bodyA->angle();
+		shapeA.rotation = bodyA->rotation();
 		shapeA.transform = bodyA->position();
 
 		shapeB.shape = bodyB->shape();
-		shapeB.rotation = bodyB->angle();
+		shapeB.rotation = bodyB->rotation();
 		shapeB.transform = bodyB->position();
 
 		AABB a = AABB::fromShape(shapeA);
@@ -56,30 +58,30 @@ namespace Physics2D
 			return result;
 
 
-		
+
 		//auto [direction, simplex] = MPR::discover(shapeA, shapeB);
 		//auto [isColliding, portal] = MPR::refine(shapeA, shapeB, simplex, direction);
 		//if (shapeA.transform.fuzzyEqual(shapeB.transform) && !isColliding)
 		//	isColliding = simplex.containOrigin(true);
 
 		//result.isColliding = isColliding;
-		
+
 		auto [isColliding, simplex] = GJK::gjk(shapeA, shapeB);
-		
-		if(shapeA.transform.fuzzyEqual(shapeB.transform) && !isColliding)
+
+		if (shapeA.transform.fuzzyEqual(shapeB.transform) && !isColliding)
 			isColliding = simplex.containOrigin(true);
-		
+
 		result.isColliding = isColliding;
-		
+
 		if (isColliding)
 		{
 
 			//portal.vertices.erase(portal.vertices.begin());
 			//PenetrationSource source = GJK::dumpSource(portal);
-			
+
 			simplex = GJK::epa(shapeA, shapeB, simplex);
 			PenetrationSource source = GJK::dumpSource(simplex);
-			
+
 
 			const auto info = GJK::dumpInfo(source);
 			result.normal = info.normal;
@@ -134,11 +136,11 @@ namespace Physics2D
 
 		ShapePrimitive shapeA, shapeB;
 		shapeA.shape = bodyA->shape();
-		shapeA.rotation = bodyA->angle();
+		shapeA.rotation = bodyA->rotation();
 		shapeA.transform = bodyA->position();
 
 		shapeB.shape = bodyB->shape();
-		shapeB.rotation = bodyB->angle();
+		shapeB.rotation = bodyB->rotation();
 		shapeB.transform = bodyB->position();
 
 		return std::optional<PointPair>(GJK::distance(shapeA, shapeB));

@@ -18,7 +18,7 @@ add_executable(physics-engine
     
     "include/collision/algorithm/clip.h"
     "include/collision/collider.h"
-    "include/collision/contact.h"
+    
     "include/collision/detector.h"
     "include/common/common.h"
     "include/dynamics/body.h"
@@ -48,7 +48,7 @@ add_executable(physics-engine
     "source/collision/algorithm/clip.cpp"
     "source/collision/collider.cpp"
     "source/collision/detector.cpp"
-    "source/collision/contact.cpp"
+    
     "source/common/common.cpp"
     "source/dynamics/body.cpp"
     "source/dynamics/world.cpp"
@@ -76,9 +76,8 @@ add_executable(physics-engine
     "include/dynamics/joint/point.h"
     "include/dynamics/joint/distance.h"
     "include/dynamics/joint/angle.h"
-    "include/dynamics/joint/joints.h"    "include/dynamics/constraint/contact.h"  "include/utils/camera.h" "source/utils/camera.cpp" "include/collision/broadphase/tree.h" "source/collision/broadphase/tree.cpp" "include/collision/continuous/ccd.h" "source/collision/continuous/ccd.cpp")
+    "include/dynamics/joint/joints.h"    "include/dynamics/constraint/contact.h"  "include/utils/camera.h" "source/utils/camera.cpp" "include/collision/broadphase/tree.h" "source/collision/broadphase/tree.cpp" "include/collision/continuous/ccd.h" "source/collision/continuous/ccd.cpp" "source/utils/random.cpp" "source/dynamics/constraint/contact.cpp")
 
-find_package(Qt5 COMPONENTS Widgets REQUIRED)
 find_package(fmt CONFIG REQUIRED)
-
+find_package(Qt5 COMPONENTS Widgets REQUIRED)
 target_link_libraries(physics-engine PRIVATE Qt5::Widgets fmt::fmt)

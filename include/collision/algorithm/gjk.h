@@ -56,8 +56,13 @@ namespace Physics2D
 
 	struct PointPair
 	{
+		PointPair() = default;
 		Vector2 pointA;
 		Vector2 pointB;
+		bool isEmpty()const
+		{
+			return pointA.fuzzyEqual({ 0, 0 }) && pointB.fuzzyEqual({ 0, 0 });
+		}
 		bool operator==(const PointPair& other)const
 		{
 			return (other.pointA.fuzzyEqual(this->pointA) && other.pointB.fuzzyEqual(this->pointB))

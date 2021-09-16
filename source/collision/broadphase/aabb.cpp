@@ -162,7 +162,7 @@ namespace Physics2D
 		
 		ShapePrimitive primitive;
 		primitive.shape = body->shape();
-		primitive.rotation = body->angle();
+		primitive.rotation = body->rotation();
 		primitive.transform = body->position();
 		return fromShape(primitive, factor);
 	}

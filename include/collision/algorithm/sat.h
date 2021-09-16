@@ -1,9 +1,8 @@
 #ifndef PHYSICS2D_SAT_H
 #define PHYSICS2D_SAT_H
 
-#include "include/collision/contact.h"
 #include "include/geometry/shape.h"
-
+#include "include/collision/algorithm/clip.h"
 
 namespace Physics2D
 {

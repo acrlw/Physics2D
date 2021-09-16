@@ -37,7 +37,7 @@ namespace Physics2D
 		}
 		void prepare(const real& dt) override
 		{
-			Vector2 ra = Matrix2x2(m_primitive.bodyA->angle()).multiply(m_primitive.localPointA);
+			Vector2 ra = Matrix2x2(m_primitive.bodyA->rotation()).multiply(m_primitive.localPointA);
 			Vector2 c = m_primitive.mousePoint - (m_primitive.bodyA->position() + ra);
 			Matrix2x2 k;
 
@@ -58,7 +58,7 @@ namespace Physics2D
 		}
 		Vector2 solveVelocity(const real& dt) override
 		{
-			Vector2 ra = Matrix2x2(m_primitive.bodyA->angle()).multiply(m_primitive.localPointA);
+			Vector2 ra = Matrix2x2(m_primitive.bodyA->rotation()).multiply(m_primitive.localPointA);
 			Vector2 va = m_primitive.bodyA->velocity() + Vector2::crossProduct(m_primitive.bodyA->angularVelocity(), ra);
 			
 			Vector2 jv = va + m_primitive.bias;

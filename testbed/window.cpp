@@ -11,19 +11,19 @@ namespace Physics2D
 	{
 		this->setParent(parent);
 		this->setWindowTitle("Testbed");
-		this->resize(1920, 1080);
+		this->resize(1280, 780);
 		this->setMouseTracking(true);
 
-		rectangle.set(4, 4);
-		land.set(18, 0.2);
+		rectangle.set(1, 1);
+		land.set(32, 0.2);
 		polygon.append({{3, 0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3}, {2, -3}, {3, 0}});
-		polygon.scale(0.05);
+		polygon.scale(0.22);
 		ellipse.set({-5, 4}, {5, -4});
 		ellipse.scale(0.15);
-		circle.setRadius(1);
+		circle.setRadius(0.5);
 		//circle.scale(7);
 		edge.set({-18, 0}, {18, 0});
-		capsule.set(2, 4);
+		capsule.set(0.8, 1.6);
 
 		rectangle_ptr = std::make_shared<Rectangle>(rectangle);
 		land_ptr = std::make_shared<Rectangle>(land);
@@ -48,24 +48,26 @@ namespace Physics2D
 
 
 		m_world.setEnableGravity(true);
-		m_world.setGravity({0, -9.8});
+		m_world.setGravity({0, -0.5f});
 		m_world.setLinearVelocityDamping(0.8f);
 		m_world.setAirFrictionCoefficient(0.8f);
 		m_world.setAngularVelocityDamping(0.8f);
+		m_world.setPositionIteration(6);
 		//createStackBox(6, 1.1, 1.1);
 		//createBoxesAndGround(6);
 		//testPendulum();
-		//testCollision();
+		testCollision();
 		//testJoint();
 		//testBroadphase();
 		//testCCD();
-		testCapsule();
+		//testCapsule();
+		
 		camera.setViewport(Utils::Camera::Viewport((0, 0), (1920, 1080)));
 		camera.setWorld(&m_world);
 		camera.setDbvh(&dbvh);
 		camera.setTree(&tree);
-		camera.setAabbVisible(true);
-		camera.setDbvhVisible(true);
+		camera.setAabbVisible(false);
+		camera.setDbvhVisible(false);
 		camera.setTreeVisible(false);
 		camera.setAxisVisible(false);
 		connect(&m_timer, &QTimer::timeout, this, &Window::process);
@@ -89,7 +91,7 @@ namespace Physics2D
 			body->position().set(-9.0 + QRandomGenerator::global()->bounded(18.0),
 			                     -9.0 + QRandomGenerator::global()->bounded(18.0));
 			body->setShape(rectangle_ptr);
-			body->angle() = -360 + QRandomGenerator::global()->bounded(720);
+			body->rotation() = -360 + QRandomGenerator::global()->bounded(720);
 			body->setMass(400);
 			body->setType(Body::BodyType::Static);
 			
@@ -103,13 +105,13 @@ namespace Physics2D
 		rect->setShape(rectangle_ptr);
 		rect->position().set({ 8, -5.4 });
 		rect->setMass(Constant::Max);
-		rect->angle() = 90;
+		rect->rotation() = 90;
 		rect->setType(Body::BodyType::Dynamic);
 
 		rect2 = m_world.createBody();
 		rect2->setShape(rectangle_ptr);
 		rect2->position().set({ -5.5, -6 });
-		rect2->angle() = 90;
+		rect2->rotation() = 90;
 		rect2->setMass(200);
 		rect2->setType(Body::BodyType::Bullet);
 		rect2->velocity() = { 1000, 0 };
@@ -118,7 +120,7 @@ namespace Physics2D
 		rect3 = m_world.createBody();
 		rect3->setShape(rectangle_ptr);
 		rect3->position().set({ 8, -6.6 });
-		rect3->angle() = 180;
+		rect3->rotation() = 180;
 		rect3->setMass(200);
 		rect3->setType(Body::BodyType::Dynamic);
 		//rect3->angularVelocity() = 360;
@@ -133,8 +135,8 @@ namespace Physics2D
 		rect = m_world.createBody();
 		rect->setShape(capsule_ptr);
 		rect->position().set({ 0, 0 });
-		rect->angle() = 0;
-		rect->setMass(200);
+		rect->rotation() = 0;
+		rect->setMass(20);
 		rect->setType(Body::BodyType::Dynamic);
 		
 		dbvh.insert(rect);
@@ -154,17 +156,22 @@ namespace Physics2D
 		
 		m_world.stepVelocity(dt);
 
-		DistanceConstraintPrimitive p;
-		p.distance = 2;
-		p.source = rect;
-		p.sourcePoint.set(0, 1);
-		p.targetPoint.set(2, 0);
-		p.stiffness = 0.9;
-		DistanceConstraintSolver s;
-		s.add(p);
-		s.solve(dt);
-		
-		m_world.stepPosition(dt);
+		for(int i = 0;i < 1;i++)
+		{
+
+			auto potentialList = dbvh.generatePairs();
+			for (auto pair : potentialList)
+			{
+				auto result = Detector::detect(pair.first, pair.second);
+				if (result.isColliding)
+				{
+					contactMaintainer.add(result);
+				}
+			}
+			contactMaintainer.solve(dt);
+			m_world.stepPosition(dt);
+		}
+
 		
 		
 		for(auto& body: m_world.bodyList())
@@ -188,21 +195,21 @@ namespace Physics2D
 		rect = m_world.createBody();
 		rect->setShape(polygon_ptr);
 		rect->position().set({-4, 2});
-		rect->angle() = 0;
+		rect->rotation() = 0;
 		rect->setMass(5);
 		rect->setType(Body::BodyType::Dynamic);
 
 		rect2 = m_world.createBody();
 		rect2->setShape(rectangle_ptr);
 		rect2->position().set({-5, -5});
-		rect2->angle() = 0;
+		rect2->rotation() = 0;
 		rect2->setMass(100);
 		rect2->setType(Body::BodyType::Static);
 
 		rect3 = m_world.createBody();
 		rect3->setShape(ellipse_ptr);
 		rect3->position().set({8, -8});
-		rect3->angle() = 0;
+		rect3->rotation() = 0;
 		rect3->setMass(100);
 		rect3->setType(Body::BodyType::Static);
 
@@ -222,23 +229,23 @@ namespace Physics2D
 	{
 		ground = m_world.createBody();
 		ground->setShape(land_ptr);
-		ground->position().set({ 0, -8 });
+		ground->position().set({ 0, 0 });
 		ground->setMass(Constant::Max);
 		ground->setType(Body::BodyType::Static);
 
 		dbvh.insert(ground);
 		
 		rect = m_world.createBody();
-		rect->setShape(rectangle_ptr);
-		rect->position().set({-5, 0});
-		rect->angle() = 37;
-		rect->setMass(200);
+		rect->setShape(capsule_ptr);
+		rect->position().set({-5, 2});
+		rect->rotation() = 25;
+		rect->setMass(20);
 		rect->setType(Body::BodyType::Dynamic);
 
 		rect2 = m_world.createBody();
-		rect2->setShape(polygon_ptr);
-		rect2->position().set({ 5, 0 });
-		rect2->angle() = 0;
+		rect2->setShape(rectangle_ptr);
+		rect2->position().set({ 5, 6 });
+		rect2->rotation() = 0;
 		rect2->setMass(200);
 		rect2->setType(Body::BodyType::Static);
 		dbvh.insert(rect2);
@@ -261,7 +268,7 @@ namespace Physics2D
 			Body* rect = m_world.createBody();
 			rect->setShape(rectangle_ptr);
 			rect->position().set({-600 + static_cast<real>(i * 60), 250});
-			rect->angle() = 45;
+			rect->rotation() = 45;
 			rect->setMass(2);
 			rect->setType(Body::BodyType::Dynamic);
 			if (i == 0)
@@ -278,14 +285,14 @@ namespace Physics2D
 		rect = m_world.createBody();
 		rect->setShape(circle_ptr);
 		rect->position().set({0, 4});
-		rect->angle() = 0;
+		rect->rotation() = 0;
 		rect->setMass(Constant::Max);
 		rect->setType(Body::BodyType::Kinematic);
 
 		rect2 = m_world.createBody();
 		rect2->setShape(rectangle_ptr);
 		rect2->position().set(-12, -9);
-		rect2->angle() = 0;
+		rect2->rotation() = 0;
 		rect2->setMass(100);
 		rect2->setType(Body::BodyType::Dynamic);
 	}
@@ -296,7 +303,15 @@ namespace Physics2D
 		camera.render(&painter);
 		real dt = 1.0 / 60;
 
-		//QPen pen2(Qt::red, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		QPen pen2(Qt::red, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		for(auto iter = contactMaintainer.m_contactTable.begin(); iter != contactMaintainer.m_contactTable.end(); ++iter)
+		{
+			for(auto& elem:iter->second)
+			{
+				RendererQtImpl::renderPoint(&painter, &camera, elem.bodyA->toWorldPoint(elem.localA), pen2);
+				RendererQtImpl::renderPoint(&painter, &camera, elem.bodyB->toWorldPoint(elem.localB), pen2);
+			}
+		}
 		//
 		//
 		//auto result = Detector::detect(rect, rect2);
@@ -305,13 +320,13 @@ namespace Physics2D
 
 		//	//ShapePrimitive primitive;
 		//	//primitive.shape = rect->shape();
-		//	//primitive.rotation = rect->angle();
+		//	//primitive.rotation = rect->rotation();
 		//	//primitive.transform = rect->position();
 		//	//RendererQtImpl::renderShape(&painter, &camera, primitive, pen2);
 
 
 		//	//primitive.shape = rect2->shape();
-		//	//primitive.rotation = rect2->angle();
+		//	//primitive.rotation = rect2->rotation();
 		//	//primitive.transform = rect2->position();
 		//	//RendererQtImpl::renderShape(&painter, &camera, primitive, pen2);
 
@@ -331,7 +346,7 @@ namespace Physics2D
 		//		rect2->stepPosition(pair.toi);
 		//		ShapePrimitive primitive;
 		//		primitive.shape = rect2->shape();
-		//		primitive.rotation = rect2->angle();
+		//		primitive.rotation = rect2->rotation();
 		//		primitive.transform = rect2->position();
 		//		RendererQtImpl::renderShape(&painter, &camera, primitive, pen2);
 		//		rect2->setPhysicsAttribute(origin);
@@ -358,7 +373,7 @@ namespace Physics2D
 		for(auto& body: m_world.bodyList())
 		{
 			Vector2 point = mousePos - body->position();
-			point = Matrix2x2(-body->angle()).multiply(point);
+			point = Matrix2x2(-body->rotation()).multiply(point);
 			if(body->shape()->contains(point) && selectedBody == nullptr)
 			{
 				selectedBody = body.get();
@@ -402,7 +417,7 @@ namespace Physics2D
 	{
 		Vector2 pos(event->x(), event->y());
 		clickPos.set(camera.screenToWorld(pos));
-		fmt::print("select body at {}\n", clickPos);
+        //fmt::print("select body at {}\n", clickPos);
 			
 	}
 
@@ -437,7 +452,7 @@ namespace Physics2D
 		}
 		case Qt::Key_R:
 			{
-			rect->angle() -= 10;
+			rect->rotation() -= 10;
 			break;
 			}
 		case Qt::Key_L:
@@ -462,7 +477,7 @@ namespace Physics2D
 
 	void Window::wheelEvent(QWheelEvent* event)
 	{
-		fmt::print("delta:{},{}\n", event->angleDelta().x(), event->angleDelta().y());
+		//fmt::print("delta:{},{}\n", event->angleDelta().x(), event->angleDelta().y());
 		if (event->angleDelta().y() > 0)
 			camera.setMeterToPixel(camera.meterToPixel() + camera.meterToPixel() / 4.0);
 		else
@@ -482,7 +497,7 @@ namespace Physics2D
 					static_cast<real>(-spacing * (row - j) + i * spacing), static_cast<real>(j * margin + margin) - 6
 				});
 				body->setShape(rectangle_ptr);
-				body->angle() = 0;
+				body->rotation() = 0;
 				body->setMass(400);
 				body->setType(Body::BodyType::Dynamic);
 				dbvh.insert(body);
@@ -505,7 +520,7 @@ namespace Physics2D
 			Body* body = m_world.createBody();
 			body->position().set({1 + j * 1.2, -6 + j * 1.2});
 			body->setShape(rectangle_ptr);
-			body->angle() = 45;
+			body->rotation() = 45;
 			body->setMass(400);
 			body->setType(Body::BodyType::Static);
 			dbvh.insert(body);

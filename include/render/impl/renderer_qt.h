@@ -17,7 +17,7 @@ namespace Physics2D
 			assert(painter != nullptr && camera != nullptr);
 			Vector2 screen_p = camera->worldToScreen(point);
 			QPen p = pen;
-			p.setWidth(6);
+			p.setWidth(4);
 			painter->setPen(p);
 			painter->drawPoint(QPointF(screen_p.x, screen_p.y));
 		}
@@ -141,12 +141,13 @@ namespace Physics2D
 			real shortest = Math::min(capsule->width(), capsule->height()) * camera->meterToPixel() / 2;
 			path.addRoundedRect(rect, shortest, shortest);
 			painter->translate(screen_p.x, screen_p.y);
-			painter->rotate(-shape.rotation);
+			
+			painter->rotate(Math::radianToAngle(-shape.rotation));
 
 			painter->setPen(pen);
 			painter->drawPath(path);
 			painter->fillPath(path, brush);
-			painter->rotate(shape.rotation);
+			painter->rotate(Math::radianToAngle(shape.rotation));
 			painter->translate(-screen_p.x, -screen_p.y);
 
 

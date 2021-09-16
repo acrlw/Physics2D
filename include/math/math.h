@@ -63,6 +63,10 @@ namespace Physics2D
 		{
 			return std::min(std::fabs(a), std::fabs(b));
 		}
+		inline real sqrt(const real& x)
+		{
+			return std::sqrt(x);
+		}
 		//other
 		inline int sign(const real& num)
 		{

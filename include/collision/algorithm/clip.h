@@ -3,23 +3,23 @@
 #include "include/common/common.h"
 #include "include/geometry/shape.h"
 #include "include/math/linear/linear.h"
+#include "include/collision/algorithm/gjk.h"
 namespace Physics2D
 {
-	class Clipper
+	struct ContactEdge
+	{
+		Vector2 point1;
+		Vector2 point2;
+	};
+	class ContactGenerator
 	{
 	public:
-		/// <summary>
-		/// Clip shape B by shape A
-		/// Only for polygon
-		/// </summary>
-		/// <param name="shapeA"></param>
-		/// <param name="shapeB"></param>
-		/// <param name="normal"></param>
-		/// <returns></returns>
-		static std::optional<std::vector<Vector2>> clip(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB)
-		{
-			return std::nullopt;
-		}
+
+		static std::optional<std::vector<PointPair>> clip(const ContactEdge& lhs, const ContactEdge& rhs, const bool& exchange = false);
+
+		static std::optional<std::vector<PointPair>> generate(const ShapePrimitive& shape, const ContactEdge& edge, const Vector2& source, const PenetrationInfo& info, const bool& exchange = false);
+
 	};
+
 }
 #endif

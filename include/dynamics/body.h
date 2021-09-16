@@ -23,7 +23,7 @@ namespace Physics2D
 		{
 			Vector2 position;
 			Vector2 velocity;
-			real angle = 0;
+			real rotation = 0;
 			real angularVelocity = 0;
 			void step(const real& dt);
 		};
@@ -33,7 +33,7 @@ namespace Physics2D
 
 		Vector2& velocity();
 
-		real& angle();
+		real& rotation();
 
 		real& angularVelocity();
 
@@ -55,8 +55,8 @@ namespace Physics2D
 
 		AABB aabb(const real& factor = 1) const;
 
-		real damping() const;
-		void setDamping(const real& damping);
+		real friction() const;
+		void setFriction(const real& friction);
 
 		bool sleep() const;
 		void setSleep(bool sleep);
@@ -74,8 +74,12 @@ namespace Physics2D
 		Vector2 toWorldPoint(const Vector2& point) const;
 		Vector2 toActualPoint(const Vector2& point) const;
 
+		int id()const;
+		void setId(const int& id);
 	private:
 		void calcInertia();
+
+		int m_id;
 
 		real m_mass = 0;
 		real m_inertia = 0;
@@ -84,7 +88,7 @@ namespace Physics2D
 
 		Vector2 m_position;
 		Vector2 m_velocity;
-		real m_angle = 0;
+		real m_rotation = 0;
 		real m_angularVelocity = 0;
 
 		Vector2 m_forces;
@@ -94,9 +98,11 @@ namespace Physics2D
 		BodyType m_type = BodyType::Static;
 
 		bool m_sleep = false;
-		real m_damping = 0.7;
+		real m_friction = 0.3;
 
 		BodyState m_bodyState;
+
+		
 	};
 }
 #endif

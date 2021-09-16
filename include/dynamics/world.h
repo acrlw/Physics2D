@@ -5,6 +5,8 @@
 #include "include/math/math.h"
 #include "include/math/integrator.h"
 #include "include/dynamics/joint/joints.h"
+#include "include/utils/random.h"
+#include "include/dynamics/constraint/contact.h"
 namespace Physics2D
 {
     class World
@@ -42,6 +44,7 @@ namespace Physics2D
             void setEnableGravity(bool enableGravity);
             
             Body* createBody();
+            void removeBody(Body* body);
     	
             AngleJoint* createJoint(const AngleJointPrimitive& primitive);
             PointJoint* createJoint(const PointJointPrimitive& primitive);
@@ -83,7 +86,6 @@ namespace Physics2D
             std::vector<std::unique_ptr<Joint>> m_jointList;
             Integrator m_integrator;
 
-            
     		
     		
     };

@@ -105,6 +105,9 @@ namespace Physics2D
 		Body* selectedBody = nullptr;
 
 		Tree tree;
+
+
+		ContactMaintainer contactMaintainer;
 	};
 }
 #endif
