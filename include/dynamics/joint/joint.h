@@ -7,7 +7,7 @@ namespace Physics2D
 	{
 		Distance,
 		Point,
-		Angle,
+		Rotation,
 		Pulley,
 		Prismatic,
 		Wheel,

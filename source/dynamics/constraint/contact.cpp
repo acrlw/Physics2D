@@ -49,7 +49,7 @@ namespace Physics2D
 				vcp.accumulatedNormalImpulse = Math::max(oldImpulse + lambda_n, 0);
 				lambda_n = vcp.accumulatedNormalImpulse - oldImpulse;
 
-				Vector2 impulse_n = lambda_n * vcp.normal;
+				Vector2 impulse_n = 0.6 * lambda_n * vcp.normal;
 
 				ccp.bodyA->applyImpulse(impulse_n, vcp.ra);
 				ccp.bodyB->applyImpulse(-impulse_n, vcp.rb);
@@ -102,7 +102,7 @@ namespace Physics2D
 				lambda_n2 = vcp2.accumulatedNormalImpulse - oldImpulse2;
 
 
-				Vector2 impulse_n = lambda_n1 * vcp1.normal + lambda_n2 * vcp2.normal;
+				Vector2 impulse_n = 0.6 * (lambda_n1 * vcp1.normal + lambda_n2 * vcp2.normal);
 
 				ccp1.bodyA->applyImpulse(impulse_n, vcp1.ra + vcp2.ra);
 				ccp1.bodyB->applyImpulse(-impulse_n, vcp1.rb + vcp2.rb);

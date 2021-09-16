@@ -142,12 +142,12 @@ namespace Physics2D
 			path.addRoundedRect(rect, shortest, shortest);
 			painter->translate(screen_p.x, screen_p.y);
 			
-			painter->rotate(Math::radianToAngle(-shape.rotation));
+			painter->rotate(Math::radianToDegree(-shape.rotation));
 
 			painter->setPen(pen);
 			painter->drawPath(path);
 			painter->fillPath(path, brush);
-			painter->rotate(Math::radianToAngle(shape.rotation));
+			painter->rotate(Math::radianToDegree(shape.rotation));
 			painter->translate(-screen_p.x, -screen_p.y);
 
 
@@ -233,10 +233,10 @@ namespace Physics2D
 			topLeft = camera->worldToScreen(topLeft);
 			painter->drawRect(QRectF(topLeft.x, topLeft.y, aabb.width * camera->meterToPixel(), aabb.height * camera->meterToPixel()));
 		}
-		static void renderAngleJoint(QPainter* painter, Utils::Camera* camera, Joint* joint, const QPen& pen)
+		static void renderRotationJoint(QPainter* painter, Utils::Camera* camera, Joint* joint, const QPen& pen)
 		{
 			assert(joint != nullptr);
-			AngleJoint* angleJoint = dynamic_cast<AngleJoint*>(joint);
+			RotationJoint* angleJoint = dynamic_cast<RotationJoint*>(joint);
 		}
 		static void renderDistanceJoint(QPainter* painter, Utils::Camera* camera, Joint* joint, const QPen& pen)
 		{
@@ -329,9 +329,9 @@ namespace Physics2D
 
 			switch (joint->type())
 			{
-			case JointType::Angle:
+			case JointType::Rotation:
 			{
-				renderAngleJoint(painter, camera, joint, pen);
+				renderRotationJoint(painter, camera, joint, pen);
 				break;
 			}
 			case JointType::Distance:

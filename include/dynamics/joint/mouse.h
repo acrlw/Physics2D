@@ -37,8 +37,10 @@ namespace Physics2D
 		}
 		void prepare(const real& dt) override
 		{
+			
 			Vector2 ra = Matrix2x2(m_primitive.bodyA->rotation()).multiply(m_primitive.localPointA);
-			Vector2 c = m_primitive.mousePoint - (m_primitive.bodyA->position() + ra);
+			Vector2 wa = m_primitive.bodyA->toWorldPoint(m_primitive.localPointA);
+			Vector2 c = wa - m_primitive.mousePoint;
 			Matrix2x2 k;
 
 			real im_a = m_primitive.bodyA->inverseMass();
@@ -51,20 +53,19 @@ namespace Physics2D
 			k.e22() = im_a + ii_a * ra.x * ra.x;
 
 			m_primitive.effectiveMass = k.invert();
-			m_primitive.bias = - 0.5 * c * inv_dt;
+			m_primitive.bias = c * inv_dt;
 
 
-			//m_primitive.bodyA->applyImpulse(-m_primitive.accumulatedImpulse, ra);
+			m_primitive.bodyA->applyImpulse(m_primitive.accumulatedImpulse, ra);
 		}
 		Vector2 solveVelocity(const real& dt) override
 		{
 			Vector2 ra = Matrix2x2(m_primitive.bodyA->rotation()).multiply(m_primitive.localPointA);
 			Vector2 va = m_primitive.bodyA->velocity() + Vector2::crossProduct(m_primitive.bodyA->angularVelocity(), ra);
 			
-			Vector2 jv = va + m_primitive.bias;
+			Vector2 jv = va + m_primitive.bias - 0.01 * m_primitive.accumulatedImpulse;
 			Vector2 impulse = m_primitive.effectiveMass.multiply(jv.negate());
 
-			//impulse += (impulse - m_primitive.lastImpulse) * dt;
 			m_primitive.bodyA->applyImpulse(impulse, ra);
 
 			m_primitive.accumulatedImpulse += impulse;

@@ -75,7 +75,7 @@ add_executable(physics-engine
     "include/dynamics/joint/pulley.h"
     "include/dynamics/joint/point.h"
     "include/dynamics/joint/distance.h"
-    "include/dynamics/joint/angle.h"
+    "include/dynamics/joint/rotation.h"
     "include/dynamics/joint/joints.h"    "include/dynamics/constraint/contact.h"  "include/utils/camera.h" "source/utils/camera.cpp" "include/collision/broadphase/tree.h" "source/collision/broadphase/tree.cpp" "include/collision/continuous/ccd.h" "source/collision/continuous/ccd.cpp" "source/utils/random.cpp" "source/dynamics/constraint/contact.cpp")
 
 find_package(fmt CONFIG REQUIRED)

@@ -84,7 +84,7 @@ namespace Physics2D
 		Vector2 clickPos;
 		Vector2 mousePos;
 		DistanceJointPrimitive distancePrim;
-		AngleJointPrimitive anglePrim;
+		RotationJointPrimitive rotationPrim;
 		PointJointPrimitive pointPrim;
 		MouseJointPrimitive mousePrim;
 		DBVH dbvh;

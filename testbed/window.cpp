@@ -22,7 +22,7 @@ namespace Physics2D
 		ellipse.scale(0.15);
 		circle.setRadius(0.5);
 		//circle.scale(7);
-		edge.set({-18, 0}, {18, 0});
+		edge.set({-32, 0}, {32, 0});
 		capsule.set(0.8, 1.6);
 
 		rectangle_ptr = std::make_shared<Rectangle>(rectangle);
@@ -38,13 +38,13 @@ namespace Physics2D
 		distancePrim.localPointA.set(0, 0);
 		distancePrim.localPointB.set(0, 0);
 
-		anglePrim.referenceAngle = 45;
+		rotationPrim.referenceRotation = Math::degreeToRadian(45);
 
 		pointPrim.localPointA.set(-0.5, -0.5);
 		pointPrim.localPointB.set(0.5, 0.5);
 
 		mousePrim.localPointA.set(0.25, 0.25);
-		mousePrim.mousePoint.set(2.0, 2.0);
+		mousePrim.mousePoint.set(1.0, 1.0);
 
 
 		m_world.setEnableGravity(true);
@@ -52,8 +52,8 @@ namespace Physics2D
 		m_world.setLinearVelocityDamping(0.8f);
 		m_world.setAirFrictionCoefficient(0.8f);
 		m_world.setAngularVelocityDamping(0.8f);
-		m_world.setPositionIteration(4);
-		m_world.setVelocityIteration(2);
+		m_world.setPositionIteration(6);
+		m_world.setVelocityIteration(1);
 		//createStackBox(6, 1.1, 1.1);
 		//createBoxesAndGround(6);
 		//testPendulum();
@@ -165,13 +165,11 @@ namespace Physics2D
 			{
 				auto result = Detector::detect(pair.first, pair.second);
 				if (result.isColliding)
-				{
 					contactMaintainer.add(result);
-				}
 			}
 			contactMaintainer.solve(dt);
-			m_world.stepPosition(dt);
 		}
+		m_world.stepPosition(dt);
 
 		
 		
@@ -186,18 +184,18 @@ namespace Physics2D
 	{
 
 		ground = m_world.createBody();
-		ground->setShape(land_ptr);
+		ground->setShape(edge_ptr);
 		ground->position().set({ 0, -10 });
 		ground->setMass(Constant::Max);
 		ground->setType(Body::BodyType::Static);
 
-		tree.insert(ground);
+		//tree.insert(ground);
 		
 		rect = m_world.createBody();
-		rect->setShape(polygon_ptr);
-		rect->position().set({-4, 2});
+		rect->setShape(rectangle_ptr);
+		rect->position().set({-1, -1});
 		rect->rotation() = 0;
-		rect->setMass(5);
+		rect->setMass(200);
 		rect->setType(Body::BodyType::Dynamic);
 
 		rect2 = m_world.createBody();
@@ -206,20 +204,13 @@ namespace Physics2D
 		rect2->rotation() = 0;
 		rect2->setMass(100);
 		rect2->setType(Body::BodyType::Static);
-
-		rect3 = m_world.createBody();
-		rect3->setShape(ellipse_ptr);
-		rect3->position().set({8, -8});
-		rect3->rotation() = 0;
-		rect3->setMass(100);
-		rect3->setType(Body::BodyType::Static);
-
+		
 		mousePrim.bodyA = rect;
 		MouseJoint* j = m_world.createJoint(mousePrim);
 
+
 		dbvh.insert(rect);
 		dbvh.insert(rect2);
-		dbvh.insert(rect3);
 		camera.setTargetBody(rect);
 
 		//rect->velocity() += {10, 0};
@@ -496,7 +487,7 @@ namespace Physics2D
 			{
 				Body* body = m_world.createBody();
 				body->position().set({
-					static_cast<real>(-spacing * (row - j) + i * spacing), static_cast<real>(j * margin + margin) - 6
+					(-spacing * (row - j) + i * spacing), j * margin + margin - 6
 				});
 				body->setShape(rectangle_ptr);
 				body->rotation() = 0;

@@ -12,6 +12,14 @@ namespace Physics2D
 	}
 	void World::stepVelocity(const real& dt)
 	{
+		for (int i = 0; i < m_velocityIteration; i++)
+			for (auto& joint : m_jointList)
+				joint->prepare(dt);
+
+		for (int i = 0; i < m_velocityIteration; i++)
+			for (auto& joint : m_jointList)
+				joint->solveVelocity(dt);
+
 		const Vector2 g = m_enableGravity ? m_gravity : (0, 0);
 		for (auto& body : m_bodyList)
 		{
@@ -265,10 +273,10 @@ namespace Physics2D
 		}
 	}
 
-	AngleJoint* World::createJoint(const AngleJointPrimitive& primitive)
+	RotationJoint* World::createJoint(const RotationJointPrimitive& primitive)
 	{
-		auto joint = std::make_unique<AngleJoint>(primitive);
-		AngleJoint* temp = joint.get();
+		auto joint = std::make_unique<RotationJoint>(primitive);
+		RotationJoint* temp = joint.get();
 		m_jointList.emplace_back(std::move(joint));
 		return temp;
 	}

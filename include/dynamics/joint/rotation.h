@@ -3,28 +3,28 @@
 #include "joint.h"
 namespace Physics2D
 {
-	struct AngleJointPrimitive
+	struct RotationJointPrimitive
 	{
 		Body* bodyA;
 		Body* bodyB;
-		real referenceAngle = 0;
+		real referenceRotation = 0;
 		real effectiveMass = 0;
 		real bias = 0;
 		real lastImpulse = 0;
 		real accumulatedImpulse = 0;
 	};
-	class AngleJoint: public Joint
+	class RotationJoint: public Joint
 	{
 	public:
-		AngleJoint()
+		RotationJoint()
 		{
-			m_type = JointType::Angle;
+			m_type = JointType::Rotation;
 		}
-		AngleJoint(const AngleJointPrimitive& prim) : m_primitive(prim)
+		RotationJoint(const RotationJointPrimitive& prim) : m_primitive(prim)
 		{
-			m_type = JointType::Angle;
+			m_type = JointType::Rotation;
 		}
-		void set(const AngleJointPrimitive& prim)
+		void set(const RotationJointPrimitive& prim)
 		{
 			m_primitive = prim;
 		}
@@ -37,7 +37,7 @@ namespace Physics2D
 			real ii_b = m_primitive.bodyB->inverseInertia();
 			real inv_dt = 1.0 / dt;
 			m_primitive.effectiveMass = 1.0 / (ii_a + ii_b);
-			real c = m_primitive.bodyA->rotation() - m_primitive.bodyB->rotation() - m_primitive.referenceAngle;
+			real c = m_primitive.bodyA->rotation() - m_primitive.bodyB->rotation() - m_primitive.referenceRotation;
 			m_primitive.bias = -m_factor * inv_dt * c;
 			
 
@@ -59,12 +59,12 @@ namespace Physics2D
 		{
 
 		}
-		AngleJointPrimitive primitive()const
+		RotationJointPrimitive primitive()const
 		{
 			return m_primitive;
 		}
 	private:
-		AngleJointPrimitive m_primitive;
+		RotationJointPrimitive m_primitive;
 		real m_factor = 0.2;
 	};
 }

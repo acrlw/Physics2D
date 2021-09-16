@@ -46,7 +46,7 @@ namespace Physics2D
             Body* createBody();
             void removeBody(Body* body);
     	
-            AngleJoint* createJoint(const AngleJointPrimitive& primitive);
+            RotationJoint* createJoint(const RotationJointPrimitive& primitive);
             PointJoint* createJoint(const PointJointPrimitive& primitive);
             DistanceJoint* createJoint(const DistanceJointPrimitive& primitive);
             MouseJoint* createJoint(const MouseJointPrimitive& primitive);
