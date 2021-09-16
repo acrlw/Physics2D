@@ -25,7 +25,7 @@ cmake CMakeLists.txt
     - Point
     - Capsule
 - Continuous Collision Detection
-  - Sampling The Trajectory of Body
+  - Sampling Trajectory of Body
   - Time of Impact
 - Rigid Body Dynamics Simulation
 - Axis-Aligned Bounding Box
