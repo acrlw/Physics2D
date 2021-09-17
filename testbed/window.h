@@ -46,6 +46,7 @@ namespace Physics2D
 		void wheelEvent(QWheelEvent* event)override;
 	
 	private:
+		void createBoxRoom();
 		void createBoxesAndGround(const real& count = 10);
 		void createStackBox(const uint16_t& row, const real& margin, const real& spacing);
 		void testJoint();
@@ -61,6 +62,10 @@ namespace Physics2D
 		Rectangle land;
 		Ellipse ellipse;
 		Edge edge;
+
+		Edge boxHorizontal;
+		Edge boxVertical;
+
 		Curve curve;
 		Polygon polygon;
 		Circle circle;
@@ -73,6 +78,8 @@ namespace Physics2D
 		Body* rect3;
 		Body* rect4;
 		Body* ground;
+		
+
 		real angle = 0;
 		real radius = 150;
 		Vector2 originPoint = { 0, 0 };
@@ -92,6 +99,10 @@ namespace Physics2D
 		
 		std::shared_ptr<Ellipse> ellipse_ptr;
 		std::shared_ptr<Edge> edge_ptr;
+
+		std::shared_ptr<Edge> horizontalWall;
+		std::shared_ptr<Edge> verticalWall;
+
 		std::shared_ptr<Curve> curve_ptr;
 		std::shared_ptr<Polygon> polygon_ptr;
 		std::shared_ptr<Rectangle> land_ptr;
@@ -105,9 +116,10 @@ namespace Physics2D
 		Body* selectedBody = nullptr;
 
 		Tree tree;
-
+		real roomSize = 10;
 
 		ContactMaintainer contactMaintainer;
 	};
+	
 }
 #endif

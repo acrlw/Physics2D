@@ -417,6 +417,25 @@ namespace Physics2D
 		}
 		return target;
 	}
+	Vector2 GeometryAlgorithm2D::calculateCapsuleProjectionPoint(const real& width, const real& height, const Vector2& direction)
+	{
+		Vector2 target;
+		if (width >= height) // Horizontal
+		{
+			real radius = height / 2;
+			real offset = direction.x >= 0 ? width / 2 - radius : radius - width / 2;
+			target = direction.normal() * radius;
+			target.x += offset;
+		}
+		else // Vertical
+		{
+			real radius = width / 2;
+			real offset = direction.y >= 0 ? height / 2 - radius : radius - height / 2;
+			target = direction.normal() * radius;
+			target.y += offset;
+		}
+		return target;
+	}
 	bool GeometryAlgorithm2D::triangleContainsOrigin(const Vector2& a, const Vector2& b, const Vector2& c)
 	{
 		return ((b - a).cross(-a) > 0.0 &&

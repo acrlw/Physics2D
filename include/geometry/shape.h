@@ -16,7 +16,8 @@ namespace Physics2D
                 Ellipse,
             	Capsule,
                 Edge,
-                Curve
+                Curve,
+                Sector
                 };
             Type type()const
             {
@@ -195,6 +196,26 @@ namespace Physics2D
         real m_width;
         real m_height;
 	};
+    class Sector: public Shape
+    {
+    public:
+        Sector();
+        bool contains(const Vector2& point, const real& epsilon) override;
+        void scale(const real& factor) override;
+        Vector2 center() const override;
+
+        real startRadian()const;
+        real endRadian()const;
+        real radius()const;
+        void setStartRadian(const real& angle);
+        void setEndRadian(const real& angle);
+        void setRadius(const real& radius);
+        void set(const real& start, const real& end, const real& radius);
+    private:
+        real m_startRadian;
+        real m_endRadian;
+        real m_radius;
+    };
 
 }
 #endif

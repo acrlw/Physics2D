@@ -66,6 +66,27 @@ namespace Physics2D
 
 		//result.isColliding = isColliding;
 
+		if(bodyA->shape()->type() == Shape::Type::Circle && bodyB->shape()->type() == Shape::Type::Circle)
+		{
+			auto info = SAT::circleVsCircle(shapeA, shapeB);
+			result.isColliding = info.isColliding;
+			result.contactList.emplace_back(info.pointPair[0]);
+			result.penetration = info.penetration;
+			result.normal = info.normal;
+			return result;
+		}
+
+		if (bodyA->shape()->type() == Shape::Type::Circle && bodyB->shape()->type() == Shape::Type::Edge || bodyA->shape()->type() == Shape::Type::Edge && bodyB->shape()->type() == Shape::Type::Circle)
+		{
+			auto info = SAT::circleVsEdge(shapeA, shapeB);
+			result.isColliding = info.isColliding;
+			result.contactList.emplace_back(info.pointPair[0]);
+			result.penetration = info.penetration;
+			result.normal = info.normal;
+			return result;
+		}
+
+
 		auto [isColliding, simplex] = GJK::gjk(shapeA, shapeB);
 
 		if (shapeA.transform.fuzzyEqual(shapeB.transform) && !isColliding)

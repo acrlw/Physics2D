@@ -2,11 +2,67 @@
 
 namespace Physics2D
 {
-	std::optional<PenetrationInfo> SAT::circleVsCircle(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB)
+	SATResult SAT::circleVsCapsule(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB)
+	{
+		return SATResult();
+	}
+
+	SATResult SAT::circleVsSector(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB)
+	{
+		return SATResult();
+	}
+
+	SATResult SAT::circleVsEdge(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB)
+	{
+		//Default sign: A is circle, B is edge
+		SATResult result;
+		Circle* circle = nullptr;
+		Edge* edge = nullptr;
+		const ShapePrimitive* shapeCircle;
+		const ShapePrimitive* shapeEdge;
+		auto* pointCircle = &result.pointPair[0].pointA;
+		auto* pointEdge = &result.pointPair[0].pointB;
+		if (shapeA.shape->type() == Shape::Type::Circle && shapeB.shape->type() == Shape::Type::Edge)
+		{
+			circle = dynamic_cast<Circle*>(shapeA.shape.get());
+			edge = dynamic_cast<Edge*>(shapeB.shape.get());
+			shapeCircle = &shapeA;
+			shapeEdge = &shapeB;
+		}
+		else if (shapeA.shape->type() == Shape::Type::Edge && shapeB.shape->type() == Shape::Type::Circle)
+		{
+			circle = dynamic_cast<Circle*>(shapeB.shape.get());
+			edge = dynamic_cast<Edge*>(shapeA.shape.get());
+			shapeCircle = &shapeB;
+			shapeEdge = &shapeA;
+			pointEdge = &result.pointPair[0].pointA;
+			pointCircle = &result.pointPair[0].pointB;
+		}
+		assert(circle != nullptr && edge != nullptr);
+		Vector2 actualStart = shapeEdge->transform + edge->startPoint();
+		Vector2 actualEnd = shapeEdge->transform + edge->endPoint();
+		Vector2 normal = (actualStart - actualEnd).normal();
+
+		if ((edge->startPoint() - shapeCircle->transform).dot(normal) < 0)
+			normal.negate();
+
+		Vector2 projectedPoint = GeometryAlgorithm2D::pointToLineSegment(actualStart, actualEnd, shapeCircle->transform);
+		Vector2 diff = projectedPoint - shapeCircle->transform;
+		result.normal = diff.normal();
+		real length = diff.length();
+		result.isColliding = length < circle->radius();
+		result.penetration = circle->radius() - length;
+		*pointCircle = shapeCircle->transform + circle->radius() * result.normal;
+		*pointEdge = projectedPoint;
+		return result;
+	}
+
+	SATResult SAT::circleVsCircle(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB)
 	{
 		assert(shapeA.shape->type() == Shape::Type::Circle);
 		assert(shapeB.shape->type() == Shape::Type::Circle);
 
+		SATResult result;
 		Circle* circleA = dynamic_cast<Circle*>(shapeA.shape.get());
 		Circle* circleB = dynamic_cast<Circle*>(shapeB.shape.get());
 		Vector2 ba = shapeA.transform - shapeB.transform;
@@ -14,12 +70,13 @@ namespace Physics2D
 		real length = ba.length();
 		if (length <= dp)
 		{
-			PenetrationInfo info;
-			info.normal = ba.normal();
-			info.penetration = dp - length;
-			return std::optional<PenetrationInfo>(info);
+			result.normal = ba.normal();
+			result.penetration = dp - length;
+			result.isColliding = true;
+			result.pointPair[0].pointA = shapeA.transform - circleA->radius() * result.normal;
+			result.pointPair[0].pointB = shapeB.transform + circleB->radius() * result.normal;
 		}
-		return std::nullopt;
+		return result;
 	}
 
 	SATResult SAT::circleVsPolygon(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB)
@@ -34,7 +91,6 @@ namespace Physics2D
 		SATResult result;
 		
 		//circle sat test
-
 		
 		//finding circle axis
 		real minLength = Constant::Max;
@@ -99,8 +155,8 @@ namespace Physics2D
 		if (collidingAxis == polygonB->vertices().size())
 			result.isColliding = true;
 		
-		result.pointPair.pointA = circlePoint.vertex;
-		result.pointPair.pointB = circlePoint.vertex + -result.normal * result.penetration;
+		result.pointPair[0].pointA = circlePoint.vertex;
+		result.pointPair[0].pointB = circlePoint.vertex + -result.normal * result.penetration;
 
 
 		return result;
@@ -167,20 +223,47 @@ namespace Physics2D
 		{
 			result.penetration = length1;
 			result.normal = normal1;
-			result.pointPair.pointA = polyBPoint1.vertex - result.normal * result.penetration;
-			result.pointPair.pointB = polyBPoint1.vertex;
+			//do clipping
 		}
 		else
 		{
 			result.penetration = length2;
 			result.normal = normal2;
-			result.pointPair.pointA = polyAPoint2.vertex;
-			result.pointPair.pointB = polyAPoint2.vertex + result.normal * result.penetration;
+			//do clipping
 		}
 
 		return result;
 	}
 
+	SATResult SAT::polygonVsCapsule(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB)
+	{
+		return SATResult();
+	}
+
+	SATResult SAT::polygonVsSector(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB)
+	{
+		return SATResult();
+	}
+	SATResult SAT::capsuleVsEdge(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB)
+	{
+		return SATResult();
+	}
+	SATResult SAT::capsuleVsCapsule(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB)
+	{
+		return SATResult();
+	}
+	SATResult SAT::capsuleVsSector(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB)
+	{
+		return SATResult();
+	}
+	SATResult SAT::sectorVsSector(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB)
+	{
+		return SATResult();
+	}
+	SATResult SAT::polygonVsEdge(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB)
+	{
+		return SATResult();
+	}
 	ProjectedSegment SAT::axisProjection(const ShapePrimitive& shape, Polygon* polygon, const Vector2& normal)
 	{
 		ProjectedPoint minPoint, maxPoint;
@@ -250,6 +333,16 @@ namespace Physics2D
 
 		return segmentEllipse;
 		 
+	}
+
+	ProjectedSegment SAT::axisProjection(const ShapePrimitive& shape, Capsule* capsule, const Vector2& normal)
+	{
+		return ProjectedSegment();
+	}
+
+	ProjectedSegment SAT::axisProjection(const ShapePrimitive& shape, Sector* sector, const Vector2& normal)
+	{
+		return ProjectedSegment();
 	}
 	
 	std::tuple<ProjectedSegment, real> ProjectedSegment::intersect(const ProjectedSegment& s1, const ProjectedSegment& s2)

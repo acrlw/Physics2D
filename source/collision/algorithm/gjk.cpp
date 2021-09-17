@@ -241,8 +241,7 @@ namespace Physics2D
 		case Shape::Type::Circle:
 		{
 			const Circle* circle = dynamic_cast<const Circle*>(shape.shape.get());
-			target = direction.normal() * circle->radius() + shape.transform;
-			return target;
+			return direction.normal() * circle->radius() + shape.transform;
 		}
 		case Shape::Type::Ellipse:
 		{
@@ -265,7 +264,7 @@ namespace Physics2D
 		case Shape::Type::Capsule:
 		{
 			const Capsule* capsule = dynamic_cast<const Capsule*>(shape.shape.get());
-			if(capsule->width() >= capsule->height()) // Horizontal
+			if (capsule->width() >= capsule->height()) // Horizontal
 			{
 				real radius = capsule->height() / 2;
 				real offset = rot_dir.x >= 0 ? capsule->width() / 2 - radius : radius - capsule->width() / 2;
@@ -281,9 +280,15 @@ namespace Physics2D
 			}
 			break;
 		}
+		case Shape::Type::Sector:
+		{
+			const Sector* sector = dynamic_cast<const Sector*>(shape.shape.get());
+			break;
+		}
 		default:
 			break;
 		}
+
 		rot.setAngle(shape.rotation);
 		target = rot.multiply(target);
 		target += shape.transform;

@@ -20,10 +20,13 @@ namespace Physics2D
 		polygon.scale(0.22);
 		ellipse.set({-5, 4}, {5, -4});
 		ellipse.scale(0.15);
-		circle.setRadius(0.5);
+		circle.setRadius(0.12);
 		//circle.scale(7);
 		edge.set({-32, 0}, {32, 0});
 		capsule.set(0.8, 1.6);
+
+		boxHorizontal.set({ -roomSize, 0 }, { roomSize, 0 });
+		boxVertical.set({ 0, roomSize }, { 0, -roomSize });
 
 		rectangle_ptr = std::make_shared<Rectangle>(rectangle);
 		land_ptr = std::make_shared<Rectangle>(land);
@@ -32,6 +35,9 @@ namespace Physics2D
 		circle_ptr = std::make_shared<Circle>(circle);
 		edge_ptr = std::make_shared<Edge>(edge);
 		capsule_ptr = std::make_shared<Capsule>(capsule);
+
+		horizontalWall = std::make_shared<Edge>(boxHorizontal);
+		verticalWall = std::make_shared<Edge>(boxVertical);
 		
 		distancePrim.minDistance = 1;
 		distancePrim.maxDistance = 1.5;
@@ -48,14 +54,16 @@ namespace Physics2D
 
 
 		m_world.setEnableGravity(true);
-		m_world.setGravity({0, -0.4f});
+		m_world.setGravity({0, -0.2f});
 		m_world.setLinearVelocityDamping(0.8f);
 		m_world.setAirFrictionCoefficient(0.8f);
 		m_world.setAngularVelocityDamping(0.8f);
 		m_world.setPositionIteration(6);
-		m_world.setVelocityIteration(1);
+		m_world.setVelocityIteration(2);
+		
 		//createStackBox(6, 1.1, 1.1);
-		//createBoxesAndGround(6);
+		//createBoxRoom();
+		//createBoxesAndGround(4);
 		//testPendulum();
 		testCollision();
 		//testJoint();
@@ -83,7 +91,42 @@ namespace Physics2D
 	{
 
 	}
+	void Window::createBoxRoom()
+	{
 
+		ground = m_world.createBody();
+		ground->setShape(horizontalWall);
+		ground->position().set({ 0, -roomSize });
+		ground->setMass(Constant::Max);
+		ground->setType(Body::BodyType::Static);
+		//camera.setMeterToPixel(120);
+		dbvh.insert(ground);
+
+		ground = m_world.createBody();
+		ground->setShape(horizontalWall);
+		ground->position().set({ 0, roomSize });
+		ground->setMass(Constant::Max);
+		ground->setType(Body::BodyType::Static);
+		//camera.setMeterToPixel(120);
+		dbvh.insert(ground);
+
+		ground = m_world.createBody();
+		ground->setShape(verticalWall);
+		ground->position().set({ roomSize, 0 });
+		ground->setMass(Constant::Max);
+		ground->setType(Body::BodyType::Static);
+		//camera.setMeterToPixel(120);
+		dbvh.insert(ground);
+
+		ground = m_world.createBody();
+		ground->setShape(verticalWall);
+		ground->position().set({ -roomSize, 0 });
+		ground->setMass(Constant::Max);
+		ground->setType(Body::BodyType::Static);
+		camera.setTargetBody(ground);
+		//camera.setMeterToPixel(120);
+		dbvh.insert(ground);
+	}
 	void Window::testBroadphase()
 	{
 		for (int i = 0; i < 500; i++)
@@ -157,18 +200,20 @@ namespace Physics2D
 		
 		m_world.stepVelocity(dt);
 
+
+		auto potentialList = dbvh.generatePairs();
+		for (auto pair : potentialList)
+		{
+			auto result = Detector::detect(pair.first, pair.second);
+			if (result.isColliding)
+				contactMaintainer.add(result);
+		}
+
 		for(int i = 0;i < 1;i++)
 		{
-
-			auto potentialList = dbvh.generatePairs();
-			for (auto pair : potentialList)
-			{
-				auto result = Detector::detect(pair.first, pair.second);
-				if (result.isColliding)
-					contactMaintainer.add(result);
-			}
 			contactMaintainer.solve(dt);
 		}
+
 		m_world.stepPosition(dt);
 
 		
@@ -229,9 +274,9 @@ namespace Physics2D
 		dbvh.insert(ground);
 		
 		rect = m_world.createBody();
-		rect->setShape(rectangle_ptr);
-		rect->position().set({-5, 2});
-		rect->rotation() = 0;
+		rect->setShape(polygon_ptr);
+		rect->position().set({-5, 4});
+		rect->rotation() = 20;
 		rect->setMass(200);
 		rect->setType(Body::BodyType::Dynamic);
 
@@ -296,7 +341,8 @@ namespace Physics2D
 		camera.render(&painter);
 		real dt = 1.0 / 60;
 
-		QPen pen2(Qt::red, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		QPen pen3(Qt::red, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		QPen pen2(Qt::green, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 		for(auto iter = contactMaintainer.m_contactTable.begin(); iter != contactMaintainer.m_contactTable.end(); ++iter)
 		{
 			for(auto& elem:iter->second)
@@ -305,6 +351,33 @@ namespace Physics2D
 				RendererQtImpl::renderPoint(&painter, &camera, elem.bodyB->toWorldPoint(elem.localB), pen2);
 			}
 		}
+
+		//auto potentialList = dbvh.generatePairs();
+		//for (auto pair : potentialList)
+		//{
+		//	auto result = Detector::detect(pair.first, pair.second);
+		//	if (result.isColliding)
+		//	{
+		//		ShapePrimitive p1, p2;
+		//		p1.rotation = result.bodyA->rotation();
+		//		p1.shape = result.bodyA->shape();
+		//		p1.transform = result.bodyA->position();
+
+
+		//		p2.rotation = result.bodyB->rotation();
+		//		p2.shape = result.bodyB->shape();
+		//		p2.transform = result.bodyB->position();
+		//		RendererQtImpl::renderShape(&painter, &camera, p1, pen3);
+		//		RendererQtImpl::renderShape(&painter, &camera, p2, pen3);
+		//		for(auto& elem: result.contactList)
+		//		{
+		//			RendererQtImpl::renderPoint(&painter, &camera, elem.pointA, pen2);
+		//			RendererQtImpl::renderPoint(&painter, &camera, elem.pointB, pen2);
+		//		}
+
+		//	}
+		//}
+
 		//
 		//
 		//auto result = Detector::detect(rect, rect2);
@@ -510,20 +583,26 @@ namespace Physics2D
 	{
 		for (real j = 0; j < count; j++)
 		{
-			Body* body = m_world.createBody();
-			body->position().set({1 + j * 1.2, -6 + j * 1.2});
-			body->setShape(rectangle_ptr);
-			body->rotation() = 45;
-			body->setMass(400);
-			body->setType(Body::BodyType::Static);
-			dbvh.insert(body);
+			for(real i = 0;i < count; i++)
+			{
+				Body* body = m_world.createBody();
+				body->position().set({ i * 1 - 5, j * 1 - 8});
+				body->setShape(rectangle_ptr);
+				body->rotation() = 0;
+				body->setMass(100);
+				body->setType(Body::BodyType::Dynamic);
+				camera.setTargetBody(body);
+				dbvh.insert(body);
+			}
 		}
 
-
-		ground = m_world.createBody();
-		ground->setShape(land_ptr);
-		ground->position().set({0, -8});
-		ground->setMass(Constant::Max);
-		ground->setType(Body::BodyType::Static);
+		//ground = m_world.createBody();
+		//ground->setShape(edge_ptr);
+		//ground->position().set({0, -1.0});
+		//ground->setMass(Constant::Max);
+		//ground->setType(Body::BodyType::Static);
+		//camera.setTargetBody(ground);
+		//camera.setMeterToPixel(120);
+		//dbvh.insert(ground);
 	}
 }

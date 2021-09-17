@@ -83,6 +83,11 @@ namespace Physics2D
 		return sqrt(lengthSquare());
 	}
 
+	real Vector2::theta() const
+	{
+		return Math::arctanx(y, x);
+	}
+
 	Vector2& Vector2::set(const real& _x, const real& _y)
 	{
 		x = _x;

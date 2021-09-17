@@ -26,9 +26,9 @@ namespace Physics2D
 	
     struct SATResult
     {
-        PointPair pointPair;
+        PointPair pointPair[2];
         Vector2 normal;
-        real penetration = Constant::Max;
+        real penetration = 0;
         bool isColliding = false;
     };
 
@@ -38,13 +38,29 @@ namespace Physics2D
     class SAT
     {
     public:
-        static std::optional<PenetrationInfo> circleVsCircle(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB);
+        static SATResult circleVsCapsule(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB);
+        static SATResult circleVsSector(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB);
+        static SATResult circleVsEdge(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB);
+        static SATResult circleVsCircle(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB);
         static SATResult circleVsPolygon(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB);
+
         static SATResult polygonVsPolygon(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB);
+		static SATResult polygonVsEdge(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB);
+        static SATResult polygonVsCapsule(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB);
+        static SATResult polygonVsSector(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB);
+        
+        static SATResult capsuleVsEdge(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB);
+        static SATResult capsuleVsCapsule(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB);
+		static SATResult capsuleVsSector(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB);
+
+        static SATResult sectorVsSector(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB);
     private:
         static ProjectedSegment axisProjection(const ShapePrimitive& shape, Polygon* polygon, const Vector2& normal);
         static ProjectedSegment axisProjection(const ShapePrimitive& shape, Circle* circle, const Vector2& normal);
         static ProjectedSegment axisProjection(const ShapePrimitive& shape, Ellipse* ellipse, const Vector2& normal);
+        static ProjectedSegment axisProjection(const ShapePrimitive& shape, Capsule* capsule, const Vector2& normal);
+        static ProjectedSegment axisProjection(const ShapePrimitive& shape, Sector* sector, const Vector2& normal);
     };
+    
 }
 #endif

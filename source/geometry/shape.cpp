@@ -430,4 +430,64 @@ namespace Physics2D
 	{
 		return Matrix2x2(rotation).multiply(source) + transform;
 	}
+	Sector::Sector()
+	{
+		m_startRadian = 0;
+		m_endRadian = 0;
+		m_radius = 0;
+	}
+	bool Sector::contains(const Vector2& point, const real& epsilon)
+	{
+		real theta = point.theta();
+		return theta >= m_startRadian && theta <= m_endRadian && point.lengthSquare() <= m_radius * m_radius;
+	}
+	void Sector::scale(const real& factor)
+	{
+		m_radius *= factor;
+	}
+	Vector2 Sector::center() const
+	{
+		Vector2 st = Matrix2x2(m_startRadian).multiply(Vector2{ m_radius, 0 });
+		Vector2 ed = Matrix2x2(m_endRadian).multiply(Vector2{ m_radius, 0 });
+		Vector2 normal = (st + ed) / 2;
+		real c = (st - ed).length();
+		real l = (m_endRadian - m_startRadian) * m_radius;
+		normal.normalize();
+		return normal * ((2 * m_radius * c) / (3 * l));
+	}
+
+	real Sector::startRadian() const
+	{
+		return m_startRadian;
+	}
+
+	real Sector::endRadian() const
+	{
+		return m_endRadian;
+	}
+	real Sector::radius() const
+	{
+		return m_radius;
+	}
+
+	void Sector::setStartRadian(const real& angle)
+	{
+		m_startRadian = angle;
+	}
+
+	void Sector::setEndRadian(const real& angle)
+	{
+		m_endRadian = angle;
+	}
+
+	void Sector::setRadius(const real& radius)
+	{
+		m_radius = radius;
+	}
+	void Sector::set(const real& start, const real& end, const real& radius)
+	{
+		m_startRadian = start;
+		m_endRadian = end;
+		m_radius = radius;
+	}
 }

@@ -155,6 +155,36 @@ namespace Physics2D
 			center.setWidth(2);
 			renderAngleLine(painter, camera, shape, center);
 		}
+
+
+		static void renderSector(QPainter* painter, Utils::Camera* camera, const ShapePrimitive& shape, const QPen& pen)
+		{
+			assert(painter != nullptr && camera != nullptr);
+			assert(shape.shape->type() == Shape::Type::Sector);
+			const Sector* sector = dynamic_cast<Sector*>(shape.shape.get());
+			const Vector2 screen_p = camera->worldToScreen(shape.transform);
+			QPen gc(Qt::gray, 8, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+			renderPoint(painter, camera, Matrix2x2(shape.rotation).multiply(dynamic_cast<Sector*>(shape.shape.get())->center()) + shape.transform, gc);
+
+			QColor color = pen.color();
+			color.setAlphaF(0.15f);
+			QBrush brush(color);
+			QPainterPath path;
+			//path.arcTo(rect, shortest, shortest);
+			painter->translate(screen_p.x, screen_p.y);
+
+			painter->rotate(Math::radianToDegree(-shape.rotation));
+
+			painter->setPen(pen);
+			painter->drawPath(path);
+			painter->fillPath(path, brush);
+			painter->rotate(Math::radianToDegree(shape.rotation));
+			painter->translate(-screen_p.x, -screen_p.y);
+
+			QPen center = pen;
+			center.setWidth(2);
+			renderAngleLine(painter, camera, shape, center);
+		}
 		static void renderEllipse(QPainter* painter, Utils::Camera* camera, const ShapePrimitive& shape, const QPen& pen)
 		{
 			assert(painter != nullptr && camera != nullptr);
@@ -406,6 +436,11 @@ namespace Physics2D
 			case Shape::Type::Capsule:
 			{
 				renderCapsule(painter, camera, shape, pen);
+				break;
+			}
+			case Shape::Type::Sector:
+			{
+				renderSector(painter, camera, shape, pen);
 				break;
 			}
 			default:

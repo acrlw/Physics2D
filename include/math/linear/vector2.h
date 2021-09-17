@@ -34,6 +34,10 @@ namespace Physics2D
 		
         real lengthSquare()const;
         real length()const;
+        real theta()const;
+		Vector2 normal()const;
+
+
         Vector2& set(const real& _x, const real& _y);
         Vector2& set(const Vector2& copy);
         Vector2& clear();
@@ -41,7 +45,6 @@ namespace Physics2D
         Vector2& swap(Vector2& other) noexcept;
 
         Vector2& normalize();
-        Vector2 normal()const;
         Vector2 perpendicular()const;
 
         real dot(const Vector2& rhs)const;

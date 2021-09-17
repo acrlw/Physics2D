@@ -43,9 +43,9 @@ namespace Physics2D
 		{
 			return std::acos(x);
 		}
-		inline real arctanx(const real& x)
+		inline real arctanx(const real& y,const real& x)
 		{
-			return std::atan(x);
+			return std::atan2(y, x);
 		}
 		inline real max(const real& a, const real& b)
 		{
