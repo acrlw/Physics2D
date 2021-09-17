@@ -10,28 +10,32 @@ cmake CMakeLists.txt
 
 # Features
 - Basic Linear Algebra
-- Collision Detection Algorithm
-  - SAT
-  - GJK
-  - EPA
-  - MPR
-  - Distance
-  - Contact Pair
-  - Support Mapping
-    - Ellipse
-    - Circle
-    - Polygon
-    - Line
-    - Point
-    - Capsule
-- Continuous Collision Detection
-  - Sampling Trajectory of Body
-  - Time of Impact
+- Collision Detection
+  - Narrowphase
+    - Basic Algorithm
+      - SAT
+      - GJK
+      - EPA
+      - MPR
+      - Distance
+      - Contact Pair
+    - Support Mapping
+      - Ellipse
+      - Circle
+      - Polygon
+      - Line
+      - Point
+      - Capsule
+    - Continuous Collision Detection
+      - Sampling Trajectory of Body
+      - Time of Impact
+  - Broadphase
+    - Axis-Aligned Bounding Box
+    - Dynamic Bounding Volume Tree
+      - Dynamic Tree
+      - Dynamic Array
+- Contact Cache
 - Rigid Body Dynamics Simulation
-- Axis-Aligned Bounding Box
-- Dynamic Bounding Volume Tree
-  - Dynamic Tree
-  - Dynamic Array
 - Basic Debug Drawing
   - Rigid Body
   - AABB
@@ -61,6 +65,11 @@ cmake CMakeLists.txt
 
 # Future
 - Sequential Impulse Solver
+- Broadphase
+  - Uniform Grid
+- Integrator
+  - Verlet
+  - Rk4
 - Joint
   - Mouse
   - Prismatic
