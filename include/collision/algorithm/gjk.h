@@ -6,6 +6,7 @@
 #include "include/geometry/shape.h"
 #include "include/geometry/algorithm/2d.h"
 
+#include "fmt/core.h"
 namespace Physics2D
 {
 	struct Minkowski
@@ -161,7 +162,7 @@ namespace Physics2D
 		/// </summary>
 		/// <param name="source"></param>
 		/// <returns></returns>
-		static PointPair dumpContacts(const PenetrationSource& source, const PenetrationInfo& info);
+		static PointPair dumpPoints(const PenetrationSource& source);
 	};
 }
 

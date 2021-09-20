@@ -66,7 +66,7 @@ add_executable(physics-engine
     "include/collision/broadphase/aabb.h"
     "source/collision/broadphase/dbvh.cpp"
     "source/collision/broadphase/aabb.cpp"
-    "include/render/impl/renderer_qt.h"
+    "source/render/impl/renderer_qt.cpp"
     "testbed/window.h"
     "testbed/window.cpp"
     "include/dynamics/joint/joint.h"
@@ -76,7 +76,7 @@ add_executable(physics-engine
     "include/dynamics/joint/point.h"
     "include/dynamics/joint/distance.h"
     "include/dynamics/joint/rotation.h"
-    "include/dynamics/joint/joints.h"    "include/dynamics/constraint/contact.h"  "include/utils/camera.h" "source/utils/camera.cpp" "include/collision/broadphase/tree.h" "source/collision/broadphase/tree.cpp" "include/collision/continuous/ccd.h" "source/collision/continuous/ccd.cpp" "source/utils/random.cpp" "source/dynamics/constraint/contact.cpp")
+    "include/dynamics/joint/joints.h"    "include/dynamics/constraint/contact.h"  "include/utils/camera.h" "source/utils/camera.cpp" "include/collision/broadphase/tree.h" "source/collision/broadphase/tree.cpp" "include/collision/continuous/ccd.h" "source/collision/continuous/ccd.cpp" "source/utils/random.cpp" "source/dynamics/constraint/contact.cpp" "source/render/impl/renderer_qt.cpp")
 
 find_package(fmt CONFIG REQUIRED)
 find_package(Qt5 COMPONENTS Widgets REQUIRED)

@@ -169,6 +169,16 @@ namespace Physics2D {
         m_id = id;
     }
 
+    real Body::restitution() const
+    {
+        return m_restitution;
+    }
+
+    void Body::setRestitution(const real& restitution)
+    {
+        m_restitution = restitution;
+    }
+
     void Body::calcInertia()
     {
         switch (m_shape->type()) {

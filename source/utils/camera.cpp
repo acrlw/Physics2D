@@ -53,7 +53,7 @@ namespace Physics2D::Utils
 			QPen origin(Qt::green, 10, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 
 
-			RendererQtImpl::renderPoint(painter, this, Vector2(0, 0), origin);
+			//RendererQtImpl::renderPoint(painter, this, Vector2(0, 0), origin);
 
 			QPen pen(Qt::green, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 			if(m_bodyVisible)

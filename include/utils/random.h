@@ -2,6 +2,7 @@
 #define PHYSICS_RANDOM_H
 
 #include "QtCore/QRandomGenerator"
+
 namespace Physics2D
 {
 	class RandomGenerator

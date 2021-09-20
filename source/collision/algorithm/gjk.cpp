@@ -15,29 +15,14 @@ namespace Physics2D
 		{
 		case 4:
 			{
-				real a = 0, b = 0, c = 0;
-				Vector2 oa = simplex.vertices[0].result * -1;
-				Vector2 ob = simplex.vertices[1].result * -1;
-				Vector2 oc = simplex.vertices[2].result * -1;
-
-				a = Vector2::crossProduct(oa, ob);
-				b = Vector2::crossProduct(ob, oc);
-				c = Vector2::crossProduct(oc, oa);
-
-				if ((a <= 0 && b <= 0 && c <= 0) ||
-					(a >= 0 && b >= 0 && c >= 0))
-					return true;
-				return false;
-
+				return GeometryAlgorithm2D::triangleContainsOrigin(simplex.vertices[0].result,
+					simplex.vertices[1].result, simplex.vertices[2].result);
 			}
 		case 2:
 			{
-				if(strict)
-				{
-					Vector2 oa = simplex.vertices[0].result * -1;
-					Vector2 ob = simplex.vertices[1].result * -1;
-					return GeometryAlgorithm2D::isPointOnSegment(oa, ob, { 0, 0 });
-				}
+				Vector2 oa = simplex.vertices[0].result * -1;
+				Vector2 ob = simplex.vertices[1].result * -1;
+				return GeometryAlgorithm2D::isPointOnSegment(oa, ob, { 0, 0 });
 
 			}
 		default:
@@ -96,7 +81,7 @@ namespace Physics2D
 
 			if (simplex.lastVertex().dot(direction) <= 0)
 				break;
-			if (simplex.containOrigin())
+			if (simplex.containOrigin(true))
 			{
 				found = true;
 				break;
@@ -136,11 +121,13 @@ namespace Physics2D
 		Minkowski p;
 		while (iter <= iteration)
 		{
+
 			auto [index1, index2] = findEdgeClosestToOrigin(simplex);
-			
+
+			//fmt::print("closest edge: ({0}, {1}), ({2}, {3})\n", simplex.vertices[index1].result.x, simplex.vertices[index1].result.y, simplex.vertices[index2].result.x, simplex.vertices[index2].result.y);
 			normal = calculateDirectionByEdge(simplex.vertices[index1].result, simplex.vertices[index2].result, false).
 				normal();
-
+			
 			if (GeometryAlgorithm2D::isPointOnSegment(simplex.vertices[index1].result, simplex.vertices[index2].result, { 0, 0 }))
 				normal.negate();
 			
@@ -264,25 +251,13 @@ namespace Physics2D
 		case Shape::Type::Capsule:
 		{
 			const Capsule* capsule = dynamic_cast<const Capsule*>(shape.shape.get());
-			if (capsule->width() >= capsule->height()) // Horizontal
-			{
-				real radius = capsule->height() / 2;
-				real offset = rot_dir.x >= 0 ? capsule->width() / 2 - radius : radius - capsule->width() / 2;
-				target = rot_dir.normal() * radius;
-				target.x += offset;
-			}
-			else // Vertical
-			{
-				real radius = capsule->width() / 2;
-				real offset = rot_dir.y >= 0 ? capsule->height() / 2 - radius : radius - capsule->height() / 2;
-				target = rot_dir.normal() * radius;
-				target.y += offset;
-			}
+			target = GeometryAlgorithm2D::calculateCapsuleProjectionPoint(capsule->width(), capsule->height(), rot_dir);
 			break;
 		}
 		case Shape::Type::Sector:
 		{
 			const Sector* sector = dynamic_cast<const Sector*>(shape.shape.get());
+
 			break;
 		}
 		default:
@@ -359,34 +334,7 @@ namespace Physics2D
 			adjustSimplex(simplex, index1, index2);
 		}
 		
-		auto source = dumpSource(simplex);
-		
-		const Vector2 A_s1 = source.a1;
-		const Vector2 A_s2 = source.a2;
-		const Vector2 B_s1 = source.b1;
-		const Vector2 B_s2 = source.b2;
-
-		const real diffEpsilonA = (A_s1 - A_s2).lengthSquare();
-		const real diffEpsilonB = (B_s1 - B_s2).lengthSquare();
-		//two point
-		if (diffEpsilonA < epsilon && diffEpsilonB < epsilon)
-		{
-			result.pointA = (A_s1 + A_s2) * 0.5;
-			result.pointB = (B_s1 + B_s2) * 0.5;
-		}
-		//point a and edge b
-		if (diffEpsilonA < epsilon && diffEpsilonB > epsilon)
-		{
-			result.pointA = (A_s1 + A_s2) * 0.5;
-			result.pointB = GeometryAlgorithm2D::pointToLineSegment(B_s1, B_s2, result.pointA);
-		}
-		//point b and edge a
-		if (diffEpsilonA > epsilon && diffEpsilonB < epsilon)
-		{
-			result.pointB = (B_s1 + B_s2) * 0.5;
-			result.pointA = GeometryAlgorithm2D::pointToLineSegment(A_s1, A_s2, result.pointB);
-		}
-		return result;
+		return dumpPoints(dumpSource(simplex));
 	}
 
 	PenetrationSource GJK::dumpSource(const Simplex& simplex)
@@ -400,35 +348,36 @@ namespace Physics2D
 		return result;
 	}
 	
-	PointPair GJK::dumpContacts(const PenetrationSource& source, const PenetrationInfo& info)
+	PointPair GJK::dumpPoints(const PenetrationSource& source)
 	{
 		PointPair result;
 		const Vector2 A_s1 = source.a1;
-		const Vector2 A_s2 = source.a2;
-		const Vector2 B_s1 = source.b1;
+		const Vector2 B_s1 = source.a2;
+		const Vector2 A_s2 = source.b1;
 		const Vector2 B_s2 = source.b2;
-		
-		Vector2 witness;
 
-		int dir = 1;
-		if ((A_s1 - A_s2).lengthSquare() < (B_s1 - B_s2).lengthSquare())
+		Vector2 a = source.a1 - source.b1;
+		Vector2 b = source.a2 - source.b2;
+
+		Vector2 l = b - a;
+		real ll = l.dot(l);
+		real la = l.dot(a);
+		real lambda2 = -la / ll;
+		real lambda1 = 1 - lambda2;
+
+		result.pointA.set(lambda1 * A_s1 + lambda2 * B_s1);
+		result.pointB.set(lambda1 * A_s2 + lambda2 * B_s2);
+
+		if(l.fuzzyEqual({0, 0}) || lambda2 < 0)
 		{
-			witness = (A_s1 + A_s2) * (0.5f);
+			result.pointA.set(A_s1);
+			result.pointB.set(A_s2);
 		}
-		else
+		if(lambda1 < 0)
 		{
-			witness = (B_s1 + B_s2) * (0.5f);
-			dir = dir * -1;
+			result.pointA.set(B_s1);
+			result.pointB.set(B_s2);
 		}
-		Vector2 mirror = witness + info.normal * info.penetration * dir;
-		if (dir < 0)
-		{
-			const Vector2 temp = witness;
-			witness = mirror;
-			mirror = temp;
-		}
-		result.pointA = witness;
-		result.pointB = mirror;
 		return result;
 	}
 	Minkowski::Minkowski(const Vector2& point_a, const Vector2& point_b) : pointA(point_a), pointB(point_b),

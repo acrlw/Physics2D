@@ -43,7 +43,8 @@ namespace Physics2D
 		Vector2 actualEnd = shapeEdge->transform + edge->endPoint();
 		Vector2 normal = (actualStart - actualEnd).normal();
 
-		if ((edge->startPoint() - shapeCircle->transform).dot(normal) < 0)
+		if ((actualStart - shapeCircle->transform).dot(normal) < 0 &&
+			(actualEnd - shapeCircle->transform).dot(normal) < 0)
 			normal.negate();
 
 		Vector2 projectedPoint = GeometryAlgorithm2D::pointToLineSegment(actualStart, actualEnd, shapeCircle->transform);

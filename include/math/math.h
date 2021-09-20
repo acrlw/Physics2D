@@ -12,7 +12,7 @@ namespace Physics2D
 		lhs = rhs;
 		rhs = temp;
 	}
-	inline bool fuzzyRealEqual(const real& lhs, const real& rhs, const real& epsilon)
+	inline bool fuzzyRealEqual(const real& lhs, const real& rhs, const real& epsilon = Constant::GeometryEpsilon)
 	{
 		return std::abs(lhs - rhs) < epsilon;
 	}

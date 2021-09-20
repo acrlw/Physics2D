@@ -1,9 +1,7 @@
 #include "include/collision/detector.h"
-
 namespace Physics2D
 {
-
-
+	
 	bool Detector::collide(Body* bodyA, Body* bodyB)
 	{
 		assert(bodyA != nullptr && bodyB != nullptr);
@@ -57,91 +55,26 @@ namespace Physics2D
 		if (!a.collide(b))
 			return result;
 
-
-
-		//auto [direction, simplex] = MPR::discover(shapeA, shapeB);
-		//auto [isColliding, portal] = MPR::refine(shapeA, shapeB, simplex, direction);
-		//if (shapeA.transform.fuzzyEqual(shapeB.transform) && !isColliding)
-		//	isColliding = simplex.containOrigin(true);
-
-		//result.isColliding = isColliding;
-
-		if(bodyA->shape()->type() == Shape::Type::Circle && bodyB->shape()->type() == Shape::Type::Circle)
-		{
-			auto info = SAT::circleVsCircle(shapeA, shapeB);
-			result.isColliding = info.isColliding;
-			result.contactList.emplace_back(info.pointPair[0]);
-			result.penetration = info.penetration;
-			result.normal = info.normal;
-			return result;
-		}
-
-		if (bodyA->shape()->type() == Shape::Type::Circle && bodyB->shape()->type() == Shape::Type::Edge || bodyA->shape()->type() == Shape::Type::Edge && bodyB->shape()->type() == Shape::Type::Circle)
-		{
-			auto info = SAT::circleVsEdge(shapeA, shapeB);
-			result.isColliding = info.isColliding;
-			result.contactList.emplace_back(info.pointPair[0]);
-			result.penetration = info.penetration;
-			result.normal = info.normal;
-			return result;
-		}
-
-
 		auto [isColliding, simplex] = GJK::gjk(shapeA, shapeB);
 
 		if (shapeA.transform.fuzzyEqual(shapeB.transform) && !isColliding)
 			isColliding = simplex.containOrigin(true);
 
+
 		result.isColliding = isColliding;
 
+		
 		if (isColliding)
 		{
-
-			//portal.vertices.erase(portal.vertices.begin());
-			//PenetrationSource source = GJK::dumpSource(portal);
-
+			auto oldSimplex = simplex;
 			simplex = GJK::epa(shapeA, shapeB, simplex);
 			PenetrationSource source = GJK::dumpSource(simplex);
 
-
+			
 			const auto info = GJK::dumpInfo(source);
 			result.normal = info.normal;
 			result.penetration = info.penetration;
-
-			if (source.a1 == source.a2 && source.b1 == source.b2)
-			{
-				result.contactList.emplace_back(GJK::dumpContacts(source, info));
-			}
-			else if (source.a1 != source.a2 && source.b1 == source.b2)
-			{
-				ContactEdge edge;
-				edge.point1 = source.a1;
-				edge.point2 = source.a2;
-				auto temp = ContactGenerator::generate(shapeB, edge, source.b1, info, true);
-				if (temp.has_value())
-					result.contactList = temp.value();
-				else
-					result.contactList.emplace_back(GJK::dumpContacts(source, info));
-			}
-			else if (source.a1 == source.a2 && source.b1 != source.b2)
-			{
-				ContactEdge edge;
-				edge.point1 = source.b1;
-				edge.point2 = source.b2;
-				auto temp = ContactGenerator::generate(shapeA, edge, source.a1, info, false);
-				if (temp.has_value())
-					result.contactList = temp.value();
-				else
-					result.contactList.emplace_back(GJK::dumpContacts(source, info));
-			}
-			else
-			{
-				auto temp = ContactGenerator::clip({ source.a1, source.a2 }, { source.b1, source.b2 });
-				if (temp.has_value())
-					result.contactList = temp.value();
-				else
-					result.contactList.emplace_back(GJK::dumpContacts(source, info));
-			}
+			result.contactList.emplace_back(GJK::dumpPoints(source));
 		}
 		assert(result.contactList.size() != 3);
 		return result;

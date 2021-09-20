@@ -10,15 +10,18 @@ namespace Physics2D
 
 	bool GeometryAlgorithm2D::isPointOnSegment(const Vector2& a, const Vector2& b, const Vector2& c)
 	{
-		return !isCollinear(a, b, c) ? false : fuzzyIsPointOnSegment(a, b, c);
+		return !isCollinear(a, b, c) ? false : fuzzyIsCollinear(a, b, c);
 	}
 
-	bool GeometryAlgorithm2D::fuzzyIsPointOnSegment(const Vector2& a, const Vector2& b, const Vector2& c)
+	bool GeometryAlgorithm2D::fuzzyIsPointOnSegment(const Vector2& a, const Vector2& b, const Vector2& c, const real& epsilon)
+	{
+		return fuzzyRealEqual(pointToLineSegment(a, b, c).lengthSquare(), epsilon);
+	}
+	bool GeometryAlgorithm2D::fuzzyIsCollinear(const Vector2& a, const Vector2& b, const Vector2& c)
 	{
 		return (c.x <= Math::max(a.x, b.x) && c.x >= Math::min(a.x, b.x) &&
 			c.y <= Math::max(a.y, b.y) && c.y >= Math::min(a.y, b.y));
 	}
-
 	std::optional<Vector2> GeometryAlgorithm2D::lineSegmentIntersection(const Vector2& a, const Vector2& b,
 	                                                                    const Vector2& c, const Vector2& d)
 	{
@@ -32,7 +35,7 @@ namespace Physics2D
 
 		if (realEqual(ab_length, 0.0f))
 		{
-			if (fuzzyIsPointOnSegment(c, d, a))
+			if (fuzzyIsCollinear(c, d, a))
 				return std::optional<Vector2>(a);
 			return std::nullopt;
 		}
@@ -57,7 +60,7 @@ namespace Physics2D
 
 		Vector2 p = bp + b;
 
-		return (fuzzyIsPointOnSegment(a, b, p) && fuzzyIsPointOnSegment(d, c, p))
+		return (fuzzyIsCollinear(a, b, p) && fuzzyIsCollinear(d, c, p))
 			       ? std::optional<Vector2>(p)
 			       : std::nullopt;
 	}
@@ -178,7 +181,7 @@ namespace Physics2D
 		const Vector2 ap_proj = ab_normal.dot(ap) * ab_normal;
 		Vector2 op_proj = a + ap_proj;
 
-		if (fuzzyIsPointOnSegment(a, b, op_proj))
+		if (fuzzyIsCollinear(a, b, op_proj))
 			return op_proj;
 		return (p - a).lengthSquare() > (p - b).lengthSquare() ? b : a;
 	}
@@ -344,7 +347,7 @@ namespace Physics2D
 			const Vector2 p1_fp = p1p2 * p1p2.dot(p1f);
 			const Vector2 f_proj = p1 + p1_fp;
 
-			if (fuzzyIsPointOnSegment(a, b, f_proj))
+			if (fuzzyIsCollinear(a, b, f_proj))
 			{
 				p_ellipse = f;
 				p_line = f_proj;
@@ -438,8 +441,10 @@ namespace Physics2D
 	}
 	bool GeometryAlgorithm2D::triangleContainsOrigin(const Vector2& a, const Vector2& b, const Vector2& c)
 	{
-		return ((b - a).cross(-a) > 0.0 &&
-			(c - b).cross(-b) > 0.0 &&
-			(a - c).cross(-c) > 0.0);
+		real ra = (b - a).cross(-a);
+		real rb = (c - b).cross(-b);
+		real rc = (a - c).cross(-c);
+		return ra >= 0 && rb >= 0 && rc >= 0
+		|| ra <= 0 && rb <= 0 && rc <= 0;
 	}
 }

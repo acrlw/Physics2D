@@ -76,6 +76,9 @@ namespace Physics2D
 
 		int id()const;
 		void setId(const int& id);
+
+		real restitution()const;
+		void setRestitution(const real& restitution);
 	private:
 		void calcInertia();
 
@@ -98,7 +101,8 @@ namespace Physics2D
 		BodyType m_type = BodyType::Static;
 
 		bool m_sleep = false;
-		real m_friction = 0.4;
+		real m_friction = 0.2;
+		real m_restitution = 0.8;
 
 		BodyState m_bodyState;
 

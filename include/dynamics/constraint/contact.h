@@ -18,10 +18,12 @@ namespace Physics2D
 		Vector2 normal;
 		Vector2 tangent;
 		real bias = 0;
+		real restitution = 0.8;
 		real effectiveMassNormal = 0;
 		real effectiveMassTangent = 0;
 		real accumulatedNormalImpulse = 0;
 		real accumulatedTangentImpulse = 0;
+
 	};
 	
 	struct ContactConstraintPoint
@@ -45,7 +47,7 @@ namespace Physics2D
 		std::map<RelationID, std::vector<ContactConstraintPoint>> m_contactTable;
 		void prepare(ContactConstraintPoint& ccp, const PointPair& pair, const Collision& collision);
 		real m_maxPenetration = 0.01;
-		real m_biasFactor = 0.25;
+		real m_biasFactor = 0.06;
 	private:
 	};
 	

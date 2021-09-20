@@ -30,7 +30,8 @@ namespace Physics2D
 		/// <param name="b"></param>
 		/// <param name="c"></param>
 		/// <returns></returns>
-		bool fuzzyIsPointOnSegment(const Vector2& a, const Vector2& b, const Vector2& c);
+		bool fuzzyIsPointOnSegment(const Vector2& a, const Vector2& b, const Vector2& c, const real& epsilon = Constant::GeometryEpsilon);
+		bool fuzzyIsCollinear(const Vector2& a, const Vector2& b, const Vector2& c);
 		/// <summary>
 		/// Calculate intersected point between line ab and line cd.
 		/// Return if there is a actual intersected point.
