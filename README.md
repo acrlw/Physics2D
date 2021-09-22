@@ -36,6 +36,10 @@ cmake CMakeLists.txt
       - Dynamic Array
 - Contact Cache
 - Rigid Body Dynamics Simulation
+- Sequential Impulse Solver
+- Joint
+  - Distance
+  - Rotation
 - Basic Debug Drawing
   - Rigid Body
   - AABB
@@ -64,20 +68,18 @@ cmake CMakeLists.txt
     - Nearest Point
 
 # Future
-- Sequential Impulse Solver
 - Broadphase
   - Uniform Grid
+- Test Demo
 - Integrator
   - Verlet
   - Rk4
 - Joint
   - Mouse
   - Prismatic
-  - Angle
   - Point
   - Weld
-  - Distance
 - Non-Fit Polygon
-- Finite Element Method
-- Mass-Spring System
-- Test Demo
+- Soft Body
+  - Finite Element Method
+  - Mass-Spring System
