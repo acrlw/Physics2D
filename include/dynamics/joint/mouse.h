@@ -46,7 +46,7 @@ namespace Physics2D
 			real im_a = m_primitive.bodyA->inverseMass();
 			real ii_a = m_primitive.bodyA->inverseInertia();
 			real inv_dt = 1.0 / dt;
-			
+
 			k.e11() = im_a + ii_a * ra.y * ra.y;
 			k.e21() = -ii_a * ra.x * ra.y;
 			k.e12() = -ii_a * ra.x * ra.y;

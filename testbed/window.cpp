@@ -252,14 +252,18 @@ namespace Physics2D
 		rect2->position().set({-5, -5});
 		rect2->rotation() = 0;
 		rect2->setMass(100);
-		rect2->setType(Body::BodyType::Static);
+		rect2->setType(Body::BodyType::Kinematic);
 		
 		mousePrim.bodyA = rect;
-		MouseJoint* j = m_world.createJoint(mousePrim);
 
+		rotationPrim.bodyA = rect;
+		rotationPrim.bodyB = rect2;
+		RotationJoint* rj = m_world.createJoint(rotationPrim);
+		
 
 		dbvh.insert(rect);
 		dbvh.insert(rect2);
+		dbvh.insert(ground);
 		camera.setTargetBody(rect);
 
 		//rect->velocity() += {10, 0};
