@@ -5,17 +5,16 @@ namespace Physics2D
 {
 	struct PointJointPrimitive
 	{
-		Body* bodyA = nullptr;
-		Body* bodyB = nullptr;
+		Body* bodyA;
 		Vector2 localPointA;
-		Vector2 localPointB;
-		real stiffness = 0.2;
-		real damping = 1;
-		Matrix2x2 effectiveMass;
-		Vector2 bias;
-		Vector2 accumulatedImpulse;
-		Vector2 lastImpulse;
-		real maxForce = 20000;
+		Vector2 targetPoint;
+		Vector2 normal;
+		real damping = 0;
+		real stiffness = 1;
+		real bias = 0;
+		real biasFactor = 0.06;
+		real effectiveMass = 0;
+		real accumulatedImpulse = 0;
 	};
 	class PointJoint : public Joint
 	{
@@ -34,14 +33,39 @@ namespace Physics2D
 		}
 		void prepare(const real& dt) override
 		{
-			if (m_primitive.bodyA == nullptr || m_primitive.bodyB == nullptr)
+			if (m_primitive.bodyA == nullptr)
 				return;
-
+			Body* bodyA = m_primitive.bodyA;
+			Vector2 pa = bodyA->toWorldPoint(m_primitive.localPointA);
+			Vector2 ra = pa - bodyA->position();
+			Vector2 pb = m_primitive.targetPoint;
+			real im_a = m_primitive.bodyA->inverseMass();
+			real ii_a = m_primitive.bodyA->inverseInertia();
+			Vector2 error = pb - pa;
+			m_primitive.normal = error.normal();
+			real c = Math::max(error.length() - 0.01, 0);
+			real rn_a = m_primitive.normal.dot(ra);
+			m_primitive.effectiveMass = 1.0 / (im_a + ii_a * rn_a * rn_a);
+			m_primitive.bias = m_primitive.biasFactor * c / dt;
+			//m_primitive.bodyA->applyImpulse(m_primitive.accumulatedImpulse * m_primitive.normal, ra);
 			
 		}
-		Vector2 solveVelocity(const real& dt) override
+		void solveVelocity(const real& dt) override
 		{
-			return Vector2();
+			Vector2 ra = m_primitive.bodyA->toWorldPoint(m_primitive.localPointA) - m_primitive.bodyA->position();
+			Vector2 va = m_primitive.bodyA->velocity() + Vector2::crossProduct(m_primitive.bodyA->angularVelocity(), ra);
+
+			Vector2 dv = va;
+			real jv = m_primitive.normal.dot(dv);
+			real jvb = -jv + m_primitive.bias;
+			real lambda_n = m_primitive.effectiveMass * jvb;
+
+			real oldImpulse = m_primitive.accumulatedImpulse;
+			m_primitive.accumulatedImpulse = Math::max(oldImpulse + lambda_n, 0);
+			lambda_n = m_primitive.accumulatedImpulse - oldImpulse;
+
+			Vector2 impulse = lambda_n * m_primitive.normal;
+			m_primitive.bodyA->applyImpulse(impulse, ra);
 		}
 		void solvePosition(const real& dt) override
 		{

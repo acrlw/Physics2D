@@ -47,7 +47,7 @@ namespace Physics2D
 		std::map<RelationID, std::vector<ContactConstraintPoint>> m_contactTable;
 		void prepare(ContactConstraintPoint& ccp, const PointPair& pair, const Collision& collision);
 		real m_maxPenetration = 0.01;
-		real m_biasFactor = 0.06;
+		real m_biasFactor = 0.2;
 	private:
 	};
 	

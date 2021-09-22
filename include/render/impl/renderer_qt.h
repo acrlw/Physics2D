@@ -206,12 +206,12 @@ namespace Physics2D
 			renderAngleLine(painter, camera, shape, center);
 			
 			painter->translate(screen_p.x, screen_p.y);
-			painter->rotate(-shape.rotation);
+			painter->rotate(Math::radianToDegree(-shape.rotation));
 			path.addEllipse(QRectF(-A, -B, width, height));
 			painter->setPen(pen);
 			painter->drawPath(path);
 			painter->fillPath(path, brush);
-			painter->rotate(shape.rotation);
+			painter->rotate(Math::radianToDegree(shape.rotation));
 			painter->translate(-screen_p.x, -screen_p.y);
 
 			
@@ -273,10 +273,10 @@ namespace Physics2D
 			assert(joint != nullptr);
 			DistanceJoint* distanceJoint = dynamic_cast<DistanceJoint*>(joint);
 			Vector2 pa = distanceJoint->primitive().bodyA->toWorldPoint(distanceJoint->primitive().localPointA);
-			Vector2 pb = distanceJoint->primitive().bodyB->toWorldPoint(distanceJoint->primitive().localPointB);
-			Vector2 n = (pb - pa).normal();
-			Vector2 minPoint = n * distanceJoint->primitive().minDistance + pa;
-			Vector2 maxPoint = n * distanceJoint->primitive().maxDistance + pa;
+			Vector2 pb = distanceJoint->primitive().targetPoint;
+			Vector2 n = (pa - pb).normal();
+			Vector2 minPoint = n * distanceJoint->primitive().minDistance + pb;
+			Vector2 maxPoint = n * distanceJoint->primitive().maxDistance + pb;
 			QColor minColor("#448AFF");
 			QColor maxColor("#F44336");
 			minColor.setAlphaF(0.8);
@@ -288,9 +288,9 @@ namespace Physics2D
 			renderPoint(painter, camera, pb, p);
 			renderPoint(painter, camera, minPoint, min);
 			renderPoint(painter, camera, maxPoint, max);
-			QColor color = Qt::green;
+			QColor color = Qt::gray;
 			color.setAlphaF(0.45);
-			QPen line(color, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+			QPen line(color, 1, Qt::DashDotLine, Qt::RoundCap, Qt::RoundJoin);
 			renderLine(painter, camera, pa, pb, line);
 
 		}
@@ -321,14 +321,32 @@ namespace Physics2D
 			assert(joint != nullptr);
 			PointJoint* pointJoint = dynamic_cast<PointJoint*>(joint);
 			Vector2 pa = pointJoint->primitive().bodyA->toWorldPoint(pointJoint->primitive().localPointA);
-			Vector2 pb = pointJoint->primitive().bodyB->toWorldPoint(pointJoint->primitive().localPointB);
+			Vector2 pb = pointJoint->primitive().targetPoint;
 			
 			QColor pColor = Qt::gray;
-			QPen p(pColor, 6, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+			QPen p(pColor, 8, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 			
 			QColor color = Qt::green;
 			color.setAlphaF(0.45);
 			QPen line(color, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+			renderPoint(painter, camera, pa, p);
+			renderPoint(painter, camera, pb, p);
+			renderLine(painter, camera, pa, pb, line);
+		}
+
+		static void renderOrientationJoint(QPainter* painter, Utils::Camera* camera, Joint* joint, const QPen& pen)
+		{
+			assert(joint != nullptr);
+			OrientationJoint* pointJoint = dynamic_cast<OrientationJoint*>(joint);
+			Vector2 pa = pointJoint->primitive().bodyA->position();
+			Vector2 pb = pointJoint->primitive().targetPoint;
+
+			QColor pColor = Qt::gray;
+			QPen p(pColor, 8, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+
+			QColor color = Qt::green;
+			color.setAlphaF(0.45);
+			QPen line(color, 1, Qt::DotLine, Qt::RoundCap, Qt::RoundJoin);
 			renderPoint(painter, camera, pa, p);
 			renderPoint(painter, camera, pb, p);
 			renderLine(painter, camera, pa, pb, line);
@@ -377,6 +395,11 @@ namespace Physics2D
 			case JointType::Point:
 			{
 				renderPointJoint(painter, camera, joint, pen);
+				break;
+			}
+			case JointType::Orientation:
+			{
+				renderOrientationJoint(painter, camera, joint, pen);
 				break;
 			}
 			case JointType::Pulley:

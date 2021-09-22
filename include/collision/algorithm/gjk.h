@@ -84,7 +84,7 @@ namespace Physics2D
 		/// <param name="iteration"></param>
 		/// <returns>return initial simplex and whether collision exists</returns>
 		static std::tuple<bool, Simplex> gjk(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB,
-		                                     const size_t& iteration = 50);
+		                                     const size_t& iteration = 20);
 		/// <summary>
 		/// Expanding Polygon Algorithm
 		/// </summary>
@@ -95,7 +95,7 @@ namespace Physics2D
 		/// <param name="epsilon">epsilon of iterated result</param>
 		/// <returns>return expanded simplex</returns>
 		static Simplex epa(const ShapePrimitive& shapeA, const ShapePrimitive& shapshapeBe_B, const Simplex& src,
-		                   const size_t& iteration = 50, const real& epsilon = 0.0001);
+		                   const size_t& iteration = 20, const real& epsilon = Constant::GeometryEpsilon);
 		/// <summary>
 		/// Dump collision penetration normal and depth
 		/// </summary>
@@ -150,7 +150,7 @@ namespace Physics2D
 		/// <param name="shapeB"></param>
 		/// <returns></returns>
 		static PointPair distance(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB,
-		                          const real& iteration = 50, const real& epsilon = 0.000001);
+		                          const real& iteration = 20, const real& epsilon = Constant::GeometryEpsilon);
 		/// <summary>
 		/// dump collision source point
 		/// </summary>

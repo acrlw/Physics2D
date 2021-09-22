@@ -7,13 +7,13 @@ namespace Physics2D
 		Body* bodyA;
 		Vector2 localPointA;
 		Vector2 mousePoint;
-		Matrix2x2 effectiveMass;
+		Vector2 normal;
 		real damping = 0;
 		real stiffness = 1;
-		Vector2 bias;
-		Vector2 lastImpulse;
-		Vector2 accumulatedImpulse;
-		Vector2 error;
+		real bias = 0;
+		real biasFactor = 0.05;
+		real effectiveMass = 0;
+		real accumulatedImpulse = 0;
 		real maxForce = 20000;
 	};
 	class MouseJoint : public Joint
@@ -38,37 +38,12 @@ namespace Physics2D
 		}
 		void prepare(const real& dt) override
 		{
-			Vector2 ra = Matrix2x2(m_primitive.bodyA->rotation()).multiply(m_primitive.localPointA);
-			Vector2 wa = m_primitive.bodyA->toWorldPoint(m_primitive.localPointA);
-			Vector2 c = wa - m_primitive.mousePoint;
-			Matrix2x2 k;
 
-			real im_a = m_primitive.bodyA->inverseMass();
-			real ii_a = m_primitive.bodyA->inverseInertia();
-			real inv_dt = 1.0 / dt;
-
-			k.e11() = im_a + ii_a * ra.y * ra.y;
-			k.e21() = -ii_a * ra.x * ra.y;
-			k.e12() = -ii_a * ra.x * ra.y;
-			k.e22() = im_a + ii_a * ra.x * ra.x;
-
-			m_primitive.effectiveMass = k.invert();
-			m_primitive.bias =  c * inv_dt;
-			m_primitive.error = c;
-			//m_primitive.bodyA->applyImpulse(0.01 * m_primitive.accumulatedImpulse, ra);
+			
 		}
-		Vector2 solveVelocity(const real& dt) override
+		void solveVelocity(const real& dt) override
 		{
-			Vector2 ra = Matrix2x2(m_primitive.bodyA->rotation()).multiply(m_primitive.localPointA);
-			Vector2 va = m_primitive.bodyA->velocity() + Vector2::crossProduct(m_primitive.bodyA->angularVelocity(), ra);
-
-			Vector2 jv = va + m_primitive.bias;
-			Vector2 impulse = m_primitive.effectiveMass.multiply(jv.negate());
-
-			m_primitive.bodyA->applyImpulse(impulse, ra);
-			m_primitive.accumulatedImpulse += impulse;
-			m_primitive.lastImpulse = impulse;
-			return impulse;
+			
 		}
 		void solvePosition(const real& dt) override
 		{

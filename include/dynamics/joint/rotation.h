@@ -11,6 +11,14 @@ namespace Physics2D
 		real effectiveMass = 0;
 		real bias = 0;
 	};
+	struct OrientationJointPrimitive
+	{
+		Body* bodyA;
+		Vector2 targetPoint;
+		real referenceRotation = 0;
+		real bias = 0;
+		real effectiveMass = 0;
+	};
 	class RotationJoint: public Joint
 	{
 	public:
@@ -38,7 +46,7 @@ namespace Physics2D
 			real c = m_primitive.bodyA->rotation() - m_primitive.bodyB->rotation() - m_primitive.referenceRotation;
 			m_primitive.bias = -m_factor * inv_dt * c;
 		}
-		Vector2 solveVelocity(const real& dt) override
+		void solveVelocity(const real& dt) override
 		{
 			real dw = m_primitive.bodyA->angularVelocity() - m_primitive.bodyB->angularVelocity();
 			real impulse = m_primitive.effectiveMass * (-dw + m_primitive.bias);
@@ -46,7 +54,6 @@ namespace Physics2D
 			m_primitive.bodyA->angularVelocity() += m_primitive.bodyA->inverseInertia() * impulse;
 			m_primitive.bodyB->angularVelocity() -= m_primitive.bodyB->inverseInertia() * impulse;
 			
-			return Vector2();
 		}
 		void solvePosition(const real& dt) override
 		{
@@ -59,6 +66,69 @@ namespace Physics2D
 	private:
 		RotationJointPrimitive m_primitive;
 		real m_factor = 0.2;
+	};
+	class OrientationJoint : public Joint
+	{
+
+	public:
+		OrientationJoint()
+		{
+			m_type = JointType::Orientation;
+		}
+		OrientationJoint(const OrientationJointPrimitive& prim) : m_primitive(prim)
+		{
+			m_type = JointType::Orientation;
+		}
+		void set(const OrientationJointPrimitive& prim)
+		{
+			m_primitive = prim;
+		}
+		void prepare(const real& dt) override
+		{
+			if (m_primitive.bodyA == nullptr)
+				return;
+
+			Body* bodyA = m_primitive.bodyA;
+			Vector2 point = m_primitive.targetPoint - bodyA->position();
+			real targetRotation = point.theta();
+
+			real ii_a = m_primitive.bodyA->inverseInertia();
+			real inv_dt = 1.0 / dt;
+			m_primitive.effectiveMass = 1.0 / ii_a;
+			real c = targetRotation - m_primitive.bodyA->rotation() - m_primitive.referenceRotation;
+			if(fuzzyRealEqual(c, 2 * Constant::Pi, 0.1))
+			{
+				c = 0;
+				bodyA->rotation() = targetRotation;
+				return;
+			}
+			if (fuzzyRealEqual(c, -2 * Constant::Pi, 0.1))
+			{
+				c = 0;
+				bodyA->rotation() = targetRotation;
+				return;
+			}
+			m_primitive.bias = m_factor * inv_dt * c;
+		}
+		void solveVelocity(const real& dt) override
+		{
+			real dw = m_primitive.bodyA->angularVelocity();
+			real impulse = m_primitive.effectiveMass * (-dw + m_primitive.bias);
+
+			m_primitive.bodyA->angularVelocity() += m_primitive.bodyA->inverseInertia() * impulse;
+
+		}
+		void solvePosition(const real& dt) override
+		{
+
+		}
+		OrientationJointPrimitive primitive()const
+		{
+			return m_primitive;
+		}
+	private:
+		OrientationJointPrimitive m_primitive;
+		real m_factor = 1.0;
 	};
 }
 #endif

@@ -52,6 +52,7 @@ namespace Physics2D
             MouseJoint* createJoint(const MouseJointPrimitive& primitive);
             PulleyJoint* createJoint(const PulleyJointPrimitive& primitive);
             RevoluteJoint* createJoint(const RevoluteJointPrimitive& primitive);
+            OrientationJoint* createJoint(const OrientationJointPrimitive& primitive);
 			
             real bias() const;
             void setBias(const real &bias);

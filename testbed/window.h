@@ -92,8 +92,11 @@ namespace Physics2D
 		Vector2 mousePos;
 		DistanceJointPrimitive distancePrim;
 		RotationJointPrimitive rotationPrim;
+		OrientationJointPrimitive orientationPrim;
 		PointJointPrimitive pointPrim;
-		MouseJointPrimitive mousePrim;
+		//MouseJointPrimitive mousePrim;
+
+		MouseJoint* mj;
 		DBVH dbvh;
 		int counter = 0;
 		

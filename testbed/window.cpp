@@ -20,10 +20,10 @@ namespace Physics2D
 		polygon.scale(0.22);
 		ellipse.set({-5, 4}, {5, -4});
 		ellipse.scale(0.15);
-		circle.setRadius(0.2);
+		circle.setRadius(0.5);
 		//circle.scale(7);
-		edge.set({-8, 3}, {8, 0});
-		capsule.set(0.8, 1.6);
+		edge.set({-18, 5}, {18, 0});
+		capsule.set(1, 2);
 
 		boxHorizontal.set({ -roomSize, 0 }, { roomSize, 0 });
 		boxVertical.set({ 0, roomSize }, { 0, -roomSize });
@@ -39,27 +39,16 @@ namespace Physics2D
 		horizontalWall = std::make_shared<Edge>(boxHorizontal);
 		verticalWall = std::make_shared<Edge>(boxVertical);
 		
-		distancePrim.minDistance = 1;
-		distancePrim.maxDistance = 1.5;
-		distancePrim.localPointA.set(0, 0);
-		distancePrim.localPointB.set(0, 0);
 
-		rotationPrim.referenceRotation = Math::degreeToRadian(45);
-
-		pointPrim.localPointA.set(-0.5, -0.5);
-		pointPrim.localPointB.set(0.5, 0.5);
-
-		mousePrim.localPointA.set(0.5, 0.5);
-		mousePrim.mousePoint.set(1.0, 1.0);
 
 
 		m_world.setEnableGravity(true);
-		m_world.setGravity({0, -0.2f});
+		m_world.setGravity({0, -0.98f});
 		m_world.setLinearVelocityDamping(0.8f);
 		m_world.setAirFrictionCoefficient(0.8f);
 		m_world.setAngularVelocityDamping(0.8f);
-		m_world.setPositionIteration(6);
-		m_world.setVelocityIteration(2);
+		m_world.setPositionIteration(1);
+		m_world.setVelocityIteration(1);
 		
 		//createStackBox(6, 1.1, 1.1);
 		//createBoxRoom();
@@ -199,8 +188,8 @@ namespace Physics2D
 			repaint();
 			return;
 		}
-		const real dt = 1.0 / 60.0;
-		const real inv_dt = 60;
+		const real dt = 1.0 / 30.0;
+		const real inv_dt = 30;
 
 		
 		m_world.stepVelocity(dt);
@@ -241,28 +230,49 @@ namespace Physics2D
 		//tree.insert(ground);
 		
 		rect = m_world.createBody();
-		rect->setShape(rectangle_ptr);
-		rect->position().set({-1, -1});
+		rect->setShape(circle_ptr);
+		rect->position().set({-0.5, -1});
 		rect->rotation() = 0;
 		rect->setMass(200);
 		rect->setType(Body::BodyType::Dynamic);
 
-		rect2 = m_world.createBody();
-		rect2->setShape(rectangle_ptr);
-		rect2->position().set({-5, -5});
-		rect2->rotation() = 0;
-		rect2->setMass(100);
-		rect2->setType(Body::BodyType::Kinematic);
+		//rect2 = m_world.createBody();
+		//rect2->setShape(rectangle_ptr);
+		//rect2->position().set({-5, -5});
+		//rect2->rotation() = 0;
+		//rect2->setMass(200);
+		//rect2->setFriction(0.8);
+		//rect2->setType(Body::BodyType::Dynamic);
 		
-		mousePrim.bodyA = rect;
 
-		rotationPrim.bodyA = rect;
-		rotationPrim.bodyB = rect2;
-		RotationJoint* rj = m_world.createJoint(rotationPrim);
+		//rotationPrim.bodyA = rect;
+		//rotationPrim.bodyB = rect2;
+		//rotationPrim.referenceRotation = Math::degreeToRadian(45);
+		//RotationJoint* rj = m_world.createJoint(rotationPrim);
+
+		distancePrim.bodyA = rect;
+		distancePrim.localPointA.set({ 0, 0 });
+		distancePrim.minDistance = 2;
+		distancePrim.maxDistance = 4;
+		distancePrim.targetPoint.set({ 1, 1 });
+		m_world.createJoint(distancePrim);
+
+		orientationPrim.bodyA = rect;
+		orientationPrim.targetPoint.set({ 1, 1 });
+		orientationPrim.referenceRotation = 0;
+		m_world.createJoint(orientationPrim);
+
+		//pointPrim.localPointA.set(-0.5, -0.5);
+		//pointPrim.localPointB.set(0.5, 0.5);
+
+		//pointPrim.localPointA.set(0, 0.5);
+		//pointPrim.targetPoint.set(2.0, 2.0);
+		//pointPrim.bodyA = rect;
+		//m_world.createJoint(pointPrim);
 		
 
 		dbvh.insert(rect);
-		dbvh.insert(rect2);
+		//dbvh.insert(rect2);
 		dbvh.insert(ground);
 		camera.setTargetBody(rect);
 
@@ -472,6 +482,7 @@ namespace Physics2D
 	{
 		Vector2 pos(e->pos().x(), e->pos().y());
 		mousePos = camera.screenToWorld(pos);
+
 		clickPos.clear();
 		cameraTransform = false;
 		selectedBody = nullptr;
@@ -496,6 +507,9 @@ namespace Physics2D
 			selectedBody->position() += tf;
 		}
 		mousePos = camera.screenToWorld(pos);
+		//auto prim = mj->primitive();
+		//prim.mousePoint = mousePos;
+		//mj->set(prim);
 		repaint();
 	}
 
@@ -606,11 +620,12 @@ namespace Physics2D
 			for(real i = 0;i < count; i++)
 			{
 				Body* body = m_world.createBody();
-				body->position().set({ i * 0.8 - 8, j * 2 + 1});
+				body->position().set({ i * 0.5 - 8, j * 0.5 + 1});
 				body->setShape(rectangle_ptr);
 				body->rotation() = 0;
 				body->setMass(200);
 				body->setType(Body::BodyType::Dynamic);
+				body->setFriction(0.8);
 				camera.setTargetBody(body);
 				dbvh.insert(body);
 			}

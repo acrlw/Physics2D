@@ -53,7 +53,7 @@ namespace Physics2D
 	}
 	void World::stepPosition(const real& dt)
 	{
-		for (int i = 0; i < m_velocityIteration; i++)
+		for (int i = 0; i < m_positionIteration; i++)
 			for(auto& joint: m_jointList)
 				joint->solvePosition(dt);
 
@@ -317,6 +317,14 @@ namespace Physics2D
 	{
 		auto joint = std::make_unique<RevoluteJoint>(primitive);
 		RevoluteJoint* temp = joint.get();
+		m_jointList.emplace_back(std::move(joint));
+		return temp;
+	}
+
+	OrientationJoint* World::createJoint(const OrientationJointPrimitive& primitive)
+	{
+		auto joint = std::make_unique<OrientationJoint>(primitive);
+		OrientationJoint* temp = joint.get();
 		m_jointList.emplace_back(std::move(joint));
 		return temp;
 	}

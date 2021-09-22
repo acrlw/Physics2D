@@ -28,9 +28,9 @@ namespace Physics2D
 		{
 
 		}
-		Vector2 solveVelocity(const real& dt) override
+		void solveVelocity(const real& dt) override
 		{
-			return Vector2();
+
 		}
 		void solvePosition(const real& dt) override
 		{
