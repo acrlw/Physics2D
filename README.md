@@ -1,5 +1,5 @@
 # Physics2D
-Simple 2D physics engine for tutoring
+Simple 2D Physics Engine For Tutoring.
 # Build
 cmake CMakeLists.txt
 # Requirement
