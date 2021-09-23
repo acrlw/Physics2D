@@ -13,7 +13,8 @@ namespace Physics2D
 		return !isCollinear(a, b, c) ? false : fuzzyIsCollinear(a, b, c);
 	}
 
-	bool GeometryAlgorithm2D::fuzzyIsPointOnSegment(const Vector2& a, const Vector2& b, const Vector2& c, const real& epsilon)
+	bool GeometryAlgorithm2D::fuzzyIsPointOnSegment(const Vector2& a, const Vector2& b, const Vector2& c,
+	                                                const real& epsilon)
 	{
 		return fuzzyRealEqual(pointToLineSegment(a, b, c).lengthSquare(), epsilon);
 	}
@@ -420,7 +421,8 @@ namespace Physics2D
 		}
 		return target;
 	}
-	Vector2 GeometryAlgorithm2D::calculateCapsuleProjectionPoint(const real& width, const real& height, const Vector2& direction)
+	Vector2 GeometryAlgorithm2D::calculateCapsuleProjectionPoint(const real& width, const real& height,
+	                                                             const Vector2& direction)
 	{
 		Vector2 target;
 		if (width >= height) // Horizontal
@@ -439,6 +441,19 @@ namespace Physics2D
 		}
 		return target;
 	}
+
+	Vector2 GeometryAlgorithm2D::calculateSectorProjectionPoint(const real& startRadian, const real& endRadian,
+		const real& radius, const Vector2& direction)
+	{
+		//startRadian < endRadian, startRadian
+		assert(startRadian < endRadian);
+		Vector2 result;
+		const real theta = direction.theta();
+		if(!Math::isInRange(theta, Constant::DoublePi - startRadian, Constant::HalfPi + endRadian))
+			result = Matrix2x2(Math::clamp(direction.theta(), startRadian, endRadian)).multiply(Vector2{ 1, 0 }) * radius;
+		return result;
+	}
+
 	bool GeometryAlgorithm2D::triangleContainsOrigin(const Vector2& a, const Vector2& b, const Vector2& c)
 	{
 		real ra = (b - a).cross(-a);

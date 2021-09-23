@@ -3,9 +3,9 @@
 namespace Physics2D
 {
 	
-	Matrix2x2::Matrix2x2(const real& angle)
+	Matrix2x2::Matrix2x2(const real& radian)
 	{
-		setAngle(angle);
+		set(radian);
 	}
 
 
@@ -186,11 +186,10 @@ namespace Physics2D
 		return *this;
 	}
 
-	Matrix2x2& Matrix2x2::setAngle(const real& angle)
+	Matrix2x2& Matrix2x2::set(const real& radian)
 	{
-		//const real arc = Math::angleToRadian(angle);
-		const real c = Math::cosx(angle);
-		const real s = Math::sinx(angle);
+		const real c = Math::cosx(radian);
+		const real s = Math::sinx(radian);
 		column1.set(c, s);
 		column2.set(-s, c);
 		return *this;

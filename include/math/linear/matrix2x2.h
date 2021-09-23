@@ -8,7 +8,7 @@ namespace Physics2D
 	struct Matrix2x2
 	{
 		Matrix2x2() = default;
-        Matrix2x2(const real& angle);
+        Matrix2x2(const real& radian);
         Matrix2x2(const Matrix2x2& mat);
         Matrix2x2(const Vector2& col1, const Vector2& col2);
         Matrix2x2(const real& col1_x, const real& col1_y, const real& col2_x, const real& col2_y);
@@ -42,7 +42,7 @@ namespace Physics2D
         Matrix2x2& set(const real& col1_x, const real& col1_y, const real& col2_x, const real& col2_y);
         Matrix2x2& set(const Vector2& col1, const Vector2& col2);
         Matrix2x2& set(const Matrix2x2& other);
-        Matrix2x2& setAngle(const real& angle);
+        Matrix2x2& set(const real& radian);
 
         static Matrix2x2 skewSymmetricMatrix(const Vector2& r);
         static Matrix2x2 identityMatrix();

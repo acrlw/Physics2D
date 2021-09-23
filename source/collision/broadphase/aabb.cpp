@@ -7,6 +7,36 @@
 
 namespace Physics2D
 {
+
+	bool AABB::isEmpty() const
+	{
+		return realEqual(width, 0) && realEqual(height, 0) && position.fuzzyEqual({ 0, 0 });
+	}
+	bool AABB::raycast(const Vector2& start, const Vector2& direction) const
+	{
+		return raycast(*this, start, direction);
+	}
+
+	Vector2 AABB::topLeft() const
+	{
+		return Vector2{ (-width * 0.5) + position.x , (height * 0.5) + position.y };
+	}
+
+	Vector2 AABB::topRight() const
+	{
+		return Vector2{ (width * 0.5) + position.x , (height * 0.5) + position.y };
+	}
+
+	Vector2 AABB::bottomLeft() const
+	{
+		return Vector2{ (-width * 0.5) + position.x , (-height * 0.5) + position.y };
+	}
+
+	Vector2 AABB::bottomRight() const
+	{
+		return Vector2{ (width * 0.5) + position.x , (-height * 0.5) + position.y };
+	}
+
 	bool AABB::collide(const AABB& other) const
 	{
 		return collide(*this, other);
@@ -18,7 +48,7 @@ namespace Physics2D
 	}
 	
 
-	void AABB::clear()
+	inline void AABB::clear()
 	{
 		position.clear();
 		width = 0.0;
@@ -127,26 +157,36 @@ namespace Physics2D
 		}
 		case Shape::Type::Curve:
 		{
-			const Curve* curve = dynamic_cast<Curve*>(shape.shape.get());
 
 			break;
 		}
 		case Shape::Type::Point:
 		{
-			const Point* curve = dynamic_cast<Point*>(shape.shape.get());
 			aabb.width = 1;
 			aabb.height = 1;
 			break;
 		}
 		case Shape::Type::Capsule:
 		{
-			const Capsule* capsule = dynamic_cast<Capsule*>(shape.shape.get());
 			Vector2 p1 = GJK::findFarthestPoint(shape, { 1, 0 });
 			Vector2 p2 = GJK::findFarthestPoint(shape, { 0, 1 });
 			p1 -= shape.transform;
 			p2 -= shape.transform;
 			aabb.width = p1.x * 2.0;
 			aabb.height = p2.y * 2.0;
+			break;
+		}
+		case Shape::Type::Sector:
+		{
+			Vector2 p1 = GJK::findFarthestPoint(shape, { 1, 0 });
+			Vector2 p2 = GJK::findFarthestPoint(shape, { 0, 1 });
+			Vector2 p3 = GJK::findFarthestPoint(shape, { -1, 0 });
+			p1 -= shape.transform;
+			p2 -= shape.transform;
+			p3 -= shape.transform;
+			aabb.width = p3.x - p1.x;
+			aabb.height = abs(p2.y);
+			aabb.position.set({ aabb.width / 2, aabb.height / 2 });
 			break;
 		}
 		}
@@ -169,22 +209,13 @@ namespace Physics2D
 
 	bool AABB::collide(const AABB& src, const AABB& target)
 	{
-		const real src_low_x = (-src.width * 0.5) + src.position.x;
-		const real src_high_x = (src.width * 0.5) + src.position.x;
+		const Vector2 srcTopLeft = src.topLeft();
+		const Vector2 srcBottomRight = src.bottomRight();
 
+		const Vector2 targetTopLeft = target.topLeft();
+		const Vector2 targetBottomRight = target.bottomRight();
 
-		const real src_low_y = (-src.height * 0.5) + src.position.y;
-		const real src_high_y = (src.height * 0.5) + src.position.y;
-
-
-		const real target_low_x = (-target.width * 0.5) + target.position.x;
-		const real target_high_x = (target.width * 0.5) + target.position.x;
-
-
-		const real target_low_y = (-target.height * 0.5) + target.position.y;
-		const real target_high_y = (target.height * 0.5) + target.position.y;
-
-		return !(src_high_x < target_low_x || target_high_x < src_low_x || src_high_y < target_low_y || target_high_y < src_low_y);
+		return !(srcBottomRight.x < targetTopLeft.x || targetBottomRight.x < srcTopLeft.x || srcTopLeft.y < targetBottomRight.y || targetTopLeft.y < srcBottomRight.y);
 	}
 
 	AABB AABB::unite(const AABB& src, const AABB& target, const real& factor)
@@ -194,27 +225,19 @@ namespace Physics2D
 
 		if (target.isEmpty())
 			return src;
+
+
+		const Vector2 srcTopLeft = src.topLeft();
+		const Vector2 srcBottomRight = src.bottomRight();
+
+		const Vector2 targetTopLeft = target.topLeft();
+		const Vector2 targetBottomRight = target.bottomRight();
+
+		const real low_x = Math::min(srcTopLeft.x, targetTopLeft.x);
+		const real high_x = Math::max(srcTopLeft.x, targetBottomRight.x);
 		
-		const real src_low_x = (-src.width * 0.5) + src.position.x;
-		const real src_high_x = (src.width * 0.5) + src.position.x;
-
-
-		const real src_low_y = (-src.height * 0.5) + src.position.y;
-		const real src_high_y = (src.height * 0.5) + src.position.y;
-
-
-		const real target_low_x = (-target.width * 0.5) + target.position.x;
-		const real target_high_x = (target.width * 0.5) + target.position.x;
-
-
-		const real target_low_y = (-target.height * 0.5) + target.position.y;
-		const real target_high_y = (target.height * 0.5) + target.position.y;
-
-		const real low_x = Math::min(src_low_x, target_low_x);
-		const real high_x = Math::max(src_high_x, target_high_x);
-		
-		const real low_y = Math::min(src_low_y, target_low_y);
-		const real high_y = Math::max(src_high_y, target_high_y);
+		const real low_y = Math::min(srcBottomRight.y, targetBottomRight.y);
+		const real high_y = Math::max(srcTopLeft.y, targetTopLeft.y);
 
 		AABB aabb;
 		aabb.position.set((low_x + high_x) * 0.5, (low_y + high_y) * 0.5);
@@ -227,36 +250,28 @@ namespace Physics2D
 	//b is a subset of a
 	bool AABB::isSubset(const AABB& a, const AABB& b)
 	{
-		const real a_low_x = (-a.width * 0.5) + a.position.x;
-		const real a_high_x = (a.width * 0.5) + a.position.x;
 
+		const Vector2 aTopLeft = a.topLeft();
+		const Vector2 aBottomRight = a.bottomRight();
 
-		const real b_low_x = (-b.width * 0.5) + b.position.x;
-		const real b_high_x = (b.width * 0.5) + b.position.x;
+		const Vector2 bTopLeft = b.topLeft();
+		const Vector2 bBottomRight = b.bottomRight();
 
-
-		const real a_low_y = (-a.height * 0.5) + a.position.y;
-		const real a_high_y = (a.height * 0.5) + a.position.y;
-
-
-		const real b_low_y = (-b.height * 0.5) + b.position.y;
-		const real b_high_y = (b.height * 0.5) + b.position.y;
-
-		return a_high_x >= b_high_x && b_low_x >= a_low_x && a_high_y >= b_high_y && b_low_y >= a_low_y;
+		return aBottomRight.x >= bBottomRight.x && bTopLeft.x >= aTopLeft.x && 
+			aTopLeft.y >= bTopLeft.y && bBottomRight.y >= aBottomRight.y;
 	}
 	void AABB::expand(AABB& aabb, const real& factor)
 	{
 		aabb.width += factor;
 		aabb.height += factor;
 	}
-	std::optional<Vector2> AABB::raycast(const AABB& aabb, const Vector2& start, const Vector2& direction)
+	bool AABB::raycast(const AABB& aabb, const Vector2& start, const Vector2& direction)
 	{
-		return std::optional<Vector2>();
+
 	}
 	void Pair::clear()
 	{
 		body = nullptr;
 		aabb.clear();
-		
 	}
 }

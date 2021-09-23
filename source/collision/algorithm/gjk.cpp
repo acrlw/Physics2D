@@ -257,14 +257,13 @@ namespace Physics2D
 		case Shape::Type::Sector:
 		{
 			const Sector* sector = dynamic_cast<const Sector*>(shape.shape.get());
-
+			target = GeometryAlgorithm2D::calculateSectorProjectionPoint(sector->startRadian(), sector->endRadian(), sector->radius(), rot_dir);
 			break;
 		}
 		default:
 			break;
 		}
-
-		rot.setAngle(shape.rotation);
+		rot.set(shape.rotation);
 		target = rot.multiply(target);
 		target += shape.transform;
 		return target;

@@ -54,6 +54,23 @@ namespace Physics2D
 			nodes.emplace_back(node);
 	}
 
+	void DBVH::raycast(std::vector<Body*>& result, Node* node, const Vector2& start, const Vector2& direction)
+	{
+		if (node == nullptr)
+			return;
+		if(node->pair.aabb.raycast(start, direction))
+		{
+			if (node->isLeaf())
+				result.emplace_back(node->pair.body);
+			else
+			{
+				raycast(result, node->left, start, direction);
+				raycast(result, node->right, start, direction);
+			}
+		}
+
+	}
+
 	void DBVH::insert(Node* node)
 	{
 		if (node == nullptr)
@@ -241,12 +258,11 @@ namespace Physics2D
 		delete target;
 		m_leaves.erase(body);
 	}
-	DBVH::Node* DBVH::raycast(const Vector2& start, const Vector2& direction)
+	std::vector<Body*> DBVH::raycast(const Vector2& start, const Vector2& direction)
 	{
-		if (m_root == nullptr)
-			return nullptr;
-
-		
+		std::vector<Body*> result;
+		raycast(result, m_root, start, direction);
+		return result;
 	}
 	DBVH::Node* DBVH::merge(Node* node, const Pair& pair)
 	{
@@ -262,6 +278,7 @@ namespace Physics2D
 		
 		node->pair.body = nullptr;
 		node->pair.aabb = AABB::unite(pair.aabb, node->pair.aabb);
+		//node->pair.aabb.expand(0.5);
 		node->left = copy;
 		node->right = newNode;
 		copy->parent = node;

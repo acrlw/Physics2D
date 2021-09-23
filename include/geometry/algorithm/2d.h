@@ -164,6 +164,7 @@ namespace Physics2D
 		/// <returns></returns>
 		Vector2 calculateEllipseProjectionPoint(const real& a, const real& b, const Vector2& direction);
 		Vector2 calculateCapsuleProjectionPoint(const real& width, const real& height, const Vector2& direction);
+		Vector2 calculateSectorProjectionPoint(const real& startRadian, const real& endRadian, const real& radius, const Vector2& direction);
 		bool triangleContainsOrigin(const Vector2& a, const Vector2& b, const Vector2& c);
 	};
 }

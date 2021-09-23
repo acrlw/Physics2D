@@ -9,7 +9,7 @@ namespace Physics2D
 		Vector2 localPointA;
 		Vector2 targetPoint;
 		Vector2 normal;
-		real biasFactor = 0.2;
+		real biasFactor = 0.3;
 		real bias = 0;
 		real minDistance = 0;
 		real maxDistance = 0;

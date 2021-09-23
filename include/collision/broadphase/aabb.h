@@ -14,6 +14,10 @@ namespace Physics2D
 		real width = 0;
 		real height = 0;
 		Vector2 position;
+		Vector2 topLeft()const;
+		Vector2 topRight()const;
+		Vector2 bottomLeft()const;
+		Vector2 bottomRight()const;
 		bool collide(const AABB& other) const;
 		void expand(const real& factor);
 		void clear();
@@ -23,7 +27,7 @@ namespace Physics2D
 		bool isSubset(const AABB& other)const;
 		bool isEmpty()const;
 		bool operator==(const AABB& other)const;
-		std::optional<Vector2> raycast(const Vector2& start, const Vector2& direction)const;
+		bool raycast(const Vector2& start, const Vector2& direction)const;
 		/// <summary>
 		/// Create AABB from shape.
 		/// </summary>
@@ -56,7 +60,7 @@ namespace Physics2D
 
 		static void expand(AABB& aabb, const real& factor = 0.0);
 
-		static std::optional<Vector2> raycast(const AABB& aabb, const Vector2& start, const Vector2& direction);
+		static bool raycast(const AABB& aabb, const Vector2& start, const Vector2& direction);
 		
 	};
 
@@ -68,13 +72,5 @@ namespace Physics2D
 		AABB aabb;
 		void clear();
 	};
-	inline bool AABB::isEmpty() const
-	{
-		return realEqual(width, 0) && realEqual(height, 0) && position.fuzzyEqual({ 0, 0 });
-	}
-	inline std::optional<Vector2> AABB::raycast(const Vector2& start, const Vector2& direction) const
-	{
-		return raycast(*this, start, direction);
-	}
 }
 #endif

@@ -338,12 +338,29 @@ namespace Physics2D
 
 	ProjectedSegment SAT::axisProjection(const ShapePrimitive& shape, Capsule* capsule, const Vector2& normal)
 	{
-		return ProjectedSegment();
+		ProjectedPoint min, max;
+		Vector2 direction = Matrix2x2(-shape.rotation).multiply(normal);
+		Vector2 p1 = GeometryAlgorithm2D::calculateCapsuleProjectionPoint(capsule->width(), capsule->height(), direction);
+		Vector2 p2 = GeometryAlgorithm2D::calculateCapsuleProjectionPoint(capsule->width(), capsule->height(), -direction);
+		p1 = shape.translate(p1);
+		p2 = shape.translate(p2);
+
+		max.vertex = p1;
+		max.value = max.vertex.dot(normal);
+		min.vertex = p2;
+		min.value = min.vertex.dot(normal);
+
+		ProjectedSegment segment;
+
+		segment.min = min;
+		segment.max = max;
+
+		return segment;
 	}
 
 	ProjectedSegment SAT::axisProjection(const ShapePrimitive& shape, Sector* sector, const Vector2& normal)
 	{
-		return ProjectedSegment();
+
 	}
 	
 	std::tuple<ProjectedSegment, real> ProjectedSegment::intersect(const ProjectedSegment& s1, const ProjectedSegment& s2)

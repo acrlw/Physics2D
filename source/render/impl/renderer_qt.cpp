@@ -256,9 +256,7 @@ namespace Physics2D
     {
         assert(painter != nullptr && camera != nullptr);
         painter->setPen(pen);
-        Vector2 topLeft;
-        topLeft.set(-aabb.width * (0.5), aabb.height * (0.5));
-        topLeft += aabb.position;
+        Vector2 topLeft = aabb.topLeft();
         topLeft = camera->worldToScreen(topLeft);
         painter->drawRect(QRectF(topLeft.x, topLeft.y, aabb.width * camera->meterToPixel(), aabb.height * camera->meterToPixel()));
     }

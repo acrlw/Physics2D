@@ -14,7 +14,7 @@ namespace Physics2D
 		this->resize(1920, 1080);
 		this->setMouseTracking(true);
 
-		rectangle.set(1, 1);
+		rectangle.set(0.5, 0.5);
 		land.set(32, 0.2);
 		polygon.append({{3, 0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3}, {2, -3}, {3, 0}});
 		polygon.scale(0.22);
@@ -55,10 +55,11 @@ namespace Physics2D
 		//createBoxesAndGround(8);
 		//testPendulum();
 		//testCollision();
-		testJoint();
+		//testJoint();
 		//testBroadphase();
 		//testCCD();
 		//testCapsule();
+		testRaycast();
 		
 		camera.setViewport(Utils::Camera::Viewport((0, 0), (1920, 1080)));
 		camera.setWorld(&m_world);
@@ -166,6 +167,34 @@ namespace Physics2D
 		dbvh.insert(rect3);
 	}
 
+	void Window::testRaycast()
+	{
+		//for (real j = 0; j < 10; j++)
+		//{
+		//	for (real i = 0; i < 10; i++)
+		//	{
+		//		Body* body = m_world.createBody();
+		//		body->position().set({ i * 0.5 - 8, j * 0.5 + 5 });
+		//		body->setShape(rectangle_ptr);
+		//		body->rotation() = 0;
+		//		body->setMass(200);
+		//		body->setType(Body::BodyType::Static);
+		//		body->setFriction(0.8);
+		//		camera.setTargetBody(body);
+		//		dbvh.insert(body);
+		//	}
+		//}
+
+		ground = m_world.createBody();
+		ground->setShape(edge_ptr);
+		ground->position().set({0, -2.0});
+		ground->setMass(Constant::Max);
+		ground->setType(Body::BodyType::Static);
+		camera.setTargetBody(ground);
+		camera.setMeterToPixel(120);
+		dbvh.insert(ground);
+	}
+
 	void Window::testCapsule()
 	{
 		rect = m_world.createBody();
@@ -230,19 +259,19 @@ namespace Physics2D
 		//tree.insert(ground);
 		
 		rect = m_world.createBody();
-		rect->setShape(circle_ptr);
+		rect->setShape(rectangle_ptr);
 		rect->position().set({-0.5, -1});
 		rect->rotation() = 0;
 		rect->setMass(200);
 		rect->setType(Body::BodyType::Dynamic);
 
-		//rect2 = m_world.createBody();
-		//rect2->setShape(rectangle_ptr);
-		//rect2->position().set({-5, -5});
-		//rect2->rotation() = 0;
-		//rect2->setMass(200);
-		//rect2->setFriction(0.8);
-		//rect2->setType(Body::BodyType::Dynamic);
+		rect2 = m_world.createBody();
+		rect2->setShape(rectangle_ptr);
+		rect2->position().set({-5, -5});
+		rect2->rotation() = 0;
+		rect2->setMass(200);
+		rect2->setFriction(0.1);
+		rect2->setType(Body::BodyType::Dynamic);
 		
 
 		//rotationPrim.bodyA = rect;
@@ -252,14 +281,14 @@ namespace Physics2D
 
 		distancePrim.bodyA = rect;
 		distancePrim.localPointA.set({ 0, 0 });
-		distancePrim.minDistance = 2;
-		distancePrim.maxDistance = 4;
+		distancePrim.minDistance = 3;
+		distancePrim.maxDistance = 7;
 		distancePrim.targetPoint.set({ 1, 1 });
 		m_world.createJoint(distancePrim);
 
 		orientationPrim.bodyA = rect;
 		orientationPrim.targetPoint.set({ 1, 1 });
-		orientationPrim.referenceRotation = 0;
+		orientationPrim.referenceRotation = Math::degreeToRadian(90);
 		m_world.createJoint(orientationPrim);
 
 		//pointPrim.localPointA.set(-0.5, -0.5);
@@ -272,7 +301,7 @@ namespace Physics2D
 		
 
 		dbvh.insert(rect);
-		//dbvh.insert(rect2);
+		dbvh.insert(rect2);
 		dbvh.insert(ground);
 		camera.setTargetBody(rect);
 
@@ -360,8 +389,25 @@ namespace Physics2D
 		camera.render(&painter);
 		real dt = 1.0 / 60;
 
-		//QPen pen3(Qt::red, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		//QPen pen2(Qt::green, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		Vector2 direction = mousePos - Vector2(9, 9);
+		auto list = dbvh.raycast({ 9, 9 }, direction);
+
+
+		QPen pen3(Qt::red, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		QPen pen2(Qt::green, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		RendererQtImpl::renderPoint(&painter, &camera, { 9, 9 }, pen3);
+		RendererQtImpl::renderPoint(&painter, &camera, mousePos, pen3);
+		RendererQtImpl::renderLine(&painter, &camera, { 9, 9 }, mousePos, pen2);
+		for (auto elem : list)
+		{
+			ShapePrimitive p1;
+			p1.rotation = elem->rotation();
+			p1.shape = elem->shape();
+			p1.transform = elem->position();
+
+			RendererQtImpl::renderShape(&painter, &camera, p1, pen3);
+		}
+
 		//for(auto iter = contactMaintainer.m_contactTable.begin(); iter != contactMaintainer.m_contactTable.end(); ++iter)
 		//{
 		//	for(auto& elem:iter->second)

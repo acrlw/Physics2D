@@ -72,6 +72,10 @@ namespace Physics2D
 		{
 			return num > 0 ? 1 : -1;
 		}
+		inline bool isInRange(const real& value, const real& low, const real& high)
+		{
+			return value >= low && value <= high;
+		}
 		inline real clamp(const real& num, const real& low, const real& high)
 		{
 			return std::clamp(num, low, high);

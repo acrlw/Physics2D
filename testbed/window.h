@@ -56,6 +56,7 @@ namespace Physics2D
 		void testPendulum();
 		void testBroadphase();
 		void testCCD();
+		void testRaycast();
 		void testCapsule();
 		World m_world;
 		Rectangle rectangle;
