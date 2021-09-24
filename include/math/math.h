@@ -72,9 +72,11 @@ namespace Physics2D
 		{
 			return num > 0 ? 1 : -1;
 		}
-		inline bool isInRange(const real& value, const real& low, const real& high)
+		inline bool isInRange(const real& value, const real& low, const real& high, const real& epsilon = Constant::GeometryEpsilon)
 		{
-			return value >= low && value <= high;
+			bool lowBound = value >= low - epsilon;
+			bool upBound = value <= high + epsilon;
+			return lowBound && upBound;
 		}
 		inline real clamp(const real& num, const real& low, const real& high)
 		{

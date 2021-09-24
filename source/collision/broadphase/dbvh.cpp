@@ -1,5 +1,7 @@
 #include "include/collision/broadphase/dbvh.h"
 
+#include "include/dynamics/body.h"
+
 namespace Physics2D
 {
 	DBVH::DBVH()
@@ -58,16 +60,20 @@ namespace Physics2D
 	{
 		if (node == nullptr)
 			return;
-		if(node->pair.aabb.raycast(start, direction))
-		{
-			if (node->isLeaf())
-				result.emplace_back(node->pair.body);
-			else
-			{
-				raycast(result, node->left, start, direction);
-				raycast(result, node->right, start, direction);
-			}
-		}
+		//for(auto iter = m_leaves.begin(); iter != m_leaves.end(); ++iter)
+		//	if(iter->second->pair.aabb.raycast(start, direction))
+		//		result.emplace_back(iter->first);
+		
+		//if(node->pair.aabb.raycast(start, direction))
+		//{
+		//	if (node->isLeaf())
+		//		result.emplace_back(node->pair.body);
+		//	else
+		//	{
+		//		raycast(result, node->left, start, direction);
+		//		raycast(result, node->right, start, direction);
+		//	}
+		//}
 
 	}
 

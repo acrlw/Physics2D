@@ -14,7 +14,7 @@ namespace Physics2D
 		this->resize(1920, 1080);
 		this->setMouseTracking(true);
 
-		rectangle.set(0.5, 0.5);
+		rectangle.set(0.2, 0.2);
 		land.set(32, 0.2);
 		polygon.append({{3, 0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3}, {2, -3}, {3, 0}});
 		polygon.scale(0.22);
@@ -169,21 +169,21 @@ namespace Physics2D
 
 	void Window::testRaycast()
 	{
-		//for (real j = 0; j < 10; j++)
-		//{
-		//	for (real i = 0; i < 10; i++)
-		//	{
-		//		Body* body = m_world.createBody();
-		//		body->position().set({ i * 0.5 - 8, j * 0.5 + 5 });
-		//		body->setShape(rectangle_ptr);
-		//		body->rotation() = 0;
-		//		body->setMass(200);
-		//		body->setType(Body::BodyType::Static);
-		//		body->setFriction(0.8);
-		//		camera.setTargetBody(body);
-		//		dbvh.insert(body);
-		//	}
-		//}
+		for (real j = 0; j < 20; j++)
+		{
+			for (real i = 0; i < 20; i++)
+			{
+				Body* body = m_world.createBody();
+				body->position().set({ i * 0.2 - 8, j * 0.2 + 5 });
+				body->setShape(rectangle_ptr);
+				body->rotation() = 0;
+				body->setMass(200);
+				body->setType(Body::BodyType::Static);
+				body->setFriction(0.8);
+				camera.setTargetBody(body);
+				dbvh.insert(body);
+			}
+		}
 
 		ground = m_world.createBody();
 		ground->setShape(edge_ptr);
@@ -391,14 +391,17 @@ namespace Physics2D
 
 		Vector2 direction = mousePos - Vector2(9, 9);
 		direction.normalize();
+		
 		auto list = dbvh.raycast({ 9, 9 }, direction);
 		
 
-		QPen pen3(Qt::red, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		QPen pen3(Qt::red, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 		QPen pen2(Qt::green, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 		RendererQtImpl::renderPoint(&painter, &camera, { 9, 9 }, pen3);
 		RendererQtImpl::renderPoint(&painter, &camera, mousePos, pen3);
 		RendererQtImpl::renderLine(&painter, &camera, { 9, 9 }, mousePos, pen2);
+		
+
 		for (auto elem : list)
 		{
 			ShapePrimitive p1;

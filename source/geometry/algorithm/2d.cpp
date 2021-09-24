@@ -424,12 +424,19 @@ namespace Physics2D
 			tenter = Math::max(txenter, tyenter);
 			texit = Math::min(txexit, tyexit);
 		}
-		
+		if (tenter < 0 && texit < 0)
+			return std::nullopt;
 		Vector2 enter = p + tenter * dir;
 		Vector2 exit = p + texit * dir;
 
 		return std::make_pair(enter, exit);
 
+	}
+
+	bool GeometryAlgorithm2D::isPointOnAABB(const Vector2& p, const Vector2& topLeft, const Vector2& bottomRight)
+	{
+		return Math::isInRange(p.x, topLeft.x, bottomRight.x) &&
+			Math::isInRange(p.y, bottomRight.y, topLeft.y);
 	}
 
 	Vector2 GeometryAlgorithm2D::rotate(const Vector2& p, const Vector2& center, const real& angle)

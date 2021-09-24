@@ -267,21 +267,12 @@ namespace Physics2D
 	}
 	bool AABB::raycast(const AABB& aabb, const Vector2& start, const Vector2& direction)
 	{
-		return false;
-		//Vector2 p1 = aabb.topLeft() - start;
-		//Vector2 p2 = aabb.bottomLeft() - start;
-		//Vector2 p3 = aabb.bottomRight() - start;
-		//Vector2 p4 = aabb.topRight() - start;
-		//
-		//Vector2 normal = direction.perpendicular().normal();
-		//real r1 = p1.dot(normal);
-		//real r2 = p2.dot(normal);
-		//real r3 = p3.dot(normal);
-		//real r4 = p4.dot(normal);
-		////make line into ray using cross product
-
-		//return !(r1 >= 0 && r2 >= 0 && r3 >= 0 && r4 >= 0 ||
-		//	r1 <= 0 && r2 <= 0 && r3 <= 0 && r4 <= 0);
+		auto result = GeometryAlgorithm2D::raycastAABB(start, direction, aabb.topLeft(), aabb.bottomRight());
+		if (!result.has_value())
+			return false;
+		auto [p1, p2] = result.value();
+		return GeometryAlgorithm2D::isPointOnAABB(p1, aabb.topLeft(), aabb.bottomRight())
+		&& GeometryAlgorithm2D::isPointOnAABB(p2, aabb.topLeft(), aabb.bottomRight());
 	}
 	void Pair::clear()
 	{

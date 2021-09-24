@@ -147,6 +147,7 @@ namespace Physics2D
 		/// <returns></returns>
 		std::optional<Vector2> raycast(const Vector2& p, const Vector2& dir, const Vector2& a, const Vector2& b);
 		std::optional<std::pair<Vector2, Vector2>> raycastAABB(const Vector2& p, const Vector2& dir, const Vector2& topLeft, const Vector2& bottomRight);
+		bool isPointOnAABB(const Vector2& p, const Vector2& topLeft, const Vector2& bottomRight);
 		/// <summary>
 		/// Rotate point 'p' around point 'center' by 'angle' degrees
 		/// </summary>
