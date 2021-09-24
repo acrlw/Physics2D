@@ -65,13 +65,6 @@ namespace Physics2D
 		
 	};
 
-	struct Pair
-	{
-		Pair() {}
-		Pair(const AABB& aabb, Body* source = nullptr) : body(source), aabb(aabb) {}
-		Body* body = nullptr;
-		AABB aabb;
-		void clear();
-	};
+
 }
 #endif

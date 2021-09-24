@@ -37,12 +37,12 @@ namespace Physics2D
 
 	void DBVH::queryNodes(Node* node, const AABB& aabb, std::vector<Node*>& nodes, Body* skipBody)
 	{
-		if (node == nullptr || !aabb.collide(node->pair.aabb))
+		if (node == nullptr || !aabb.collide(node->aabb))
 			return;
 
 		//skip query
 		if (skipBody != nullptr)
-			if (node->pair.body == skipBody)
+			if (node->body == skipBody)
 				return;
 
 		if (node->isBranch() || node->isRoot())
@@ -62,10 +62,10 @@ namespace Physics2D
 			return;
 
 		
-		if(node->pair.aabb.raycast(start, direction))
+		if(node->aabb.raycast(start, direction))
 		{
 			if (node->isLeaf())
-				result.emplace_back(node->pair.body);
+				result.emplace_back(node->body);
 			else
 			{
 				raycast(result, node->left, start, direction);
@@ -79,9 +79,9 @@ namespace Physics2D
 	{
 		if (node == nullptr)
 			return;
-		AABB aabb = AABB::fromBody(node->pair.body);
+		AABB aabb = AABB::fromBody(node->body);
 		aabb.expand(m_leafFactor);
-		node->pair.aabb = aabb;
+		node->aabb = aabb;
 
 		auto getCost = [&](Node* target, const AABB& aabb)
 		{
@@ -139,7 +139,6 @@ namespace Physics2D
 		
 		AABB aabb = AABB::fromBody(body);
 		aabb.expand(m_leafFactor);
-		Pair pair(aabb, body);
 		
 		auto getCost = [&](const AABB& aabb)
 		{
@@ -162,21 +161,21 @@ namespace Physics2D
 
 		if (m_root == nullptr)
 		{
-			m_root = new Node(pair);
+			m_root = new Node(body, aabb);
 			m_leaves.insert({ body, m_root });
 			return;
 		}
 
 		if (m_root->isLeaf() && m_root->isRoot())
 		{
-			merge(m_root, pair);
+			merge(m_root, aabb, body);
 			update(m_root);
 			return;
 		}
 
 
-		auto target = getCost(pair.aabb);
-		merge(target, pair);
+		auto target = getCost(aabb);
+		merge(target, aabb, body);
 			
 		balance(m_root);
 
@@ -196,7 +195,7 @@ namespace Physics2D
 		
 		AABB thin = AABB::fromBody(body);
 		thin.expand(0.1);
-		if(!thin.isSubset(iter->second->pair.aabb))
+		if(!thin.isSubset(iter->second->aabb))
 		{
 			Node* node = extract(body);
 			insert(node);
@@ -220,7 +219,7 @@ namespace Physics2D
 
 			parent->swap(branch, child);
 			branch->parent = nullptr;
-			branch->pair.aabb.clear();
+			branch->aabb.clear();
 			delete branch;
 			return child;
 		};
@@ -256,8 +255,8 @@ namespace Physics2D
 		if (target == nullptr)
 			return;
 
-		target->pair.body = nullptr;
-		target->pair.aabb.clear();
+		target->body = nullptr;
+		target->aabb.clear();
 		delete target;
 		m_leaves.erase(body);
 	}
@@ -267,20 +266,20 @@ namespace Physics2D
 		raycast(result, m_root, start, direction);
 		return result;
 	}
-	DBVH::Node* DBVH::merge(Node* node, const Pair& pair)
+	DBVH::Node* DBVH::merge(Node* node, const AABB& aabb, Body* body)
 	{
 		assert(node != nullptr);
 		
-		Node* newNode = new Node(pair);
-		Node* copy = new Node(node->pair);
+		Node* newNode = new Node(body, aabb);
+		Node* copy = new Node(node->body, node->aabb);
 
-		m_leaves.insert({ newNode->pair.body, newNode });
+		m_leaves.insert({ newNode->body, newNode });
 		if (node->isLeaf())
-			m_leaves[node->pair.body] = copy;
+			m_leaves[node->body] = copy;
 
 		
-		node->pair.body = nullptr;
-		node->pair.aabb = AABB::unite(pair.aabb, node->pair.aabb);
+		node->body = nullptr;
+		node->aabb = AABB::unite(aabb, node->aabb);
 		node->left = copy;
 		node->right = newNode;
 		copy->parent = node;
@@ -294,11 +293,11 @@ namespace Physics2D
 		assert(target != nullptr && source != nullptr);
 		assert(source->isLeaf());
 		
-		Node* copy = new Node(target->pair);
+		Node* copy = new Node(target->body, target->aabb);
 		if (target->isLeaf())
-			m_leaves[target->pair.body] = copy;
-		target->pair.body = nullptr;
-		target->pair.aabb = AABB::unite(copy->pair.aabb, source->pair.aabb);
+			m_leaves[target->body] = copy;
+		target->body = nullptr;
+		target->aabb = AABB::unite(copy->aabb, source->aabb);
 		target->left = copy;
 		target->right = source;
 		copy->parent = target;
@@ -312,7 +311,7 @@ namespace Physics2D
 			return;
 
 		if (parent->isBranch() || parent->isRoot())
-			parent->pair.aabb = AABB::unite(parent->left->pair.aabb, parent->right->pair.aabb);
+			parent->aabb = AABB::unite(parent->left->aabb, parent->right->aabb);
 
 		update(parent->parent);
 
@@ -433,7 +432,7 @@ namespace Physics2D
 		if (node == nullptr || node->isLeaf())
 			return;
 
-		bool result = AABB::collide(node->left->pair.aabb, node->right->pair.aabb);
+		bool result = AABB::collide(node->left->aabb, node->right->aabb);
 		m_profile++;
 		if (result)
 			generate(node->left, node->right, pairs);
@@ -447,7 +446,7 @@ namespace Physics2D
 		if (left == nullptr || right == nullptr)
 			return;
 
-		bool result = left->pair.aabb.collide(right->pair.aabb) || left->pair.aabb.isSubset(right->pair.aabb);
+		bool result = left->aabb.collide(right->aabb) || left->aabb.isSubset(right->aabb);
 		m_profile++;
 		
 		if (!result)
@@ -456,7 +455,7 @@ namespace Physics2D
 		if (left->isLeaf() && right->isLeaf())
 		{
 			m_profile++;
-			std::pair<Body*, Body*> pair = {left->pair.body, right->pair.body};
+			std::pair pair = {left->body, right->body};
 			pairs.emplace_back(pair);
 		}
 		if (left->isLeaf() && right->isBranch())
@@ -478,7 +477,7 @@ namespace Physics2D
 
 	int DBVH::height(Node* node)
 	{
-		return node == nullptr ? 0 : Math::max(height(node->left), height(node->right)) + 1;
+		return node == nullptr ? 0 : std::max(height(node->left), height(node->right)) + 1;
 	}
 
 	void DBVH::cleanUp(Node* node)
@@ -498,9 +497,9 @@ namespace Physics2D
 			return 0;
 		
 		if (node->isLeaf())
-			return AABB::unite(node->pair.aabb, aabb).surfaceArea();
+			return AABB::unite(node->aabb, aabb).surfaceArea();
 
-		return AABB::unite(node->pair.aabb, aabb).surfaceArea() - node->pair.aabb.surfaceArea();
+		return AABB::unite(node->aabb, aabb).surfaceArea() - node->aabb.surfaceArea();
 	}
 
 	void DBVH::totalCost(Node* node, const AABB& aabb, real& cost)const
@@ -525,13 +524,13 @@ namespace Physics2D
 		{
 			left = nullptr;
 			node->parent = nullptr;
-			pair.aabb = right->pair.aabb;
+			aabb = right->aabb;
 		}
 		else if(node == right)
 		{
 			right = nullptr;
 			node->parent = nullptr;
-			pair.aabb = left->pair.aabb;
+			aabb = left->aabb;
 		}
 	}
 
@@ -564,5 +563,11 @@ namespace Physics2D
 	bool DBVH::Node::isRoot() const
 	{
 		return parent == nullptr;
+	}
+
+	void DBVH::Node::clear()
+	{
+		body = nullptr;
+		aabb.clear();
 	}
 }

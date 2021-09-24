@@ -248,14 +248,14 @@ namespace Physics2D
 		DBVH::queryNodes(root, aabbCCD, potential, body);
 		for(DBVH::Node * element: potential)
 		{
-			auto [trajectoryElement, aabbElement] = buildTrajectoryAABB(element->pair.body, dt);
-			auto [newCCDTrajectory, newAABB] = buildTrajectoryAABB(body, element->pair.body->position(), dt);
-			auto result = findBroadphaseRoot(body, newCCDTrajectory, element->pair.body, trajectoryElement, dt);
+			auto [trajectoryElement, aabbElement] = buildTrajectoryAABB(element->body, dt);
+			auto [newCCDTrajectory, newAABB] = buildTrajectoryAABB(body, element->body->position(), dt);
+			auto result = findBroadphaseRoot(body, newCCDTrajectory, element->body, trajectoryElement, dt);
 			if(result.has_value())
 			{
-				auto toi = findNarrowphaseRoot(body, newCCDTrajectory, element->pair.body, trajectoryElement, result.value(), dt);
+				auto toi = findNarrowphaseRoot(body, newCCDTrajectory, element->body, trajectoryElement, result.value(), dt);
 				if (toi.has_value())
-					queryList.emplace_back(CCDPair(toi.value(), element->pair.body));
+					queryList.emplace_back(CCDPair(toi.value(), element->body));
 			}
 		}
 		return !queryList.empty() ? std::optional(queryList)

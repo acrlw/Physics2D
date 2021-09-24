@@ -205,15 +205,16 @@ namespace Physics2D
         Vector2 center() const override;
 
         real startRadian()const;
-        real endRadian()const;
+        real spanRadian()const;
         real radius()const;
-        void setStartRadian(const real& angle);
-        void setEndRadian(const real& angle);
+        real area()const;
+        void setStartRadian(const real& radian);
+        void setSpanRadian(const real& radian);
         void setRadius(const real& radius);
         void set(const real& start, const real& end, const real& radius);
     private:
         real m_startRadian;
-        real m_endRadian;
+        real m_spanRadian;
         real m_radius;
     };
 

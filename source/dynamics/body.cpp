@@ -143,7 +143,7 @@ namespace Physics2D {
     void Body::applyImpulse(const Vector2& impulse, const Vector2& r)
     {
         m_velocity += m_invMass * impulse;
-        m_angularVelocity += m_invInertia * r.cross(impulse);
+        m_angularVelocity += m_invInertia * (r + this->shape()->center()).cross(impulse);
     }
     Vector2 Body::toLocalPoint(const Vector2& point)const
     {
@@ -186,7 +186,7 @@ namespace Physics2D {
         {
             const Circle* circle = dynamic_cast<Circle*>(m_shape.get());
 
-            m_inertia = m_mass * circle->radius() * circle->radius() * (0.5f);
+            m_inertia = m_mass * circle->radius() * circle->radius() / 2;
             break;
         }
         case Shape::Type::Polygon:
@@ -194,8 +194,8 @@ namespace Physics2D {
             const Polygon* polygon = dynamic_cast<Polygon*>(m_shape.get());
 
             const Vector2 center = polygon->center();
-            real sum1 = 0.0f;
-            real sum2 = 0.0f;
+            real sum1 = 0.0;
+            real sum2 = 0.0;
 
             for (uint32_t i = 0; i < polygon->vertices().size() - 1; i++)
             {
@@ -207,7 +207,7 @@ namespace Physics2D {
                 sum2 += cross;
             }
 
-            m_inertia = (m_mass * (1.0f / 6.0f)) * sum1 / sum2;
+            m_inertia = m_mass * (1.0 / 6.0) * sum1 / sum2;
             break;
         }
         case Shape::Type::Ellipse:
@@ -216,7 +216,7 @@ namespace Physics2D {
 
             const real a = ellipse->A();
             const real b = ellipse->B();
-            m_inertia = m_mass * (a * a + b * b) * (1.0f / 5.0f);
+            m_inertia = m_mass * (a * a + b * b) * (1.0 / 5.0);
 
             break;
         }
@@ -224,18 +224,18 @@ namespace Physics2D {
         {
             const Capsule* capsule = dynamic_cast<Capsule*>(m_shape.get());
             real r = 0, h = 0, massS = 0, inertiaS = 0, massC = 0, inertiaC = 0, volume = 0;
-        	
-        	if(capsule->width() >= capsule->height())//Horizontal
-        	{
+
+            if (capsule->width() >= capsule->height())//Horizontal
+            {
                 r = capsule->height() / 2;
                 h = capsule->width() - capsule->height();
-        	}
+            }
             else//Vertical
             {
                 r = capsule->width() / 2;
                 h = capsule->height() - capsule->width();
             }
-        		
+
             volume = Constant::Pi * r * r + h * 2 * r;
             real rho = m_mass / volume;
             massS = rho * Constant::Pi * r * r;
@@ -243,6 +243,12 @@ namespace Physics2D {
             inertiaC = (1.0 / 12.0) * massC * (h * h + (2 * r) * (2 * r));
             inertiaS = massS * r * r * 0.5;
             m_inertia = inertiaC + inertiaS + massS * (3 * r + 2 * h) * h / 8.0;
+            break;
+        }
+        case Shape::Type::Sector:
+        {
+            const Sector* sector = dynamic_cast<Sector*>(m_shape.get());
+            m_inertia = m_mass * (sector->spanRadian() - Math::sinx(sector->spanRadian())) * sector->radius() * sector->radius() / 4 * sector->spanRadian();
             break;
         }
         default:

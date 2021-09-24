@@ -158,27 +158,36 @@ namespace Physics2D
         assert(shape.shape->type() == Shape::Type::Sector);
         const Sector* sector = dynamic_cast<Sector*>(shape.shape.get());
         const Vector2 screen_p = camera->worldToScreen(shape.transform);
+        AABB aabb = AABB::fromShape(shape);
+        Vector2 offset(sector->radius(), sector->radius());
+        Vector2 topLeft = camera->worldToScreen(shape.transform - offset);
+        Vector2 bottomRight = camera->worldToScreen(shape.transform + offset);
         QPen gc(Qt::gray, 8, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+        renderPoint(painter, camera, shape.transform, pen);
         renderPoint(painter, camera, Matrix2x2(shape.rotation).multiply(dynamic_cast<Sector*>(shape.shape.get())->center()) + shape.transform, gc);
 
         QColor color = pen.color();
         color.setAlphaF(0.15f);
         QBrush brush(color);
-        QPainterPath path;
-        //path.arcTo(rect, shortest, shortest);
-        painter->translate(screen_p.x, screen_p.y);
-
-        painter->rotate(Math::radianToDegree(-shape.rotation));
+        QBrush oldBrush = painter->brush();
 
         painter->setPen(pen);
-        painter->drawPath(path);
-        painter->fillPath(path, brush);
-        painter->rotate(Math::radianToDegree(shape.rotation));
-        painter->translate(-screen_p.x, -screen_p.y);
+        painter->setBrush(brush);
+
+        
+        QRectF boundingRect;
+        boundingRect.setTopLeft({ topLeft.x, topLeft.y});
+        boundingRect.setBottomRight({ bottomRight.x, bottomRight.y });
+
+        auto start = Math::radianToDegree(sector->startRadian() + shape.rotation) * 16.0;
+        auto span = Math::radianToDegree(sector->spanRadian()) * 16.0;
+        painter->drawPie(boundingRect, start, span);
+        
 
         QPen center = pen;
         center.setWidth(2);
         renderAngleLine(painter, camera, shape, center);
+        painter->setBrush(oldBrush);
     }
 
     void RendererQtImpl::renderEllipse(QPainter* painter, Utils::Camera* camera, const ShapePrimitive& shape, const QPen& pen)

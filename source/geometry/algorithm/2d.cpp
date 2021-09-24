@@ -494,15 +494,21 @@ namespace Physics2D
 		return target;
 	}
 
-	Vector2 GeometryAlgorithm2D::calculateSectorProjectionPoint(const real& startRadian, const real& endRadian,
+	Vector2 GeometryAlgorithm2D::calculateSectorProjectionPoint(const real& startRadian, const real& spanRadian,
 		const real& radius, const Vector2& direction)
 	{
-		//startRadian < endRadian, startRadian
-		assert(startRadian < endRadian);
 		Vector2 result;
-		const real theta = direction.theta();
-		if(!Math::isInRange(theta, Constant::DoublePi - startRadian, Constant::HalfPi + endRadian))
-			result = Matrix2x2(Math::clamp(direction.theta(), startRadian, endRadian)).multiply(Vector2{ 1, 0 }) * radius;
+		real originTheta = direction.theta();
+		real theta = originTheta < 0 ? Constant::DoublePi + originTheta : originTheta;
+		if(!Math::isInRange(theta, Constant::HalfPi + startRadian + spanRadian, Constant::DoublePi - (startRadian - Constant::HalfPi)))
+		{
+			if (Math::isInRange(originTheta, startRadian - Constant::HalfPi, startRadian))
+				result = Matrix2x2(startRadian).multiply(Vector2{ 1, 0 }) * radius;
+			else if (Math::isInRange(originTheta, startRadian + spanRadian, Constant::HalfPi + startRadian + spanRadian))
+				result = Matrix2x2(startRadian + spanRadian).multiply(Vector2{ 1, 0 }) * radius;
+			else
+				result = Matrix2x2(Math::clamp(theta, startRadian - Constant::HalfPi, startRadian + spanRadian)).multiply(Vector2{ 1, 0 }) * radius;
+		}
 		return result;
 	}
 

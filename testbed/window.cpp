@@ -14,7 +14,7 @@ namespace Physics2D
 		this->resize(1920, 1080);
 		this->setMouseTracking(true);
 
-		rectangle.set(0.1, 0.1);
+		rectangle.set(1, 1);
 		land.set(32, 0.2);
 		polygon.append({{3, 0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3}, {2, -3}, {3, 0}});
 		polygon.scale(0.22);
@@ -24,6 +24,7 @@ namespace Physics2D
 		//circle.scale(7);
 		edge.set({-18, 5}, {18, 0});
 		capsule.set(1, 2);
+		sector.set(Math::degreeToRadian(30), Math::degreeToRadian(90), 1);
 
 		boxHorizontal.set({ -roomSize, 0 }, { roomSize, 0 });
 		boxVertical.set({ 0, roomSize }, { 0, -roomSize });
@@ -35,6 +36,8 @@ namespace Physics2D
 		circle_ptr = std::make_shared<Circle>(circle);
 		edge_ptr = std::make_shared<Edge>(edge);
 		capsule_ptr = std::make_shared<Capsule>(capsule);
+		sector_ptr = std::make_shared<Sector>(sector);
+		
 
 		horizontalWall = std::make_shared<Edge>(boxHorizontal);
 		verticalWall = std::make_shared<Edge>(boxVertical);
@@ -54,7 +57,7 @@ namespace Physics2D
 		//createBoxRoom();
 		//createBoxesAndGround(8);
 		//testPendulum();
-		//testCollision();
+		testCollision();
 		//testJoint();
 		//testBroadphase();
 		//testCCD();
@@ -69,7 +72,7 @@ namespace Physics2D
 		camera.setAabbVisible(false);
 		camera.setDbvhVisible(false);
 		camera.setTreeVisible(false);
-		camera.setAxisVisible(true);
+		camera.setAxisVisible(false);
 		connect(&m_timer, &QTimer::timeout, this, &Window::process);
 
 		
@@ -321,11 +324,11 @@ namespace Physics2D
 		dbvh.insert(ground);
 		
 		rect = m_world.createBody();
-		rect->setShape(rectangle_ptr);
+		rect->setShape(sector_ptr);
 		rect->position().set({-5, 6});
-		rect->rotation() = Math::degreeToRadian(5);
+		rect->rotation() = 0;
 		rect->setMass(200);
-		rect->setType(Body::BodyType::Dynamic);
+		rect->setType(Body::BodyType::Static);
 		rect->setFriction(0.1);
 		dbvh.insert(rect);
 
@@ -389,28 +392,28 @@ namespace Physics2D
 		camera.render(&painter);
 		real dt = 1.0 / 60;
 
-		Vector2 direction = mousePos - Vector2(9, 9);
-		direction.normalize();
-		
-		auto list = dbvh.raycast({ 9, 9 }, direction);
-		
+		//Vector2 direction = mousePos - Vector2(9, 9);
+		//direction.normalize();
+		//
+		//auto list = dbvh.raycast({ 9, 9 }, direction);
+		//
 
-		QPen pen3(Qt::red, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		QPen pen2(Qt::green, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		RendererQtImpl::renderPoint(&painter, &camera, { 9, 9 }, pen3);
-		RendererQtImpl::renderPoint(&painter, &camera, mousePos, pen3);
-		RendererQtImpl::renderLine(&painter, &camera, { 9, 9 }, mousePos, pen2);
-		
+		//QPen pen3(Qt::red, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		//QPen pen2(Qt::green, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		//RendererQtImpl::renderPoint(&painter, &camera, { 9, 9 }, pen3);
+		//RendererQtImpl::renderPoint(&painter, &camera, mousePos, pen3);
+		//RendererQtImpl::renderLine(&painter, &camera, { 9, 9 }, mousePos, pen2);
+		//
 
-		for (auto elem : list)
-		{
-			ShapePrimitive p1;
-			p1.rotation = elem->rotation();
-			p1.shape = elem->shape();
-			p1.transform = elem->position();
+		//for (auto elem : list)
+		//{
+		//	ShapePrimitive p1;
+		//	p1.rotation = elem->rotation();
+		//	p1.shape = elem->shape();
+		//	p1.transform = elem->position();
 
-			RendererQtImpl::renderShape(&painter, &camera, p1, pen3);
-		}
+		//	RendererQtImpl::renderShape(&painter, &camera, p1, pen3);
+		//}
 
 		//for(auto iter = contactMaintainer.m_contactTable.begin(); iter != contactMaintainer.m_contactTable.end(); ++iter)
 		//{

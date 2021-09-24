@@ -257,7 +257,7 @@ namespace Physics2D
 		case Shape::Type::Sector:
 		{
 			const Sector* sector = dynamic_cast<const Sector*>(shape.shape.get());
-			target = GeometryAlgorithm2D::calculateSectorProjectionPoint(sector->startRadian(), sector->endRadian(), sector->radius(), rot_dir);
+			target = GeometryAlgorithm2D::calculateSectorProjectionPoint(sector->startRadian(), sector->spanRadian(), sector->radius(), rot_dir);
 			break;
 		}
 		default:

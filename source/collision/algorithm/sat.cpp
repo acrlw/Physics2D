@@ -362,8 +362,8 @@ namespace Physics2D
 	{
 		ProjectedPoint min, max;
 		Vector2 direction = Matrix2x2(-shape.rotation).multiply(normal);
-		Vector2 p1 = GeometryAlgorithm2D::calculateSectorProjectionPoint(sector->startRadian(), sector->endRadian(), sector->radius(), direction);
-		Vector2 p2 = GeometryAlgorithm2D::calculateSectorProjectionPoint(sector->startRadian(), sector->endRadian(), sector->radius(), -direction);
+		Vector2 p1 = GeometryAlgorithm2D::calculateSectorProjectionPoint(sector->startRadian(), sector->spanRadian(), sector->radius(), direction);
+		Vector2 p2 = GeometryAlgorithm2D::calculateSectorProjectionPoint(sector->startRadian(), sector->spanRadian(), sector->radius(), -direction);
 		p1 = shape.translate(p1);
 		p2 = shape.translate(p2);
 

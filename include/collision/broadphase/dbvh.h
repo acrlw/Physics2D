@@ -10,17 +10,19 @@ namespace Physics2D
 		public:
 			struct Node
 			{
-				Node(const Pair& pair) : pair(pair){}
-				Node(const AABB& aabb) : pair(aabb){}
+				Node(Body* _body, const AABB& _aabb) : body(_body), aabb(_aabb){}
+				Node(const AABB& _aabb) : aabb(_aabb) {}
 				Node* parent = nullptr;
 				Node* left = nullptr;
 				Node* right = nullptr;
-				Pair pair;
+				Body* body = nullptr;
+				AABB aabb;
 				void separate(Node* node);
 				void swap(Node* source, Node* target);
 				bool isLeaf()const;
 				bool isBranch()const;
 				bool isRoot()const;
+				void clear();
 			};
 		
 			DBVH();
@@ -41,7 +43,7 @@ namespace Physics2D
 			void cleanUp(Node* node);
 			real deltaCost(Node* node, const AABB& aabb)const;
 			void totalCost(Node* node, const AABB& aabb, real& cost)const;
-			Node* merge(Node* node, const Pair& pair);
+			Node* merge(Node* node, const AABB& aabb, Body* body);
 			void merge(Node* target, Node* source);
 			void update(Node* parent);
 			void balance(Node* node);

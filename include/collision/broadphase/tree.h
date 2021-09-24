@@ -9,6 +9,18 @@ namespace Physics2D
 	/// Using std::vector to store tree node and binary tree primitives.
 	///	Attention: This method does not support tree balance.
 	/// </summary>
+	struct Pair
+	{
+		Pair() {}
+		Pair(const AABB & aabb, Body * source = nullptr) : body(source), aabb(aabb) {}
+		Body* body = nullptr;
+		AABB aabb;
+		void clear()
+		{
+			body = nullptr;
+			aabb.clear();
+		}
+	};
 	class Tree
 	{
 	public:

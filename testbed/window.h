@@ -17,7 +17,7 @@
 #include <include/collision/algorithm/sat.h>
 #include <include/collision/broadphase/dbvh.h>
 
-
+#include "include/collision/broadphase/dbvt.h"
 #include "include/collision/broadphase/tree.h"
 #include "include/utils/camera.h"
 #include "include/collision/continuous/ccd.h"
@@ -71,6 +71,9 @@ namespace Physics2D
 		Polygon polygon;
 		Circle circle;
 		Capsule capsule;
+		Sector sector;
+
+
 		real m_angle = 0;
 		Body* m_lastBody = nullptr;
 		QTimer m_timer;
@@ -113,6 +116,7 @@ namespace Physics2D
 		std::shared_ptr<Rectangle> rectangle_ptr;
 		std::shared_ptr<Circle> circle_ptr;
 		std::shared_ptr<Capsule> capsule_ptr;
+		std::shared_ptr<Sector> sector_ptr;
 
 		Utils::Camera camera;
 		bool cameraTransform = false;
@@ -120,6 +124,7 @@ namespace Physics2D
 		Body* selectedBody = nullptr;
 
 		Tree tree;
+		DBVT dbvt;
 		real roomSize = 10;
 
 		ContactMaintainer contactMaintainer;

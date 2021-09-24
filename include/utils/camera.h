@@ -4,6 +4,7 @@
 
 
 #include "include/collision/broadphase/dbvh.h"
+#include "include/collision/broadphase/dbvt.h"
 #include "include/collision/broadphase/tree.h"
 #include "include/common/common.h"
 #include "include/dynamics/world.h"
@@ -77,11 +78,17 @@ namespace Physics2D::Utils
         bool treeVisible()const;
         void setTreeVisible(bool visible);
 
+        bool dbvtVisible()const;
+        void setDbvtVisible(bool visible);
+
         real deltaTime()const;
         void setDeltaTime(const real& deltaTime);
 
+        DBVT* dbvt()const;
+        void setDbvt(DBVT* dbvt);
 		
     private:
+        void drawDbvt(int nodeIndex, QPainter* painter);
         void drawDbvh(DBVH::Node* node, QPainter* painter);
         void drawTree(QPainter* painter);
         bool m_visible = true;
@@ -91,6 +98,7 @@ namespace Physics2D::Utils
 		bool m_axisVisible = true;
         bool m_dbvhVisible = false;
         bool m_treeVisible = false;
+        bool m_dbvtVisible = false;
 		
 		real m_meterToPixel = 50.0;
 		real m_pixelToMeter = 0.02;
@@ -105,6 +113,7 @@ namespace Physics2D::Utils
         Body *m_targetBody = nullptr;
         DBVH* m_dbvh = nullptr;
         Tree* m_tree = nullptr;
+        DBVT* m_dbvt = nullptr;
 
 		real m_zoomFactor = 1.0;
         real m_restitution = 2;

@@ -67,6 +67,10 @@ namespace Physics2D
 		{
 			return std::sqrt(x);
 		}
+		inline real pow(const real& x, const real& e)
+		{
+			return std::pow(x, e);
+		}
 		//other
 		inline int sign(const real& num)
 		{
@@ -74,9 +78,11 @@ namespace Physics2D
 		}
 		inline bool isInRange(const real& value, const real& low, const real& high, const real& epsilon = Constant::GeometryEpsilon)
 		{
-			bool lowBound = value >= low - epsilon;
-			bool upBound = value <= high + epsilon;
-			return lowBound && upBound;
+			return value >= low - epsilon && value <= high + epsilon;
+		}
+		inline bool fuzzyIsInRange(const real& value, const real& low, const real& high, const real& epsilon = Constant::GeometryEpsilon)
+		{
+			return value >= low - epsilon && value <= high + epsilon || value <= low + epsilon && low >= high - epsilon;
 		}
 		inline real clamp(const real& num, const real& low, const real& high)
 		{

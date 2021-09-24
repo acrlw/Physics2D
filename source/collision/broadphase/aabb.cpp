@@ -54,7 +54,7 @@ namespace Physics2D
 	}
 	
 
-	inline void AABB::clear()
+	void AABB::clear()
 	{
 		position.clear();
 		width = 0.0;
@@ -187,12 +187,14 @@ namespace Physics2D
 			Vector2 p1 = GJK::findFarthestPoint(shape, { 1, 0 });
 			Vector2 p2 = GJK::findFarthestPoint(shape, { 0, 1 });
 			Vector2 p3 = GJK::findFarthestPoint(shape, { -1, 0 });
+			Vector2 p4 = GJK::findFarthestPoint(shape, { 0, -1 });
 			p1 -= shape.transform;
 			p2 -= shape.transform;
 			p3 -= shape.transform;
-			aabb.width = p3.x - p1.x;
-			aabb.height = abs(p2.y);
-			aabb.position.set({ aabb.width / 2, aabb.height / 2 });
+			p4 -= shape.transform;
+			aabb.width = p1.x - p3.x;
+			aabb.height = p2.y - p4.y;
+			aabb.position.set({ (p1.x + p3.x) / 2, (p2.y + p4.y) / 2 });
 			break;
 		}
 		}
@@ -279,10 +281,5 @@ namespace Physics2D
 		auto [p1, p2] = result.value();
 		return GeometryAlgorithm2D::isPointOnAABB(p1, aabb.topLeft(), aabb.bottomRight())
 		&& GeometryAlgorithm2D::isPointOnAABB(p2, aabb.topLeft(), aabb.bottomRight());
-	}
-	void Pair::clear()
-	{
-		body = nullptr;
-		aabb.clear();
 	}
 }
