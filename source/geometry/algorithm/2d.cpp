@@ -387,6 +387,51 @@ namespace Physics2D
 		return std::nullopt;
 	}
 
+	std::optional<std::pair<Vector2, Vector2>> GeometryAlgorithm2D::raycastAABB(const Vector2& p, const Vector2& dir, const Vector2& topLeft, const Vector2& bottomRight)
+	{
+		const real xmin = topLeft.x;
+		const real ymin = bottomRight.y;
+		const real xmax = bottomRight.x;
+		const real ymax = topLeft.y;
+		real txmin, txmax, tymin, tymax;
+		real txenter, txexit, tyenter, tyexit;
+		real tenter, texit;
+		if(realEqual(dir.x, 0) && !realEqual(dir.y, 0))
+		{
+			tymin = (ymin - p.y) / dir.y;
+			tymax = (ymax - p.y) / dir.y;
+			tenter = Math::min(tymin, tymax);
+			texit = Math::max(tymin, tymax);
+		}
+		else if (!realEqual(dir.x, 0) && realEqual(dir.y, 0))
+		{
+
+			txmin = (xmin - p.x) / dir.x;
+			txmax = (xmax - p.x) / dir.x;
+			tenter = Math::min(txmin, txmax);
+			texit = Math::max(txmin, txmax);
+		}
+		else
+		{
+			txmin = (xmin - p.x) / dir.x;
+			txmax = (xmax - p.x) / dir.x;
+			tymin = (ymin - p.y) / dir.y;
+			tymax = (ymax - p.y) / dir.y;
+			txenter = Math::min(txmin, txmax);
+			txexit = Math::max(txmin, txmax);
+			tyenter = Math::min(tymin, tymax);
+			tyexit = Math::max(tymin, tymax);
+			tenter = Math::max(txenter, tyenter);
+			texit = Math::min(txexit, tyexit);
+		}
+		
+		Vector2 enter = p + tenter * dir;
+		Vector2 exit = p + texit * dir;
+
+		return std::make_pair(enter, exit);
+
+	}
+
 	Vector2 GeometryAlgorithm2D::rotate(const Vector2& p, const Vector2& center, const real& angle)
 	{
 		return Matrix2x2(angle).multiply(p - center) + center;

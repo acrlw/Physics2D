@@ -19,22 +19,22 @@ namespace Physics2D
 
 	Vector2 AABB::topLeft() const
 	{
-		return Vector2{ (-width * 0.5) + position.x , (height * 0.5) + position.y };
+		return Vector2{ -width / 2 + position.x , height / 2 + position.y };
 	}
 
 	Vector2 AABB::topRight() const
 	{
-		return Vector2{ (width * 0.5) + position.x , (height * 0.5) + position.y };
+		return Vector2{ width / 2 + position.x , height / 2 + position.y };
 	}
 
 	Vector2 AABB::bottomLeft() const
 	{
-		return Vector2{ (-width * 0.5) + position.x , (-height * 0.5) + position.y };
+		return Vector2{ -width / 2 + position.x , -height / 2 + position.y };
 	}
 
 	Vector2 AABB::bottomRight() const
 	{
-		return Vector2{ (width * 0.5) + position.x , (-height * 0.5) + position.y };
+		return Vector2{ width / 2 + position.x , -height / 2 + position.y };
 	}
 
 	bool AABB::collide(const AABB& other) const
@@ -267,7 +267,21 @@ namespace Physics2D
 	}
 	bool AABB::raycast(const AABB& aabb, const Vector2& start, const Vector2& direction)
 	{
+		return false;
+		//Vector2 p1 = aabb.topLeft() - start;
+		//Vector2 p2 = aabb.bottomLeft() - start;
+		//Vector2 p3 = aabb.bottomRight() - start;
+		//Vector2 p4 = aabb.topRight() - start;
+		//
+		//Vector2 normal = direction.perpendicular().normal();
+		//real r1 = p1.dot(normal);
+		//real r2 = p2.dot(normal);
+		//real r3 = p3.dot(normal);
+		//real r4 = p4.dot(normal);
+		////make line into ray using cross product
 
+		//return !(r1 >= 0 && r2 >= 0 && r3 >= 0 && r4 >= 0 ||
+		//	r1 <= 0 && r2 <= 0 && r3 <= 0 && r4 <= 0);
 	}
 	void Pair::clear()
 	{

@@ -390,8 +390,9 @@ namespace Physics2D
 		real dt = 1.0 / 60;
 
 		Vector2 direction = mousePos - Vector2(9, 9);
+		direction.normalize();
 		auto list = dbvh.raycast({ 9, 9 }, direction);
-
+		
 
 		QPen pen3(Qt::red, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 		QPen pen2(Qt::green, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
