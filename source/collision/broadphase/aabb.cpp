@@ -46,6 +46,12 @@ namespace Physics2D
 	{
 		expand(*this, factor);
 	}
+
+	void AABB::scale(const real& factor)
+	{
+		width *= factor;
+		height *= factor;
+	}
 	
 
 	inline void AABB::clear()
@@ -234,7 +240,7 @@ namespace Physics2D
 		const Vector2 targetBottomRight = target.bottomRight();
 
 		const real low_x = Math::min(srcTopLeft.x, targetTopLeft.x);
-		const real high_x = Math::max(srcTopLeft.x, targetBottomRight.x);
+		const real high_x = Math::max(srcBottomRight.x, targetBottomRight.x);
 		
 		const real low_y = Math::min(srcBottomRight.y, targetBottomRight.y);
 		const real high_y = Math::max(srcTopLeft.y, targetTopLeft.y);

@@ -6,7 +6,8 @@ namespace Physics2D
 {
 	/// <summary>
 	/// Bounding Volume Tree
-	/// Using vector to implement tree.
+	/// Using std::vector to store tree node and binary tree primitives.
+	///	Attention: This method does not support tree balance.
 	/// </summary>
 	class Tree
 	{

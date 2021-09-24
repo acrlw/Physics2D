@@ -109,6 +109,7 @@ namespace Physics2D::Utils
 		real m_zoomFactor = 1.0;
         real m_restitution = 2;
         real m_deltaTime = 15.0;
+        real m_axisPointCount = 20;
         
 	};
 }

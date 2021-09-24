@@ -77,7 +77,7 @@ namespace Physics2D::Utils
 				QColor color = Qt::green;
 				color.setAlphaF(0.6);
 				pen.setColor(color);
-				for (int i = -10; i <= 10; i++)
+				for (int i = -m_axisPointCount; i <= m_axisPointCount; i++)
 				{
 					RendererQtImpl::renderPoint(painter, this, Vector2(0, i), pen);
 					RendererQtImpl::renderPoint(painter, this, Vector2(i, 0), pen);
@@ -85,8 +85,8 @@ namespace Physics2D::Utils
 				color.setAlphaF(0.45);
 				pen.setColor(color);
 				pen.setWidth(1);
-				RendererQtImpl::renderLine(painter, this, Vector2(0, -10), Vector2(0, 10), pen);
-				RendererQtImpl::renderLine(painter, this, Vector2(-10, 0), Vector2(10, 0), pen);
+				RendererQtImpl::renderLine(painter, this, Vector2(0, -m_axisPointCount), Vector2(0, m_axisPointCount), pen);
+				RendererQtImpl::renderLine(painter, this, Vector2(-m_axisPointCount, 0), Vector2(m_axisPointCount, 0), pen);
 
 			}
 			if(m_aabbVisible)
@@ -296,8 +296,10 @@ namespace Physics2D::Utils
 		drawDbvh(node->right, painter);
 
 		QPen pen(Qt::cyan, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		AABB aabb = node->pair.aabb;
+		aabb.expand(0.5);
 		if (!node->isLeaf())
-			RendererQtImpl::renderAABB(painter, this, node->pair.aabb, pen);
+			RendererQtImpl::renderAABB(painter, this, aabb, pen);
 	}
 	void Camera::drawTree(QPainter* painter)
 	{

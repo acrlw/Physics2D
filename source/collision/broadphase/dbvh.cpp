@@ -60,20 +60,18 @@ namespace Physics2D
 	{
 		if (node == nullptr)
 			return;
-		//for(auto iter = m_leaves.begin(); iter != m_leaves.end(); ++iter)
-		//	if(iter->second->pair.aabb.raycast(start, direction))
-		//		result.emplace_back(iter->first);
+
 		
-		//if(node->pair.aabb.raycast(start, direction))
-		//{
-		//	if (node->isLeaf())
-		//		result.emplace_back(node->pair.body);
-		//	else
-		//	{
-		//		raycast(result, node->left, start, direction);
-		//		raycast(result, node->right, start, direction);
-		//	}
-		//}
+		if(node->pair.aabb.raycast(start, direction))
+		{
+			if (node->isLeaf())
+				result.emplace_back(node->pair.body);
+			else
+			{
+				raycast(result, node->left, start, direction);
+				raycast(result, node->right, start, direction);
+			}
+		}
 
 	}
 
@@ -176,17 +174,16 @@ namespace Physics2D
 			return;
 		}
 
-		if (m_root->isRoot())
-		{
-			auto target = getCost(pair.aabb);
-			merge(target, pair);
-			
-			balance(m_root);
 
-			update(target);
-			//for (auto const& [key, val] : m_leaves)
-			//	update(val);
-		}
+		auto target = getCost(pair.aabb);
+		merge(target, pair);
+			
+		balance(m_root);
+
+		update(target);
+		for (auto const& [key, val] : m_leaves)
+			update(val);
+		
 	}
 	void DBVH::update(Body* body)
 	{
@@ -284,7 +281,6 @@ namespace Physics2D
 		
 		node->pair.body = nullptr;
 		node->pair.aabb = AABB::unite(pair.aabb, node->pair.aabb);
-		//node->pair.aabb.expand(0.5);
 		node->left = copy;
 		node->right = newNode;
 		copy->parent = node;
@@ -318,11 +314,8 @@ namespace Physics2D
 		if (parent->isBranch() || parent->isRoot())
 			parent->pair.aabb = AABB::unite(parent->left->pair.aabb, parent->right->pair.aabb);
 
-		
 		update(parent->parent);
 
-		if (parent->parent == nullptr && parent->left != nullptr && parent->right != nullptr)
-			m_root = parent;
 	}
 
 	void DBVH::balance(Node* node)

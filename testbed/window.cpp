@@ -14,7 +14,7 @@ namespace Physics2D
 		this->resize(1920, 1080);
 		this->setMouseTracking(true);
 
-		rectangle.set(0.2, 0.2);
+		rectangle.set(0.1, 0.1);
 		land.set(32, 0.2);
 		polygon.append({{3, 0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3}, {2, -3}, {3, 0}});
 		polygon.scale(0.22);
@@ -59,7 +59,7 @@ namespace Physics2D
 		//testBroadphase();
 		//testCCD();
 		//testCapsule();
-		testRaycast();
+		//testRaycast();
 		
 		camera.setViewport(Utils::Camera::Viewport((0, 0), (1920, 1080)));
 		camera.setWorld(&m_world);
@@ -69,7 +69,7 @@ namespace Physics2D
 		camera.setAabbVisible(false);
 		camera.setDbvhVisible(false);
 		camera.setTreeVisible(false);
-		camera.setAxisVisible(false);
+		camera.setAxisVisible(true);
 		connect(&m_timer, &QTimer::timeout, this, &Window::process);
 
 		
@@ -174,7 +174,7 @@ namespace Physics2D
 			for (real i = 0; i < 20; i++)
 			{
 				Body* body = m_world.createBody();
-				body->position().set({ i * 0.2 - 8, j * 0.2 + 5 });
+				body->position().set({ i * 0.1 - 8, j * 0.1 + 5 });
 				body->setShape(rectangle_ptr);
 				body->rotation() = 0;
 				body->setMass(200);
