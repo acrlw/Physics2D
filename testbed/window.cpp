@@ -14,7 +14,7 @@ namespace Physics2D
 		this->resize(1920, 1080);
 		this->setMouseTracking(true);
 
-		rectangle.set(1, 1);
+		rectangle.set(8, 0.5);
 		land.set(32, 0.2);
 		//polygon.append({{3, 0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3}, {2, -3}, {3, 0}});
 		polygon.append({ {-2, 0}, {0, 4}, {4, 6}, {10, 4}, {4, -2}, {-2, 0} });
@@ -26,7 +26,7 @@ namespace Physics2D
 		//circle.scale(7);
 		edge.set({-18, 5}, {18, 0});
 		capsule.set(1, 2);
-		sector.set(Math::degreeToRadian(0), Math::degreeToRadian(60), 1);
+		sector.set(Math::degreeToRadian(0), Math::degreeToRadian(90), 2);
 
 		boxHorizontal.set({ -roomSize, 0 }, { roomSize, 0 });
 		boxVertical.set({ 0, roomSize }, { 0, -roomSize });
@@ -675,11 +675,11 @@ namespace Physics2D
 	{
 		for (real j = 0; j < count; j++)
 		{
-			for(real i = 0;i < count; i++)
+			for(real i = 0;i < 1; i++)
 			{
 				Body* body = m_world.createBody();
-				body->position().set({ i * 0.5 - 8, j * 0.5 + 1});
-				body->setShape(rectangle_ptr);
+				body->position().set({ i * 1 - 4, j * 1 + 1});
+				body->setShape(sector_ptr);
 				body->rotation() = 0;
 				body->setMass(200);
 				body->setType(Body::BodyType::Dynamic);
