@@ -16,7 +16,9 @@ namespace Physics2D
 
 		rectangle.set(1, 1);
 		land.set(32, 0.2);
-		polygon.append({{3, 0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3}, {2, -3}, {3, 0}});
+		//polygon.append({{3, 0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3}, {2, -3}, {3, 0}});
+		polygon.append({ {-2, 0}, {0, 4}, {4, 6}, {10, 4}, {4, -2}, {-2, 0} });
+		//polygon.append({ {0, 6}, {6, -4}, {-6, -4}, {0, 6}});
 		polygon.scale(0.22);
 		ellipse.set({-5, 4}, {5, -4});
 		ellipse.scale(0.15);
@@ -24,7 +26,7 @@ namespace Physics2D
 		//circle.scale(7);
 		edge.set({-18, 5}, {18, 0});
 		capsule.set(1, 2);
-		sector.set(Math::degreeToRadian(30), Math::degreeToRadian(90), 1);
+		sector.set(Math::degreeToRadian(0), Math::degreeToRadian(60), 1);
 
 		boxHorizontal.set({ -roomSize, 0 }, { roomSize, 0 });
 		boxVertical.set({ 0, roomSize }, { 0, -roomSize });
@@ -220,30 +222,33 @@ namespace Physics2D
 			repaint();
 			return;
 		}
-		const real dt = 1.0 / 30.0;
-		const real inv_dt = 30;
-
-		
-		m_world.stepVelocity(dt);
-
 		for(int i = 0;i < 1;i++)
 		{
-			auto potentialList = dbvh.generatePairs();
-			for (auto pair : potentialList)
+
+			const real dt = 1.0 / 30.0;
+
+
+			m_world.stepVelocity(dt);
+
+			for (int i = 0; i < 1; i++)
 			{
-				auto result = Detector::detect(pair.first, pair.second);
-				if (result.isColliding)
-					contactMaintainer.add(result);
+				auto potentialList = dbvh.generatePairs();
+				for (auto pair : potentialList)
+				{
+					auto result = Detector::detect(pair.first, pair.second);
+					if (result.isColliding)
+						contactMaintainer.add(result);
+				}
+
+				contactMaintainer.solve(dt);
 			}
 
-			contactMaintainer.solve(dt);
+
+			m_world.stepPosition(dt);
+
+			for (auto& body : m_world.bodyList())
+				dbvh.update(body.get());
 		}
-		
-
-		m_world.stepPosition(dt);
-
-		for (auto& body : m_world.bodyList())
-			dbvh.update(body.get());
 		
 
 		
@@ -328,7 +333,7 @@ namespace Physics2D
 		rect->position().set({-5, 6});
 		rect->rotation() = 0;
 		rect->setMass(200);
-		rect->setType(Body::BodyType::Static);
+		rect->setType(Body::BodyType::Dynamic);
 		rect->setFriction(0.1);
 		dbvh.insert(rect);
 

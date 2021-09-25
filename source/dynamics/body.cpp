@@ -143,7 +143,7 @@ namespace Physics2D {
     void Body::applyImpulse(const Vector2& impulse, const Vector2& r)
     {
         m_velocity += m_invMass * impulse;
-        m_angularVelocity += m_invInertia * (r + this->shape()->center()).cross(impulse);
+        m_angularVelocity += m_invInertia * r.cross(impulse);
     }
     Vector2 Body::toLocalPoint(const Vector2& point)const
     {

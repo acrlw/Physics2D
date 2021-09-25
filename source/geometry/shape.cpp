@@ -463,7 +463,8 @@ namespace Physics2D
 		real c = (st - ed).length();
 		real l = m_spanRadian * m_radius;
 		normal.normalize();
-		return normal * (2.0 * m_radius * c / (3.0 * l));
+		Vector2 result = normal * (2.0 * m_radius * c / (3.0 * l));
+		return result;
 	}
 
 	real Sector::startRadian() const

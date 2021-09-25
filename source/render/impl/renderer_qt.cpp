@@ -27,7 +27,6 @@ namespace Physics2D
         assert(painter != nullptr && camera != nullptr);
         assert(shape.shape->type() == Shape::Type::Polygon);
         Vector2 position = camera->worldToScreen(shape.transform);
-        renderPoint(painter, camera, shape.transform, pen);
         QPen center(Qt::gray, 8, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
         renderPoint(painter, camera, Matrix2x2(shape.rotation).multiply(dynamic_cast<Polygon*>(shape.shape.get())->center()) + shape.transform, center);
         QPolygonF polygon;
@@ -157,13 +156,11 @@ namespace Physics2D
         assert(painter != nullptr && camera != nullptr);
         assert(shape.shape->type() == Shape::Type::Sector);
         const Sector* sector = dynamic_cast<Sector*>(shape.shape.get());
-        const Vector2 screen_p = camera->worldToScreen(shape.transform);
-        AABB aabb = AABB::fromShape(shape);
+        
         Vector2 offset(sector->radius(), sector->radius());
         Vector2 topLeft = camera->worldToScreen(shape.transform - offset);
         Vector2 bottomRight = camera->worldToScreen(shape.transform + offset);
         QPen gc(Qt::gray, 8, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-        renderPoint(painter, camera, shape.transform, pen);
         renderPoint(painter, camera, Matrix2x2(shape.rotation).multiply(dynamic_cast<Sector*>(shape.shape.get())->center()) + shape.transform, gc);
 
         QColor color = pen.color();
@@ -255,10 +252,11 @@ namespace Physics2D
         QPen yAxis(colorY, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
         Vector2 xP(0.1, 0);
         Vector2 yP(0, 0.1);
-        xP = Matrix2x2(shape.rotation).multiply(xP) + shape.transform;
-        yP = Matrix2x2(shape.rotation).multiply(yP) + shape.transform;
-        renderLine(painter, camera, shape.transform, xP, xAxis);
-        renderLine(painter, camera, shape.transform, yP, yAxis);
+        Vector2 mc = Matrix2x2(shape.rotation).multiply(shape.shape->center());
+        xP = Matrix2x2(shape.rotation).multiply(xP) + shape.transform + mc;
+        yP = Matrix2x2(shape.rotation).multiply(yP) + shape.transform + mc;
+        renderLine(painter, camera, shape.transform + mc, xP, xAxis);
+        renderLine(painter, camera, shape.transform + mc, yP, yAxis);
     }
 
     void RendererQtImpl::renderAABB(QPainter* painter, Utils::Camera* camera, const AABB& aabb, const QPen& pen)

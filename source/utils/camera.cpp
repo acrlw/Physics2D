@@ -22,7 +22,7 @@ namespace Physics2D::Utils
 			if (m_targetBody != nullptr)
 			{
 				Vector2 real_origin(m_origin.x + m_transform.x, m_origin.y - m_transform.y);
-				Vector2 target(-m_targetBody->position().x, m_targetBody->position().y);
+				Vector2 target(-(m_targetBody->position().x + m_targetBody->shape()->center().x), m_targetBody->position().y + m_targetBody->shape()->center().y);
 				target = worldToScreen(target) - real_origin;
 
 				Vector2 c = target - m_transform;

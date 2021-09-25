@@ -538,8 +538,15 @@ namespace Physics2D
 		//special case for half circle
 		if(fuzzyRealEqual(originStart, originEnd))
 		{
-			if(clampStart < clampEnd)
-				result = Matrix2x2(Math::clamp(theta, clampStart, clampEnd)).multiply(Vector2{ 1, 0 }) * radius;
+			if(!fuzzyRealEqual(theta, originStart))
+			{
+				if (theta > originStart)
+					theta = originTheta;
+				if (clampStart > clampEnd)
+					result = Matrix2x2(Math::clamp(theta, clampStart - Constant::DoublePi, clampEnd)).multiply(Vector2{ 1, 0 }) * radius;
+				else
+					result = Matrix2x2(Math::clamp(theta, clampStart, clampEnd)).multiply(Vector2{ 1, 0 }) * radius;
+			}
 		}
 		return result;
 	}
