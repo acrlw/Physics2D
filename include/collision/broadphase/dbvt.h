@@ -32,9 +32,15 @@ namespace Physics2D
 		int rootIndex()const;
 	private:
 		void extract(int targetIndex);
-		void merge(int targetIndex);
+		int merge(int sourceIndex, int targetIndex);
 		void balance(int targetIndex);
-		void updateNodeIndex(int targetIndex);
+		void separate(int sourceIndex, int parentIndex);
+		void join(int nodeIndex, int boxIndex);
+		void remove(int targetIndex);
+		void elevate(int targetIndex);
+		void updateNodeIndex(int newIndex);
+		real totalCost(int nodeIndex, int leafIndex);
+		real deltaCost(int nodeIndex, int boxIndex);
 		int allocateNode();
 		int height(int targetIndex);
 
@@ -43,6 +49,7 @@ namespace Physics2D
 		std::vector<int> m_emptyList;
 		std::map<Body*, int> m_bodyTable;
 	};
+
 }
 
 #endif
