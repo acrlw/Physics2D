@@ -276,7 +276,6 @@ namespace Physics2D
 			pos /= area;
 			return pos;
 		}
-		else
 			return Vector2();
 	}
 
@@ -525,13 +524,23 @@ namespace Physics2D
 				
 				//clamp theta to sector area
 				
-				result = Matrix2x2(Math::clamp(originTheta, clampStart, clampEnd)).multiply(Vector2{ 1, 0 }) * radius;
+				result = Matrix2x2(Math::clamp(theta, clampStart, clampEnd)).multiply(Vector2{ 1, 0 }) * radius;
 			}
 		}
-		else if(originStart < originEnd && Math::isInRange(originTheta, originStart, originEnd))
+		if(originStart < originEnd)
+		{
+			if (Math::isInRange(originTheta, originStart, originEnd))
+			{
+				//clamp theta to sector area
 				result = Matrix2x2(Math::clamp(theta, clampStart, clampEnd)).multiply(Vector2{ 1, 0 }) * radius;
-			
-		
+			}
+		}
+		//special case for half circle
+		if(fuzzyRealEqual(originStart, originEnd))
+		{
+			if(clampStart < clampEnd)
+				result = Matrix2x2(Math::clamp(theta, clampStart, clampEnd)).multiply(Vector2{ 1, 0 }) * radius;
+		}
 		return result;
 	}
 

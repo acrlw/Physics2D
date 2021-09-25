@@ -47,11 +47,13 @@ namespace Physics2D
 	{
 		for (const Vector2& vertex : vertices)
 			m_vertices.emplace_back(vertex);
+		updateVertices();
 	}
 
 	void Polygon::append(const Vector2& vertex)
 	{
 		m_vertices.emplace_back(vertex);
+		updateVertices();
 	}
 
 	Vector2 Polygon::center()const
@@ -76,6 +78,13 @@ namespace Physics2D
 				return false;
 		}
 		return true;
+	}
+
+	void Polygon::updateVertices()
+	{
+		Vector2 center = this->center();
+		for(auto& elem: m_vertices)
+			elem -= center;
 	}
 
 	Rectangle::Rectangle(const real& width, const real& height)
