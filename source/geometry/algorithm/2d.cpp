@@ -498,17 +498,40 @@ namespace Physics2D
 		const real& radius, const Vector2& direction)
 	{
 		Vector2 result;
-		real originTheta = direction.theta();
-		real theta = originTheta < 0 ? Constant::DoublePi + originTheta : originTheta;
-		if(!Math::isInRange(theta, Constant::HalfPi + startRadian + spanRadian, Constant::DoublePi - (startRadian - Constant::HalfPi)))
+		auto clampRadian = [](const real& radian)
 		{
-			if (Math::isInRange(originTheta, startRadian - Constant::HalfPi, startRadian))
-				result = Matrix2x2(startRadian).multiply(Vector2{ 1, 0 }) * radius;
-			else if (Math::isInRange(originTheta, startRadian + spanRadian, Constant::HalfPi + startRadian + spanRadian))
-				result = Matrix2x2(startRadian + spanRadian).multiply(Vector2{ 1, 0 }) * radius;
-			else
-				result = Matrix2x2(Math::clamp(theta, startRadian - Constant::HalfPi, startRadian + spanRadian)).multiply(Vector2{ 1, 0 }) * radius;
+			real result = radian;
+			result -= std::floor(result / Constant::DoublePi) * Constant::DoublePi;
+			if (result < 0)
+				result += Constant::DoublePi;
+			return result;
+		};
+
+		const real clampStart = clampRadian(startRadian);
+		const real clampEnd = clampRadian(startRadian + spanRadian);
+		const real originStart = clampRadian(startRadian - Constant::HalfPi);
+		const real originEnd = clampRadian(startRadian + spanRadian + Constant::HalfPi);
+		
+		const real originTheta = direction.theta();
+		real theta = clampRadian(originTheta);
+
+		if(originStart > originEnd)
+		{
+			//does not fall in zero area
+			if (!Math::isInRange(theta, originEnd, originStart))
+			{
+				if(theta > originStart)
+					theta = originTheta;
+				
+				//clamp theta to sector area
+				
+				result = Matrix2x2(Math::clamp(originTheta, clampStart, clampEnd)).multiply(Vector2{ 1, 0 }) * radius;
+			}
 		}
+		else if(originStart < originEnd && Math::isInRange(originTheta, originStart, originEnd))
+				result = Matrix2x2(Math::clamp(theta, clampStart, clampEnd)).multiply(Vector2{ 1, 0 }) * radius;
+			
+		
 		return result;
 	}
 
