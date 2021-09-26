@@ -31,6 +31,7 @@ namespace Physics2D
 		const std::vector<Node>& tree();
 		int rootIndex()const;
 	private:
+		void traverseLowestCost(int nodeIndex, int boxIndex, real& cost, int& finalIndex);
 		void raycast(std::vector<Body*>& result, int nodeIndex, const Vector2& p, const Vector2& d);
 		void generate(int nodeIndex, std::vector<std::pair<Body*, Body*>>& pairs);
 		void generate(int leftIndex, int rightIndex, std::vector<std::pair<Body*, Body*>>& pairs);

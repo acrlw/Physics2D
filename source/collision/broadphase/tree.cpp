@@ -115,6 +115,46 @@ namespace Physics2D
 		return m_rootIndex;
 	}
 
+	void Tree::traverseLowestCost(int nodeIndex, int boxIndex, real& cost, int& finalIndex)
+	{
+		if (m_tree[boxIndex].isLeaf())
+		{
+			finalIndex = boxIndex;
+			return;
+		}
+
+		if (boxIndex == m_rootIndex)
+		{
+			finalIndex = -1;
+			cost = deltaCost(nodeIndex, boxIndex);
+		}
+
+		auto accumulateCost = [&](int nodeIndex, int boxIndex)
+		{
+			if (m_tree[nodeIndex].isLeaf())
+				return cost + AABB::unite(m_tree[nodeIndex].aabb, m_tree[boxIndex].aabb).surfaceArea();
+			return deltaCost(nodeIndex, boxIndex);
+		};
+
+		int leftIndex = m_tree[boxIndex].leftIndex;
+		int rightIndex = m_tree[boxIndex].rightIndex;
+		real leftCost = accumulateCost(nodeIndex, leftIndex);
+		real rightCost = accumulateCost(nodeIndex, rightIndex);
+		real lowestCost;
+		int lowestCostIndex;
+		if(leftCost > rightCost)
+		{
+			lowestCost = rightCost;
+			lowestCostIndex = rightIndex;
+		}
+		else
+		{
+			lowestCost = leftCost;
+			lowestCostIndex = leftIndex;
+		}
+		traverseLowestCost(nodeIndex, lowestCostIndex, lowestCost, finalIndex);
+	}
+
 	void Tree::raycast(std::vector<Body*>& result, int nodeIndex, const Vector2& p, const Vector2& d)
 	{
 		if (nodeIndex < 0)
@@ -356,17 +396,8 @@ namespace Physics2D
 	{
 		real lowestCost = Constant::Max;
 		int targetIndex = -1;
-		for(auto& [body, leafIndex]: m_bodyTable)
-		{
-			if(leafIndex == nodeIndex)
-				continue;
-			real cost = totalCost(nodeIndex, leafIndex);
-			if(lowestCost > cost)
-			{
-				lowestCost = cost;
-				targetIndex = leafIndex;
-			}
-		}
+		//start traverse lowest cost node
+		traverseLowestCost(nodeIndex, m_rootIndex, lowestCost, targetIndex);
 		return targetIndex;
 	}
 	real Tree::totalCost(int nodeIndex, int leafIndex)

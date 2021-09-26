@@ -60,7 +60,7 @@ namespace Physics2D
 		//createBoxesAndGround(8);
 		//testPendulum();
 		//testCollision();
-		testJoint();
+		//testJoint();
 		//testBroadphase();
 		//testCCD();
 		//testCapsule();
@@ -100,10 +100,10 @@ namespace Physics2D
 
 		tree.insert(ground);
 
-		for(real i = 0;i < 3;i++)
+		for(real i = 0;i < 6;i++)
 		{
 			rect = m_world.createBody();
-			rect->setShape(rectangle_ptr);
+			rect->setShape(capsule_ptr);
 			rect->position().set({ -5 + 2 * i, 5 + i * 2 });
 			rect->rotation() = 0;
 			rect->setMass(200);
