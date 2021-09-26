@@ -26,6 +26,7 @@ cmake CMakeLists.txt
       - Line
       - Point
       - Capsule
+      - Sector
     - Continuous Collision Detection
       - Sampling Trajectory of Body
       - Time of Impact
