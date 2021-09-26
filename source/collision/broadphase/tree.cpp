@@ -1,265 +1,410 @@
 #include "include/collision/broadphase/tree.h"
+
+#include "include/dynamics/body.h"
+
 namespace Physics2D
 {
-	Tree::Node::Node(int i):index(i)
+	bool Tree::Node::isLeaf() const
 	{
-		left = 2 * i + 1;
-		right = 2 * i + 2;
-		parent = (i - 1) / 2;
+		return leftIndex == -1 && rightIndex == -1;
 	}
+
+	bool Tree::Node::isBranch() const
+	{
+		return parentIndex != -1 && leftIndex != -1 && rightIndex != -1;
+	}
+
+	bool Tree::Node::isRoot() const
+	{
+		return parentIndex == -1 && leftIndex != -1 && rightIndex != -1;
+	}
+
 	bool Tree::Node::isEmpty() const
 	{
-		return pair.aabb.isEmpty();
+		return aabb.isEmpty();
 	}
+
 	void Tree::Node::clear()
 	{
-		pair.clear();
+		body = nullptr;
+		aabb.clear();
+		parentIndex = -1;
+		leftIndex = -1;
+		rightIndex = -1;
 	}
+
+	Tree::Tree()
+	{
+		m_tree.reserve(10);
+	}
+
+	std::vector<Body*> Tree::raycast(const Vector2& point, const Vector2& direction)
+	{
+		std::vector<Body*> result;
+		raycast(result, m_rootIndex, point, direction);
+		return result;
+	}
+
+	std::vector<std::pair<Body*, Body*>> Tree::generate()
+	{
+		std::vector<std::pair<Body*, Body*>> pairs;
+		generate(m_rootIndex, pairs);
+		return pairs;
+	}
+	
+
 	void Tree::insert(Body* body)
 	{
-		assert(body != nullptr);
-		
-		if(std::find_if(m_tree.begin(), m_tree.end(), [body](const Node& node)
-			{
-				return node.pair.body == body;
-			}) != m_tree.end())
+		int newNodeIndex = allocateNode();
+		m_tree[newNodeIndex].body = body;
+		m_tree[newNodeIndex].aabb = AABB::fromBody(body);
+		m_tree[newNodeIndex].aabb.expand(0.1);
+		m_bodyTable[body] = newNodeIndex;
+		if(m_rootIndex == -1)
+		{
+			m_rootIndex = newNodeIndex;
 			return;
-
-		Pair pair;
-		AABB aabb = AABB::fromBody(body);
-		aabb.expand(m_leafFactor);
-		pair.body = body;
-		pair.aabb = aabb;
-		
-		
-		auto getCost = [&](const AABB& aabb)
+		}
+		if(m_tree[m_rootIndex].isLeaf())
 		{
-			int targetIndex = -1;
-			real minimumCost = Constant::Max;
-			for(auto&[body, leafIndex]: m_leaves)
-			{
-				real cost = totalCost(leafIndex, aabb);
-				if(minimumCost > cost)
-				{
-					targetIndex = leafIndex;
-					minimumCost = cost;
-				}
-			}
-			return targetIndex;
-		};
-
-		
-		if(m_leaves.empty())
-		{
-			expand(1);
-			m_tree[0].pair = pair;
-			m_tree[0].parent = -1;
-			m_leaves[body] = 0;
+			m_rootIndex = merge(newNodeIndex, m_rootIndex);
 			return;
 		}
 
-		if(m_leaves.size() == 1)
-		{
-			expand(1);
-			merge(0, pair);
-			return;
-		}
-		//get target leaf node
-		const int targetIndex = getCost(pair.aabb);
-		if (2 * targetIndex + 2 >= m_tree.size())
-			expand(1);
+		//calc cost
+		int targetIndex = calculateLowestCostNode(newNodeIndex);
+		int targetParentIndex = m_tree[targetIndex].parentIndex;
+		separate(targetIndex, targetParentIndex);
+		int boxIndex = merge(newNodeIndex, targetIndex);
+		join(boxIndex, targetParentIndex);
+		upgrade(boxIndex);
+		balance(m_rootIndex);
 
-		merge(targetIndex, pair);
-		//m_leaves[body] = m_tree[targetIndex].right;
-		
-		for (auto& [body, index] : m_leaves)
-			update(index);
-		
 	}
-
-	void Tree::erase(Body* body)
+	void Tree::remove(Body* body)
 	{
-		if (body == nullptr)
+		auto iter = m_bodyTable.find(body);
+		if (iter == m_bodyTable.end())
 			return;
-
-		Node& target = m_tree[m_leaves[body]];
-		Node& parent = m_tree[target.parent];
-		Node& child = target.index == parent.left ? m_tree[parent.right] : m_tree[parent.left];
-		
-		m_leaves.erase(target.pair.body);
-		target.clear();
-		parent.pair = child.pair;
-		child.clear();
-		m_leaves[parent.pair.body] = parent.index;
-	}
-	void Tree::update(int targetIndex)
-	{
-		if (targetIndex > m_tree.size())
-			return;
-
-		Node& target = m_tree[targetIndex];
-		if (target.right >= m_tree.size())
-			return;
-		Node& left = m_tree[target.left];
-		Node& right = m_tree[target.right];
-		if (!left.isEmpty() && !right.isEmpty())
-			target.pair.aabb = AABB::unite(left.pair.aabb, right.pair.aabb);
-
-		update(target.parent);
+		remove(iter->second);
+		m_bodyTable.erase(iter);
 	}
 
 	void Tree::update(Body* body)
 	{
-		assert(body != nullptr);
-		auto iter = m_leaves.find(body);
-		if (iter == m_leaves.end())
+		auto iter = m_bodyTable.find(body);
+		if (iter == m_bodyTable.end())
 			return;
-		
+
 		AABB thin = AABB::fromBody(body);
-		thin.expand(0.2);
-		if (!thin.isSubset(m_tree[iter->second].pair.aabb))
+		thin.expand(0.1);
+		if (!thin.isSubset(m_tree[iter->second].aabb))
 		{
-			erase(body);
+			extract(iter->second);
 			insert(body);
 		}
 	}
 
-	std::vector<Tree::Node> Tree::tree()
+	const std::vector<Tree::Node>& Tree::tree()
 	{
 		return m_tree;
 	}
 
-	void Tree::balance(int targetIndex)
+	int Tree::rootIndex()const
 	{
-		
+		return m_rootIndex;
 	}
-	int Tree::level()
+
+	void Tree::raycast(std::vector<Body*>& result, int nodeIndex, const Vector2& p, const Vector2& d)
 	{
-		if (m_tree.empty())
-			return 0;
-		return static_cast<int>(std::floor(log2(m_tree.size()))) + 1;
-	}
-	int Tree::height(int index)
-	{
-		return index >= m_tree.size() || m_tree[index].isEmpty() ? 0 : Math::max(height(m_tree[index].left), height(m_tree[index].right) + 1);
-	}
-	void Tree::expand(int levels)
-	{
-		if(m_tree.empty())
+		if (nodeIndex < 0)
+			return;
+
+		if(m_tree[nodeIndex].aabb.raycast(p, d))
 		{
-			m_tree.emplace_back(Node(0));
+			if (m_tree[nodeIndex].isLeaf())
+				result.emplace_back(m_tree[nodeIndex].body);
+			else
+			{
+				raycast(result, m_tree[nodeIndex].leftIndex, p, d);
+				raycast(result, m_tree[nodeIndex].rightIndex, p, d);
+			}
+		}
+	}
+
+	void Tree::generate(int nodeIndex, std::vector<std::pair<Body*, Body*>>& pairs)
+	{
+		if (nodeIndex < 0 || m_tree[nodeIndex].isLeaf())
+			return;
+
+		int leftIndex = m_tree[nodeIndex].leftIndex;
+		int rightIndex = m_tree[nodeIndex].rightIndex;
+		bool result = m_tree[leftIndex].aabb.collide(m_tree[rightIndex].aabb);
+		
+		if (result)
+			generate(leftIndex, rightIndex, pairs);
+
+		generate(leftIndex, pairs);
+		generate(rightIndex, pairs);
+	}
+
+	void Tree::generate(int leftIndex, int rightIndex, std::vector<std::pair<Body*, Body*>>& pairs)
+	{
+		if (leftIndex < 0 || rightIndex < 0)
+			return;
+
+		bool result = m_tree[leftIndex].aabb.collide(m_tree[rightIndex].aabb) || m_tree[leftIndex].aabb.isSubset(m_tree[rightIndex].aabb);
+		
+
+		if (!result)
+			return;
+
+		if (m_tree[leftIndex].isLeaf() && m_tree[rightIndex].isLeaf())
+		{
+			std::pair pair = { m_tree[leftIndex].body, m_tree[rightIndex].body };
+			pairs.emplace_back(pair);
+		}
+		if (m_tree[leftIndex].isLeaf() && m_tree[rightIndex].isBranch())
+		{
+			generate(leftIndex, m_tree[rightIndex].leftIndex, pairs);
+			generate(leftIndex, m_tree[rightIndex].rightIndex, pairs);
+		}
+		if (m_tree[rightIndex].isLeaf() && m_tree[leftIndex].isBranch())
+		{
+			generate(rightIndex, m_tree[leftIndex].leftIndex, pairs);
+			generate(rightIndex, m_tree[leftIndex].rightIndex, pairs);
+		}
+		if (m_tree[leftIndex].isBranch() && m_tree[rightIndex].isBranch())
+		{
+			generate(m_tree[leftIndex].leftIndex, rightIndex, pairs);
+			generate(m_tree[leftIndex].rightIndex, rightIndex, pairs);
+		}
+	}
+
+	void Tree::extract(int targetIndex)
+	{
+		if(targetIndex == m_rootIndex)
+		{
+			m_rootIndex = -1;
+			m_bodyTable[m_tree[targetIndex].body] = -1;
+			remove(targetIndex);
 			return;
 		}
-		int targetLevel = level() + 1;
-		int start = m_tree.size();
-		for(int i = 0;i < pow(2, targetLevel - 1);i++)
-			m_tree.emplace_back(Node(start + i));
+		if(m_tree[targetIndex].parentIndex == m_rootIndex)
+		{
+			int anotherChildIndex = m_tree[m_rootIndex].leftIndex == targetIndex ? m_tree[m_rootIndex].rightIndex : m_tree[m_rootIndex].leftIndex;
+			separate(targetIndex, m_rootIndex);
+			elevate(anotherChildIndex);
+			m_bodyTable[m_tree[targetIndex].body] = -1;
+			remove(targetIndex);
+			return;
+		}
+		int parentIndex = m_tree[targetIndex].parentIndex;
+		int anotherChildIndex = m_tree[parentIndex].leftIndex == targetIndex ? m_tree[parentIndex].rightIndex : m_tree[parentIndex].leftIndex;
+		separate(targetIndex, parentIndex);
+		elevate(anotherChildIndex);
+		m_bodyTable[m_tree[targetIndex].body] = -1;
+		remove(targetIndex);
 	}
 
+	int Tree::merge(int nodeIndex, int leafIndex)
+	{
+		int parentIndex = allocateNode();
+		m_tree[leafIndex].parentIndex = parentIndex;
+		m_tree[nodeIndex].parentIndex = parentIndex;
+		m_tree[parentIndex].leftIndex = leafIndex;
+		m_tree[parentIndex].rightIndex = nodeIndex;
+		m_tree[parentIndex].aabb = AABB::unite(m_tree[nodeIndex].aabb, m_tree[leafIndex].aabb);
+		return parentIndex;
+
+	}
+
+	void Tree::rr(int nodeIndex)
+	{
+		if (nodeIndex == -1 || m_tree[nodeIndex].isRoot())
+			return;
+
+		if (m_tree[nodeIndex].parentIndex == m_rootIndex)
+		{
+			int parentIndex = m_tree[nodeIndex].parentIndex;
+			int leftIndex = m_tree[nodeIndex].leftIndex;
+			separate(nodeIndex, parentIndex);
+			separate(leftIndex, nodeIndex);
+			join(leftIndex, parentIndex);
+			join(parentIndex, nodeIndex);
+			m_rootIndex = nodeIndex;
+			upgrade(parentIndex);
+			return;
+		}
+		int parentIndex = m_tree[nodeIndex].parentIndex;
+		int grandIndex = m_tree[parentIndex].parentIndex;
+		int leftIndex = m_tree[nodeIndex].leftIndex;
+		separate(parentIndex, grandIndex);
+		separate(nodeIndex, parentIndex);
+		separate(leftIndex, nodeIndex);
+		join(leftIndex, parentIndex);
+		join(parentIndex, nodeIndex);
+		join(nodeIndex, grandIndex);
+		upgrade(parentIndex);
+	}
+
+	void Tree::ll(int nodeIndex)
+	{
+		if (nodeIndex == -1 || m_tree[nodeIndex].isRoot())
+			return;
+
+		if (m_tree[nodeIndex].parentIndex == m_rootIndex)
+		{
+			int parentIndex = m_tree[nodeIndex].parentIndex;
+			int rightIndex = m_tree[nodeIndex].rightIndex;
+			separate(nodeIndex, parentIndex);
+			separate(rightIndex, nodeIndex);
+			join(rightIndex, parentIndex);
+			join(parentIndex, nodeIndex);
+			m_rootIndex = nodeIndex;
+			upgrade(parentIndex);
+			return;
+		}
+		int parentIndex = m_tree[nodeIndex].parentIndex;
+		int grandIndex = m_tree[parentIndex].parentIndex;
+		int rightIndex = m_tree[nodeIndex].rightIndex;
+		separate(parentIndex, grandIndex);
+		separate(nodeIndex, parentIndex);
+		separate(rightIndex, nodeIndex);
+		join(rightIndex, parentIndex);
+		join(parentIndex, nodeIndex);
+		join(nodeIndex, grandIndex);
+		upgrade(parentIndex);
+	}
+
+	void Tree::balance(int targetIndex)
+	{
+		if (targetIndex == -1 || m_tree[targetIndex].isLeaf())
+			return;
+
+		const int leftHeight = height(m_tree[targetIndex].leftIndex);
+		const int rightHeight = height(m_tree[targetIndex].rightIndex);
+		if (std::abs(leftHeight - rightHeight) <= 1)
+			return;
+
+		if (leftHeight > rightHeight) //left unbalance
+		{
+			const int leftLeftHeight = height(m_tree[m_tree[targetIndex].leftIndex].leftIndex);
+			const int leftRightHeight = height(m_tree[m_tree[targetIndex].leftIndex].rightIndex);
+			if (leftLeftHeight < leftRightHeight) //LR case
+				rr(m_tree[m_tree[targetIndex].leftIndex].rightIndex);
+			else
+				ll(m_tree[m_tree[targetIndex].leftIndex].leftIndex);
+			ll(m_tree[targetIndex].leftIndex);
+		}
+		else //right unbalance
+		{
+			const int rightRightHeight = height(m_tree[m_tree[targetIndex].rightIndex].rightIndex);
+			const int rightLeftHeight = height(m_tree[m_tree[targetIndex].rightIndex].leftIndex);
+			if (rightRightHeight < rightLeftHeight) //RL case
+				ll(m_tree[m_tree[targetIndex].rightIndex].leftIndex);
+			else
+				rr(m_tree[m_tree[targetIndex].rightIndex].rightIndex);
+			rr(m_tree[targetIndex].rightIndex);
+		}
+		balance(m_tree[targetIndex].leftIndex);
+		balance(m_tree[targetIndex].rightIndex);
+		balance(m_tree[targetIndex].parentIndex);
+	}
+
+	void Tree::separate(int sourceIndex, int parentIndex)
+	{
+		if (m_tree[parentIndex].leftIndex == sourceIndex)
+			m_tree[parentIndex].leftIndex = -1;
+		else if (m_tree[parentIndex].rightIndex == sourceIndex)
+			m_tree[parentIndex].rightIndex = -1;
+		m_tree[sourceIndex].parentIndex = -1;
+	}
+
+	void Tree::join(int nodeIndex, int boxIndex)
+	{
+		if (m_tree[boxIndex].leftIndex == -1)
+			m_tree[boxIndex].leftIndex = nodeIndex;
+		else if (m_tree[boxIndex].rightIndex == -1)
+			m_tree[boxIndex].rightIndex = nodeIndex;
+		m_tree[nodeIndex].parentIndex = boxIndex;
+	}
+
+	void Tree::remove(int targetIndex)
+	{
+		m_tree[targetIndex].clear();
+		m_emptyList.emplace_back(targetIndex);
+	}
+
+	void Tree::elevate(int targetIndex)
+	{
+		if(m_tree[targetIndex].parentIndex == m_rootIndex)
+		{
+			remove(m_rootIndex);
+			m_rootIndex = targetIndex;
+			m_tree[targetIndex].parentIndex = -1;
+			return;
+		}
+		int parentIndex = m_tree[targetIndex].parentIndex;
+		int grandIndex = m_tree[parentIndex].parentIndex;
+		separate(targetIndex, parentIndex);
+		separate(parentIndex, grandIndex);
+		join(targetIndex, grandIndex);
+		remove(parentIndex);
+	}
+	int Tree::calculateLowestCostNode(int nodeIndex)
+	{
+		real lowestCost = Constant::Max;
+		int targetIndex = -1;
+		for(auto& [body, leafIndex]: m_bodyTable)
+		{
+			if(leafIndex == nodeIndex)
+				continue;
+			real cost = totalCost(nodeIndex, leafIndex);
+			if(lowestCost > cost)
+			{
+				lowestCost = cost;
+				targetIndex = leafIndex;
+			}
+		}
+		return targetIndex;
+	}
+	real Tree::totalCost(int nodeIndex, int leafIndex)
+	{
+		real totalCost = AABB::unite(m_tree[nodeIndex].aabb, m_tree[leafIndex].aabb).surfaceArea();
+		int currentIndex = m_tree[leafIndex].parentIndex;
+		while(currentIndex != -1)
+		{
+			totalCost += deltaCost(nodeIndex, currentIndex);
+			currentIndex = m_tree[currentIndex].parentIndex;
+		}
+		return totalCost;
+	}
+	void Tree::upgrade(int nodeIndex)
+	{
+		if (nodeIndex < 0 || m_tree[nodeIndex].isLeaf())
+			return;
+		m_tree[nodeIndex].aabb = AABB::unite(m_tree[m_tree[nodeIndex].leftIndex].aabb, m_tree[m_tree[nodeIndex].rightIndex].aabb);
+		upgrade(m_tree[nodeIndex].parentIndex);
+	}
+	real Tree::deltaCost(int nodeIndex, int boxIndex)
+	{
+		return AABB::unite(m_tree[boxIndex].aabb, m_tree[nodeIndex].aabb).surfaceArea() - m_tree[boxIndex].aabb.surfaceArea();
+	}
 	int Tree::allocateNode()
 	{
-		if (!m_tree[m_tree.size() - 1].isEmpty())
-			expand(1);
-
-		for (auto& node : m_tree)
-			if (node.isEmpty())
-				return node.index;
-	}
-
-	bool Tree::isLeaf(int targetIndex)const
-	{
-		assert(targetIndex < m_tree.size());
-		const Node& target = m_tree[targetIndex];
-		if (target.left > m_tree.size() || target.right > m_tree.size())
-			return true;
-		return m_tree[target.left].isEmpty() && m_tree[target.right].isEmpty();
-	}
-
-	bool Tree::isBranch(int targetIndex)const
-	{
-		return !isLeaf(targetIndex);
-	}
-
-	bool Tree::isRoot(int targetIndex)const
-	{
-		assert(targetIndex < m_tree.size());
-		const Node& target = m_tree[targetIndex];
-		return m_tree[target.parent].isEmpty();
-	}
-
-	Tree::Node Tree::separate(int targetIndex, int sourceIndex)
-	{
-		assert(targetIndex < m_tree.size() && sourceIndex < m_tree.size());
-		
-		int child = -1;
-		
-		if (m_tree[targetIndex].left == sourceIndex)
-			child = m_tree[targetIndex].right;
-		else if (m_tree[targetIndex].right == sourceIndex)
-			child = m_tree[targetIndex].left;
-		else
-			return Node();
-
-		Node result = m_tree[sourceIndex];
-		result.parent = -1;
-		m_tree[sourceIndex].clear();
-
-		Node& target = m_tree[targetIndex];
-		target.pair = m_tree[child].pair;
-		m_tree[child].clear();
-
-		return result;
-	}
-
-	void Tree::merge(int targetIndex, const Pair& pair)
-	{
-		assert(targetIndex < m_tree.size());
-		//make it parent node
-		Node& targetNode = m_tree[targetIndex];
-		Node& leftChild = m_tree[targetNode.left];
-		Node& rightChild = m_tree[targetNode.right];
-
-		leftChild.pair = targetNode.pair;
-		rightChild.pair = pair;
-
-		targetNode.pair.body = nullptr;
-		targetNode.pair.aabb = AABB::unite(leftChild.pair.aabb, rightChild.pair.aabb);
-
-		if(leftChild.pair.body != nullptr)
-			m_leaves[leftChild.pair.body] = leftChild.index;
-
-		if (rightChild.pair.body != nullptr)
-			m_leaves[rightChild.pair.body] = rightChild.index;
-		
-
-		
-	}
-	real Tree::deltaCost(int nodeIndex, const AABB& aabb) const
-	{
-		assert(nodeIndex < m_tree.size());
-		if (nodeIndex < 0)
-			return 0;
-		
-		if (isLeaf(nodeIndex))
-			return AABB::unite(m_tree[nodeIndex].pair.aabb, aabb).surfaceArea();
-
-		return AABB::unite(m_tree[nodeIndex].pair.aabb, aabb).surfaceArea() - m_tree[nodeIndex].pair.aabb.surfaceArea();
-	}
-	real Tree::totalCost(int nodeIndex, const AABB& aabb) const
-	{
-		assert(nodeIndex < m_tree.size());
-		real cost = 0;
-		if (nodeIndex < 0)
-			return cost;
-
-		cost += deltaCost(nodeIndex, aabb);
-		int parentIndex = m_tree[nodeIndex].parent;
-		while(true)
+		if(!m_emptyList.empty())
 		{
-			if (parentIndex == -1)
-				return cost;
-			cost += deltaCost(parentIndex, aabb);
-			parentIndex = m_tree[parentIndex].parent;
+			int targetIndex = m_emptyList.back();
+			m_emptyList.pop_back();
+			return targetIndex;
 		}
+		m_tree.emplace_back(Node{});
+		return m_tree.size() - 1;
+	}
+
+	int Tree::height(int targetIndex)
+	{
+		return targetIndex < 0 ? 0 : std::max(height(m_tree[targetIndex].leftIndex), height(m_tree[targetIndex].rightIndex)) + 1;
 	}
 }

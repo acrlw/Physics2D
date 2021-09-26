@@ -151,10 +151,8 @@ namespace Physics2D
 		ccp.friction = Math::sqrt(ccp.bodyA->friction() * ccp.bodyB->friction());
 
 		VelocityConstraintPoint& vcp = ccp.vcp;
-		Vector2 mc_a = collision.bodyA->toActualPoint(collision.bodyA->shape()->center());
-		Vector2 mc_b = collision.bodyB->toActualPoint(collision.bodyB->shape()->center());
-		vcp.ra = pair.pointA - (collision.bodyA->position() + mc_a);
-		vcp.rb = pair.pointB - (collision.bodyB->position() + mc_b);
+		vcp.ra = pair.pointA - collision.bodyA->position();
+		vcp.rb = pair.pointB - collision.bodyB->position();
 
 		vcp.normal = collision.normal;
 		vcp.tangent = vcp.normal.perpendicular();

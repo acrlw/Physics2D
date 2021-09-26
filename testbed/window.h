@@ -17,7 +17,6 @@
 #include <include/collision/algorithm/sat.h>
 #include <include/collision/broadphase/dbvh.h>
 
-#include "include/collision/broadphase/dbvt.h"
 #include "include/collision/broadphase/tree.h"
 #include "include/utils/camera.h"
 #include "include/collision/continuous/ccd.h"
@@ -46,7 +45,7 @@ namespace Physics2D
 		void wheelEvent(QWheelEvent* event)override;
 	
 	private:
-		void testDbvt();
+		void testTree();
 		void createBoxRoom();
 		void createBoxesAndGround(const real& count = 10);
 		void createStackBox(const uint16_t& row, const real& margin, const real& spacing);
@@ -125,7 +124,6 @@ namespace Physics2D
 		Body* selectedBody = nullptr;
 
 		Tree tree;
-		DBVT dbvt;
 		real roomSize = 10;
 
 		ContactMaintainer contactMaintainer;

@@ -14,7 +14,7 @@ namespace Physics2D
 		this->resize(1920, 1080);
 		this->setMouseTracking(true);
 
-		rectangle.set(1, 1);
+		rectangle.set(1.5, 1.5);
 		land.set(32, 0.2);
 		//polygon.append({{3, 0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3}, {2, -3}, {3, 0}});
 		polygon.append({ {-2, 0}, {0, 4}, {4, 6}, {10, 4}, {4, -2}, {-2, 0} });
@@ -60,24 +60,22 @@ namespace Physics2D
 		//createBoxesAndGround(8);
 		//testPendulum();
 		//testCollision();
-		//testJoint();
+		testJoint();
 		//testBroadphase();
 		//testCCD();
 		//testCapsule();
 		//testRaycast();
-		testDbvt();
+		//testTree();
 		
 		camera.setViewport(Utils::Camera::Viewport((0, 0), (1920, 1080)));
 		camera.setWorld(&m_world);
 		camera.setDbvh(&dbvh);
 		camera.setTree(&tree);
-		camera.setDbvt(&dbvt);
 		
 		camera.setAabbVisible(false);
 		camera.setDbvhVisible(false);
 		camera.setTreeVisible(false);
-		camera.setAxisVisible(true);
-		camera.setDbvtVisible(true);
+		camera.setAxisVisible(false);
 		connect(&m_timer, &QTimer::timeout, this, &Window::process);
 
 		
@@ -91,7 +89,7 @@ namespace Physics2D
 	{
 
 	}
-	void Window::testDbvt()
+	void Window::testTree()
 	{
 		ground = m_world.createBody();
 		ground->setShape(edge_ptr);
@@ -100,18 +98,18 @@ namespace Physics2D
 		ground->setType(Body::BodyType::Static);
 		ground->setFriction(0.7);
 
-		dbvt.insert(ground);
+		tree.insert(ground);
 
-		for(real i = 0;i < 4;i++)
+		for(real i = 0;i < 3;i++)
 		{
 			rect = m_world.createBody();
 			rect->setShape(rectangle_ptr);
 			rect->position().set({ -5 + 2 * i, 5 + i * 2 });
 			rect->rotation() = 0;
 			rect->setMass(200);
-			rect->setType(Body::BodyType::Static);
+			rect->setType(Body::BodyType::Dynamic);
 			rect->setFriction(0.1);
-			dbvt.insert(rect);
+			tree.insert(rect);
 		}
 
 
@@ -126,7 +124,7 @@ namespace Physics2D
 		ground->setMass(Constant::Max);
 		ground->setType(Body::BodyType::Static);
 		//camera.setMeterToPixel(120);
-		dbvh.insert(ground);
+		tree.insert(ground);
 
 		ground = m_world.createBody();
 		ground->setShape(verticalWall);
@@ -134,7 +132,7 @@ namespace Physics2D
 		ground->setMass(Constant::Max);
 		ground->setType(Body::BodyType::Static);
 		//camera.setMeterToPixel(120);
-		dbvh.insert(ground);
+		tree.insert(ground);
 
 		ground = m_world.createBody();
 		ground->setShape(verticalWall);
@@ -143,7 +141,7 @@ namespace Physics2D
 		ground->setType(Body::BodyType::Static);
 		camera.setTargetBody(ground);
 		//camera.setMeterToPixel(120);
-		dbvh.insert(ground);
+		tree.insert(ground);
 
 		ground = m_world.createBody();
 		ground->setShape(horizontalWall);
@@ -151,7 +149,7 @@ namespace Physics2D
 		ground->setMass(Constant::Max);
 		ground->setType(Body::BodyType::Static);
 		//camera.setMeterToPixel(120);
-		dbvh.insert(ground);
+		tree.insert(ground);
 	}
 	void Window::testBroadphase()
 	{
@@ -202,30 +200,22 @@ namespace Physics2D
 
 	void Window::testRaycast()
 	{
+		isStop = true;
 		for (real j = 0; j < 20; j++)
 		{
 			for (real i = 0; i < 20; i++)
 			{
 				Body* body = m_world.createBody();
-				body->position().set({ i * 0.1 - 8, j * 0.1 + 5 });
+				body->position().set({ i * 0.5 - 8, j * 0.5 + 5 });
 				body->setShape(rectangle_ptr);
 				body->rotation() = 0;
 				body->setMass(200);
 				body->setType(Body::BodyType::Static);
 				body->setFriction(0.8);
 				camera.setTargetBody(body);
-				dbvh.insert(body);
+				tree.insert(body);
 			}
 		}
-
-		ground = m_world.createBody();
-		ground->setShape(edge_ptr);
-		ground->position().set({0, -2.0});
-		ground->setMass(Constant::Max);
-		ground->setType(Body::BodyType::Static);
-		camera.setTargetBody(ground);
-		camera.setMeterToPixel(120);
-		dbvh.insert(ground);
 	}
 
 	void Window::testCapsule()
@@ -246,37 +236,37 @@ namespace Physics2D
 		if(isStop)
 		{
 			//for (auto& body : m_world.bodyList())
-			//	dbvh.update(body.get());
+			//	tree.update(body.get());
 			repaint();
 			return;
 		}
-		//for(int i = 0;i < 1;i++)
-		//{
+		for(int i = 0;i < 1;i++)
+		{
 
-		//	const real dt = 1.0 / 30.0;
-
-
-		//	m_world.stepVelocity(dt);
-
-		//	for (int i = 0; i < 1; i++)
-		//	{
-		//		auto potentialList = dbvh.generatePairs();
-		//		for (auto pair : potentialList)
-		//		{
-		//			auto result = Detector::detect(pair.first, pair.second);
-		//			if (result.isColliding)
-		//				contactMaintainer.add(result);
-		//		}
-
-		//		contactMaintainer.solve(dt);
-		//	}
+			const real dt = 1.0 / 30.0;
 
 
-		//	m_world.stepPosition(dt);
+			m_world.stepVelocity(dt);
 
-		//	for (auto& body : m_world.bodyList())
-		//		dbvh.update(body.get());
-		//}
+			for (int i = 0; i < 1; i++)
+			{
+				auto potentialList = tree.generate();
+				for (auto pair : potentialList)
+				{
+					auto result = Detector::detect(pair.first, pair.second);
+					if (result.isColliding)
+						contactMaintainer.add(result);
+				}
+
+				contactMaintainer.solve(dt);
+			}
+
+
+			m_world.stepPosition(dt);
+
+			for (auto& body : m_world.bodyList())
+				tree.update(body.get());
+		}
 		
 
 		
@@ -336,9 +326,9 @@ namespace Physics2D
 		//m_world.createJoint(pointPrim);
 		
 
-		dbvh.insert(rect);
-		dbvh.insert(rect2);
-		dbvh.insert(ground);
+		tree.insert(rect);
+		tree.insert(rect2);
+		tree.insert(ground);
 		camera.setTargetBody(rect);
 
 		//rect->velocity() += {10, 0};
@@ -354,16 +344,16 @@ namespace Physics2D
 		ground->setType(Body::BodyType::Static);
 		ground->setFriction(0.7);
 
-		dbvh.insert(ground);
+		tree.insert(ground);
 		
 		rect = m_world.createBody();
-		rect->setShape(rectangle_ptr);
+		rect->setShape(capsule_ptr);
 		rect->position().set({-5, 6});
 		rect->rotation() = 0;
 		rect->setMass(200);
-		rect->setType(Body::BodyType::Static);
+		rect->setType(Body::BodyType::Dynamic);
 		rect->setFriction(0.1);
-		dbvh.insert(rect);
+		tree.insert(rect);
 
 		//rect2 = m_world.createBody();
 		//rect2->setShape(circle_ptr);
@@ -428,7 +418,7 @@ namespace Physics2D
 		//Vector2 direction = mousePos - Vector2(9, 9);
 		//direction.normalize();
 		//
-		//auto list = dbvh.raycast({ 9, 9 }, direction);
+		//auto list = tree.raycast({ 9, 9 }, direction);
 		//
 
 		//QPen pen3(Qt::red, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
@@ -612,35 +602,40 @@ namespace Physics2D
 		switch (event->key())
 		{
 		case Qt::Key_J:
-			{
-				camera.setJointVisible(!camera.jointVisible());
-				break;
-			}
+		{
+			camera.setJointVisible(!camera.jointVisible());
+			break;
+		}
 		case Qt::Key_B:
-			{
-				camera.setBodyVisible(!camera.bodyVisible());
-				break;
-			}
+		{
+			camera.setBodyVisible(!camera.bodyVisible());
+			break;
+		}
 		case Qt::Key_D:
-			{
-				camera.setDbvhVisible(!camera.dbvhVisible());
-				break;
-			}
+		{
+			camera.setDbvhVisible(!camera.dbvhVisible());
+			break;
+		}
 		case Qt::Key_A:
-			{
-				camera.setAabbVisible(!camera.aabbVisible());
-				break;
-			}
+		{
+			camera.setAabbVisible(!camera.aabbVisible());
+			break;
+		}
+		case Qt::Key_T:
+		{
+			camera.setTreeVisible(!camera.treeVisible());
+			break;
+		}
 		case Qt::Key_Space:
 		{
 			isStop = !isStop;
 			break;
 		}
 		case Qt::Key_R:
-			{
+		{
 			rect->rotation() -= Math::degreeToRadian(5);
 			break;
-			}
+		}
 		case Qt::Key_L:
 		{
 			if (camera.targetBody() != nullptr)
@@ -703,17 +698,17 @@ namespace Physics2D
 	{
 		for (real j = 0; j < count; j++)
 		{
-			for(real i = 0;i < 1; i++)
+			for(real i = 0;i < count; i++)
 			{
 				Body* body = m_world.createBody();
 				body->position().set({ i * 1 - 4, j * 1 + 1});
-				body->setShape(sector_ptr);
+				body->setShape(rectangle_ptr);
 				body->rotation() = 0;
 				body->setMass(200);
 				body->setType(Body::BodyType::Dynamic);
 				body->setFriction(0.8);
 				camera.setTargetBody(body);
-				dbvh.insert(body);
+				tree.insert(body);
 			}
 		}
 

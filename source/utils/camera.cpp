@@ -89,16 +89,16 @@ namespace Physics2D::Utils
 				RendererQtImpl::renderLine(painter, this, Vector2(-m_axisPointCount, 0), Vector2(m_axisPointCount, 0), pen);
 
 			}
-			if(m_aabbVisible)
+			if (m_aabbVisible)
 			{
 				QPen pen(Qt::cyan, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-				for(auto [body, node]: m_dbvh->leaves())
+				for (auto [body, node] : m_dbvh->leaves())
 					RendererQtImpl::renderAABB(painter, this, node->aabb, pen);
-				for(auto &elem: m_dbvt->tree())
-					if(elem.body != nullptr)
+				for (auto& elem : m_tree->tree())
+					if (elem.body != nullptr)
 						RendererQtImpl::renderAABB(painter, this, elem.aabb, pen);
-					
-				
+
+
 
 			}
 			if(m_dbvhVisible)
@@ -108,11 +108,7 @@ namespace Physics2D::Utils
 			}
 			if (m_treeVisible)
 			{
-				drawTree(painter);
-			}
-			if(m_dbvtVisible)
-			{
-				drawDbvt(m_dbvt->rootIndex(), painter);
+				drawTree(m_tree->rootIndex(), painter);
 			}
 		}
 	}
@@ -287,16 +283,6 @@ namespace Physics2D::Utils
 		m_treeVisible = visible;
 	}
 
-	bool Camera::dbvtVisible() const
-	{
-		return m_dbvtVisible;
-	}
-
-	void Camera::setDbvtVisible(bool visible)
-	{
-		m_dbvtVisible = visible;
-	}
-
 	real Camera::deltaTime() const
 	{
 		return m_deltaTime;
@@ -307,28 +293,18 @@ namespace Physics2D::Utils
 		m_deltaTime = deltaTime;
 	}
 
-	DBVT* Camera::dbvt() const
-	{
-		return m_dbvt;
-	}
-
-	void Camera::setDbvt(DBVT* dbvt)
-	{
-		m_dbvt = dbvt;
-	}
-
-	void Camera::drawDbvt(int nodeIndex, QPainter* painter)
+	void Camera::drawTree(int nodeIndex, QPainter* painter)
 	{
 		if (nodeIndex == -1)
 			return;
 
-		drawDbvt(m_dbvt->tree()[nodeIndex].leftIndex, painter);
-		drawDbvt(m_dbvt->tree()[nodeIndex].rightIndex, painter);
+		drawTree(m_tree->tree()[nodeIndex].leftIndex, painter);
+		drawTree(m_tree->tree()[nodeIndex].rightIndex, painter);
 
 		QPen pen(Qt::cyan, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		AABB aabb = m_dbvt->tree()[nodeIndex].aabb;
-		aabb.expand(0.5);
-		if (!m_dbvt->tree()[nodeIndex].isLeaf())
+		AABB aabb = m_tree->tree()[nodeIndex].aabb;
+		//aabb.expand(0.5);
+		if (!m_tree->tree()[nodeIndex].isLeaf())
 			RendererQtImpl::renderAABB(painter, this, aabb, pen);
 	}
 
@@ -344,21 +320,6 @@ namespace Physics2D::Utils
 		AABB aabb = node->aabb;
 		if (!node->isLeaf())
 			RendererQtImpl::renderAABB(painter, this, aabb, pen);
-	}
-	void Camera::drawTree(QPainter* painter)
-	{
-		if (m_tree == nullptr)
-			return;
-		QPen pen(Qt::cyan, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		for(auto& node: m_tree->tree())
-		{
-			if(!node.isEmpty())
-			{
-
-				RendererQtImpl::renderAABB(painter, this, node.pair.aabb, pen);
-			}
-			
-		}
 	}
 	real Camera::Viewport::width()
 	{

@@ -1,64 +1,62 @@
-#ifndef PHYSICS2D_BROADPHASE_TREE_H
-#define PHYSICS2D_BROADPHASE_TREE_H
+#ifndef PHYSICS2D_BROADPHASE_DBVT_H
+#define PHYSICS2D_BROADPHASE_DBVT_H
+
 #include "aabb.h"
 
 namespace Physics2D
 {
-	/// <summary>
-	/// Bounding Volume Tree
-	/// Using std::vector to store tree node and binary tree primitives.
-	///	Attention: This method does not support tree balance.
-	/// </summary>
-	struct Pair
-	{
-		Pair() {}
-		Pair(const AABB & aabb, Body * source = nullptr) : body(source), aabb(aabb) {}
-		Body* body = nullptr;
-		AABB aabb;
-		void clear()
-		{
-			body = nullptr;
-			aabb.clear();
-		}
-	};
 	class Tree
 	{
 	public:
 		struct Node
 		{
-			Node(){};
-			Node(int i);
-			Pair pair;
-			int index = -1;
-			int left = -1;
-			int right = -1;
-			int parent = -1;
+			Body* body = nullptr;
+			AABB aabb;
+			int parentIndex = -1;
+			int leftIndex = -1;
+			int rightIndex = -1;
+			bool isLeaf()const;
+			bool isBranch()const;
+			bool isRoot()const;
 			bool isEmpty()const;
 			void clear();
+			
 		};
+		Tree();
+		std::vector<Body*> raycast(const Vector2& point, const Vector2& direction);
+		std::vector<std::pair<Body*, Body*>> generate();
 		void insert(Body* body);
-		void erase(Body* body);
+		void remove(Body* body);
 		void update(Body* body);
-		std::vector<Node> tree();
+		const std::vector<Node>& tree();
+		int rootIndex()const;
 	private:
-		int level();
-		int height(int index);
+		void raycast(std::vector<Body*>& result, int nodeIndex, const Vector2& p, const Vector2& d);
+		void generate(int nodeIndex, std::vector<std::pair<Body*, Body*>>& pairs);
+		void generate(int leftIndex, int rightIndex, std::vector<std::pair<Body*, Body*>>& pairs);
+		void extract(int targetIndex);
+		int merge(int nodeIndex, int leafIndex);
+		void ll(int nodeIndex);
+		void rr(int nodeIndex);
 		void balance(int targetIndex);
-		void update(int targetIndex);
-		void expand(int levels = 1);
+		void separate(int sourceIndex, int parentIndex);
+		void join(int nodeIndex, int boxIndex);
+		void remove(int targetIndex);
+		void elevate(int targetIndex);
+		void upgrade(int nodeIndex);
+		int calculateLowestCostNode(int nodeIndex);
+		real totalCost(int nodeIndex, int leafIndex);
+		real deltaCost(int nodeIndex, int boxIndex);
 		int allocateNode();
-		bool isLeaf(int targetIndex)const;
-		bool isBranch(int targetIndex)const;
-		bool isRoot(int targetIndex)const;
-		Node separate(int targetIndex, int sourceIndex);
-		void merge(int targetIndex, const Pair& pair);
-		real deltaCost(int nodeIndex, const AABB& aabb)const;
-		real totalCost(int nodeIndex, const AABB& aabb)const;
-		
+		int height(int targetIndex);
+
+		int m_rootIndex = -1;
 		std::vector<Node> m_tree;
-		std::map<Body*, int> m_leaves;
-		real m_leafFactor = 0.4;
+		std::vector<int> m_emptyList;
+		std::map<Body*, int> m_bodyTable;
 	};
+
 	
 }
+
 #endif
