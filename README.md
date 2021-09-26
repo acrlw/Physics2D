@@ -26,14 +26,15 @@ cmake CMakeLists.txt
       - Line
       - Point
       - Capsule
+      - Sector
     - Continuous Collision Detection
       - Sampling Trajectory of Body
       - Time of Impact
   - Broadphase
     - Axis-Aligned Bounding Box
     - Dynamic Bounding Volume Tree
-      - Tree
-      - Array
+      - SAH
+      - Tree & Array
 - Contact Cache
 - Rigid Body Dynamics Simulation
 - Sequential Impulse Solver
