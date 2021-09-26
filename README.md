@@ -32,8 +32,8 @@ cmake CMakeLists.txt
   - Broadphase
     - Axis-Aligned Bounding Box
     - Dynamic Bounding Volume Tree
-      - Dynamic Tree
-      - Dynamic Array
+      - Tree
+      - Array
 - Contact Cache
 - Rigid Body Dynamics Simulation
 - Sequential Impulse Solver
