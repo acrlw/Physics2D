@@ -24,21 +24,27 @@ namespace Physics2D
 		};
 		DBVT();
 		std::vector<Body*> raycast(const Vector2& point, const Vector2& direction);
-		std::vector<std::pair<Body*, Body*>> generatePairs();
+		std::vector<std::pair<Body*, Body*>> generate();
 		void insert(Body* body);
 		void remove(Body* body);
-
+		void update(Body* body);
 		std::vector<Node>& tree();
 		int rootIndex()const;
 	private:
+		void raycast(std::vector<Body*>& result, int nodeIndex, const Vector2& p, const Vector2& d);
+		void generate(int nodeIndex, std::vector<std::pair<Body*, Body*>>& pairs);
+		void generate(int leftIndex, int rightIndex, std::vector<std::pair<Body*, Body*>>& pairs);
 		void extract(int targetIndex);
-		int merge(int sourceIndex, int targetIndex);
+		int merge(int nodeIndex, int leafIndex);
+		void ll(int nodeIndex);
+		void rr(int nodeIndex);
 		void balance(int targetIndex);
 		void separate(int sourceIndex, int parentIndex);
 		void join(int nodeIndex, int boxIndex);
 		void remove(int targetIndex);
 		void elevate(int targetIndex);
-		void updateNodeIndex(int newIndex);
+		void upgrade(int nodeIndex);
+		int calculateLowestCostNode(int nodeIndex);
 		real totalCost(int nodeIndex, int leafIndex);
 		real deltaCost(int nodeIndex, int boxIndex);
 		int allocateNode();
@@ -50,6 +56,7 @@ namespace Physics2D
 		std::map<Body*, int> m_bodyTable;
 	};
 
+	
 }
 
 #endif

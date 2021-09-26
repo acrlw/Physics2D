@@ -46,6 +46,7 @@ namespace Physics2D
 		void wheelEvent(QWheelEvent* event)override;
 	
 	private:
+		void testDbvt();
 		void createBoxRoom();
 		void createBoxesAndGround(const real& count = 10);
 		void createStackBox(const uint16_t& row, const real& margin, const real& spacing);

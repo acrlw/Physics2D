@@ -14,7 +14,7 @@ namespace Physics2D
 		this->resize(1920, 1080);
 		this->setMouseTracking(true);
 
-		rectangle.set(8, 0.5);
+		rectangle.set(1, 1);
 		land.set(32, 0.2);
 		//polygon.append({{3, 0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3}, {2, -3}, {3, 0}});
 		polygon.append({ {-2, 0}, {0, 4}, {4, 6}, {10, 4}, {4, -2}, {-2, 0} });
@@ -59,22 +59,25 @@ namespace Physics2D
 		//createBoxRoom();
 		//createBoxesAndGround(8);
 		//testPendulum();
-		testCollision();
+		//testCollision();
 		//testJoint();
 		//testBroadphase();
 		//testCCD();
 		//testCapsule();
 		//testRaycast();
+		testDbvt();
 		
 		camera.setViewport(Utils::Camera::Viewport((0, 0), (1920, 1080)));
 		camera.setWorld(&m_world);
 		camera.setDbvh(&dbvh);
 		camera.setTree(&tree);
+		camera.setDbvt(&dbvt);
 		
 		camera.setAabbVisible(false);
 		camera.setDbvhVisible(false);
 		camera.setTreeVisible(false);
-		camera.setAxisVisible(false);
+		camera.setAxisVisible(true);
+		camera.setDbvtVisible(true);
 		connect(&m_timer, &QTimer::timeout, this, &Window::process);
 
 		
@@ -86,6 +89,31 @@ namespace Physics2D
 
 	Window::~Window()
 	{
+
+	}
+	void Window::testDbvt()
+	{
+		ground = m_world.createBody();
+		ground->setShape(edge_ptr);
+		ground->position().set({ 0, 0 });
+		ground->setMass(Constant::Max);
+		ground->setType(Body::BodyType::Static);
+		ground->setFriction(0.7);
+
+		dbvt.insert(ground);
+
+		for(real i = 0;i < 4;i++)
+		{
+			rect = m_world.createBody();
+			rect->setShape(rectangle_ptr);
+			rect->position().set({ -5 + 2 * i, 5 + i * 2 });
+			rect->rotation() = 0;
+			rect->setMass(200);
+			rect->setType(Body::BodyType::Static);
+			rect->setFriction(0.1);
+			dbvt.insert(rect);
+		}
+
 
 	}
 	void Window::createBoxRoom()
@@ -217,38 +245,38 @@ namespace Physics2D
 	{
 		if(isStop)
 		{
-			for (auto& body : m_world.bodyList())
-				dbvh.update(body.get());
+			//for (auto& body : m_world.bodyList())
+			//	dbvh.update(body.get());
 			repaint();
 			return;
 		}
-		for(int i = 0;i < 1;i++)
-		{
+		//for(int i = 0;i < 1;i++)
+		//{
 
-			const real dt = 1.0 / 30.0;
-
-
-			m_world.stepVelocity(dt);
-
-			for (int i = 0; i < 1; i++)
-			{
-				auto potentialList = dbvh.generatePairs();
-				for (auto pair : potentialList)
-				{
-					auto result = Detector::detect(pair.first, pair.second);
-					if (result.isColliding)
-						contactMaintainer.add(result);
-				}
-
-				contactMaintainer.solve(dt);
-			}
+		//	const real dt = 1.0 / 30.0;
 
 
-			m_world.stepPosition(dt);
+		//	m_world.stepVelocity(dt);
 
-			for (auto& body : m_world.bodyList())
-				dbvh.update(body.get());
-		}
+		//	for (int i = 0; i < 1; i++)
+		//	{
+		//		auto potentialList = dbvh.generatePairs();
+		//		for (auto pair : potentialList)
+		//		{
+		//			auto result = Detector::detect(pair.first, pair.second);
+		//			if (result.isColliding)
+		//				contactMaintainer.add(result);
+		//		}
+
+		//		contactMaintainer.solve(dt);
+		//	}
+
+
+		//	m_world.stepPosition(dt);
+
+		//	for (auto& body : m_world.bodyList())
+		//		dbvh.update(body.get());
+		//}
 		
 
 		
@@ -329,11 +357,11 @@ namespace Physics2D
 		dbvh.insert(ground);
 		
 		rect = m_world.createBody();
-		rect->setShape(sector_ptr);
+		rect->setShape(rectangle_ptr);
 		rect->position().set({-5, 6});
 		rect->rotation() = 0;
 		rect->setMass(200);
-		rect->setType(Body::BodyType::Dynamic);
+		rect->setType(Body::BodyType::Static);
 		rect->setFriction(0.1);
 		dbvh.insert(rect);
 

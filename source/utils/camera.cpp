@@ -94,6 +94,12 @@ namespace Physics2D::Utils
 				QPen pen(Qt::cyan, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 				for(auto [body, node]: m_dbvh->leaves())
 					RendererQtImpl::renderAABB(painter, this, node->aabb, pen);
+				for(auto &elem: m_dbvt->tree())
+					if(elem.body != nullptr)
+						RendererQtImpl::renderAABB(painter, this, elem.aabb, pen);
+					
+				
+
 			}
 			if(m_dbvhVisible)
 			{

@@ -341,7 +341,6 @@ namespace Physics2D
 
 				node->right = parent;
 				right->parent = parent;
-				parent->left = right;
 
 				parent->parent = node;
 				m_root = node;
@@ -377,8 +376,7 @@ namespace Physics2D
 
 				node->left = parent;
 				left->parent = parent;
-
-				parent->right = left;
+				
 				parent->parent = node;
 
 				m_root = node;
