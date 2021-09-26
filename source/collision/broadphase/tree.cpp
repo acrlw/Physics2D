@@ -58,7 +58,7 @@ namespace Physics2D
 		int newNodeIndex = allocateNode();
 		m_tree[newNodeIndex].body = body;
 		m_tree[newNodeIndex].aabb = AABB::fromBody(body);
-		m_tree[newNodeIndex].aabb.expand(0.1);
+		m_tree[newNodeIndex].aabb.expand(m_fatExpansionFactor);
 		m_bodyTable[body] = newNodeIndex;
 		if(m_rootIndex == -1)
 		{

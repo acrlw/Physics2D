@@ -14,7 +14,7 @@ namespace Physics2D
 		this->resize(1920, 1080);
 		this->setMouseTracking(true);
 
-		rectangle.set(1.5, 1.5);
+		rectangle.set(0.5, 0.5);
 		land.set(32, 0.2);
 		//polygon.append({{3, 0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3}, {2, -3}, {3, 0}});
 		polygon.append({ {-2, 0}, {0, 4}, {4, 6}, {10, 4}, {4, -2}, {-2, 0} });
@@ -59,7 +59,7 @@ namespace Physics2D
 		//createBoxRoom();
 		//createBoxesAndGround(8);
 		//testPendulum();
-		//testCollision();
+		testCollision();
 		//testJoint();
 		//testBroadphase();
 		//testCCD();
@@ -235,8 +235,8 @@ namespace Physics2D
 	{
 		if(isStop)
 		{
-			//for (auto& body : m_world.bodyList())
-			//	tree.update(body.get());
+			for (auto& body : m_world.bodyList())
+				tree.update(body.get());
 			repaint();
 			return;
 		}

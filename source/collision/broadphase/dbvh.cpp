@@ -18,7 +18,7 @@ namespace Physics2D
 		return m_root;
 	}
 
-	std::vector<std::pair<Body*, Body*>> DBVH::generatePairs()
+	std::vector<std::pair<Body*, Body*>> DBVH::generate()
 	{
 		m_profile = 0;
 		std::vector<std::pair<Body*, Body*>> pairs;

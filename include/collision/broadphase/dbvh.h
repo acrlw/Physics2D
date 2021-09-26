@@ -33,7 +33,7 @@ namespace Physics2D
 			void erase(Body* body);
 			Node* root()const;
 			std::vector<Body*> raycast(const Vector2& start, const Vector2& direction);
-			std::vector<std::pair<Body*, Body*>> generatePairs();
+			std::vector<std::pair<Body*, Body*>> generate();
 			std::map<Body*, Node*>& leaves();
 			void query(const AABB& sourceAABB, std::vector<Node*>& nodes, Body* skipBody = nullptr)const;
 			static void queryNodes(Node* node, const AABB& sourceAABB, std::vector<Node*>& nodes, Body* skipBody = nullptr);
@@ -54,7 +54,7 @@ namespace Physics2D
 			std::map<Body*, Node*> m_leaves;
 			Node* m_root = nullptr;
 			real m_profile = 0;
-			real m_leafFactor = 0.1;
+			real m_leafFactor = 0.5;
 	};
 }
 #endif

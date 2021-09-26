@@ -5,6 +5,11 @@
 
 namespace Physics2D
 {
+
+	static std::random_device randomDevice;
+	static std::mt19937_64 randomEngine(randomDevice());
+	static std::uniform_int_distribution<int16_t> uniformDistribution;
+
 	class RandomGenerator
 	{
 	public:
@@ -12,17 +17,9 @@ namespace Physics2D
 		{
 			return QRandomGenerator::global()->bounded(min, max);
 		}
-		static int unique(int min, int max)
+		static int unique()
 		{
-			while(true)
-			{
-				int result = generate(min, max);
-				if (std::find(std::begin(m_uniqueList), std::end(m_uniqueList), result) == std::end(m_uniqueList))
-				{
-					m_uniqueList.push_back(result);
-					return result;
-				}
-			}
+			return uniformDistribution(randomEngine);
 		}
 		static bool pop(size_t number)
 		{

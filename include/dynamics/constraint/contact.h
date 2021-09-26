@@ -30,7 +30,7 @@ namespace Physics2D
 	{
 		ContactConstraintPoint() = default;
 		RelationID relation = 0;
-		int contactId = RandomGenerator::unique(1, 99999);
+		int contactId = RandomGenerator::unique();
 		real friction = 0.2;
 		bool active = true;
 		Vector2 localA;
