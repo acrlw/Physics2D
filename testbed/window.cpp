@@ -56,10 +56,10 @@ namespace Physics2D
 		m_world.setVelocityIteration(1);
 		
 		//createStackBox(6, 1.1, 1.1);
-		//createBoxRoom();
-		//createBoxesAndGround(8);
+		createBoxRoom();
+		createBoxesAndGround(8);
 		//testPendulum();
-		testCollision();
+		//testCollision();
 		//testJoint();
 		//testBroadphase();
 		//testCCD();
@@ -591,10 +591,20 @@ namespace Physics2D
 
 	void Window::mouseDoubleClickEvent(QMouseEvent* event)
 	{
-		Vector2 pos(event->x(), event->y());
-		clickPos.set(camera.screenToWorld(pos));
+		Vector2 pos(event->pos().x(), event->pos().y());
+		mousePos = camera.screenToWorld(pos);
         //fmt::print("select body at {}\n", clickPos);
-			
+		for (auto& body : m_world.bodyList())
+		{
+			Vector2 point = mousePos - body->position();
+			point = Matrix2x2(-body->rotation()).multiply(point);
+			if (body->shape()->contains(point) && selectedBody == nullptr)
+			{
+				tree.remove(body.get());
+				m_world.removeBody(body.get());
+				break;
+			}
+		}
 	}
 
 	void Window::keyPressEvent(QKeyEvent* event)

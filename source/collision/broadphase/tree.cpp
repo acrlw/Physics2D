@@ -86,7 +86,11 @@ namespace Physics2D
 		auto iter = m_bodyTable.find(body);
 		if (iter == m_bodyTable.end())
 			return;
+		int parentIndex = m_tree[iter->second].parentIndex;
+		int anotherChild = m_tree[parentIndex].leftIndex == iter->second ? m_tree[parentIndex].rightIndex : m_tree[parentIndex].leftIndex;
 		remove(iter->second);
+		elevate(anotherChild);
+		upgrade(anotherChild);
 		m_bodyTable.erase(iter);
 	}
 
