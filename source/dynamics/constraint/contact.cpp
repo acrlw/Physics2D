@@ -4,16 +4,23 @@ namespace Physics2D
 {
 	RelationID generateRelation(Body* bodyA, Body* bodyB)
 	{
-		return std::stoul(std::to_string(bodyA->id()) + std::to_string(bodyB->id()));
+		auto bodyAId = bodyA->id();
+		auto bodyBId = bodyB->id();
+		if (bodyAId > bodyBId)
+			std::swap(bodyAId, bodyBId);
+		auto pair = std::pair{ bodyAId, bodyBId };
+		auto result = reinterpret_cast<uint64_t&>(pair);
+		return result;
 	}
 	
 
 	void ContactMaintainer::solve(real dt)
 	{
-		std::vector<int> removedList, clearList;
+		std::vector<RelationID> clearList;
+		std::vector<ContactConstraintPoint*> removedList;
 		for (auto iter = m_contactTable.begin(); iter != m_contactTable.end(); ++iter)
 		{
-			if (iter->second.size() == 0)
+			if (iter->second.empty())
 			{
 				clearList.push_back(iter->first);
 				continue;
@@ -21,12 +28,12 @@ namespace Physics2D
 
 			for (auto iterInner = iter->second.begin(); iterInner != iter->second.end(); ++iterInner)
 				if (!iterInner->active)
-					removedList.push_back(iterInner->contactId);
-			for (auto id : removedList)
+					removedList.push_back(&*iterInner);
+			for (const auto id : removedList)
 			{
 				for (auto removed = iter->second.begin(); removed != iter->second.end(); ++removed)
 				{
-					if (removed->contactId == id)
+					if (&*removed == id)
 					{
 						iter->second.erase(removed);
 						break;

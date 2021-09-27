@@ -266,6 +266,7 @@ namespace Physics2D
 		{
 			if(iter->get() == body)
 			{
+				RandomGenerator::pop(body->id());
 				iter->release();
 				m_bodyList.erase(iter);
 				break;

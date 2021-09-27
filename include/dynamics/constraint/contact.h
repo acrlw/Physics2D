@@ -7,7 +7,7 @@
 #include "include/collision/detector.h"
 namespace Physics2D
 {
-	using RelationID = long;
+	using RelationID = uint64_t;
 	static RelationID generateRelation(Body* bodyA, Body* bodyB);
 	struct VelocityConstraintPoint
 	{
@@ -30,7 +30,6 @@ namespace Physics2D
 	{
 		ContactConstraintPoint() = default;
 		RelationID relation = 0;
-		int contactId = RandomGenerator::unique();
 		real friction = 0.2;
 		bool active = true;
 		Vector2 localA;
