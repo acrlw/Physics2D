@@ -4,7 +4,7 @@ namespace Physics2D
 {
 	RelationID generateRelation(Body* bodyA, Body* bodyB)
 	{
-		return std::stoll(std::to_string(bodyA->id()) + std::to_string(bodyB->id()));
+		return std::stoul(std::to_string(bodyA->id()) + std::to_string(bodyB->id()));
 	}
 	
 

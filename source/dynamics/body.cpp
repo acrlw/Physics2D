@@ -159,12 +159,12 @@ namespace Physics2D {
         return Matrix2x2(m_rotation).multiply(point);
     }
 
-    int Body::id() const
+    unsigned int Body::id() const
     {
         return m_id;
     }
 
-    void Body::setId(const int& id)
+    void Body::setId(const unsigned int& id)
     {
         m_id = id;
     }

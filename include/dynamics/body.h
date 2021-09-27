@@ -74,15 +74,15 @@ namespace Physics2D
 		Vector2 toWorldPoint(const Vector2& point) const;
 		Vector2 toActualPoint(const Vector2& point) const;
 
-		int id()const;
-		void setId(const int& id);
+		unsigned int id()const;
+		void setId(const unsigned int& id);
 
 		real restitution()const;
 		void setRestitution(const real& restitution);
 	private:
 		void calcInertia();
 
-		int m_id;
+		unsigned int m_id;
 
 		real m_mass = 0;
 		real m_inertia = 0;
