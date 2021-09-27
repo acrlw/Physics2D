@@ -9,12 +9,9 @@ namespace Physics2D
 		Vector2 localPointA;
 		Vector2 targetPoint;
 		Vector2 normal;
-		real damping = 0;
-		real stiffness = 1;
 		real bias = 0;
-		real biasFactor = 0.06;
+		real biasFactor = 0.2;
 		real effectiveMass = 0;
-		real accumulatedImpulse = 0;
 	};
 	class PointJoint : public Joint
 	{
@@ -47,7 +44,6 @@ namespace Physics2D
 			real rn_a = m_primitive.normal.dot(ra);
 			m_primitive.effectiveMass = 1.0 / (im_a + ii_a * rn_a * rn_a);
 			m_primitive.bias = m_primitive.biasFactor * c / dt;
-			//m_primitive.bodyA->applyImpulse(m_primitive.accumulatedImpulse * m_primitive.normal, ra);
 			
 		}
 		void solveVelocity(const real& dt) override
@@ -59,13 +55,11 @@ namespace Physics2D
 			real jv = m_primitive.normal.dot(dv);
 			real jvb = -jv + m_primitive.bias;
 			real lambda_n = m_primitive.effectiveMass * jvb;
-
-			real oldImpulse = m_primitive.accumulatedImpulse;
-			m_primitive.accumulatedImpulse = Math::max(oldImpulse + lambda_n, 0);
-			lambda_n = m_primitive.accumulatedImpulse - oldImpulse;
-
 			Vector2 impulse = lambda_n * m_primitive.normal;
-			m_primitive.bodyA->applyImpulse(impulse, ra);
+			
+			m_primitive.bodyA->velocity() += m_primitive.bodyA->inverseMass() * impulse;
+			m_primitive.bodyA->angularVelocity() += m_primitive.bodyA->inverseInertia() * ra.cross(impulse);
+			
 		}
 		void solvePosition(const real& dt) override
 		{

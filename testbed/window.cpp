@@ -56,11 +56,11 @@ namespace Physics2D
 		m_world.setVelocityIteration(1);
 		
 		//createStackBox(6, 1.1, 1.1);
-		createBoxRoom();
-		createBoxesAndGround(20);
+		//createBoxRoom();
+		//createBoxesAndGround(20);
 		//testPendulum();
 		//testCollision();
-		//testJoint();
+		testJoint();
 		//testBroadphase();
 		//testCCD();
 		//testCapsule();
@@ -240,7 +240,7 @@ namespace Physics2D
 			repaint();
 			return;
 		}
-		for(int i = 0;i < 1;i++)
+		for (int i = 0; i < 1; i++)
 		{
 
 			const real dt = 1.0 / 30.0;
@@ -248,19 +248,17 @@ namespace Physics2D
 
 			m_world.stepVelocity(dt);
 
-			for (int i = 0; i < 1; i++)
+
+			auto potentialList = tree.generate();
+			for (auto pair : potentialList)
 			{
-				auto potentialList = tree.generate();
-				for (auto pair : potentialList)
-				{
-					auto result = Detector::detect(pair.first, pair.second);
-					if (result.isColliding)
-						contactMaintainer.add(result);
-				}
-
-				contactMaintainer.solve(dt);
+				auto result = Detector::detect(pair.first, pair.second);
+				if (result.isColliding)
+					contactMaintainer.add(result);
 			}
+			contactMaintainer.solveVelocity(dt);
 
+			contactMaintainer.solvePosition(dt);
 
 			m_world.stepPosition(dt);
 
@@ -281,23 +279,24 @@ namespace Physics2D
 		ground->position().set({ 0, -10 });
 		ground->setMass(Constant::Max);
 		ground->setType(Body::BodyType::Static);
-
-		//tree.insert(ground);
+		ground->setRestitution(1);
 		
 		rect = m_world.createBody();
 		rect->setShape(rectangle_ptr);
 		rect->position().set({-0.5, -1});
 		rect->rotation() = 0;
 		rect->setMass(200);
+		rect->setRestitution(0.1);
+		rect->setFriction(0.8);
 		rect->setType(Body::BodyType::Dynamic);
 
-		rect2 = m_world.createBody();
-		rect2->setShape(rectangle_ptr);
-		rect2->position().set({-5, -5});
-		rect2->rotation() = 0;
-		rect2->setMass(200);
-		rect2->setFriction(0.1);
-		rect2->setType(Body::BodyType::Dynamic);
+		//rect2 = m_world.createBody();
+		//rect2->setShape(rectangle_ptr);
+		//rect2->position().set({-5, -5});
+		//rect2->rotation() = 0;
+		//rect2->setMass(200);
+		//rect2->setFriction(0.4);
+		//rect2->setType(Body::BodyType::Dynamic);
 		
 
 		//rotationPrim.bodyA = rect;
@@ -305,31 +304,29 @@ namespace Physics2D
 		//rotationPrim.referenceRotation = Math::degreeToRadian(45);
 		//RotationJoint* rj = m_world.createJoint(rotationPrim);
 
-		distancePrim.bodyA = rect;
-		distancePrim.localPointA.set({ 0, 0 });
-		distancePrim.minDistance = 3;
-		distancePrim.maxDistance = 7;
-		distancePrim.targetPoint.set({ 1, 1 });
-		m_world.createJoint(distancePrim);
+		//distancePrim.bodyA = rect;
+		//distancePrim.localPointA.set({ 0, 0 });
+		//distancePrim.minDistance = 3;
+		//distancePrim.maxDistance = 7;
+		//distancePrim.targetPoint.set({ 1, 1 });
+		//m_world.createJoint(distancePrim);
 
-		orientationPrim.bodyA = rect;
-		orientationPrim.targetPoint.set({ 1, 1 });
-		orientationPrim.referenceRotation = Math::degreeToRadian(90);
-		m_world.createJoint(orientationPrim);
+		//orientationPrim.bodyA = rect;
+		//orientationPrim.targetPoint.set({ 1, 1 });
+		//orientationPrim.referenceRotation = Math::degreeToRadian(90);
+		//m_world.createJoint(orientationPrim);
+		
 
-		//pointPrim.localPointA.set(-0.5, -0.5);
-		//pointPrim.localPointB.set(0.5, 0.5);
-
-		//pointPrim.localPointA.set(0, 0.5);
-		//pointPrim.targetPoint.set(2.0, 2.0);
+		//pointPrim.localPointA.set(0.5, 0.5);
+		//pointPrim.targetPoint.set(0, 0);
 		//pointPrim.bodyA = rect;
 		//m_world.createJoint(pointPrim);
 		
 
 		tree.insert(rect);
-		tree.insert(rect2);
+		//tree.insert(rect2);
 		tree.insert(ground);
-		camera.setTargetBody(rect);
+		//camera.setTargetBody(rect);
 
 		//rect->velocity() += {10, 0};
 
@@ -347,12 +344,12 @@ namespace Physics2D
 		tree.insert(ground);
 		
 		rect = m_world.createBody();
-		rect->setShape(capsule_ptr);
+		rect->setShape(ellipse_ptr);
 		rect->position().set({-5, 6});
 		rect->rotation() = 0;
 		rect->setMass(200);
 		rect->setType(Body::BodyType::Dynamic);
-		rect->setFriction(0.1);
+		rect->setFriction(0.4);
 		tree.insert(rect);
 
 		//rect2 = m_world.createBody();

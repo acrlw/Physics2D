@@ -41,14 +41,17 @@ namespace Physics2D
 	class ContactMaintainer
 	{
 	public:
-		void solve(real dt);
+		void solveVelocity(real dt);
+		void solvePosition(real dt);
 		void add(const Collision& collision);
-		std::map<RelationID, std::vector<ContactConstraintPoint>> m_contactTable;
 		void prepare(ContactConstraintPoint& ccp, const PointPair& pair, const Collision& collision);
 		real m_maxPenetration = 0.01;
 		real m_biasFactor = 0.2;
 	private:
+		std::map<RelationID, std::vector<ContactConstraintPoint>> m_contactTable;
+		void clearInactivePoints();
 	};
+
 	
 }
 #endif

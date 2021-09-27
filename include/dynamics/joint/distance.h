@@ -81,12 +81,15 @@ namespace Physics2D
 			real jvb = -jv + m_primitive.bias;
 			real lambda_n = m_primitive.effectiveMass * jvb;
 
-			real oldImpulse = m_primitive.accumulatedImpulse;
-			m_primitive.accumulatedImpulse = Math::max(oldImpulse + lambda_n, 0);
-			lambda_n = m_primitive.accumulatedImpulse - oldImpulse;
+			//real oldImpulse = m_primitive.accumulatedImpulse;
+			//m_primitive.accumulatedImpulse = Math::max(oldImpulse + lambda_n, 0);
+			//lambda_n = m_primitive.accumulatedImpulse - oldImpulse;
 
 			Vector2 impulse = lambda_n * m_primitive.normal;
-			m_primitive.bodyA->applyImpulse(impulse, ra);
+			m_primitive.bodyA->velocity() += m_primitive.bodyA->inverseMass() * impulse;
+			m_primitive.bodyA->angularVelocity() += m_primitive.bodyA->inverseInertia() * ra.cross(impulse);
+			//m_primitive.bodyA->velocity() *= 0.8;
+			//m_primitive.bodyA->angularVelocity() *= 0.8;
 		}
 		void solvePosition(const real& dt) override
 		{

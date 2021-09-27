@@ -14,58 +14,18 @@ namespace Physics2D
 	}
 	
 
-	void ContactMaintainer::solve(real dt)
+	void ContactMaintainer::solveVelocity(real dt)
 	{
-		std::vector<RelationID> clearList;
-		std::vector<ContactConstraintPoint*> removedList;
-		for (auto iter = m_contactTable.begin(); iter != m_contactTable.end(); ++iter)
-		{
-			if (iter->second.empty())
-			{
-				clearList.push_back(iter->first);
-				continue;
-			}
-
-			for (auto iterInner = iter->second.begin(); iterInner != iter->second.end(); ++iterInner)
-				if (!iterInner->active)
-					removedList.push_back(&*iterInner);
-			for (const auto id : removedList)
-			{
-				for (auto removed = iter->second.begin(); removed != iter->second.end(); ++removed)
-				{
-					if (&*removed == id)
-					{
-						iter->second.erase(removed);
-						break;
-					}
-				}
-			}
-			removedList.clear();
-		}
-
-		for(auto id: clearList)
-		{
-			for (auto iter = m_contactTable.begin(); iter != m_contactTable.end(); ++iter)
-			{
-				if(iter->first == id)
-				{
-					m_contactTable.erase(iter);
-					break;
-				}
-			}
-		}
-
-		
+		clearInactivePoints();
 
 		for (auto iter = m_contactTable.begin(); iter != m_contactTable.end(); ++iter)
 		{
-			if (iter->second.size() == 0 || !iter->second[0].active)
+			if (iter->second.empty() || !iter->second[0].active)
 				continue;
 
 			for(auto& ccp: iter->second)
 			{
 				auto& vcp = ccp.vcp;
-
 
 				Vector2 wa = Vector2::crossProduct(ccp.bodyA->angularVelocity(), vcp.ra);
 				Vector2 wb = Vector2::crossProduct(ccp.bodyB->angularVelocity(), vcp.rb);
@@ -73,9 +33,8 @@ namespace Physics2D
 				vcp.vb = ccp.bodyB->velocity() + wb;
 
 				Vector2 dv = vcp.va - vcp.vb;
-				real jv = vcp.normal.dot(dv);
-				real jvb = - vcp.restitution * jv + vcp.bias;
-				real lambda_n = vcp.effectiveMassNormal * jvb;
+				real jv = -(1 + vcp.restitution) * vcp.normal.dot(dv);
+				real lambda_n = vcp.effectiveMassNormal * (jv + vcp.bias);
 				real oldImpulse = vcp.accumulatedNormalImpulse;
 				vcp.accumulatedNormalImpulse = Math::max(oldImpulse + lambda_n, 0);
 				lambda_n = vcp.accumulatedNormalImpulse - oldImpulse;
@@ -92,7 +51,6 @@ namespace Physics2D
 				real jvt = vcp.tangent.dot(dv);
 				real lambda_t = vcp.effectiveMassTangent * - jvt;
 
-
 				real maxT = ccp.friction * vcp.accumulatedNormalImpulse;
 				oldImpulse = vcp.accumulatedTangentImpulse;
 				vcp.accumulatedTangentImpulse = Math::clamp(oldImpulse + lambda_t, -maxT, maxT);
@@ -104,10 +62,37 @@ namespace Physics2D
 
 				ccp.bodyA->applyImpulse(impulse_t, vcp.ra);
 				ccp.bodyB->applyImpulse(-impulse_t, vcp.rb);
+				
+			}
+		}
+	}
+
+	void ContactMaintainer::solvePosition(real dt)
+	{
+		for (auto iter = m_contactTable.begin(); iter != m_contactTable.end(); ++iter)
+		{
+			if (iter->second.empty() || !iter->second[0].active)
+				continue;
+
+			for (auto& ccp : iter->second)
+			{
+				auto& vcp = ccp.vcp;
 
 				ccp.active = false;
-			}
 
+				real lambda_p = vcp.bias;
+				if (ccp.bodyA->type() == Body::BodyType::Static || ccp.bodyB->type() == Body::BodyType::Static)
+					lambda_p *= 2;
+
+				Vector2 positionImpulse = 0.7 * lambda_p * vcp.normal;
+				
+
+				if (ccp.bodyA->type() != Body::BodyType::Static)
+					ccp.bodyA->position() += positionImpulse * dt;
+				if (ccp.bodyB->type() != Body::BodyType::Static)
+					ccp.bodyB->position() -= positionImpulse * dt;
+
+			}
 		}
 	}
 
@@ -149,6 +134,47 @@ namespace Physics2D
 		}
 	}
 
+	void ContactMaintainer::clearInactivePoints()
+	{
+		std::vector<RelationID> clearList;
+		std::vector<ContactConstraintPoint*> removedList;
+		for (auto iter = m_contactTable.begin(); iter != m_contactTable.end(); ++iter)
+		{
+			if (iter->second.empty())
+			{
+				clearList.push_back(iter->first);
+				continue;
+			}
+
+			for (auto iterInner = iter->second.begin(); iterInner != iter->second.end(); ++iterInner)
+				if (!iterInner->active)
+					removedList.push_back(&*iterInner);
+			for (const auto id : removedList)
+			{
+				for (auto removed = iter->second.begin(); removed != iter->second.end(); ++removed)
+				{
+					if (&*removed == id)
+					{
+						iter->second.erase(removed);
+						break;
+					}
+				}
+			}
+			removedList.clear();
+		}
+
+		for (auto id : clearList)
+		{
+			for (auto iter = m_contactTable.begin(); iter != m_contactTable.end(); ++iter)
+			{
+				if (iter->first == id)
+				{
+					m_contactTable.erase(iter);
+					break;
+				}
+			}
+		}
+	}
 	void ContactMaintainer::prepare(ContactConstraintPoint& ccp, const PointPair& pair, const Collision& collision)
 	{
 		ccp.bodyA = collision.bodyA;
@@ -185,8 +211,8 @@ namespace Physics2D
 		vcp.effectiveMassTangent = realEqual(kTangent, 0.0) ? 0 : 1.0 / kTangent;
 
 		//vcp.bias = 0;
-		vcp.bias = m_biasFactor * Math::max(0.0, collision.penetration - m_maxPenetration) * 60.0;
 		vcp.restitution = Math::min(ccp.bodyA->restitution(), ccp.bodyB->restitution());
+		vcp.bias = m_biasFactor * Math::max(0.0, collision.penetration - m_maxPenetration) * 60.0;
 		//accumulate inherited impulse
 		Vector2 impulse = vcp.accumulatedNormalImpulse * vcp.normal + vcp.accumulatedTangentImpulse * vcp.tangent;
 		//Vector2 impulse;
