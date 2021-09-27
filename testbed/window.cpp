@@ -14,7 +14,7 @@ namespace Physics2D
 		this->resize(1920, 1080);
 		this->setMouseTracking(true);
 
-		rectangle.set(0.5, 0.5);
+		rectangle.set(1.0, 1.0);
 		land.set(32, 0.2);
 		//polygon.append({{3, 0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3}, {2, -3}, {3, 0}});
 		polygon.append({ {-2, 0}, {0, 4}, {4, 6}, {10, 4}, {4, -2}, {-2, 0} });
@@ -57,7 +57,7 @@ namespace Physics2D
 		
 		//createStackBox(6, 1.1, 1.1);
 		createBoxRoom();
-		createBoxesAndGround(8);
+		createBoxesAndGround(20);
 		//testPendulum();
 		//testCollision();
 		//testJoint();
@@ -711,7 +711,7 @@ namespace Physics2D
 			for(real i = 0;i < count; i++)
 			{
 				Body* body = m_world.createBody();
-				body->position().set({ i * 1 - 4, j * 1 + 1});
+				body->position().set({ i * 1 - 15, j * 1 + 2});
 				body->setShape(rectangle_ptr);
 				body->rotation() = 0;
 				body->setMass(200);

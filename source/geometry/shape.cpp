@@ -36,6 +36,7 @@ namespace Physics2D
 	Polygon::Polygon()
 	{
 		m_type = Type::Polygon;
+		m_vertices.reserve(4);
 	}
 
 	const std::vector<Vector2>& Polygon::vertices() const

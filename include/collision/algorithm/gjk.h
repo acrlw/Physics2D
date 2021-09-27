@@ -5,8 +5,7 @@
 #include "include/common/common.h"
 #include "include/geometry/shape.h"
 #include "include/geometry/algorithm/2d.h"
-
-#include "fmt/core.h"
+#include "QVarLengthArray"
 namespace Physics2D
 {
 	struct Minkowski
@@ -38,6 +37,7 @@ namespace Physics2D
 		void insert(const size_t& pos, const Minkowski& vertex);
 		bool contains(const Minkowski& minkowski);
 		bool fuzzyContains(const Minkowski& minkowski, const real& epsilon = 0.0001);
+
 		Vector2 lastVertex() const;
 	};
 

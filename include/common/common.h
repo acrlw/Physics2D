@@ -11,6 +11,7 @@
 #include <functional>
 #include <memory>
 #include <map>
+
 namespace Physics2D
 {
 #ifdef SINGLE_PRECISION
@@ -19,10 +20,11 @@ namespace Physics2D
 	{
 		constexpr real Epsilon = FLT_EPSILON;
 		constexpr real Max = FLT_MAX;
-		constexpr real Min = FLT_MIN;
 		constexpr real PositiveMin = FLT_MIN;
 		constexpr real NegativeMin = -Max;
-		constexpr real Pi = 3.14159265358979f;
+		constexpr real Pi = 3.141592653589793238463;
+		constexpr real HalfPi = Constant::Pi / 2;
+		constexpr real DoublePi = Constant::Pi * 2;
 		constexpr real ReciprocalOfPi = 0.3183098861837907f;
 		constexpr real GeometryEpsilon = 0.0000001;
 		constexpr real MaxVelocity = 1000.0;
@@ -30,7 +32,6 @@ namespace Physics2D
 	}
 #else
 	using real = double;
-#endif
 	namespace Constant
 	{
 		constexpr real Epsilon = DBL_EPSILON;
@@ -46,6 +47,7 @@ namespace Physics2D
 		constexpr real MaxAngularVelocity = 1000.0;
 
 	}
+#endif
 }
 
 #endif

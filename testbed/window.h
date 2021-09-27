@@ -124,7 +124,7 @@ namespace Physics2D
 		Body* selectedBody = nullptr;
 
 		Tree tree;
-		real roomSize = 10;
+		real roomSize = 20;
 
 		ContactMaintainer contactMaintainer;
 	};

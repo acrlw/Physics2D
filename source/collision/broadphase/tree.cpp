@@ -73,6 +73,14 @@ namespace Physics2D
 
 		//calc cost
 		int targetIndex = calculateLowestCostNode(newNodeIndex);
+
+		if(targetIndex == m_rootIndex)
+		{
+			m_rootIndex = merge(newNodeIndex, targetIndex);
+			balance(m_rootIndex);
+			return;
+		}
+
 		int targetParentIndex = m_tree[targetIndex].parentIndex;
 		separate(targetIndex, targetParentIndex);
 		int boxIndex = merge(newNodeIndex, targetIndex);
@@ -121,23 +129,66 @@ namespace Physics2D
 
 	void Tree::traverseLowestCost(int nodeIndex, int boxIndex, real& cost, int& finalIndex)
 	{
-		if (m_tree[boxIndex].isLeaf())
+		//Search for best leaf node
+		
+		//if (m_tree[boxIndex].isLeaf())
+		//{
+		//	finalIndex = boxIndex;
+		//	return;
+		//}
+
+		//if (boxIndex == m_rootIndex)
+		//{
+		//	finalIndex = -1;
+		//	cost = deltaCost(nodeIndex, boxIndex);
+		//}
+
+		//auto accumulateCost = [&](int nodeIndex, int boxIndex)
+		//{
+		//	if (m_tree[nodeIndex].isLeaf())
+		//		return cost + AABB::unite(m_tree[nodeIndex].aabb, m_tree[boxIndex].aabb).surfaceArea();
+		//	return deltaCost(nodeIndex, boxIndex);
+		//};
+
+		//int leftIndex = m_tree[boxIndex].leftIndex;
+		//int rightIndex = m_tree[boxIndex].rightIndex;
+		//real leftCost = accumulateCost(nodeIndex, leftIndex);
+		//real rightCost = accumulateCost(nodeIndex, rightIndex);
+		//real lowestCost;
+		//int lowestCostIndex;
+		//if(leftCost > rightCost)
+		//{
+		//	lowestCost = rightCost;
+		//	lowestCostIndex = rightIndex;
+		//}
+		//else
+		//{
+		//	lowestCost = leftCost;
+		//	lowestCostIndex = leftIndex;
+		//}
+		//traverseLowestCost(nodeIndex, lowestCostIndex, lowestCost, finalIndex);
+
+		//Branch And Bound from box2d
+		//A little bit faster because it doesn't always reach leaf node when traversing.
+		//The final bvh result is worse than brute search, but collision pair generation is almost the same, only 100 less than brute search
+
+		if (m_tree[boxIndex].isLeaf() && !m_tree[boxIndex].isRoot())
 		{
 			finalIndex = boxIndex;
 			return;
 		}
 
-		if (boxIndex == m_rootIndex)
-		{
-			finalIndex = -1;
-			cost = deltaCost(nodeIndex, boxIndex);
-		}
+		real area = m_tree[boxIndex].aabb.surfaceArea();
+		real unionArea = AABB::unite(m_tree[nodeIndex].aabb, m_tree[boxIndex].aabb).surfaceArea();
+
+		cost = 2.0 * area;
+		real inheritanceCost = 2.0 * (unionArea - area);
 
 		auto accumulateCost = [&](int nodeIndex, int boxIndex)
 		{
 			if (m_tree[nodeIndex].isLeaf())
-				return cost + AABB::unite(m_tree[nodeIndex].aabb, m_tree[boxIndex].aabb).surfaceArea();
-			return deltaCost(nodeIndex, boxIndex);
+				return inheritanceCost + AABB::unite(m_tree[nodeIndex].aabb, m_tree[boxIndex].aabb).surfaceArea();
+			return deltaCost(nodeIndex, boxIndex) + inheritanceCost;
 		};
 
 		int leftIndex = m_tree[boxIndex].leftIndex;
@@ -146,6 +197,13 @@ namespace Physics2D
 		real rightCost = accumulateCost(nodeIndex, rightIndex);
 		real lowestCost;
 		int lowestCostIndex;
+
+		if(cost < leftCost && cost < rightCost)
+		{
+			finalIndex = boxIndex;
+			return;
+		}
+
 		if(leftCost > rightCost)
 		{
 			lowestCost = rightCost;
@@ -156,6 +214,7 @@ namespace Physics2D
 			lowestCost = leftCost;
 			lowestCostIndex = leftIndex;
 		}
+		finalIndex = lowestCostIndex;
 		traverseLowestCost(nodeIndex, lowestCostIndex, lowestCost, finalIndex);
 	}
 
@@ -358,6 +417,9 @@ namespace Physics2D
 
 	void Tree::separate(int sourceIndex, int parentIndex)
 	{
+		if (sourceIndex < 0 || parentIndex < 0)
+			return;
+
 		if (m_tree[parentIndex].leftIndex == sourceIndex)
 			m_tree[parentIndex].leftIndex = -1;
 		else if (m_tree[parentIndex].rightIndex == sourceIndex)
@@ -367,6 +429,9 @@ namespace Physics2D
 
 	void Tree::join(int nodeIndex, int boxIndex)
 	{
+		if (nodeIndex < 0 || boxIndex < 0)
+			return;
+
 		if (m_tree[boxIndex].leftIndex == -1)
 			m_tree[boxIndex].leftIndex = nodeIndex;
 		else if (m_tree[boxIndex].rightIndex == -1)
@@ -402,6 +467,21 @@ namespace Physics2D
 		int targetIndex = -1;
 		//start traverse lowest cost node
 		traverseLowestCost(nodeIndex, m_rootIndex, lowestCost, targetIndex);
+
+		//brute search every leaf to find the lowest cost
+		
+		//for (auto& [body, leafIndex] : m_bodyTable)
+		//{
+		//	if (leafIndex == nodeIndex)
+		//		continue;
+		//	real cost = totalCost(nodeIndex, leafIndex);
+		//	if (lowestCost > cost)
+		//	{
+		//		lowestCost = cost;
+		//		targetIndex = leafIndex;
+		//	}
+		//}
+
 		return targetIndex;
 	}
 	real Tree::totalCost(int nodeIndex, int leafIndex)
