@@ -92,6 +92,7 @@ cmake CMakeLists.txt
 - [Game Physics For Beginners - liabru](https://brm.io/game-physics-for-beginners/)
 - [Allen Chou's Blog](http://allenchou.net/game-physics-series/)
 - [Physics Constraints Series - Allen Chou](https://www.youtube.com/c/MingLunChou/videos)
+- [Soft Constraints - ode](https://ode.org/ode-latest-userguide.html#sec_3_8_0)
 - [Gaffer's on Games](https://gafferongames.com/#posts)
 - [Randy Gaul's Blog](http://www.randygaul.net/)
 - [Winter's Dev](https://blog.winter.dev/)
