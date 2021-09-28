@@ -87,7 +87,18 @@ cmake CMakeLists.txt
 - [Box2D Publications](https://box2d.org/publications/)
 - [dyn4j Official Blog](https://dyn4j.org/blog/)
 - [dyn4j](https://github.com/dyn4j/dyn4j)
+- [matterjs](https://github.com/liabru/matter-js)
+- [Game Physics For Beginners - liabru](https://brm.io/game-physics-for-beginners/)
 - [Allen Chou's Blog](http://allenchou.net/game-physics-series/)
+- [Physics Constraints Series - Allen Chou](https://www.youtube.com/c/MingLunChou/videos)
 - [Gaffer's on Games](https://gafferongames.com/#posts)
+- [Randy Gaul's Blog](http://www.randygaul.net/)
+- [Winter's Dev](https://blog.winter.dev/)
+- [Real-Time Rendering Intersection](http://www.realtimerendering.com/intersections.html)
+- [Inigo Quilez's 2D SDF Functions](https://www.iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm)
+- [*A Simple Time-Corrected Verlet Integration Method* - Jonathan Dummer](https://archive.gamedev.net/archive/reference/programming/features/verlet/)
 - [*Introduction to rigid body pipeline, collision detection* - Erwin Coumans](https://docs.google.com/presentation/d/1wGUJ4neOhw5i4pQRfSGtZPE3CIm7MfmqfTp5aJKuFYM/edit#slide=id.g644a5aa5f_1_116)
 - *Foundations of Physically Based Modeling and Animation* - Donald House and John C. Keyser
+- *Real-Time Collision Detection* by Christer Ericson
+- *Game Programming Gems 7* - Scott Jacobs
+- *Game Physics Cookbook* - Gabor Szauer
