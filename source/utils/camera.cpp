@@ -64,13 +64,16 @@ namespace Physics2D::Utils
 					primitive.shape = body->shape();
 					primitive.rotation = body->rotation();
 					primitive.transform = body->position();
+					if(body->sleep())
+						pen.setColor(Qt::gray);
 					RendererQtImpl::renderShape(painter, this, primitive, pen);
 				}
 			}
 			if(m_jointVisible)
 			{
 				for (auto& joint : m_world->jointList())
-					RendererQtImpl::renderJoint(painter, this, joint.get(), pen);
+					if(joint->active())
+						RendererQtImpl::renderJoint(painter, this, joint.get(), pen);
 			}
 			if(m_axisVisible)
 			{

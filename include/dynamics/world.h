@@ -18,7 +18,9 @@ namespace Physics2D
             {}
             ~World();
             void stepVelocity(const real& dt);
+            void solveVelocityConstraint(real dt);
             void stepPosition(const real& dt);
+            void solvePositionConstraint(real dt);
             void step(const real& dt);
             
 
@@ -90,5 +92,6 @@ namespace Physics2D
     		
     		
     };
+    
 }
 #endif

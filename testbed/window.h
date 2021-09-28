@@ -100,7 +100,7 @@ namespace Physics2D
 		PointJointPrimitive pointPrim;
 		//MouseJointPrimitive mousePrim;
 
-		MouseJoint* mj;
+		PointJoint* mj = nullptr;
 		DBVH dbvh;
 		int counter = 0;
 		

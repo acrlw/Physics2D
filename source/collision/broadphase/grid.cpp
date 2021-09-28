@@ -10,6 +10,8 @@ namespace Physics2D
 
     std::vector<Body*> UniformGrid::raycast(const Vector2& p, const Vector2& d)
     {
+        std::vector<Body*> result;
+        return result;
     }
 
     void UniformGrid::update(Body* body)

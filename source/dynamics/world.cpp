@@ -12,14 +12,6 @@ namespace Physics2D
 	}
 	void World::stepVelocity(const real& dt)
 	{
-		for (int i = 0; i < m_velocityIteration; i++)
-			for (auto& joint : m_jointList)
-				joint->prepare(dt);
-
-		for (int i = 0; i < m_velocityIteration; i++)
-			for (auto& joint : m_jointList)
-				joint->solveVelocity(dt);
-
 		const Vector2 g = m_enableGravity ? m_gravity : (0, 0);
 		for (auto& body : m_bodyList)
 		{
@@ -34,8 +26,14 @@ namespace Physics2D
 			case Body::BodyType::Dynamic:
 			{
 				body->forces() += body->mass() * g;
+
 				body->velocity() += body->inverseMass() * body->forces() * dt * m_velocityIteration;
 				body->angularVelocity() += body->inverseInertia() * body->torques() * dt * m_velocityIteration;
+
+					//damping
+				body->velocity() *= 1.0 / (1.0 + dt * m_linearVelocityDamping);
+				body->angularVelocity() *= 1.0 / (1.0 + dt * m_angularVelocityDamping);
+
 				break;
 			}
 			case Body::BodyType::Kinematic:
@@ -51,11 +49,28 @@ namespace Physics2D
 			}
 		}
 	}
-	void World::stepPosition(const real& dt)
+	void World::solveVelocityConstraint(real dt)
+	{
+		for (int i = 0; i < m_velocityIteration; i++)
+			for (auto& joint : m_jointList)
+				if (joint->active())
+					joint->prepare(dt);
+
+		for (int i = 0; i < m_velocityIteration; i++)
+			for (auto& joint : m_jointList)
+				if (joint->active())
+					joint->solveVelocity(dt);
+	}
+	void World::solvePositionConstraint(real dt)
 	{
 		for (int i = 0; i < m_positionIteration; i++)
-			for(auto& joint: m_jointList)
-				joint->solvePosition(dt);
+			for (auto& joint : m_jointList)
+				if (joint->active())
+					joint->solvePosition(dt);
+	}
+
+	void World::stepPosition(const real& dt)
+	{
 
 		for (auto& body : m_bodyList)
 		{
@@ -68,6 +83,7 @@ namespace Physics2D
 				body->position() += body->velocity() * dt * m_positionIteration;
 				body->rotation() += body->angularVelocity() * dt * m_positionIteration;
 
+
 				body->forces().clear();
 				body->clearTorque();
 				break;
@@ -76,6 +92,7 @@ namespace Physics2D
 			{
 				body->position() += body->velocity() * dt * m_positionIteration;
 				body->rotation() += body->angularVelocity() * dt * m_positionIteration;
+
 
 				body->forces().clear();
 				body->clearTorque();
@@ -87,6 +104,7 @@ namespace Physics2D
 			}
 			}
 		}
+
 	}
 	void World::step(const real& dt)
 	{

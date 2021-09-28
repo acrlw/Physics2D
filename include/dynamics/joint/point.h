@@ -9,9 +9,17 @@ namespace Physics2D
 		Vector2 localPointA;
 		Vector2 targetPoint;
 		Vector2 normal;
-		real bias = 0;
-		real biasFactor = 0.2;
-		real effectiveMass = 0;
+
+		real damping = 0.0;
+		real stiffness = 0.0;
+		real frequency = 8;
+		real maxForce = 4000;
+		real dampingRatio = 0.2;
+		real gamma = 0.0;
+		Vector2 bias;
+		Matrix2x2 effectiveMass;
+		Vector2 impulse;
+
 	};
 	class PointJoint : public Joint
 	{
@@ -33,33 +41,65 @@ namespace Physics2D
 			if (m_primitive.bodyA == nullptr)
 				return;
 			Body* bodyA = m_primitive.bodyA;
+
+			real m_a = bodyA->mass();
+			real im_a = bodyA->inverseMass();
+			real ii_a = bodyA->inverseInertia();
+			if(m_primitive.frequency > 0.0)
+			{
+				real nf = naturalFrequency(m_primitive.frequency);
+				m_primitive.stiffness = springStiffness(m_a, nf);
+				m_primitive.damping = springDampingCoefficient(m_a, nf, m_primitive.dampingRatio);
+			}
+			else
+			{
+				m_primitive.stiffness = 0.0;
+				m_primitive.damping = 0.0;
+			}
+			m_primitive.gamma = constraintImpulseMixing(dt, m_primitive.stiffness, m_primitive.damping);	
+			real erp = errorReductionParameter(dt, m_primitive.stiffness, m_primitive.damping);
+
+
 			Vector2 pa = bodyA->toWorldPoint(m_primitive.localPointA);
 			Vector2 ra = pa - bodyA->position();
 			Vector2 pb = m_primitive.targetPoint;
-			real im_a = m_primitive.bodyA->inverseMass();
-			real ii_a = m_primitive.bodyA->inverseInertia();
-			Vector2 error = pb - pa;
-			m_primitive.normal = error.normal();
-			real c = Math::max(error.length() - 0.01, 0);
-			real rn_a = m_primitive.normal.dot(ra);
-			m_primitive.effectiveMass = 1.0 / (im_a + ii_a * rn_a * rn_a);
-			m_primitive.bias = m_primitive.biasFactor * c / dt;
-			
+
+			m_primitive.bias = (pa - pb) * erp;
+			Matrix2x2 k;
+			k.e11() = im_a + ra.y * ra.y * ii_a;
+			k.e12() = -ra.x * ra.x * ii_a;
+			k.e21() = k.e12();
+			k.e22() = im_a + ra.x * ra.x * ii_a;
+
+			k.e11() += m_primitive.gamma;
+			k.e22() += m_primitive.gamma;
+
+			m_primitive.effectiveMass = k.invert();
+			//warmstart
+			//m_primitive.impulse *= dt / dt;
+			bodyA->applyImpulse(m_primitive.impulse, ra);
 		}
 		void solveVelocity(const real& dt) override
 		{
+			if (m_primitive.bodyA == nullptr)
+				return;
 			Vector2 ra = m_primitive.bodyA->toWorldPoint(m_primitive.localPointA) - m_primitive.bodyA->position();
 			Vector2 va = m_primitive.bodyA->velocity() + Vector2::crossProduct(m_primitive.bodyA->angularVelocity(), ra);
-
-			Vector2 dv = va;
-			real jv = m_primitive.normal.dot(dv);
-			real jvb = -jv + m_primitive.bias;
-			real lambda_n = m_primitive.effectiveMass * jvb;
-			Vector2 impulse = lambda_n * m_primitive.normal;
-			
-			m_primitive.bodyA->velocity() += m_primitive.bodyA->inverseMass() * impulse;
-			m_primitive.bodyA->angularVelocity() += m_primitive.bodyA->inverseInertia() * ra.cross(impulse);
-			
+			Vector2 jvb = va;
+			jvb += m_primitive.bias;
+			jvb += m_primitive.impulse * m_primitive.gamma;
+			jvb.negate();
+			Vector2 J = m_primitive.effectiveMass.multiply(jvb);
+			Vector2 oldImpulse = m_primitive.impulse;
+			m_primitive.impulse += J;
+			real maxImpulse = dt * m_primitive.maxForce;
+			if(m_primitive.impulse.lengthSquare() > maxImpulse * maxImpulse)
+			{
+				m_primitive.impulse.normalize();
+				m_primitive.impulse *= maxImpulse;
+			}
+			J = m_primitive.impulse - oldImpulse;
+			m_primitive.bodyA->applyImpulse(J, ra);
 		}
 		void solvePosition(const real& dt) override
 		{

@@ -7,8 +7,6 @@ namespace Physics2D
 		//Combine two 32-bit id into one 64-bit id in binary form
 		auto bodyAId = bodyA->id();
 		auto bodyBId = bodyB->id();
-		if (bodyAId > bodyBId)
-			std::swap(bodyAId, bodyBId);
 		auto pair = std::pair{ bodyAId, bodyBId };
 		auto result = reinterpret_cast<uint64_t&>(pair);
 		return result;
@@ -24,7 +22,7 @@ namespace Physics2D
 			if (iter->second.empty() || !iter->second[0].active)
 				continue;
 
-			for(auto& ccp: iter->second)
+			for (auto& ccp : iter->second)
 			{
 				auto& vcp = ccp.vcp;
 
@@ -50,7 +48,7 @@ namespace Physics2D
 				dv = vcp.va - vcp.vb;
 
 				real jvt = vcp.tangent.dot(dv);
-				real lambda_t = vcp.effectiveMassTangent * - jvt;
+				real lambda_t = vcp.effectiveMassTangent * -jvt;
 
 				real maxT = ccp.friction * vcp.accumulatedNormalImpulse;
 				oldImpulse = vcp.accumulatedTangentImpulse;
@@ -63,7 +61,7 @@ namespace Physics2D
 
 				ccp.bodyA->applyImpulse(impulse_t, vcp.ra);
 				ccp.bodyB->applyImpulse(-impulse_t, vcp.rb);
-				
+
 			}
 		}
 	}
@@ -78,20 +76,33 @@ namespace Physics2D
 			for (auto& ccp : iter->second)
 			{
 				auto& vcp = ccp.vcp;
-
+				
 				ccp.active = false;
 
-				real lambda_p = vcp.bias;
-				if (ccp.bodyA->type() == Body::BodyType::Static || ccp.bodyB->type() == Body::BodyType::Static)
-					lambda_p *= 2;
+				Body* bodyA = ccp.bodyA;
+				Body* bodyB = ccp.bodyB;
+				Vector2 pa = vcp.ra + bodyA->position();
+				Vector2 pb = vcp.rb + bodyB->position();
+				Vector2 c = pb - pa;
+				if (c.dot(vcp.normal) < 0) //already solve by velocity
+					continue;
+				real bias = Math::max(vcp.penetration - m_maxPenetration, 0);
+				real v = m_biasFactor * bias;
+				real lambda = vcp.effectiveMassNormal * v;
+				if (!(bodyA->type() == Body::BodyType::Static) && !(bodyB->type() == Body::BodyType::Static))
+					lambda /= 2.0;
+				Vector2 impulse = lambda * vcp.normal;
 
-				Vector2 positionImpulse = 0.7 * lambda_p * vcp.normal;
-				
-
-				if (ccp.bodyA->type() != Body::BodyType::Static)
-					ccp.bodyA->position() += positionImpulse * dt;
-				if (ccp.bodyB->type() != Body::BodyType::Static)
-					ccp.bodyB->position() -= positionImpulse * dt;
+				if (bodyA->type() != Body::BodyType::Static || !ccp.bodyA->sleep())
+				{
+					bodyA->position() += bodyA->inverseMass() * impulse;
+					bodyA->rotation() += bodyA->inverseMass() * vcp.ra.cross(impulse);
+				}
+				if (bodyB->type() != Body::BodyType::Static || !ccp.bodyB->sleep())
+				{
+					bodyB->position() -= bodyB->inverseMass() * impulse;
+					bodyB->rotation() -= bodyB->inverseMass() * vcp.rb.cross(impulse);
+				}
 
 			}
 		}
@@ -104,6 +115,7 @@ namespace Physics2D
 		const auto relation = generateRelation(collision.bodyA, collision.bodyB);
 		auto& contactList = m_contactTable[relation];
 		assert(contactList.size() <= 2);
+
 		for (const auto& elem : collision.contactList)
 		{
 			bool existed = false;
@@ -213,7 +225,8 @@ namespace Physics2D
 
 		//vcp.bias = 0;
 		vcp.restitution = Math::min(ccp.bodyA->restitution(), ccp.bodyB->restitution());
-		vcp.bias = m_biasFactor * Math::max(0.0, collision.penetration - m_maxPenetration) * 60.0;
+		vcp.penetration = collision.penetration;
+		vcp.bias = m_biasFactor * Math::max(0.0, collision.penetration - m_maxPenetration);
 		//accumulate inherited impulse
 		Vector2 impulse = vcp.accumulatedNormalImpulse * vcp.normal + vcp.accumulatedTangentImpulse * vcp.tangent;
 		//Vector2 impulse;

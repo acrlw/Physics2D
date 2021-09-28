@@ -38,6 +38,13 @@ namespace Physics2D
 		if (bodyA == bodyB)
 			return result;
 
+		if (bodyA->id() > bodyB->id())
+		{
+			Body* temp = bodyA;
+			bodyA = bodyB;
+			bodyB = temp;
+		}
+
 		result.bodyA = bodyA;
 		result.bodyB = bodyB;
 

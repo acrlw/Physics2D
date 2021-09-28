@@ -95,6 +95,15 @@ namespace Physics2D
 		if (iter == m_bodyTable.end())
 			return;
 		int parentIndex = m_tree[iter->second].parentIndex;
+
+		if (parentIndex == -1 && m_tree[iter->second].isLeaf())
+		{
+			m_rootIndex = -1;
+			remove(iter->second);
+			m_bodyTable.erase(iter);
+			return;
+		}
+
 		int anotherChild = m_tree[parentIndex].leftIndex == iter->second ? m_tree[parentIndex].rightIndex : m_tree[parentIndex].leftIndex;
 		remove(iter->second);
 		elevate(anotherChild);
