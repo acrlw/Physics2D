@@ -5,7 +5,10 @@
 #include "include/dynamics/body.h"
 namespace Physics2D
 {
-	
+	/// <summary>
+	/// Continuous Collision Detection
+	///	This class is implemented by bisection and re-sampling. Both them are costly.
+	/// </summary>
 	class CCD
 	{
 	public:

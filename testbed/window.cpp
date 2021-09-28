@@ -286,8 +286,8 @@ namespace Physics2D
 		rect->position().set({-0.5, -1});
 		rect->rotation() = 0;
 		rect->setMass(200);
-		rect->setRestitution(0.1);
-		rect->setFriction(0.8);
+		rect->setRestitution(0.5);
+		rect->setFriction(0.1);
 		rect->setType(Body::BodyType::Dynamic);
 
 		//rect2 = m_world.createBody();

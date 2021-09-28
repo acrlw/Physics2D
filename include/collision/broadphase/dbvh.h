@@ -4,7 +4,10 @@
 
 namespace Physics2D
 {
-	
+	/// <summary>
+	/// Dynamic Bounding Volume Hierarchy
+	///	This is implemented by traditional binary search tree
+	/// </summary>
 	class DBVH
 	{
 		public:

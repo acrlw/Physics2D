@@ -4,6 +4,7 @@ namespace Physics2D
 {
 	RelationID generateRelation(Body* bodyA, Body* bodyB)
 	{
+		//Combine two 32-bit id into one 64-bit id in binary form
 		auto bodyAId = bodyA->id();
 		auto bodyBId = bodyB->id();
 		if (bodyAId > bodyBId)

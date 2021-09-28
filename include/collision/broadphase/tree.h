@@ -5,6 +5,10 @@
 
 namespace Physics2D
 {
+	/// <summary>
+	/// Dynamic Bounding Volume Tree
+	///	This is implemented by dynamic array-arranged.
+	/// </summary>
 	class Tree
 	{
 	public:

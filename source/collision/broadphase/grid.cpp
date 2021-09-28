@@ -2,15 +2,24 @@
 
 namespace Physics2D
 {
-    std::vector<std::pair<Body*, Body*>> UniformGrid::generatePairs()
+    std::vector<std::pair<Body*, Body*>> UniformGrid::generate()
     {
         std::vector<std::pair<Body*, Body*>> result;
         return result;
     }
+
+    std::vector<Body*> UniformGrid::raycast(const Vector2& p, const Vector2& d)
+    {
+    }
+
     void UniformGrid::update(Body* body)
     {
     }
     void UniformGrid::insert(Body* body)
+    {
+    }
+
+    void UniformGrid::remove(Body* body)
     {
     }
 }

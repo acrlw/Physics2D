@@ -22,9 +22,11 @@ namespace Physics2D
 	/// <summary>
 	/// Simplex structure for gjk/epa test.
 	/// By convention:
-	/// 1 points: p0 , construct a single point
-	/// 2 points: p0 -> p1, construct a segment
-	/// 4 points: p0 -> p1 -> p2 -> p0, construct a triangle
+	///   1 points: p0 , construct a single point
+	///   2 points: p0 -> p1, construct a segment
+	/// >=4 points: p0 -> p1 -> p2 -> p0, construct a polygon
+	///	ATTENTION:
+	///	  The performance bottleneck results in std::vector. Inserting and reallocating is expensive.
 	/// </summary>
 	/// <returns></returns>
 	struct Simplex
