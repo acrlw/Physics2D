@@ -12,21 +12,9 @@ cmake CMakeLists.txt
 - Basic Linear Algebra
 - Collision Detection
   - Narrowphase
-    - Basic Algorithm
+    - Algorithm
       - SAT
-      - GJK
-      - EPA
-      - MPR
-      - Distance
-      - Contact Pair
-    - Support Mapping
-      - Ellipse
-      - Circle
-      - Polygon
-      - Line
-      - Point
-      - Capsule
-      - Sector
+      - GJK & EPA & MPR & Distance & Contact Pair
     - Continuous Collision Detection
       - Sampling Trajectory of Body
       - Time of Impact
@@ -35,7 +23,7 @@ cmake CMakeLists.txt
     - Dynamic Bounding Volume Tree
       - SAH
       - Tree & Array
-- Contact Cache
+- Contact Maintainer
 - Rigid Body Dynamics Simulation
 - Sequential Impulse Solver
 - Joint
@@ -51,6 +39,14 @@ cmake CMakeLists.txt
   - Smooth Transition
   - Tracing Specified Body
 - Simple 2D Geometry Algorithm
+  - Support Mapping
+      - Ellipse
+      - Circle
+      - Polygon
+      - Line
+      - Point
+      - Capsule
+      - Sector
   - Intersection
     - Raycast
     - Line Segment
@@ -84,3 +80,14 @@ cmake CMakeLists.txt
 - Soft Body
   - Finite Element Method
   - Mass-Spring System
+
+# Reference
+- [Box2D](https://github.com/erincatto/box2d)
+- [Box2D Lite](https://github.com/erincatto/box2d-lite)
+- [Box2D Publications](https://box2d.org/publications/)
+- [dyn4j Official Blog](https://dyn4j.org/blog/)
+- [dyn4j](https://github.com/dyn4j/dyn4j)
+- [Allen Chou's Blog](http://allenchou.net/game-physics-series/)
+- [Gaffer's on Games](https://gafferongames.com/#posts)
+- [*Introduction to rigid body pipeline, collision detection* - Erwin Coumans](https://docs.google.com/presentation/d/1wGUJ4neOhw5i4pQRfSGtZPE3CIm7MfmqfTp5aJKuFYM/edit#slide=id.g644a5aa5f_1_116)
+- *Foundations of Physically Based Modeling and Animation* - Donald House and John C. Keyser
