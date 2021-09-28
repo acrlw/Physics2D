@@ -84,10 +84,11 @@ cmake CMakeLists.txt
 # Reference
 - [Box2D](https://github.com/erincatto/box2d)
 - [Box2D Lite](https://github.com/erincatto/box2d-lite)
-- [Box2D Publications](https://box2d.org/publications/)
-- [dyn4j Official Blog](https://dyn4j.org/blog/)
 - [dyn4j](https://github.com/dyn4j/dyn4j)
 - [matterjs](https://github.com/liabru/matter-js)
+- [nphysics](https://github.com/dimforge/nphysics)
+- [Box2D Publications](https://box2d.org/publications/)
+- [dyn4j Official Blog](https://dyn4j.org/blog/)
 - [Game Physics For Beginners - liabru](https://brm.io/game-physics-for-beginners/)
 - [Allen Chou's Blog](http://allenchou.net/game-physics-series/)
 - [Physics Constraints Series - Allen Chou](https://www.youtube.com/c/MingLunChou/videos)
