@@ -95,6 +95,7 @@ cmake CMakeLists.txt
 - [Gaffer's on Games](https://gafferongames.com/#posts)
 - [Randy Gaul's Blog](http://www.randygaul.net/)
 - [Winter's Dev](https://blog.winter.dev/)
+- [Primitives and Intersection Acceleration](https://www.pbr-book.org/3ed-2018/Primitives_and_Intersection_Acceleration/Bounding_Volume_Hierarchies)
 - [Real-Time Rendering Intersection](http://www.realtimerendering.com/intersections.html)
 - [Inigo Quilez's 2D SDF Functions](https://www.iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm)
 - [*A Simple Time-Corrected Verlet Integration Method* - Jonathan Dummer](https://archive.gamedev.net/archive/reference/programming/features/verlet/)
