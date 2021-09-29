@@ -14,6 +14,8 @@ namespace Physics2D
 	public:
         static void renderPoint(QPainter* painter, Utils::Camera* camera, const Vector2& point, const QPen& pen);
         static void renderLine(QPainter* painter, Utils::Camera* camera, const Vector2& p1, const Vector2& p2, const QPen& pen);
+        static void renderPoints(QPainter* painter, Utils::Camera* camera, const std::vector<Vector2>& points, const QPen& pen);
+        static void renderLines(QPainter* painter, Utils::Camera* camera, const std::vector<std::pair<Vector2, Vector2>>& lines, const QPen& pen);
 
         static void renderShape(QPainter* painter, Utils::Camera* camera, const ShapePrimitive& shape, const QPen& pen);
         static void renderPolygon(QPainter* painter, Utils::Camera* camera, const ShapePrimitive& shape, const QPen& pen);

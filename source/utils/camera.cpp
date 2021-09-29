@@ -78,16 +78,20 @@ namespace Physics2D::Utils
 			if(m_axisVisible)
 			{
 				QColor color = Qt::green;
+				color.setAlphaF(0.7);
+				pen.setColor(color);
+				std::vector<Vector2> axisPoints;
+				axisPoints.reserve(static_cast<size_t>(m_axisPointCount * 2 + 1));
+				
+				for (real i = -m_axisPointCount; i <= m_axisPointCount; i += 1.0)
+				{
+					axisPoints.emplace_back(Vector2(0, i));
+					axisPoints.emplace_back(Vector2(i, 0));
+				}
+				RendererQtImpl::renderPoints(painter, this, axisPoints, pen);
 				color.setAlphaF(0.6);
 				pen.setColor(color);
-				for (int i = -m_axisPointCount; i <= m_axisPointCount; i++)
-				{
-					RendererQtImpl::renderPoint(painter, this, Vector2(0, i), pen);
-					RendererQtImpl::renderPoint(painter, this, Vector2(i, 0), pen);
-				}
-				color.setAlphaF(0.45);
-				pen.setColor(color);
-				pen.setWidth(1);
+				pen.setWidth(2);
 				RendererQtImpl::renderLine(painter, this, Vector2(0, -m_axisPointCount), Vector2(0, m_axisPointCount), pen);
 				RendererQtImpl::renderLine(painter, this, Vector2(-m_axisPointCount, 0), Vector2(m_axisPointCount, 0), pen);
 
@@ -100,9 +104,6 @@ namespace Physics2D::Utils
 				for (auto& elem : m_tree->tree())
 					if (elem.body != nullptr)
 						RendererQtImpl::renderAABB(painter, this, elem.aabb, pen);
-
-
-
 			}
 			if(m_dbvhVisible)
 			{
@@ -112,6 +113,10 @@ namespace Physics2D::Utils
 			if (m_treeVisible)
 			{
 				drawTree(m_tree->rootIndex(), painter);
+			}
+			if(m_gridScaleLineVisible)
+			{
+				drawGridScaleLine(painter);
 			}
 		}
 	}
@@ -154,6 +159,26 @@ namespace Physics2D::Utils
 	void Camera::setAxisVisible(bool axisVisible)
 	{
 		m_axisVisible = axisVisible;
+	}
+
+	bool Camera::gridScaleLineVisible() const
+	{
+		return m_gridScaleLineVisible;
+	}
+
+	void Camera::setGridScaleLineVisible(bool visible)
+	{
+		m_gridScaleLineVisible = visible;
+	}
+
+	real Camera::axisPointCount() const
+	{
+		return m_axisPointCount;
+	}
+
+	void Camera::setAxisPointCount(real count)
+	{
+		m_axisPointCount = count;
 	}
 
 	real Camera::meterToPixel() const
@@ -233,12 +258,12 @@ namespace Physics2D::Utils
         m_viewport = viewport;
 		m_origin.set((m_viewport.topLeft.x + m_viewport.bottomRight.x) * (0.5), (m_viewport.topLeft.y + m_viewport.bottomRight.y) * (0.5));
     }
-	Vector2 Camera::worldToScreen(const Vector2& pos)
+	Vector2 Camera::worldToScreen(const Vector2& pos)const
 	{
 		Vector2 real_origin(m_origin.x + m_transform.x, m_origin.y - m_transform.y);
 		return Vector2(real_origin.x + pos.x * m_meterToPixel, real_origin.y - pos.y * m_meterToPixel);
 	}
-	Vector2 Camera::screenToWorld(const Vector2& pos)
+	Vector2 Camera::screenToWorld(const Vector2& pos)const
 	{
 		Vector2 real_origin(m_origin.x + m_transform.x, m_origin.y - m_transform.y);
 		Vector2 result = pos - real_origin;
@@ -310,7 +335,70 @@ namespace Physics2D::Utils
 		if (!m_tree->tree()[nodeIndex].isLeaf())
 			RendererQtImpl::renderAABB(painter, this, aabb, pen);
 	}
+	void Camera::drawGridScaleLine(QPainter* painter)
+	{
+		QColor color = Qt::darkGreen;
+		QPen pen;
+		color.setAlphaF(0.8);
+		pen.setColor(color);
+		pen.setWidth(1);
+		bool fineEnough = m_meterToPixel > 180;
+		real h = 1.0;
 
+		if (m_meterToPixel < 20)
+			h = 10.0;
+		else if (m_meterToPixel < 60)
+			h = 5.0;
+		else if (m_meterToPixel < 120)
+			h = 2.5;
+		else
+			h = 1.0;
+
+		std::vector<std::pair<Vector2, Vector2>> lines;
+		lines.reserve(static_cast<size_t>(m_axisPointCount * 2));
+		for (real i = -m_axisPointCount; i <= m_axisPointCount; i += h)
+		{
+			if(realEqual(i, 0.0))
+				continue;
+			Vector2 p1 = { i, m_axisPointCount };
+			Vector2 p2 = { i, -m_axisPointCount };
+			lines.emplace_back(std::make_pair( p1, p2 ));
+
+			p1.set(-m_axisPointCount, i);
+			p2.set(m_axisPointCount, i);
+			lines.emplace_back(std::make_pair(p1, p2));
+		}
+		RendererQtImpl::renderLines(painter, this, lines, pen);
+		if(fineEnough)
+		{
+			if (m_meterToPixel < 380)
+				h = 0.2;
+			else if (m_meterToPixel < 700 && m_meterToPixel >= 380)
+				h = 0.1;
+			else if (m_meterToPixel >= 700)
+				h = 0.05;
+
+			lines.clear();
+			lines.reserve(static_cast<size_t>(m_axisPointCount * 2 / 0.2));
+			color.setAlphaF(0.3);
+			pen.setColor(color);
+			for (real i = -m_axisPointCount; i <= m_axisPointCount; i += h)
+			{
+				if (realEqual(i, 0.0))
+					continue;
+				if(realEqual(i - std::floor(i), 0.0))
+					continue;
+				Vector2 p1 = { i, m_axisPointCount };
+				Vector2 p2 = { i, -m_axisPointCount };
+				lines.emplace_back(std::make_pair(p1, p2));
+
+				p1.set(-m_axisPointCount, i);
+				p2.set(m_axisPointCount, i);
+				lines.emplace_back(std::make_pair(p1, p2));
+			}
+			RendererQtImpl::renderLines(painter, this, lines, pen);
+		}
+	}
 	void Camera::drawDbvh(DBVH::Node* node, QPainter* painter)
 	{
 		if (node == nullptr)

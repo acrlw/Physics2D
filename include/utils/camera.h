@@ -41,6 +41,12 @@ namespace Physics2D::Utils
         bool axisVisible() const;
         void setAxisVisible(bool axisVisible);
 
+        bool gridScaleLineVisible()const;
+        void setGridScaleLineVisible(bool visible);
+
+        real axisPointCount()const;
+        void setAxisPointCount(real count);
+
         real meterToPixel() const;
         void setMeterToPixel(const real &meterToPixel);
 
@@ -62,8 +68,8 @@ namespace Physics2D::Utils
         Viewport viewport() const;
         void setViewport(const Viewport &viewport);
 
-        Vector2 worldToScreen(const Vector2& pos);
-        Vector2 screenToWorld(const Vector2& pos);
+        Vector2 worldToScreen(const Vector2& pos)const;
+        Vector2 screenToWorld(const Vector2& pos)const;
 		
         DBVH* dbvh()const;
         void setDbvh(DBVH* dbvh);
@@ -83,6 +89,7 @@ namespace Physics2D::Utils
 
 		
     private:
+        void drawGridScaleLine(QPainter* painter);
         void drawDbvh(DBVH::Node* node, QPainter* painter);
         void drawTree(int nodeIndex, QPainter* painter);
         bool m_visible = true;
@@ -92,6 +99,7 @@ namespace Physics2D::Utils
 		bool m_axisVisible = true;
         bool m_dbvhVisible = false;
         bool m_treeVisible = false;
+        bool m_gridScaleLineVisible = false;
 		
 		real m_meterToPixel = 50.0;
 		real m_pixelToMeter = 0.02;
@@ -113,5 +121,7 @@ namespace Physics2D::Utils
         real m_axisPointCount = 20;
         
 	};
+
+	
 }
 #endif

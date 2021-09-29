@@ -80,6 +80,7 @@ namespace Physics2D
 		camera.setDbvhVisible(false);
 		camera.setTreeVisible(false);
 		camera.setAxisVisible(true);
+		camera.setGridScaleLineVisible(true);
 		connect(&m_timer, &QTimer::timeout, this, &Window::process);
 
 		
@@ -423,16 +424,18 @@ namespace Physics2D
 		QPen pen3(Qt::red, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 		QPen pen2(Qt::green, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 		real dt = 1.0 / 60;
-		//real x = 0, y = 0;
-		//real h = 0.1;
-		//
-		//for(;y<10;)
-		//{
-		//	y = std::exp(x);
-		//	Vector2 p(x, y);
-		//	RendererQtImpl::renderPoint(&painter, &camera, p, pen2);
-		//	x += h;
-		//}
+		real x = 0.1, y = 0;
+		real h = 0.1;
+		std::vector<Vector2> points;
+		points.reserve(50);
+		for(int i = 0; i < 100;i++)
+		{
+			points.emplace_back(Vector2(x, std::log(x)));
+			//points.emplace_back(Vector2(x, std::exp(x)));
+			x += h;
+		}
+
+		RendererQtImpl::renderPoints(&painter, &camera, points, pen2);
 		//
 		
 		//Vector2 direction = mousePos - Vector2(9, 9);

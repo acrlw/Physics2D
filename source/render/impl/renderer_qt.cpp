@@ -20,6 +20,38 @@ namespace Physics2D
         Vector2 screen_p2 = camera->worldToScreen(p2);
         painter->setPen(pen);
         painter->drawLine(QPointF(screen_p1.x, screen_p1.y), QPointF(screen_p2.x, screen_p2.y));
+        
+    }
+
+    void RendererQtImpl::renderPoints(QPainter* painter, Utils::Camera* camera, const std::vector<Vector2>& points,
+	    const QPen& pen)
+    {
+        assert(painter != nullptr && camera != nullptr);
+        QPolygonF pts;
+        for(auto& elem: points)
+        {
+            Vector2 screen_p = camera->worldToScreen(elem);
+            pts << QPointF(screen_p.x, screen_p.y);
+        }
+        QPen p = pen;
+        p.setWidth(4);
+        painter->setPen(p);
+        painter->drawPoints(pts);
+    }
+
+    void RendererQtImpl::renderLines(QPainter* painter, Utils::Camera* camera,
+	    const std::vector<std::pair<Vector2, Vector2>>& lines, const QPen& pen)
+    {
+        assert(painter != nullptr && camera != nullptr);
+        QVector<QLineF> lfs;
+        for(auto& [p1, p2] : lines)
+        {
+            Vector2 screen_p1 = camera->worldToScreen(p1);
+            Vector2 screen_p2 = camera->worldToScreen(p2);
+            lfs << QLineF(QPointF(screen_p1.x, screen_p1.y), QPointF(screen_p2.x, screen_p2.y));
+        }
+        painter->setPen(pen);
+        painter->drawLines(lfs);
     }
 
     void RendererQtImpl::renderPolygon(QPainter* painter, Utils::Camera* camera, const ShapePrimitive& shape, const QPen& pen)
@@ -28,7 +60,7 @@ namespace Physics2D
         assert(shape.shape->type() == Shape::Type::Polygon);
         Vector2 position = camera->worldToScreen(shape.transform);
         QPen center(Qt::gray, 8, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-        renderPoint(painter, camera, Matrix2x2(shape.rotation).multiply(dynamic_cast<Polygon*>(shape.shape.get())->center()) + shape.transform, center);
+        renderPoint(painter, camera, shape.transform, center);
         QPolygonF polygon;
         QColor color = pen.color();
         color.setAlphaF(0.2);
