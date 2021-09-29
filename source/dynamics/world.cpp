@@ -27,8 +27,8 @@ namespace Physics2D
 			{
 				body->forces() += body->mass() * g;
 
-				body->velocity() += body->inverseMass() * body->forces() * dt * m_velocityIteration;
-				body->angularVelocity() += body->inverseInertia() * body->torques() * dt * m_velocityIteration;
+				body->velocity() += body->inverseMass() * body->forces() * dt;
+				body->angularVelocity() += body->inverseInertia() * body->torques() * dt;
 
 					//damping
 				body->velocity() *= 1.0 / (1.0 + dt * m_linearVelocityDamping);
@@ -38,8 +38,8 @@ namespace Physics2D
 			}
 			case Body::BodyType::Kinematic:
 			{
-				body->velocity() += body->inverseMass() * body->forces() * dt * m_velocityIteration;
-				body->angularVelocity() += body->inverseInertia() * body->torques() * dt * m_velocityIteration;
+				body->velocity() += body->inverseMass() * body->forces() * dt;
+				body->angularVelocity() += body->inverseInertia() * body->torques() * dt;
 				break;
 			}
 			case Body::BodyType::Bullet:
@@ -80,8 +80,8 @@ namespace Physics2D
 				break;
 			case Body::BodyType::Dynamic:
 			{
-				body->position() += body->velocity() * dt * m_positionIteration;
-				body->rotation() += body->angularVelocity() * dt * m_positionIteration;
+				body->position() += body->velocity() * dt;
+				body->rotation() += body->angularVelocity() * dt;
 
 
 				body->forces().clear();
@@ -90,8 +90,8 @@ namespace Physics2D
 			}
 			case Body::BodyType::Kinematic:
 			{
-				body->position() += body->velocity() * dt * m_positionIteration;
-				body->rotation() += body->angularVelocity() * dt * m_positionIteration;
+				body->position() += body->velocity() * dt;
+				body->rotation() += body->angularVelocity() * dt;
 
 
 				body->forces().clear();
@@ -176,17 +176,7 @@ namespace Physics2D
 	{
 		m_positionIteration = positionIteration;
 	}
-
-	Integrator World::integrator() const
-	{
-		return m_integrator;
-	}
-
-	void World::setIntegrator(const Integrator& integrator)
-	{
-		m_integrator = integrator;
-	}
-
+	
 	std::vector<std::unique_ptr<Body>>& World::bodyList()
 	{
 		return m_bodyList;

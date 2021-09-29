@@ -103,8 +103,7 @@ namespace Physics2D
 		bool m_sleep = false;
 		real m_friction = 0.2;
 		real m_restitution = 0.8;
-
-		BodyState m_bodyState;
+		
 
 		
 	};

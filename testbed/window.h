@@ -127,6 +127,9 @@ namespace Physics2D
 		real roomSize = 20;
 
 		ContactMaintainer contactMaintainer;
+		SemiImplicitEuler<Vector2> euler;
+		VerletVelocity<Vector2> vv;
+		VerletPosition<Vector2> vp;
 	};
 	
 }

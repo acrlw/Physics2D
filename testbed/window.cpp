@@ -48,22 +48,23 @@ namespace Physics2D
 
 
 		m_world.setEnableGravity(true);
-		m_world.setGravity({0, -2.0});
+		m_world.setGravity({0, -3.0});
 		m_world.setLinearVelocityDamping(0.1);
 		m_world.setAirFrictionCoefficient(0.8);
 		m_world.setAngularVelocityDamping(0.1);
-		m_world.setPositionIteration(1);
-		m_world.setVelocityIteration(1);
+		m_world.setPositionIteration(6);
+		m_world.setVelocityIteration(2);
 
 		pointPrim.bodyA = nullptr;
 		mj = m_world.createJoint(pointPrim);
 		mj->setActive(false);
 		//createStackBox(6, 1.1, 1.1);
 		//createBoxRoom();
-		//createBoxesAndGround(10);
+		//createBoxesAndGround(2);
 		//testPendulum();
 		//testCollision();
-		testJoint();
+		//testJoint();
+
 		//testBroadphase();
 		//testCCD();
 		//testCapsule();
@@ -78,7 +79,7 @@ namespace Physics2D
 		camera.setAabbVisible(false);
 		camera.setDbvhVisible(false);
 		camera.setTreeVisible(false);
-		camera.setAxisVisible(false);
+		camera.setAxisVisible(true);
 		connect(&m_timer, &QTimer::timeout, this, &Window::process);
 
 		
@@ -236,19 +237,21 @@ namespace Physics2D
 
 	void Window::process()
 	{
-		if(isStop)
+		if (isStop)
 		{
 			for (auto& body : m_world.bodyList())
 				tree.update(body.get());
 			repaint();
 			return;
 		}
-		for (int i = 0; i < 1; i++)
+		const real dt = 1.0 / 60.0;
+
+		m_world.stepVelocity(dt);
+
+		for(int i = 0;i < m_world.velocityIteration(); ++i)
 		{
 
-			const real dt = 1.0 / 30.0;
-
-			m_world.stepVelocity(dt);
+			m_world.solveVelocityConstraint(dt);
 
 			auto potentialList = tree.generate();
 			for (auto pair : potentialList)
@@ -258,17 +261,22 @@ namespace Physics2D
 					contactMaintainer.add(result);
 			}
 			contactMaintainer.solveVelocity(dt);
-			m_world.solveVelocityConstraint(dt);
-			m_world.stepPosition(dt);
+		}
+
+		m_world.stepPosition(dt);
+
+		for(int i = 0;i < m_world.positionIteration(); ++i)
+		{
 			contactMaintainer.solvePosition(dt);
 			m_world.solvePositionConstraint(dt);
-
-			for (auto& body : m_world.bodyList())
-				tree.update(body.get());
 		}
-		
 
-		
+		for (auto& body : m_world.bodyList())
+			tree.update(body.get());
+
+
+
+
 		repaint();
 	}
 
@@ -286,8 +294,8 @@ namespace Physics2D
 		rect->setShape(rectangle_ptr);
 		rect->position().set({-0.5, -1});
 		rect->rotation() = 0;
-		rect->setMass(200);
-		rect->setRestitution(0.0);
+		rect->setMass(0.5);
+		rect->setRestitution(0.2);
 		rect->setFriction(0.8);
 		rect->setType(Body::BodyType::Dynamic);
 
@@ -412,16 +420,27 @@ namespace Physics2D
 	{
 		QPainter painter(this);
 		camera.render(&painter);
+		QPen pen3(Qt::red, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		QPen pen2(Qt::green, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 		real dt = 1.0 / 60;
-
+		//real x = 0, y = 0;
+		//real h = 0.1;
+		//
+		//for(;y<10;)
+		//{
+		//	y = std::exp(x);
+		//	Vector2 p(x, y);
+		//	RendererQtImpl::renderPoint(&painter, &camera, p, pen2);
+		//	x += h;
+		//}
+		//
+		
 		//Vector2 direction = mousePos - Vector2(9, 9);
 		//direction.normalize();
 		//
 		//auto list = tree.raycast({ 9, 9 }, direction);
 		//
 
-		//QPen pen3(Qt::red, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		//QPen pen2(Qt::green, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 		//RendererQtImpl::renderPoint(&painter, &camera, { 9, 9 }, pen3);
 		//RendererQtImpl::renderPoint(&painter, &camera, mousePos, pen3);
 		//RendererQtImpl::renderLine(&painter, &camera, { 9, 9 }, mousePos, pen2);
@@ -557,8 +576,6 @@ namespace Physics2D
 				prim.targetPoint = mousePos;
 				mj->setActive(true);
 				mj->set(prim);
-				if (camera.targetBody() == nullptr)
-					camera.setTargetBody(body.get());
 				break;
 			}
 		}
@@ -666,8 +683,6 @@ namespace Physics2D
 		{
 			if (camera.targetBody() != nullptr)
 				camera.setTargetBody(nullptr);
-			else
-				camera.setTargetBody(rect);
 			break;
 		}
 		default:

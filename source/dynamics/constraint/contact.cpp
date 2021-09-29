@@ -86,22 +86,20 @@ namespace Physics2D
 				Vector2 c = pb - pa;
 				if (c.dot(vcp.normal) < 0) //already solve by velocity
 					continue;
-				real bias = Math::max(vcp.penetration - m_maxPenetration, 0);
-				real v = m_biasFactor * bias;
-				real lambda = vcp.effectiveMassNormal * v;
-				if (!(bodyA->type() == Body::BodyType::Static) && !(bodyB->type() == Body::BodyType::Static))
-					lambda /= 2.0;
+				real bias = m_biasFactor * Math::max(vcp.penetration - m_maxPenetration, 0);
+				real lambda = vcp.effectiveMassNormal * bias;
+
 				Vector2 impulse = lambda * vcp.normal;
 
-				if (bodyA->type() != Body::BodyType::Static || !ccp.bodyA->sleep())
+				if (bodyA->type() != Body::BodyType::Static && !ccp.bodyA->sleep())
 				{
 					bodyA->position() += bodyA->inverseMass() * impulse;
-					bodyA->rotation() += bodyA->inverseMass() * vcp.ra.cross(impulse);
+					bodyA->rotation() += bodyA->inverseInertia() * vcp.ra.cross(impulse);
 				}
-				if (bodyB->type() != Body::BodyType::Static || !ccp.bodyB->sleep())
+				if (bodyB->type() != Body::BodyType::Static && !ccp.bodyB->sleep())
 				{
 					bodyB->position() -= bodyB->inverseMass() * impulse;
-					bodyB->rotation() -= bodyB->inverseMass() * vcp.rb.cross(impulse);
+					bodyB->rotation() -= bodyB->inverseInertia() * vcp.rb.cross(impulse);
 				}
 
 			}

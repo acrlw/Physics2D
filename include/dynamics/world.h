@@ -65,9 +65,6 @@ namespace Physics2D
             real positionIteration() const;
             void setPositionIteration(const real &positionIteration);
 
-            Integrator integrator()const;
-            void setIntegrator(const Integrator& integrator);
-
             std::vector<std::unique_ptr<Body>>& bodyList();
     	
             std::vector<std::unique_ptr<Joint>>& jointList();
@@ -87,7 +84,6 @@ namespace Physics2D
     		bool m_enableGravity;
             std::vector<std::unique_ptr<Body>> m_bodyList;
             std::vector<std::unique_ptr<Joint>> m_jointList;
-            Integrator m_integrator;
 
     		
     		
