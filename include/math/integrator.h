@@ -8,8 +8,8 @@ namespace Physics2D
 	{
 		struct Timestep
 		{
-			real dt0 = 0;
-			real dt = 0;
+			real h0 = 0;
+			real h = 0;
 		};
 		template<typename T = real>
 		struct Value
@@ -29,14 +29,14 @@ namespace Physics2D
 			static void integrate(Value<T>& value, real dt)
 			{
 				Value<T> last = value;
-				value.step.dt = dt;
+				value.step.h = dt;
 				value.dx += value.ddx * dt;
 				value.x += value.dx * dt;
 
 				//make it last
 				value.dx0 = last.dx;
 				value.x0 = last.x;
-				value.step.dt0 = dt;
+				value.step.h0 = dt;
 			}
 		};
 		template<typename T>
@@ -46,13 +46,13 @@ namespace Physics2D
 			static void integrate(Value<T>& value, real dt)
 			{
 				Value<T> last = value;
-				value.step.dt = dt;
+				value.step.h = dt;
 				value.x = value.x + value.dx * dt + 0.5 * value.ddx * dt * dt;
 				value.dx = value.dx + value.ddx * dt;
 
 				value.x0 = last.x;
 				value.dx0 = last.dx;
-				value.step.dt0 = last.step.dt;
+				value.step.h0 = last.step.h;
 			}
 		};
 
@@ -64,12 +64,12 @@ namespace Physics2D
 			static void integrate(Value<T>& value, real dt)
 			{
 				Value<T> last = value;
-				value.step.dt = dt;
+				value.step.h = dt;
 				value.x = 2 * value.x - value.x0 + value.ddx * dt * dt;
 
 				value.x0 = last.x;
 				value.dx0 = last.dx;
-				value.step.dt0 = last.step.dt;
+				value.step.h0 = last.step.h;
 			}
 		};
 		template<typename T>

@@ -20,7 +20,6 @@ namespace Physics2D
         Vector2 screen_p2 = camera->worldToScreen(p2);
         painter->setPen(pen);
         painter->drawLine(QPointF(screen_p1.x, screen_p1.y), QPointF(screen_p2.x, screen_p2.y));
-        
     }
 
     void RendererQtImpl::renderPoints(QPainter* painter, Utils::Camera* camera, const std::vector<Vector2>& points,

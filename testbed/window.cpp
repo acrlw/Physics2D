@@ -424,12 +424,20 @@ namespace Physics2D
 		QPen pen3(Qt::red, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 		QPen pen2(Qt::green, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 		real dt = 1.0 / 60;
+
 		real x = 0.1, y = 0;
 		real h = 0.1;
+		Integrator::Value<real> val;
+
 		std::vector<Vector2> points;
 		points.reserve(50);
 		for(int i = 0; i < 100;i++)
 		{
+
+			val.dx = -(val.x * val.x);
+			val.ddx = 0;
+			Integrator::SemiImplicitEuler<real>::integrate(val, h);
+
 			points.emplace_back(Vector2(x, std::log(x)));
 			//points.emplace_back(Vector2(x, std::exp(x)));
 			x += h;
@@ -670,6 +678,16 @@ namespace Physics2D
 		case Qt::Key_T:
 		{
 			camera.setTreeVisible(!camera.treeVisible());
+			break;
+		}
+		case Qt::Key_X:
+		{
+			camera.setAxisVisible(!camera.axisVisible());
+			break;
+		}
+		case Qt::Key_G:
+		{
+			camera.setGridScaleLineVisible(!camera.gridScaleLineVisible());
 			break;
 		}
 		case Qt::Key_Space:

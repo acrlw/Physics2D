@@ -78,7 +78,7 @@ namespace Physics2D::Utils
 			if(m_axisVisible)
 			{
 				QColor color = Qt::green;
-				color.setAlphaF(0.7);
+				color.setAlphaF(0.8);
 				pen.setColor(color);
 				std::vector<Vector2> axisPoints;
 				axisPoints.reserve(static_cast<size_t>(m_axisPointCount * 2 + 1));
@@ -89,9 +89,10 @@ namespace Physics2D::Utils
 					axisPoints.emplace_back(Vector2(i, 0));
 				}
 				RendererQtImpl::renderPoints(painter, this, axisPoints, pen);
-				color.setAlphaF(0.6);
+				color = Qt::green;
+				color.setAlphaF(0.7);
 				pen.setColor(color);
-				pen.setWidth(2);
+				pen.setWidth(1);
 				RendererQtImpl::renderLine(painter, this, Vector2(0, -m_axisPointCount), Vector2(0, m_axisPointCount), pen);
 				RendererQtImpl::renderLine(painter, this, Vector2(-m_axisPointCount, 0), Vector2(m_axisPointCount, 0), pen);
 
@@ -343,14 +344,14 @@ namespace Physics2D::Utils
 		pen.setColor(color);
 		pen.setWidth(1);
 		bool fineEnough = m_meterToPixel > 180;
-		real h = 1.0;
+		real h;
 
-		if (m_meterToPixel < 20)
+		if (m_meterToPixel < 30)
 			h = 10.0;
 		else if (m_meterToPixel < 60)
 			h = 5.0;
 		else if (m_meterToPixel < 120)
-			h = 2.5;
+			h = 2.0;
 		else
 			h = 1.0;
 
@@ -371,11 +372,11 @@ namespace Physics2D::Utils
 		RendererQtImpl::renderLines(painter, this, lines, pen);
 		if(fineEnough)
 		{
-			if (m_meterToPixel < 380)
+			if (m_meterToPixel < 400)
 				h = 0.2;
-			else if (m_meterToPixel < 700 && m_meterToPixel >= 380)
+			else if (m_meterToPixel < 800)
 				h = 0.1;
-			else if (m_meterToPixel >= 700)
+			else
 				h = 0.05;
 
 			lines.clear();
