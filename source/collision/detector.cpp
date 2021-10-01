@@ -67,7 +67,6 @@ namespace Physics2D
 		if (shapeA.transform.fuzzyEqual(shapeB.transform) && !isColliding)
 			isColliding = simplex.containOrigin(true);
 
-
 		result.isColliding = isColliding;
 
 		
@@ -76,7 +75,6 @@ namespace Physics2D
 			auto oldSimplex = simplex;
 			simplex = GJK::epa(shapeA, shapeB, simplex);
 			PenetrationSource source = GJK::dumpSource(simplex);
-
 			
 			const auto info = GJK::dumpInfo(source);
 			result.normal = info.normal;
@@ -87,13 +85,14 @@ namespace Physics2D
 		return result;
 	}
 
-	std::optional<PointPair> Detector::distance(Body* bodyA, Body* bodyB)
+	PointPair Detector::distance(Body* bodyA, Body* bodyB)
 	{
+		PointPair result;
 		if (bodyA == nullptr || bodyB == nullptr)
-			return std::nullopt;
+			return result;
 
 		if (bodyA == bodyB)
-			return std::nullopt;
+			return result;
 
 		ShapePrimitive shapeA, shapeB;
 		shapeA.shape = bodyA->shape();
@@ -104,6 +103,6 @@ namespace Physics2D
 		shapeB.rotation = bodyB->rotation();
 		shapeB.transform = bodyB->position();
 
-		return std::optional<PointPair>(GJK::distance(shapeA, shapeB));
+		return GJK::distance(shapeA, shapeB);
 	}
 }

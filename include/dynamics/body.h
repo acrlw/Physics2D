@@ -77,12 +77,16 @@ namespace Physics2D
 		uint32_t id()const;
 		void setId(const uint32_t& id);
 
+		uint32_t bitmask()const;
+		void setBitmask(const uint32_t& bitmask);
+
 		real restitution()const;
 		void setRestitution(const real& restitution);
 	private:
 		void calcInertia();
 
 		uint32_t m_id;
+		uint32_t m_bitmask = 1;
 
 		real m_mass = 0;
 		real m_inertia = 0;

@@ -169,6 +169,16 @@ namespace Physics2D {
         m_id = id;
     }
 
+    uint32_t Body::bitmask() const
+    {
+        return m_bitmask;
+    }
+
+    void Body::setBitmask(const uint32_t& bitmask)
+    {
+        m_bitmask = bitmask;
+    }
+
     real Body::restitution() const
     {
         return m_restitution;

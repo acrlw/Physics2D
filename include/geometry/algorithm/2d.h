@@ -167,6 +167,7 @@ namespace Physics2D
 		Vector2 calculateEllipseProjectionPoint(const real& a, const real& b, const Vector2& direction);
 		Vector2 calculateCapsuleProjectionPoint(const real& width, const real& height, const Vector2& direction);
 		Vector2 calculateSectorProjectionPoint(const real& startRadian, const real& spanRadian, const real& radius, const Vector2& direction);
+		std::vector<Vector2> sutherlandHogmentPolygonClipping(std::vector<Vector2>& polygon1, std::vector<Vector2>& polygon2);
 		bool triangleContainsOrigin(const Vector2& a, const Vector2& b, const Vector2& c);
 	};
 }

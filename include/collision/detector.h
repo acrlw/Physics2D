@@ -25,7 +25,7 @@ namespace Physics2D
 	public:
 		static bool collide(Body* bodyA, Body* bodyB);
 		static Collision detect(Body* bodyA, Body* bodyB);
-		static std::optional<PointPair> distance(Body* bodyA, Body* bodyB);
+		static PointPair distance(Body* bodyA, Body* bodyB);
 		
 	private:
 	};

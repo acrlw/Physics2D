@@ -551,6 +551,12 @@ namespace Physics2D
 		return result;
 	}
 
+	std::vector<Vector2> GeometryAlgorithm2D::sutherlandHogmentPolygonClipping(std::vector<Vector2>& polygon1, std::vector<Vector2>& polygon2)
+	{
+		std::vector<Vector2> result;
+		return result;
+	}
+
 	bool GeometryAlgorithm2D::triangleContainsOrigin(const Vector2& a, const Vector2& b, const Vector2& c)
 	{
 		real ra = (b - a).cross(-a);

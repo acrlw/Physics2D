@@ -15,8 +15,6 @@ namespace Physics2D
 
 	void ContactMaintainer::solveVelocity(real dt)
 	{
-		clearInactivePoints();
-
 		for (auto iter = m_contactTable.begin(); iter != m_contactTable.end(); ++iter)
 		{
 			if (iter->second.empty() || !iter->second[0].active)
@@ -76,8 +74,6 @@ namespace Physics2D
 			for (auto& ccp : iter->second)
 			{
 				auto& vcp = ccp.vcp;
-				
-				ccp.active = false;
 
 				Body* bodyA = ccp.bodyA;
 				Body* bodyB = ccp.bodyB;
@@ -86,7 +82,7 @@ namespace Physics2D
 				Vector2 c = pb - pa;
 				if (c.dot(vcp.normal) < 0) //already solve by velocity
 					continue;
-				real bias = m_biasFactor * Math::max(vcp.penetration - m_maxPenetration, 0);
+				real bias = m_biasFactor * Math::max(c.length() - m_maxPenetration, 0);
 				real lambda = vcp.effectiveMassNormal * bias;
 
 				Vector2 impulse = lambda * vcp.normal;
@@ -186,6 +182,19 @@ namespace Physics2D
 			}
 		}
 	}
+
+	void ContactMaintainer::deactivateAllPoints()
+	{
+		for (auto iter = m_contactTable.begin(); iter != m_contactTable.end(); ++iter)
+		{
+			if (iter->second.empty() || !iter->second[0].active)
+				continue;
+
+			for (auto& ccp : iter->second)
+				ccp.active = false;
+		}
+	}
+
 	void ContactMaintainer::prepare(ContactConstraintPoint& ccp, const PointPair& pair, const Collision& collision)
 	{
 		ccp.bodyA = collision.bodyA;

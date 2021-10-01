@@ -6,9 +6,13 @@
 #include "include/collision/algorithm/gjk.h"
 namespace Physics2D
 {
-	class ContactClipper
+	
+
+	class ContactGenerator
 	{
-		
+	public:
+		static void recognize(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB, const Vector2& normal);
+		static std::vector<PointPair> clip(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB, const Vector2& normal);
 	};
 	
 }

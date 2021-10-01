@@ -10,6 +10,14 @@ namespace Physics2D
 		for (auto& joint : m_jointList)
 			joint.release();
 	}
+
+	void World::prepareVelocityConstraint(const real& dt)
+	{
+		for (auto& joint : m_jointList)
+			if (joint->active())
+				joint->prepare(dt);
+	}
+
 	void World::stepVelocity(const real& dt)
 	{
 		const Vector2 g = m_enableGravity ? m_gravity : Vector2{0.0, 0.0};
@@ -54,11 +62,6 @@ namespace Physics2D
 	}
 	void World::solveVelocityConstraint(real dt)
 	{
-		for (int i = 0; i < m_velocityIteration; i++)
-			for (auto& joint : m_jointList)
-				if (joint->active())
-					joint->prepare(dt);
-
 		for (int i = 0; i < m_velocityIteration; i++)
 			for (auto& joint : m_jointList)
 				if (joint->active())

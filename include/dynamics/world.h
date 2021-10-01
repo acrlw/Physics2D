@@ -17,6 +17,7 @@ namespace Physics2D
     			m_velocityIteration(1), m_positionIteration(1)
             {}
             ~World();
+            void prepareVelocityConstraint(const real& dt);
             void stepVelocity(const real& dt);
             void solveVelocityConstraint(real dt);
             void stepPosition(const real& dt);

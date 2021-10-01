@@ -14,7 +14,7 @@ namespace Physics2D
 		this->resize(1920, 1080);
 		this->setMouseTracking(true);
 
-		rectangle.set(1.5, 1.5);
+		rectangle.set(1, 1);
 		land.set(32, 0.2);
 		//polygon.append({{3, 0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3}, {2, -3}, {3, 0}});
 		polygon.append({ {-2, 0}, {0, 4}, {4, 6}, {10, 4}, {4, -2}, {-2, 0} });
@@ -24,7 +24,7 @@ namespace Physics2D
 		ellipse.scale(0.15);
 		circle.setRadius(1);
 		//circle.scale(7);
-		edge.set({-30, 5}, {30, 0});
+		edge.set({-15, 5}, {15, 0});
 		capsule.set(1, 2);
 		sector.set(Math::degreeToRadian(0), Math::degreeToRadian(90), 2);
 
@@ -52,18 +52,18 @@ namespace Physics2D
 		m_world.setLinearVelocityDamping(0.1);
 		m_world.setAirFrictionCoefficient(0.8);
 		m_world.setAngularVelocityDamping(0.1);
-		m_world.setPositionIteration(4);
-		m_world.setVelocityIteration(2);
+		m_world.setPositionIteration(10);
+		m_world.setVelocityIteration(6);
 
 		pointPrim.bodyA = nullptr;
 		mj = m_world.createJoint(pointPrim);
 		mj->setActive(false);
 		//createStackBox(6, 1.1, 1.1);
-		//createBoxRoom();
-		//createBoxesAndGround(3);
+		createBoxRoom();
+		createBoxesAndGround(5);
 		//testPendulum();
 		//testCollision();
-		testJoint();
+		//testJoint();
 
 		//testBroadphase();
 		//testCCD();
@@ -82,7 +82,7 @@ namespace Physics2D
 		camera.setAxisVisible(false);
 		camera.setGridScaleLineVisible(false);
 		connect(&m_timer, &QTimer::timeout, this, &Window::process);
-
+		//isStop = true;
 		
 		m_timer.setInterval(15);
 		m_timer.start();
@@ -249,18 +249,19 @@ namespace Physics2D
 
 		m_world.stepVelocity(dt);
 
+
+		auto potentialList = tree.generate();
+		for (auto pair : potentialList)
+		{
+			auto result = Detector::detect(pair.first, pair.second);
+			if (result.isColliding)
+				contactMaintainer.add(result);
+		}
+		contactMaintainer.clearInactivePoints();
+		m_world.prepareVelocityConstraint(dt);
 		for(int i = 0;i < m_world.velocityIteration(); ++i)
 		{
-
 			m_world.solveVelocityConstraint(dt);
-
-			auto potentialList = tree.generate();
-			for (auto pair : potentialList)
-			{
-				auto result = Detector::detect(pair.first, pair.second);
-				if (result.isColliding)
-					contactMaintainer.add(result);
-			}
 			contactMaintainer.solveVelocity(dt);
 		}
 
@@ -271,6 +272,7 @@ namespace Physics2D
 			contactMaintainer.solvePosition(dt);
 			m_world.solvePositionConstraint(dt);
 		}
+		contactMaintainer.deactivateAllPoints();
 
 		for (auto& body : m_world.bodyList())
 			tree.update(body.get());
@@ -301,10 +303,10 @@ namespace Physics2D
 		rect->setType(Body::BodyType::Dynamic);
 
 		rect2 = m_world.createBody();
-		rect2->setShape(rectangle_ptr);
+		rect2->setShape(capsule_ptr);
 		rect2->position().set({-5, -5});
 		rect2->rotation() = 0;
-		rect2->setMass(200);
+		rect2->setMass(1.5);
 		rect2->setFriction(0.4);
 		rect2->setType(Body::BodyType::Dynamic);
 		
@@ -429,15 +431,15 @@ namespace Physics2D
 		//QColor colorApproximate3("#FFEB3B");
 		//QColor colorApproximate4("#FF4081");
 		//colorAccurate.setAlphaF(1);
-		//colorApproximate1.setAlphaF(0.5);
-		//colorApproximate2.setAlphaF(0.5);
-		//colorApproximate3.setAlphaF(0.5);
-		//colorApproximate4.setAlphaF(0.8);
+		//colorApproximate1.setAlphaF(1);
+		//colorApproximate2.setAlphaF(1);
+		//colorApproximate3.setAlphaF(1);
+		//colorApproximate4.setAlphaF(1);
 		//QPen penAccurate(colorAccurate, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		//QPen penApproximate1(colorApproximate1, 4, Qt::DotLine, Qt::RoundCap, Qt::RoundJoin);
-		//QPen penApproximate2(colorApproximate2, 4, Qt::DashDotDotLine, Qt::RoundCap, Qt::RoundJoin);
-		//QPen penApproximate3(colorApproximate3, 4, Qt::DashDotLine, Qt::RoundCap, Qt::RoundJoin);
-		//QPen penApproximate4(colorApproximate4, 4, Qt::DashDotLine, Qt::RoundCap, Qt::RoundJoin);
+		//QPen penApproximate1(colorApproximate1, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		//QPen penApproximate2(colorApproximate2, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		//QPen penApproximate3(colorApproximate3, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		//QPen penApproximate4(colorApproximate4, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 
 		//real y0 = 1;
 		//real y = 0;
@@ -611,34 +613,37 @@ namespace Physics2D
 		//{
 		//	for(auto& elem:iter->second)
 		//	{
-		//		RendererQtImpl::renderPoint(&painter, &camera, elem.bodyA->toWorldPoint(elem.localA), pen2);
-		//		RendererQtImpl::renderPoint(&painter, &camera, elem.bodyB->toWorldPoint(elem.localB), pen2);
+		//		RendererQtImpl::renderPoint(&painter, &camera, elem.bodyA->toWorldPoint(elem.localA), penApproximate1);
+		//		RendererQtImpl::renderPoint(&painter, &camera, elem.bodyB->toWorldPoint(elem.localB), penApproximate1);
 		//	}
 		//}
 
-		//auto potentialList = dbvh.generatePairs();
+		//auto potentialList = tree.generate();
 		//for (auto pair : potentialList)
 		//{
-		//	auto result = Detector::detect(pair.first, pair.second);
-		//	if (result.isColliding)
+		//	ShapePrimitive shapeA, shapeB;
+		//	shapeA.shape = pair.first->shape();
+		//	shapeA.rotation = pair.first->rotation();
+		//	shapeA.transform = pair.first->position();
+
+		//	shapeB.shape = pair.second->shape();
+		//	shapeB.rotation = pair.second->rotation();
+		//	shapeB.transform = pair.second->position();
+
+		//	auto [isColliding, simplex] = GJK::gjk(shapeA, shapeB);
+		//	std::vector<Vector2> points;
+		//	std::vector<std::pair<Vector2, Vector2>> lines;
+		//	if (isColliding)
 		//	{
-		//		ShapePrimitive p1, p2;
-		//		p1.rotation = result.bodyA->rotation();
-		//		p1.shape = result.bodyA->shape();
-		//		p1.transform = result.bodyA->position();
+		//		simplex = GJK::epa(shapeA, shapeB, simplex);
+		//		PenetrationSource source = GJK::dumpSource(simplex);
+		//		
+		//		for(auto& elem: simplex.vertices)
+		//			points.emplace_back(elem.result + shapeB.transform);
 
-
-		//		p2.rotation = result.bodyB->rotation();
-		//		p2.shape = result.bodyB->shape();
-		//		p2.transform = result.bodyB->position();
-		//		RendererQtImpl::renderShape(&painter, &camera, p1, pen3);
-		//		RendererQtImpl::renderShape(&painter, &camera, p2, pen3);
-		//		for(auto& elem: result.contactList)
-		//		{
-		//			RendererQtImpl::renderPoint(&painter, &camera, elem.pointA, pen2);
-		//			RendererQtImpl::renderPoint(&painter, &camera, elem.pointB, pen2);
-		//		}
-
+		//		RendererQtImpl::renderPoints(&painter, &camera, points, penApproximate3);
+		//		RendererQtImpl::renderPoint(&painter, &camera, (source.a1 - source.b1) + shapeB.transform, penApproximate1);
+		//		RendererQtImpl::renderPoint(&painter, &camera, (source.a2 - source.b2) + shapeB.transform, penApproximate2);
 		//	}
 		//}
 
@@ -837,7 +842,7 @@ namespace Physics2D
 		}
 		case Qt::Key_R:
 		{
-			rect->rotation() -= Math::degreeToRadian(5);
+			rect2->rotation() -= Math::degreeToRadian(1);
 			break;
 		}
 		case Qt::Key_L:

@@ -452,9 +452,11 @@ namespace Physics2D
 
 		if (left->isLeaf() && right->isLeaf())
 		{
-			m_profile++;
-			std::pair pair = {left->body, right->body};
-			pairs.emplace_back(pair);
+			if (left->body->bitmask() & right->body->bitmask())
+			{
+				std::pair pair = { left->body, right->body };
+				pairs.emplace_back(pair);
+			}
 		}
 		if (left->isLeaf() && right->isBranch())
 		{
