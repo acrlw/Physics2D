@@ -29,6 +29,8 @@ cmake CMakeLists.txt
 - Joint
   - Distance
   - Rotation
+  - Point
+  - Mouse
 - Basic Debug Drawing
   - Rigid Body
   - AABB
@@ -72,9 +74,7 @@ cmake CMakeLists.txt
   - Verlet
   - Rk4
 - Joint
-  - Mouse
   - Prismatic
-  - Point
   - Weld
 - Non-Fit Polygon
 - Soft Body
