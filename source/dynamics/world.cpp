@@ -12,7 +12,7 @@ namespace Physics2D
 	}
 	void World::stepVelocity(const real& dt)
 	{
-		const Vector2 g = m_enableGravity ? m_gravity : (0, 0);
+		const Vector2 g = m_enableGravity ? m_gravity : Vector2{0.0, 0.0};
 		for (auto& body : m_bodyList)
 		{
 			switch (body->type())
@@ -40,6 +40,9 @@ namespace Physics2D
 			{
 				body->velocity() += body->inverseMass() * body->forces() * dt;
 				body->angularVelocity() += body->inverseInertia() * body->torques() * dt;
+
+				body->velocity() *= 1.0 / (1.0 + dt * m_linearVelocityDamping);
+				body->angularVelocity() *= 1.0 / (1.0 + dt * m_angularVelocityDamping);
 				break;
 			}
 			case Body::BodyType::Bullet:
@@ -83,7 +86,6 @@ namespace Physics2D
 				body->position() += body->velocity() * dt;
 				body->rotation() += body->angularVelocity() * dt;
 
-
 				body->forces().clear();
 				body->clearTorque();
 				break;
@@ -93,7 +95,6 @@ namespace Physics2D
 				body->position() += body->velocity() * dt;
 				body->rotation() += body->angularVelocity() * dt;
 
-
 				body->forces().clear();
 				body->clearTorque();
 				break;
@@ -105,46 +106,6 @@ namespace Physics2D
 			}
 		}
 
-	}
-	void World::step(const real& dt)
-	{
-		const Vector2 g = m_enableGravity ? m_gravity : (0, 0);
-		for (auto& body : m_bodyList)
-		{
-			switch (body->type())
-			{
-			case Body::BodyType::Static:
-				break;
-			case Body::BodyType::Dynamic:
-				{
-					const Vector2 forces = g + body->forces();
-					const Vector2 a = body->inverseMass() * forces;
-					const Vector2 v = (body->velocity() + a * dt * m_velocityIteration) * m_linearVelocityDamping;
-					const Vector2 p = body->position() + v * dt * m_positionIteration;
-
-					const real b = body->inverseInertia() * body->torques();
-					const real av = (body->angularVelocity() + b * dt * m_velocityIteration) * m_angularVelocityDamping;
-					const real rotation = body->rotation() + av * dt * m_positionIteration;
-
-					body->velocity() = v;
-					body->position() = p;
-					body->angularVelocity() = av;
-					body->rotation() = rotation;
-
-					body->forces().clear();
-					body->clearTorque();
-					break;
-				}
-			case Body::BodyType::Kinematic:
-				{
-					break;
-				}
-			case Body::BodyType::Bullet:
-				{
-					break;
-				}
-			}
-		}
 	}
 	
 	real World::bias() const
@@ -305,15 +266,7 @@ namespace Physics2D
 		m_jointList.emplace_back(std::move(joint));
 		return temp;
 	}
-
-	MouseJoint* World::createJoint(const MouseJointPrimitive& primitive)
-	{
-		auto joint = std::make_unique<MouseJoint>(primitive);
-		MouseJoint* temp = joint.get();
-		m_jointList.emplace_back(std::move(joint));
-		return temp;
-	}
-
+	
 	PulleyJoint* World::createJoint(const PulleyJointPrimitive& primitive)
 	{
 		auto joint = std::make_unique<PulleyJoint>(primitive);

@@ -70,7 +70,7 @@ add_executable(physics-engine
     "testbed/window.h"
     "testbed/window.cpp"
     "include/dynamics/joint/joint.h"
-    "include/dynamics/joint/mouse.h"
+    
     "include/dynamics/joint/revolute.h"
     "include/dynamics/joint/pulley.h"
     "include/dynamics/joint/point.h"

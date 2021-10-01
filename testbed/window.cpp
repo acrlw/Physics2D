@@ -14,7 +14,7 @@ namespace Physics2D
 		this->resize(1920, 1080);
 		this->setMouseTracking(true);
 
-		rectangle.set(1.0, 1.0);
+		rectangle.set(1.5, 1.5);
 		land.set(32, 0.2);
 		//polygon.append({{3, 0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3}, {2, -3}, {3, 0}});
 		polygon.append({ {-2, 0}, {0, 4}, {4, 6}, {10, 4}, {4, -2}, {-2, 0} });
@@ -22,9 +22,9 @@ namespace Physics2D
 		polygon.scale(0.22);
 		ellipse.set({-5, 4}, {5, -4});
 		ellipse.scale(0.15);
-		circle.setRadius(0.5);
+		circle.setRadius(1);
 		//circle.scale(7);
-		edge.set({-18, 5}, {18, 0});
+		edge.set({-30, 5}, {30, 0});
 		capsule.set(1, 2);
 		sector.set(Math::degreeToRadian(0), Math::degreeToRadian(90), 2);
 
@@ -52,7 +52,7 @@ namespace Physics2D
 		m_world.setLinearVelocityDamping(0.1);
 		m_world.setAirFrictionCoefficient(0.8);
 		m_world.setAngularVelocityDamping(0.1);
-		m_world.setPositionIteration(6);
+		m_world.setPositionIteration(4);
 		m_world.setVelocityIteration(2);
 
 		pointPrim.bodyA = nullptr;
@@ -60,10 +60,10 @@ namespace Physics2D
 		mj->setActive(false);
 		//createStackBox(6, 1.1, 1.1);
 		//createBoxRoom();
-		//createBoxesAndGround(2);
+		//createBoxesAndGround(3);
 		//testPendulum();
 		//testCollision();
-		//testJoint();
+		testJoint();
 
 		//testBroadphase();
 		//testCCD();
@@ -79,8 +79,8 @@ namespace Physics2D
 		camera.setAabbVisible(false);
 		camera.setDbvhVisible(false);
 		camera.setTreeVisible(false);
-		camera.setAxisVisible(true);
-		camera.setGridScaleLineVisible(true);
+		camera.setAxisVisible(false);
+		camera.setGridScaleLineVisible(false);
 		connect(&m_timer, &QTimer::timeout, this, &Window::process);
 
 		
@@ -300,13 +300,13 @@ namespace Physics2D
 		rect->setFriction(0.8);
 		rect->setType(Body::BodyType::Dynamic);
 
-		//rect2 = m_world.createBody();
-		//rect2->setShape(rectangle_ptr);
-		//rect2->position().set({-5, -5});
-		//rect2->rotation() = 0;
-		//rect2->setMass(200);
-		//rect2->setFriction(0.4);
-		//rect2->setType(Body::BodyType::Dynamic);
+		rect2 = m_world.createBody();
+		rect2->setShape(rectangle_ptr);
+		rect2->position().set({-5, -5});
+		rect2->rotation() = 0;
+		rect2->setMass(200);
+		rect2->setFriction(0.4);
+		rect2->setType(Body::BodyType::Dynamic);
 		
 
 		//rotationPrim.bodyA = rect;
@@ -314,18 +314,18 @@ namespace Physics2D
 		//rotationPrim.referenceRotation = Math::degreeToRadian(45);
 		//RotationJoint* rj = m_world.createJoint(rotationPrim);
 
-		//distancePrim.bodyA = rect;
-		//distancePrim.localPointA.set({ 0, 0 });
-		//distancePrim.minDistance = 3;
-		//distancePrim.maxDistance = 7;
-		//distancePrim.targetPoint.set({ 1, 1 });
-		//
-		//m_world.createJoint(distancePrim);
+		distancePrim.bodyA = rect;
+		distancePrim.localPointA.set({ 0, 0 });
+		distancePrim.minDistance = 3;
+		distancePrim.maxDistance = 7;
+		distancePrim.targetPoint.set({ 1, 1 });
+		
+		m_world.createJoint(distancePrim);
 
-		//orientationPrim.bodyA = rect;
-		//orientationPrim.targetPoint.set({ 1, 1 });
-		//orientationPrim.referenceRotation = Math::degreeToRadian(90);
-		//m_world.createJoint(orientationPrim);
+		orientationPrim.bodyA = rect;
+		orientationPrim.targetPoint.set({ 1, 1 });
+		orientationPrim.referenceRotation = Math::degreeToRadian(90);
+		m_world.createJoint(orientationPrim);
 
 		//pointPrim.localPointA.set(0, 0);
 		//pointPrim.targetPoint.set(0, 0);
@@ -336,7 +336,7 @@ namespace Physics2D
 
 		tree.insert(rect);
 		tree.insert(ground);
-		//tree.insert(rect2);
+		tree.insert(rect2);
 		camera.setTargetBody(rect);
 
 		//rect->velocity() += {10, 0};
@@ -351,17 +351,19 @@ namespace Physics2D
 		ground->setMass(Constant::Max);
 		ground->setType(Body::BodyType::Static);
 		ground->setFriction(0.7);
-
+		ground->setRestitution(1.0);
 		tree.insert(ground);
-		
+
 		rect = m_world.createBody();
-		rect->setShape(ellipse_ptr);
-		rect->position().set({-5, 6});
+		rect->setShape(rectangle_ptr);
+		rect->position().set({ -5, 6 });
 		rect->rotation() = 0;
-		rect->setMass(200);
+		rect->setMass(1);
 		rect->setType(Body::BodyType::Dynamic);
 		rect->setFriction(0.4);
+		rect->setRestitution(0);
 		tree.insert(rect);
+
 
 		//rect2 = m_world.createBody();
 		//rect2->setShape(circle_ptr);
@@ -376,7 +378,7 @@ namespace Physics2D
 		//rect->angularVelocity() = 15;
 		//rect2->angularVelocity() = -15;
 
-		camera.setTargetBody(rect);
+		//camera.setTargetBody(rect);
 
 		//rect->velocity().set(0, -4);
 	}
@@ -421,29 +423,167 @@ namespace Physics2D
 	{
 		QPainter painter(this);
 		camera.render(&painter);
-		QPen pen3(Qt::red, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		QPen pen2(Qt::green, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		real dt = 1.0 / 60;
+		//QColor colorAccurate(Qt::green);
+		//QColor colorApproximate1(Qt::red);
+		//QColor colorApproximate2("#03A9F4");
+		//QColor colorApproximate3("#FFEB3B");
+		//QColor colorApproximate4("#FF4081");
+		//colorAccurate.setAlphaF(1);
+		//colorApproximate1.setAlphaF(0.5);
+		//colorApproximate2.setAlphaF(0.5);
+		//colorApproximate3.setAlphaF(0.5);
+		//colorApproximate4.setAlphaF(0.8);
+		//QPen penAccurate(colorAccurate, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		//QPen penApproximate1(colorApproximate1, 4, Qt::DotLine, Qt::RoundCap, Qt::RoundJoin);
+		//QPen penApproximate2(colorApproximate2, 4, Qt::DashDotDotLine, Qt::RoundCap, Qt::RoundJoin);
+		//QPen penApproximate3(colorApproximate3, 4, Qt::DashDotLine, Qt::RoundCap, Qt::RoundJoin);
+		//QPen penApproximate4(colorApproximate4, 4, Qt::DashDotLine, Qt::RoundCap, Qt::RoundJoin);
 
-		real x = 0.1, y = 0;
-		real h = 0.1;
-		Integrator::Value<real> val;
+		//real y0 = 1;
+		//real y = 0;
+		//std::vector<std::pair<Vector2, Vector2>> lines;
+		//lines.reserve(100);
 
-		std::vector<Vector2> points;
-		points.reserve(50);
-		for(int i = 0; i < 100;i++)
-		{
+		//real x = 0;
+		//real h = 0.1;
+		//real yp, yc;
+		//real k1, k2, k3, k4;
+		////for(int i = 0;i < 50;i++)
+		////{
+		////	y = y0 + h * (-y0 * y0);
+		////	Vector2 p1(x, y0);
+		////	x += h;
+		////	y0 = y;
 
-			val.dx = -(val.x * val.x);
-			val.ddx = 0;
-			Integrator::SemiImplicitEuler<real>::integrate(val, h);
+		////	y = y0 + h * (-y0 * y0);
+		////	Vector2 p2(x, y0);
+		////	x += h;
+		////	y0 = y;
 
-			points.emplace_back(Vector2(x, std::log(x)));
-			//points.emplace_back(Vector2(x, std::exp(x)));
-			x += h;
-		}
+		////	lines.emplace_back(std::make_pair(p1, p2));
+		////}
+		////RendererQtImpl::renderLines(&painter, &camera, lines, penApproximate1);
+		//lines.clear();
+		//x = 0;
+		//y0 = 0;
+		//y = 0;
+		//for (int i = 0; i < 100; i++)
+		//{
+		//	y = std::sin(x);
+		//	Vector2 p1(x, y);
+		//	x += h;
+		//	y = std::sin(x);
+		//	Vector2 p2(x, y);
 
-		RendererQtImpl::renderPoints(&painter, &camera, points, pen2);
+		//	lines.emplace_back(std::make_pair(p1, p2));
+		//}
+		//RendererQtImpl::renderLines(&painter, &camera, lines, penAccurate);
+		//lines.clear();
+		//x = 0;
+		//y0 = 0;
+		//y = 0;
+		//for(int i = 0;i < 100;i++)
+		//{
+		//	Vector2 p1(x, y);
+		//	y = y0 + h * std::cos(x);
+		//	x += h;
+		//	y0 = y;
+		//	Vector2 p2(x, y);
+
+		//	lines.emplace_back(std::make_pair(p1, p2));
+		//}
+		//RendererQtImpl::renderLines(&painter, &camera, lines, penApproximate1);
+		//lines.clear();
+		//x = 0;
+		//y0 = 0;
+		//y = 0;
+		//for (int i = 0; i < 100; i++)
+		//{
+		//	Vector2 p1(x, y);
+		//	yp = y0 + h * std::cos(x);
+		//	yc = y0 + h * std::cos(yp);
+		//	y = 0.5 * (yp + yc);
+		//	x += h;
+		//	y0 = y;
+		//	Vector2 p2(x, y);
+		//	lines.emplace_back(std::make_pair(p1, p2));
+
+		//}
+		//RendererQtImpl::renderLines(&painter, &camera, lines, penApproximate2);
+		//lines.clear();
+		//x = 0;
+		//y0 = 0;
+		//y = 0;
+		//for(int i = 0;i < 100;i++)
+		//{
+		//	Vector2 p1(x, y);
+		//	k1 = std::cos(x);
+		//	k2 = std::cos(x + k1 * h / 2.0);
+		//	k3 = std::cos(x + k2 * h / 2.0);
+		//	k4 = std::cos(x + k3 * h);
+		//	y = y0 + h * (k1 + 2 * k2 + 2 * k3 + k4) / 6.0;
+		//	x += h;
+		//	Vector2 p2(x, y);
+		//	y0 = y;
+		//	lines.emplace_back(std::make_pair(p1, p2));
+		//}
+		//RendererQtImpl::renderLines(&painter, &camera, lines, penApproximate3);
+		//lines.clear();
+		//x = 0;
+		//y0 = 0;
+		//y = 0;
+		//
+		//for(int i = 1;i < 4;i++)
+		//{
+		//	Vector2 p1(x, y);
+		//	k1 = std::cos(x);
+		//	k2 = std::cos(x + k1 * h / 2.0);
+		//	k3 = std::cos(x + k2 * h / 2.0);
+		//	k4 = std::cos(x + k3 * h);
+		//	y = y0 + h * (k1 + 2 * k2 + 2 * k3 + k4) / 6.0;
+		//	x += h;
+		//	Vector2 p2(x, y);
+		//	y0 = y;
+		//	lines.emplace_back(std::make_pair(p1, p2));
+		//}
+		//for (int i = 0; i < 96; i++)
+		//{
+		//	Vector2 p1(x, y);
+		//	y = y0 + (h / 24.0) * (55 * std::cos(x) - 59 * std::cos(x - h * 1) + 37 * std::cos(x - h * 2) - 9 * std::cos(x - h * 3));
+		//	x += h;
+		//	Vector2 p2(x, y);
+		//	y0 = y;
+		//	lines.emplace_back(std::make_pair(p1, p2));
+		//}
+		//RendererQtImpl::renderLines(&painter, &camera, lines, penApproximate4);
+		//lines.clear();
+		//x = 0;
+		//y0 = 1;
+		//y = 0;
+		//for (int i = 0; i < 50; i++)
+		//{
+		//	y = std::sqrt(10.0 * y0 + 25.0) - 5.0;
+		//	Vector2 p1(x, y);
+		//	x += h;
+		//	y0 = y;
+
+		//	y = std::sqrt(10.0 * y0 + 25.0) - 5.0;
+		//	Vector2 p2(x, y);
+		//	x += h;
+		//	y0 = y;
+		//	lines.emplace_back(std::make_pair(p1, p2));
+		//}
+		//RendererQtImpl::renderLines(&painter, &camera, lines, penApproximate2);
+
+		//for(int i = 0; i < 100;i++)
+		//{
+
+		//	
+		//	//points.emplace_back(Vector2(x, std::exp(x)));
+		//	x += h;
+		//}
+
+		//
 		//
 		
 		//Vector2 direction = mousePos - Vector2(9, 9);
@@ -763,12 +903,13 @@ namespace Physics2D
 			for(real i = 0;i < count; i++)
 			{
 				Body* body = m_world.createBody();
-				body->position().set({ i * 1 - 15, j * 1 + 2});
+				body->position().set({ i * 1 - 15, j * 1.1 + 2});
 				body->setShape(rectangle_ptr);
 				body->rotation() = 0;
-				body->setMass(200);
+				body->setMass(1);
 				body->setType(Body::BodyType::Dynamic);
 				body->setFriction(0.8);
+				body->setRestitution(0);
 				camera.setTargetBody(body);
 				tree.insert(body);
 			}

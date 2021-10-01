@@ -376,8 +376,12 @@ namespace Physics2D::Utils
 				h = 0.2;
 			else if (m_meterToPixel < 800)
 				h = 0.1;
-			else
+			else if (m_meterToPixel < 1600)
 				h = 0.05;
+			else if (m_meterToPixel < 4000)
+				h = 0.02;
+			else
+				h = 0.005;
 
 			lines.clear();
 			lines.reserve(static_cast<size_t>(m_axisPointCount * 2 / 0.2));

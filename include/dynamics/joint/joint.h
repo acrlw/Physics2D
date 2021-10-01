@@ -12,8 +12,7 @@ namespace Physics2D
 		Pulley,
 		Prismatic,
 		Wheel,
-		Revolute,
-		Mouse
+		Revolute
 	};
 	class Joint
 	{

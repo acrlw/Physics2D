@@ -331,29 +331,7 @@ namespace Physics2D
         renderLine(painter, camera, pa, pb, line);
 
     }
-
-    void RendererQtImpl::renderMouseJoint(QPainter* painter, Utils::Camera* camera, Joint* joint, const QPen& pen)
-    {
-        assert(joint != nullptr);
-
-        MouseJoint* distanceJoint = dynamic_cast<MouseJoint*>(joint);
-        Vector2 pa = distanceJoint->primitive().bodyA->toWorldPoint(distanceJoint->primitive().localPointA);
-        Vector2 pb = distanceJoint->primitive().mousePoint;
-        Vector2 n = (pb - pa).normal();
-        QColor minColor("#448AFF");
-        QColor maxColor("#F44336");
-        minColor.setAlphaF(0.8);
-        maxColor.setAlphaF(0.8);
-        QPen min(minColor, 6, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-        QPen max(maxColor, 6, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-        renderPoint(painter, camera, pa, min);
-        renderPoint(painter, camera, pb, max);
-        QColor color = Qt::green;
-        color.setAlphaF(0.45);
-        QPen line(color, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-        renderLine(painter, camera, pa, pb, line);
-
-    }
+    
 
     void RendererQtImpl::renderPointJoint(QPainter* painter, Utils::Camera* camera, Joint* joint, const QPen& pen)
     {
@@ -429,11 +407,6 @@ namespace Physics2D
         case JointType::Distance:
         {
             renderDistanceJoint(painter, camera, joint, pen);
-            break;
-        }
-        case JointType::Mouse:
-        {
-            renderMouseJoint(painter, camera, joint, pen);
             break;
         }
         case JointType::Point:

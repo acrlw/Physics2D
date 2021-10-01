@@ -13,8 +13,8 @@ namespace Physics2D
 		real damping = 0.0;
 		real stiffness = 0.0;
 		real frequency = 8;
-		real maxForce = 200;
-		real dampingRatio = 0.2;
+		real maxForce = 1000;
+		real dampingRatio = 1;
 		real gamma = 0.0;
 		Vector2 bias;
 		Matrix2x2 effectiveMass;
@@ -67,7 +67,7 @@ namespace Physics2D
 			m_primitive.bias = (pa - pb) * erp;
 			Matrix2x2 k;
 			k.e11() = im_a + ra.y * ra.y * ii_a;
-			k.e12() = -ra.x * ra.x * ii_a;
+			k.e12() = -ra.x * ra.y * ii_a;
 			k.e21() = k.e12();
 			k.e22() = im_a + ra.x * ra.x * ii_a;
 

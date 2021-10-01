@@ -61,6 +61,13 @@ namespace Physics2D
 				m_primitive.bias = 0;
 				return;
 			}
+			if (m_primitive.bodyA->velocity().dot(m_primitive.normal) > 0)
+			{
+				m_primitive.accumulatedImpulse = 0;
+				m_primitive.normal.clear();
+				m_primitive.bias = 0;
+				return;
+			}
 			real rn_a = m_primitive.normal.dot(ra);
 			m_primitive.effectiveMass = 1.0 / (im_a + ii_a * rn_a * rn_a);
  			m_primitive.bias = m_primitive.biasFactor * c / dt;
@@ -88,8 +95,6 @@ namespace Physics2D
 			Vector2 impulse = lambda_n * m_primitive.normal;
 			m_primitive.bodyA->velocity() += m_primitive.bodyA->inverseMass() * impulse;
 			m_primitive.bodyA->angularVelocity() += m_primitive.bodyA->inverseInertia() * ra.cross(impulse);
-			//m_primitive.bodyA->velocity() *= 0.8;
-			//m_primitive.bodyA->angularVelocity() *= 0.8;
 		}
 		void solvePosition(const real& dt) override
 		{

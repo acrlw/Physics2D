@@ -17,7 +17,7 @@ namespace Physics2D
 
 		PulleyJoint(const PulleyJointPrimitive& primitive)
 		{
-			m_type = JointType::Mouse;
+			m_type = JointType::Pulley;
 			m_primitive = primitive;
 		}
 		void set(const PulleyJointPrimitive& primitive)

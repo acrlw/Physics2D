@@ -98,7 +98,6 @@ namespace Physics2D
 		RotationJointPrimitive rotationPrim;
 		OrientationJointPrimitive orientationPrim;
 		PointJointPrimitive pointPrim;
-		//MouseJointPrimitive mousePrim;
 
 		PointJoint* mj = nullptr;
 		DBVH dbvh;

@@ -21,7 +21,6 @@ namespace Physics2D
             void solveVelocityConstraint(real dt);
             void stepPosition(const real& dt);
             void solvePositionConstraint(real dt);
-            void step(const real& dt);
             
 
             Vector2 gravity() const;
@@ -51,7 +50,6 @@ namespace Physics2D
             RotationJoint* createJoint(const RotationJointPrimitive& primitive);
             PointJoint* createJoint(const PointJointPrimitive& primitive);
             DistanceJoint* createJoint(const DistanceJointPrimitive& primitive);
-            MouseJoint* createJoint(const MouseJointPrimitive& primitive);
             PulleyJoint* createJoint(const PulleyJointPrimitive& primitive);
             RevoluteJoint* createJoint(const RevoluteJointPrimitive& primitive);
             OrientationJoint* createJoint(const OrientationJointPrimitive& primitive);
