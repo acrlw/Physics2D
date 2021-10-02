@@ -88,8 +88,28 @@ namespace Physics2D
 		{
 			if (m_primitive.bodyA == nullptr || m_primitive.bodyB == nullptr)
 				return;
-			Body* bodyA = m_primitive.bodyA;
-			Body* bodyB = m_primitive.bodyB;
+
+			Vector2 ra = m_primitive.bodyA->toWorldPoint(m_primitive.localPointA) - m_primitive.bodyA->position();
+			Vector2 va = m_primitive.bodyA->velocity() + Vector2::crossProduct(m_primitive.bodyA->angularVelocity(), ra);
+			Vector2 rb = m_primitive.bodyB->toWorldPoint(m_primitive.localPointB) - m_primitive.bodyB->position();
+			Vector2 vb = m_primitive.bodyB->velocity() + Vector2::crossProduct(m_primitive.bodyB->angularVelocity(), rb);
+
+			Vector2 jvb = va - vb;
+			jvb += m_primitive.bias;
+			jvb += m_primitive.impulse * m_primitive.gamma;
+			jvb.negate();
+			Vector2 J = m_primitive.effectiveMass.multiply(jvb);
+			Vector2 oldImpulse = m_primitive.impulse;
+			m_primitive.impulse += J;
+			real maxImpulse = dt * m_primitive.maxForce;
+			if (m_primitive.impulse.lengthSquare() > maxImpulse * maxImpulse)
+			{
+				m_primitive.impulse.normalize();
+				m_primitive.impulse *= maxImpulse;
+			}
+			J = m_primitive.impulse - oldImpulse;
+			m_primitive.bodyA->applyImpulse(J, ra);
+			m_primitive.bodyB->applyImpulse(-J, rb);
 
 		}
 		void solvePosition(const real& dt) override

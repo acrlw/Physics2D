@@ -265,6 +265,8 @@ namespace Physics2D
 	{
 		return SATResult();
 	}
+	
+
 	ProjectedSegment SAT::axisProjection(const ShapePrimitive& shape, Polygon* polygon, const Vector2& normal)
 	{
 		ProjectedPoint minPoint, maxPoint;

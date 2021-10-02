@@ -24,7 +24,7 @@ namespace Physics2D
 		ellipse.scale(0.15);
 		circle.setRadius(1);
 		//circle.scale(7);
-		edge.set({-15, 5}, {15, 0});
+		edge.set({-20, 5}, {20, 0});
 		capsule.set(1, 2);
 		sector.set(Math::degreeToRadian(0), Math::degreeToRadian(90), 2);
 
@@ -52,18 +52,18 @@ namespace Physics2D
 		m_world.setLinearVelocityDamping(0.1);
 		m_world.setAirFrictionCoefficient(0.8);
 		m_world.setAngularVelocityDamping(0.1);
-		m_world.setPositionIteration(10);
-		m_world.setVelocityIteration(6);
+		m_world.setPositionIteration(6);
+		m_world.setVelocityIteration(4);
 
 		pointPrim.bodyA = nullptr;
 		mj = m_world.createJoint(pointPrim);
 		mj->setActive(false);
 		//createStackBox(6, 1.1, 1.1);
-		createBoxRoom();
-		createBoxesAndGround(5);
+		//createBoxRoom();
+		//createBoxesAndGround(2);
 		//testPendulum();
 		//testCollision();
-		//testJoint();
+		testJoint();
 
 		//testBroadphase();
 		//testCCD();

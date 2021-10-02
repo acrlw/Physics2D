@@ -88,7 +88,7 @@ add_executable(physics-engine
     "include/collision/broadphase/grid.h" 
     "source/collision/broadphase/grid.cpp" 
     "include/collision/broadphase/tree.h" 
-    "source/collision/broadphase/tree.cpp")
+    "source/collision/broadphase/tree.cpp" "testbed/frame.h" "testbed/frame.cpp" "testbed/scenes/bitmask.cpp" "testbed/scenes/geometry.cpp" "testbed/scenes/collision.cpp" "testbed/scenes/broadphase.cpp" "testbed/scenes/narrowphase.cpp" "testbed/scenes/bridge.cpp" "testbed/scenes/restitution.cpp" "testbed/scenes/raycast.cpp" "testbed/scenes/sensor.cpp" "testbed/scenes/chain.cpp")
 
 find_package(fmt CONFIG REQUIRED)
 find_package(Qt5 COMPONENTS Widgets REQUIRED)

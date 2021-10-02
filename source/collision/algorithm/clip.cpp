@@ -9,6 +9,41 @@ namespace Physics2D
 			|| typeB == Shape::Type::Point || typeB == Shape::Type::Circle || typeB == Shape::Type::Ellipse)
 			return;
 		//normal: B -> A
+		switch (typeA)
+		{
+		case Shape::Type::Capsule:
+		{
+
+			break;
+		}
+		case Shape::Type::Polygon:
+		{
+			break;
+		}
+		case Shape::Type::Edge:
+		{
+			break;
+		}
+		default:
+			break;
+		}
+		switch (typeB)
+		{
+		case Shape::Type::Capsule:
+		{
+			break;
+		}
+		case Shape::Type::Polygon:
+		{
+			break;
+		}
+		case Shape::Type::Edge:
+		{
+			break;
+		}
+		default:
+			break;
+		}
 
 	}
 
