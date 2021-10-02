@@ -69,6 +69,7 @@ cmake CMakeLists.txt
 # Future
 - Broadphase
   - Uniform Grid
+  - Sweep And Prune
 - Test Demo
 - Integrator
   - Verlet
@@ -80,6 +81,8 @@ cmake CMakeLists.txt
 - Soft Body
   - Finite Element Method
   - Mass-Spring System
+- Rope
+  - Position-Based Dynamics
 
 # Reference
 - [Box2D](https://github.com/erincatto/box2d)
