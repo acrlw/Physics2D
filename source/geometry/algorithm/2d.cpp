@@ -37,7 +37,7 @@ namespace Physics2D
 		if (realEqual(ab_length, 0.0f))
 		{
 			if (fuzzyIsCollinear(c, d, a))
-				return std::optional<Vector2>(a);
+				return std::optional(a);
 			return std::nullopt;
 		}
 		const real ab_length_inv = 1 / ab_length;
@@ -62,21 +62,32 @@ namespace Physics2D
 		Vector2 p = bp + b;
 
 		return (fuzzyIsCollinear(a, b, p) && fuzzyIsCollinear(d, c, p))
-			       ? std::optional<Vector2>(p)
+			       ? std::optional(p)
 			       : std::nullopt;
+	}
+
+	Vector2 GeometryAlgorithm2D::lineIntersection(const Vector2& p1, const Vector2& p2, const Vector2& q1,
+		const Vector2& q2)
+	{
+		const real d = (p1.x - p2.x) * (q1.y - q2.y) - (p1.y - p2.y) * (q1.x - q2.x);
+		if (realEqual(d, 0))
+			return Vector2();
+		const real x = ((p1.x * p2.y - p1.y * p2.x) * (q1.x - q2.x) - (q1.x * q2.y - q1.y * q2.x) * (p1.x - p2.x)) / d;
+		const real y = ((p1.x * p2.y - p1.y * p2.x) * (q1.y - q2.y) - (q1.x * q2.y - q1.y * q2.x) * (p1.y - p2.y)) / d;
+		return Vector2(x, y);
 	}
 
 	std::optional<Vector2> GeometryAlgorithm2D::triangleCircumcenter(const Vector2& a, const Vector2& b,
 	                                                                 const Vector2& c)
 	{
-		if (triangleArea(a, b, c) == 0)
+		if (realEqual(triangleArea(a, b, c), 0))
 			return std::nullopt;
 
 		//2 * (x2 - x1) * x + 2 * (y2 - y1) y = x2 ^ 2 + y2 ^ 2 - x1 ^ 2 - y1 ^ 2;
 		//2 * (x3 - x2) * x + 2 * (y3 - y2) y = x3 ^ 2 + y3 ^ 2 - x2 ^ 2 - y2 ^ 2;
 		Matrix2x2 coef_mat{2 * (b.x - a.x), 2 * (c.x - b.x), 2 * (b.y - a.y), 2 * (c.y - b.y)};
 		const Vector2 constant{b.lengthSquare() - a.lengthSquare(), c.lengthSquare() - b.lengthSquare()};
-		return std::optional<Vector2>(coef_mat.invert().multiply(constant));
+		return std::optional(coef_mat.invert().multiply(constant));
 	}
 
 	std::optional<Vector2> GeometryAlgorithm2D::triangleIncenter(const Vector2& a, const Vector2& b, const Vector2& c)
@@ -88,7 +99,7 @@ namespace Physics2D
 		const real bc = (c - b).length();
 		const real ca = (a - c).length();
 		Vector2 p = (ab * c + bc * a + ca * b) / (ab + bc + ca);
-		return std::optional<Vector2>(p);
+		return std::optional(p);
 	}
 
 	std::optional<std::tuple<Vector2, real>> GeometryAlgorithm2D::calculateCircumcircle(
@@ -551,9 +562,62 @@ namespace Physics2D
 		return result;
 	}
 
-	std::vector<Vector2> GeometryAlgorithm2D::sutherlandHogmentPolygonClipping(std::vector<Vector2>& polygon1, std::vector<Vector2>& polygon2)
+	std::vector<Vector2> GeometryAlgorithm2D::sutherlandHodgmentPolygonClipping(std::vector<Vector2>& polygon, std::vector<Vector2>& clipRegion)
 	{
-		std::vector<Vector2> result;
+		std::vector<Vector2> result = polygon;
+
+		for(size_t i = 0;i < clipRegion.size() - 1; i++)
+		{
+			Vector2 clipPoint1 = clipRegion[i];
+			Vector2 clipPoint2 = clipRegion[i + 1];
+			Vector2 clipDirectionPoint = i + 2 == clipRegion.size() ? clipRegion[1] : clipRegion[i + 2];
+			std::vector<int8_t> testResults;
+			testResults.reserve(polygon.size());
+
+			for (size_t j = 0; j < result.size(); j++)
+			{
+				bool res = isPointOnSameSide(clipPoint1, clipPoint2, clipDirectionPoint, result[j]);
+				testResults.emplace_back(res ? 1 : -1);
+			}
+			std::vector<Vector2> newPolygon;
+			newPolygon.reserve(result.size());
+			//test result:
+			//1: inside, -1: outside
+			//2: processed, 3: need to clear
+			for(size_t j = 1; j < testResults.size(); j++)
+			{
+				bool lastInside = testResults[j - 1] == 1 ? true : false;
+				bool currentInside = testResults[j] == 1 ? true : false;
+				//last inside and current outside
+				if(lastInside && !currentInside)
+				{
+					//push last point
+					newPolygon.emplace_back(result[j - 1]);
+					//push intersection point
+					Vector2 p = lineIntersection(clipPoint1, clipPoint2, result[j - 1], result[j]);
+					newPolygon.emplace_back(p);
+				}
+				//last outside and current inside
+				if(!lastInside && currentInside)
+				{
+					//push intersection point first
+					Vector2 p = lineIntersection(clipPoint1, clipPoint2, result[j - 1], result[j]);
+					newPolygon.emplace_back(p);
+				}
+				//last outside and current outside
+				if (!lastInside && !currentInside)
+				{
+					//do nothing
+				}
+				if(lastInside && currentInside)
+				{
+					//push last vertex
+					newPolygon.emplace_back(result[j - 1]);
+				}
+			}
+			result = newPolygon;
+			result.emplace_back(result[0]);
+		}
 		return result;
 	}
 
@@ -564,5 +628,15 @@ namespace Physics2D
 		real rc = (a - c).cross(-c);
 		return ra >= 0 && rb >= 0 && rc >= 0
 		|| ra <= 0 && rb <= 0 && rc <= 0;
+	}
+	bool GeometryAlgorithm2D::isPointOnSameSide(const Vector2& edgePoint1, const Vector2& edgePoint2, const Vector2& refPoint, const Vector2 targetPoint)
+	{
+		Vector2 u = edgePoint2 - edgePoint1;
+		Vector2 v = refPoint - edgePoint1;
+		Vector2 w = targetPoint - edgePoint1;
+		real d1 = u.cross(v);
+		real d2 = u.cross(w);
+		//same side or on the edge
+		return Math::sign(d1) == Math::sign(d2) || realEqual(d2, 0);
 	}
 }

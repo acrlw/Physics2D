@@ -72,7 +72,7 @@ namespace Physics2D
 			return std::pow(x, e);
 		}
 		//other
-		inline int sign(const real& num)
+		inline int8_t sign(const real& num)
 		{
 			return num > 0 ? 1 : -1;
 		}

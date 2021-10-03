@@ -44,6 +44,15 @@ namespace Physics2D
 		/// <returns></returns>
 		std::optional<Vector2> lineSegmentIntersection(const Vector2& a, const Vector2& b, const Vector2& c, const Vector2& d);
 		/// <summary>
+		/// line intersection
+		/// </summary>
+		/// <param name="a"></param>
+		/// <param name="b"></param>
+		/// <param name="c"></param>
+		/// <param name="d"></param>
+		/// <returns></returns>
+		Vector2 lineIntersection(const Vector2& p1, const Vector2& p2, const Vector2& q1, const Vector2& q2);
+		/// <summary>
 		/// Calculate the center of circum-circle from triangle abc
 		/// </summary>
 		/// <param name="a"></param>
@@ -167,8 +176,18 @@ namespace Physics2D
 		Vector2 calculateEllipseProjectionPoint(const real& a, const real& b, const Vector2& direction);
 		Vector2 calculateCapsuleProjectionPoint(const real& width, const real& height, const Vector2& direction);
 		Vector2 calculateSectorProjectionPoint(const real& startRadian, const real& spanRadian, const real& radius, const Vector2& direction);
-		std::vector<Vector2> sutherlandHogmentPolygonClipping(std::vector<Vector2>& polygon1, std::vector<Vector2>& polygon2);
+		/// <summary>
+		/// Sutherland Hodgman Polygon Clipping
+		///	All points is stored in counter clock winding.
+		///	By convention:
+		///		p0 -> p1 -> p2 -> p0 constructs a triangle
+		/// </summary>
+		/// <param name="polygon"></param>
+		/// <param name="clipRegion"></param>
+		/// <returns></returns>
+		std::vector<Vector2> sutherlandHodgmentPolygonClipping(std::vector<Vector2>& polygon, std::vector<Vector2>& clipRegion);
 		bool triangleContainsOrigin(const Vector2& a, const Vector2& b, const Vector2& c);
+		bool isPointOnSameSide(const Vector2& edgePoint1, const Vector2& edgePoint2, const Vector2& refPoint, const Vector2 targetPoint);
 	};
 }
 #endif

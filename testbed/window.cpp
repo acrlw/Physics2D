@@ -63,7 +63,7 @@ namespace Physics2D
 		//createBoxesAndGround(2);
 		//testPendulum();
 		//testCollision();
-		testJoint();
+		//testJoint();
 
 		//testBroadphase();
 		//testCCD();
@@ -425,21 +425,40 @@ namespace Physics2D
 	{
 		QPainter painter(this);
 		camera.render(&painter);
-		//QColor colorAccurate(Qt::green);
-		//QColor colorApproximate1(Qt::red);
-		//QColor colorApproximate2("#03A9F4");
-		//QColor colorApproximate3("#FFEB3B");
-		//QColor colorApproximate4("#FF4081");
-		//colorAccurate.setAlphaF(1);
-		//colorApproximate1.setAlphaF(1);
-		//colorApproximate2.setAlphaF(1);
-		//colorApproximate3.setAlphaF(1);
-		//colorApproximate4.setAlphaF(1);
-		//QPen penAccurate(colorAccurate, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		//QPen penApproximate1(colorApproximate1, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		//QPen penApproximate2(colorApproximate2, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		//QPen penApproximate3(colorApproximate3, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		//QPen penApproximate4(colorApproximate4, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		std::vector<Vector2> polygon1 = { {0, 6}, {-4, 4},{-6, 2}, {-6, 0}, {-4, -2},{4, -4},{6, 2},{4, 6}, {0, 6} };
+		std::vector<Vector2> polygon2 = { {-10, 1}, {-8, 6},{0, 4},{6, -2}, {-8, -1}, {-10, 1} };
+		std::vector<std::pair<Vector2, Vector2>> lines1, lines2, lines3;
+		for (size_t i = 0; i < polygon1.size() - 1; i++)
+		{
+			lines1.emplace_back(std::make_pair(polygon1[i], polygon1[i + 1]));
+		}
+		for (size_t i = 0; i < polygon2.size() - 1; i++)
+		{
+			lines2.emplace_back(std::make_pair(polygon2[i], polygon2[i + 1]));
+		}
+		QColor colorAccurate(Qt::green);
+		QColor colorApproximate1(Qt::red);
+		QColor colorApproximate2("#03A9F4");
+		QColor colorApproximate3("#FFEB3B");
+		QColor colorApproximate4("#FF4081");
+		colorAccurate.setAlphaF(1);
+		colorApproximate1.setAlphaF(0.5);
+		colorApproximate2.setAlphaF(0.5);
+		colorApproximate3.setAlphaF(0.5);
+		colorApproximate4.setAlphaF(0.5);
+		QPen penAccurate(colorAccurate, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		QPen penApproximate1(colorApproximate1, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		QPen penApproximate2(colorApproximate2, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		QPen penApproximate3(colorApproximate3, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		QPen penApproximate4(colorApproximate4, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		RendererQtImpl::renderLines(&painter, &camera, lines1, penApproximate2);
+		RendererQtImpl::renderLines(&painter, &camera, lines2, penApproximate3);
+		std::vector<Vector2> results = GeometryAlgorithm2D::sutherlandHodgmentPolygonClipping(polygon1, polygon2);
+		for (size_t i = 0; i < results.size() - 1; i++)
+		{
+			lines3.emplace_back(std::make_pair(results[i], results[i + 1]));
+		}
+		RendererQtImpl::renderLines(&painter, &camera, lines3, penAccurate);
 
 		//real y0 = 1;
 		//real y = 0;
