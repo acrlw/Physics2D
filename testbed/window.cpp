@@ -303,7 +303,7 @@ namespace Physics2D
 		rect->setType(Body::BodyType::Dynamic);
 
 		rect2 = m_world.createBody();
-		rect2->setShape(capsule_ptr);
+		rect2->setShape(polygon_ptr);
 		rect2->position().set({-5, -5});
 		rect2->rotation() = 0;
 		rect2->setMass(1.5);

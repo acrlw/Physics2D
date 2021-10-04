@@ -71,11 +71,12 @@ namespace Physics2D
 
 	bool Polygon::contains(const Vector2& point, const real& epsilon)
 	{
-		for(int i = 0;i < m_vertices.size() - 1;i++)
+		for(size_t i = 0;i < m_vertices.size() - 2;i++)
 		{
-			Vector2 ab = m_vertices[i + 1] - m_vertices[i];
-			Vector2 ac = point - m_vertices[i];
-			if (ab.cross(ac) < epsilon)
+			Vector2 p1 = m_vertices[i];
+			Vector2 p2 = m_vertices[i + 1];
+			Vector2 ref = i + 2 == m_vertices.size() ? m_vertices[1] : m_vertices[i + 2];
+			if (!GeometryAlgorithm2D::isPointOnSameSide(p1, p2, ref, point))
 				return false;
 		}
 		return true;
