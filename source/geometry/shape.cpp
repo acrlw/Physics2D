@@ -253,6 +253,7 @@ namespace Physics2D
 	{
 		m_startPoint = start;
 		m_endPoint = end;
+		m_normal = (m_endPoint - m_startPoint).perpendicular().normal();
 	}
 
 	void Edge::setStartPoint(const Vector2& start)
@@ -289,6 +290,16 @@ namespace Physics2D
 	Vector2 Edge::center()const
 	{
 		return (m_startPoint + m_endPoint) / 2.0;
+	}
+
+	Vector2 Edge::normal() const
+	{
+		return m_normal;
+	}
+
+	void Edge::setNormal(const Vector2& normal)
+	{
+		m_normal = normal;
 	}
 
 	Curve::Curve()

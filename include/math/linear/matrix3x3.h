@@ -22,7 +22,6 @@ namespace Physics2D
         Matrix3x3& operator-=(const Matrix3x3& rhs);
         Matrix3x3& operator*=(const real& factor);
         Matrix3x3& operator/=(const real& factor);
-        real& operator()(const uint32_t& row, const uint32_t& col);
 
         Vector3 row1()const;
         Vector3 row2()const;

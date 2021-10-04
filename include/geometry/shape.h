@@ -150,9 +150,12 @@ namespace Physics2D
             void scale(const real& factor) override;
             bool contains(const Vector2& point, const real& epsilon = Constant::GeometryEpsilon) override;
             Vector2 center()const override;
+            Vector2 normal()const;
+            void setNormal(const Vector2& normal);
         private:
             Vector2 m_startPoint;
             Vector2 m_endPoint;
+            Vector2 m_normal;
     };
     class Curve : public Shape
     {

@@ -38,17 +38,61 @@ namespace Physics2D
 			elem = primitive.translate(elem);
 		return vertices;
 	}
+
+	ContactGenerator::ClipEdge ContactGenerator::findClipEdge(const std::vector<Vector2>& vertices, size_t index, const Vector2& normal)
+	{
+		ClipEdge edge1, edge2;
+		edge1.p1 = vertices[index];
+		edge2.p1 = vertices[index];
+		if (index == 0)
+		{
+			edge1.p2 = vertices[vertices.size() - 2];
+			edge2.p2 = vertices[index + 1];
+		}
+		else if (index == vertices.size() - 1)
+		{
+			edge1.p2 = vertices[index - 1];
+			edge2.p2 = vertices[1];
+		}
+		else
+		{
+			edge1.p2 = vertices[index - 1];
+			edge2.p2 = vertices[index + 1];
+		}
+		//compare which is closest to normal
+		return std::fabs((edge1.p2 - edge1.p1).dot(normal)) > std::fabs((edge2.p2 - edge2.p1).dot(normal)) ? edge2 : edge1;
+	}
+
+	ContactGenerator::ClipEdge ContactGenerator::dumpClipEdge(const ShapePrimitive& shape, const std::vector<Vector2>& vertices, const Vector2& normal)
+	{
+		ClipEdge edge;
+		if (vertices.size() == 2)
+		{
+			edge.p1 = vertices[0];
+			edge.p2 = vertices[1];
+			if(shape.shape->type() == Shape::Type::Edge)
+				edge.normal = dynamic_cast<Edge*>(shape.shape.get())->normal();
+		}
+		else
+		{
+			auto [support, index] = GJK::findFarthestPoint(vertices, -normal);
+			edge = findClipEdge(vertices, index, normal);
+		}
+		return edge;
+	}
+
 	void ContactGenerator::recognize(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB, const Vector2& normal)
 	{
-		auto typeA = shapeA.shape.get()->type();
-		auto typeB = shapeB.shape.get()->type();
+		auto typeA = shapeA.shape->type();
+		auto typeB = shapeB.shape->type();
 		if (typeA == Shape::Type::Point || typeA == Shape::Type::Circle || typeA == Shape::Type::Ellipse
 			|| typeB == Shape::Type::Point || typeB == Shape::Type::Circle || typeB == Shape::Type::Ellipse)
 			return;
 		//normal: B -> A
-
 		std::vector<Vector2> verticesA = dumpVertices(shapeA);
 		std::vector<Vector2> verticesB = dumpVertices(shapeB);
+		ClipEdge edgeA = dumpClipEdge(shapeA, verticesA, normal);
+		ClipEdge edgeB = dumpClipEdge(shapeB, verticesB, normal);
 
 	}
 

@@ -88,6 +88,10 @@ namespace Physics2D
 		return *this;
 	}
 
+	Vector3 Vector3::negative() const
+	{
+		return Vector3(-x, -y, -z);
+	}
 	Vector3& Vector3::negate()
 	{
 		x *= -1;

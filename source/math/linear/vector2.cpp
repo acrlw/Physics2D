@@ -136,6 +136,11 @@ namespace Physics2D
 		return Vector2(*this).normalize();
 	}
 
+	Vector2 Vector2::negative() const
+	{
+		return Vector2(-x, -y);
+	}
+
 	bool Vector2::equal(const Vector2& rhs) const
 	{
 		return realEqual(x, rhs.x) && realEqual(y, rhs.y);

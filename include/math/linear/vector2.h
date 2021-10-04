@@ -36,6 +36,7 @@ namespace Physics2D
         real length()const;
         real theta()const;
 		Vector2 normal()const;
+        Vector2 negative()const;
 
 
         Vector2& set(const real& _x, const real& _y);
