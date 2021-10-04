@@ -230,12 +230,12 @@ namespace Physics2D
 
 	real Ellipse::A() const
 	{
-		return m_width * (0.5f);
+		return m_width / 2.0;
 	}
 
 	real Ellipse::B() const
 	{
-		return m_height * (0.5f);
+		return m_height / 2.0;
 	}
 
 	real Ellipse::C() const
@@ -254,7 +254,7 @@ namespace Physics2D
 	{
 		m_startPoint = start;
 		m_endPoint = end;
-		m_normal = (m_endPoint - m_startPoint).perpendicular().normal();
+		m_normal = (m_endPoint - m_startPoint).perpendicular().normal().negate();
 	}
 
 	void Edge::setStartPoint(const Vector2& start)

@@ -303,7 +303,7 @@ namespace Physics2D
 		rect->setType(Body::BodyType::Dynamic);
 
 		rect2 = m_world.createBody();
-		rect2->setShape(polygon_ptr);
+		rect2->setShape(capsule_ptr);
 		rect2->position().set({-5, -5});
 		rect2->rotation() = 0;
 		rect2->setMass(1.5);
@@ -442,10 +442,10 @@ namespace Physics2D
 		QColor colorApproximate3("#FFEB3B");
 		QColor colorApproximate4("#FF4081");
 		colorAccurate.setAlphaF(1);
-		colorApproximate1.setAlphaF(0.5);
-		colorApproximate2.setAlphaF(0.5);
-		colorApproximate3.setAlphaF(0.5);
-		colorApproximate4.setAlphaF(0.5);
+		colorApproximate1.setAlphaF(0.8);
+		colorApproximate2.setAlphaF(0.8);
+		colorApproximate3.setAlphaF(0.8);
+		colorApproximate4.setAlphaF(0.8);
 		QPen penAccurate(colorAccurate, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 		QPen penApproximate1(colorApproximate1, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 		QPen penApproximate2(colorApproximate2, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
@@ -650,19 +650,19 @@ namespace Physics2D
 			shapeB.transform = pair.second->position();
 
 			auto [isColliding, simplex] = GJK::gjk(shapeA, shapeB);
-			std::vector<Vector2> points;
-			std::vector<std::pair<Vector2, Vector2>> lines;
 			if (isColliding)
 			{
 				simplex = GJK::epa(shapeA, shapeB, simplex);
 				PenetrationSource source = GJK::dumpSource(simplex);
-				
-				for(auto& elem: simplex.vertices)
-					points.emplace_back(elem.result + shapeB.transform);
 
-				RendererQtImpl::renderPoints(&painter, &camera, points, penApproximate3);
-				RendererQtImpl::renderPoint(&painter, &camera, (source.a1 - source.b1) + shapeB.transform, penApproximate1);
-				RendererQtImpl::renderPoint(&painter, &camera, (source.a2 - source.b2) + shapeB.transform, penApproximate2);
+				const auto info = GJK::dumpInfo(source);
+				auto [clipEdgeA, clipEdgeB] = ContactGenerator::recognize(shapeA, shapeB, info.normal);
+
+				RendererQtImpl::renderLine(&painter, &camera, clipEdgeA.p1, clipEdgeA.p2, penApproximate1);
+				RendererQtImpl::renderLine(&painter, &camera, clipEdgeB.p1, clipEdgeB.p2, penApproximate2);
+				//RendererQtImpl::renderPoints(&painter, &camera, points, penApproximate3);
+				//RendererQtImpl::renderPoint(&painter, &camera, (source.a1 - source.b1) + shapeB.transform, penApproximate1);
+				//RendererQtImpl::renderPoint(&painter, &camera, (source.a2 - source.b2) + shapeB.transform, penApproximate2);
 			}
 		}
 

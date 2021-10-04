@@ -52,7 +52,7 @@ namespace Physics2D
 		int calculateLowestCostNode(int nodeIndex);
 		real totalCost(int nodeIndex, int leafIndex);
 		real deltaCost(int nodeIndex, int boxIndex);
-		int allocateNode();
+		size_t allocateNode();
 		int height(int targetIndex);
 
 		real m_fatExpansionFactor = 0.5;

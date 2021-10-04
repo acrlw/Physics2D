@@ -88,7 +88,7 @@ namespace Physics2D
 		}
 		else
 		{
-			auto [support, index] = GJK::findFarthestPoint(vertices, -normal);
+			auto [support, index] = GJK::findFarthestPoint(vertices, normal);
 			edge = findClipEdge(vertices, index, normal);
 		}
 		return edge;
@@ -100,11 +100,11 @@ namespace Physics2D
 		auto typeB = shapeB.shape->type();
 		if (typeA == Shape::Type::Point || typeA == Shape::Type::Circle || typeA == Shape::Type::Ellipse
 			|| typeB == Shape::Type::Point || typeB == Shape::Type::Circle || typeB == Shape::Type::Ellipse)
-			return;
+			return std::make_pair(ClipEdge(), ClipEdge());
 		//normal: B -> A
 		std::vector<Vector2> verticesA = dumpVertices(shapeA);
 		std::vector<Vector2> verticesB = dumpVertices(shapeB);
-		ClipEdge edgeA = dumpClipEdge(shapeA, verticesA, normal);
+		ClipEdge edgeA = dumpClipEdge(shapeA, verticesA, -normal);
 		ClipEdge edgeB = dumpClipEdge(shapeB, verticesB, normal);
 		return std::make_pair(edgeA, edgeB);
 	}

@@ -454,9 +454,7 @@ namespace Physics2D
 		{
 			if (left->body->bitmask() & right->body->bitmask())
 			{
-				AABB a = AABB::fromBody(left->body);
-				AABB b = AABB::fromBody(right->body);
-				if (a.collide(b))
+				if (AABB::fromBody(left->body).collide(AABB::fromBody(right->body)))
 				{
 					std::pair pair = { left->body, right->body };
 					pairs.emplace_back(pair);

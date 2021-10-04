@@ -266,7 +266,6 @@ namespace Physics2D
 			return;
 
 		bool result = m_tree[leftIndex].aabb.collide(m_tree[rightIndex].aabb) || m_tree[leftIndex].aabb.isSubset(m_tree[rightIndex].aabb);
-		
 
 		if (!result)
 			return;
@@ -275,9 +274,8 @@ namespace Physics2D
 		{
 			if(m_tree[leftIndex].body->bitmask() & m_tree[rightIndex].body->bitmask())
 			{
-				AABB a = AABB::fromBody(m_tree[leftIndex].body);
-				AABB b = AABB::fromBody(m_tree[rightIndex].body);
-				if (a.collide(b))
+				//if AABB of A & B overlap
+				if (AABB::fromBody(m_tree[leftIndex].body).collide(AABB::fromBody(m_tree[rightIndex].body)))
 				{
 					std::pair pair = { m_tree[leftIndex].body, m_tree[rightIndex].body };
 					pairs.emplace_back(pair);
@@ -523,7 +521,7 @@ namespace Physics2D
 	{
 		return AABB::unite(m_tree[boxIndex].aabb, m_tree[nodeIndex].aabb).surfaceArea() - m_tree[boxIndex].aabb.surfaceArea();
 	}
-	int Tree::allocateNode()
+	size_t Tree::allocateNode()
 	{
 		if(!m_emptyList.empty())
 		{

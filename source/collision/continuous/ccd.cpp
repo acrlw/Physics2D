@@ -163,7 +163,7 @@ namespace Physics2D
 			return std::nullopt;
 
 		}
-		else if (!isBody1CCD || !isBody2CCD)
+		if (!isBody1CCD || !isBody2CCD)
 		{
 			Body* dynamicBody = nullptr;
 			Body::PhysicsAttribute origin1 = body1->physicsAttribute();

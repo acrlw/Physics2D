@@ -15,12 +15,6 @@ namespace Physics2D
 		shapeB.rotation = bodyB->rotation();
 		shapeB.transform = bodyB->position();
 
-		AABB a = AABB::fromShape(shapeA);
-		AABB b = AABB::fromShape(shapeB);
-		if (!a.collide(b))
-			return false;
-
-
 		auto [isColliding, simplex] = GJK::gjk(shapeA, shapeB);
 
 		if (shapeA.transform.fuzzyEqual(shapeB.transform) && !isColliding)
