@@ -454,8 +454,14 @@ namespace Physics2D
 		{
 			if (left->body->bitmask() & right->body->bitmask())
 			{
-				std::pair pair = { left->body, right->body };
-				pairs.emplace_back(pair);
+				AABB a = AABB::fromBody(left->body);
+				AABB b = AABB::fromBody(right->body);
+				if (a.collide(b))
+				{
+					std::pair pair = { left->body, right->body };
+					pairs.emplace_back(pair);
+				}
+
 			}
 		}
 		if (left->isLeaf() && right->isBranch())

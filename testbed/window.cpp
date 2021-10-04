@@ -82,7 +82,7 @@ namespace Physics2D
 		camera.setAxisVisible(false);
 		camera.setGridScaleLineVisible(false);
 		connect(&m_timer, &QTimer::timeout, this, &Window::process);
-		//isStop = true;
+		isStop = true;
 		
 		m_timer.setInterval(15);
 		m_timer.start();
@@ -436,21 +436,21 @@ namespace Physics2D
 		//{
 		//	lines2.emplace_back(std::make_pair(polygon2[i], polygon2[i + 1]));
 		//}
-		//QColor colorAccurate(Qt::green);
-		//QColor colorApproximate1(Qt::red);
-		//QColor colorApproximate2("#03A9F4");
-		//QColor colorApproximate3("#FFEB3B");
-		//QColor colorApproximate4("#FF4081");
-		//colorAccurate.setAlphaF(1);
-		//colorApproximate1.setAlphaF(0.5);
-		//colorApproximate2.setAlphaF(0.5);
-		//colorApproximate3.setAlphaF(0.5);
-		//colorApproximate4.setAlphaF(0.5);
-		//QPen penAccurate(colorAccurate, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		//QPen penApproximate1(colorApproximate1, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		//QPen penApproximate2(colorApproximate2, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		//QPen penApproximate3(colorApproximate3, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		//QPen penApproximate4(colorApproximate4, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		QColor colorAccurate(Qt::green);
+		QColor colorApproximate1(Qt::red);
+		QColor colorApproximate2("#03A9F4");
+		QColor colorApproximate3("#FFEB3B");
+		QColor colorApproximate4("#FF4081");
+		colorAccurate.setAlphaF(1);
+		colorApproximate1.setAlphaF(0.5);
+		colorApproximate2.setAlphaF(0.5);
+		colorApproximate3.setAlphaF(0.5);
+		colorApproximate4.setAlphaF(0.5);
+		QPen penAccurate(colorAccurate, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		QPen penApproximate1(colorApproximate1, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		QPen penApproximate2(colorApproximate2, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		QPen penApproximate3(colorApproximate3, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		QPen penApproximate4(colorApproximate4, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 		//RendererQtImpl::renderLines(&painter, &camera, lines1, penApproximate2);
 		//RendererQtImpl::renderLines(&painter, &camera, lines2, penApproximate3);
 		//std::vector<Vector2> results = Clipper::sutherlandHodgmentPolygonClipping(polygon1, polygon2);
@@ -637,34 +637,34 @@ namespace Physics2D
 		//	}
 		//}
 
-		//auto potentialList = tree.generate();
-		//for (auto pair : potentialList)
-		//{
-		//	ShapePrimitive shapeA, shapeB;
-		//	shapeA.shape = pair.first->shape();
-		//	shapeA.rotation = pair.first->rotation();
-		//	shapeA.transform = pair.first->position();
+		auto potentialList = tree.generate();
+		for (auto pair : potentialList)
+		{
+			ShapePrimitive shapeA, shapeB;
+			shapeA.shape = pair.first->shape();
+			shapeA.rotation = pair.first->rotation();
+			shapeA.transform = pair.first->position();
 
-		//	shapeB.shape = pair.second->shape();
-		//	shapeB.rotation = pair.second->rotation();
-		//	shapeB.transform = pair.second->position();
+			shapeB.shape = pair.second->shape();
+			shapeB.rotation = pair.second->rotation();
+			shapeB.transform = pair.second->position();
 
-		//	auto [isColliding, simplex] = GJK::gjk(shapeA, shapeB);
-		//	std::vector<Vector2> points;
-		//	std::vector<std::pair<Vector2, Vector2>> lines;
-		//	if (isColliding)
-		//	{
-		//		simplex = GJK::epa(shapeA, shapeB, simplex);
-		//		PenetrationSource source = GJK::dumpSource(simplex);
-		//		
-		//		for(auto& elem: simplex.vertices)
-		//			points.emplace_back(elem.result + shapeB.transform);
+			auto [isColliding, simplex] = GJK::gjk(shapeA, shapeB);
+			std::vector<Vector2> points;
+			std::vector<std::pair<Vector2, Vector2>> lines;
+			if (isColliding)
+			{
+				simplex = GJK::epa(shapeA, shapeB, simplex);
+				PenetrationSource source = GJK::dumpSource(simplex);
+				
+				for(auto& elem: simplex.vertices)
+					points.emplace_back(elem.result + shapeB.transform);
 
-		//		RendererQtImpl::renderPoints(&painter, &camera, points, penApproximate3);
-		//		RendererQtImpl::renderPoint(&painter, &camera, (source.a1 - source.b1) + shapeB.transform, penApproximate1);
-		//		RendererQtImpl::renderPoint(&painter, &camera, (source.a2 - source.b2) + shapeB.transform, penApproximate2);
-		//	}
-		//}
+				RendererQtImpl::renderPoints(&painter, &camera, points, penApproximate3);
+				RendererQtImpl::renderPoint(&painter, &camera, (source.a1 - source.b1) + shapeB.transform, penApproximate1);
+				RendererQtImpl::renderPoint(&painter, &camera, (source.a2 - source.b2) + shapeB.transform, penApproximate2);
+			}
+		}
 
 		//ShapePrimitive p1, p2;
 		//p1.rotation = rect->rotation();
@@ -785,7 +785,7 @@ namespace Physics2D
 		}
 		if(selectedBody != nullptr)
 		{
-			//selectedBody->position() += tf;
+			selectedBody->position() += tf;
 		}
 		mousePos = camera.screenToWorld(pos);
 

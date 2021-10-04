@@ -33,8 +33,8 @@ namespace Physics2D
 		static std::vector<Vector2> dumpVertices(const ShapePrimitive& primitive);
 		static ClipEdge findClipEdge(const std::vector<Vector2>& vertices, size_t index, const Vector2& normal);
 		static ClipEdge dumpClipEdge(const ShapePrimitive& shape, const std::vector<Vector2>& vertices, const Vector2& normal);
-		static void recognize(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB, const Vector2& normal);
-		static std::vector<PointPair> clip(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB, const Vector2& normal);
+		static std::pair<ClipEdge, ClipEdge> recognize(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB, const Vector2& normal);
+		static std::vector<PointPair> clip(const ClipEdge& clipEdgeA, const ClipEdge& clipEdgeB, const Vector2& normal);
 	};
 	
 }

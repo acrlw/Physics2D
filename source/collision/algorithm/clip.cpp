@@ -42,25 +42,38 @@ namespace Physics2D
 	ContactGenerator::ClipEdge ContactGenerator::findClipEdge(const std::vector<Vector2>& vertices, size_t index, const Vector2& normal)
 	{
 		ClipEdge edge1, edge2;
-		edge1.p1 = vertices[index];
+		edge1.p2 = vertices[index];
 		edge2.p1 = vertices[index];
 		if (index == 0)
 		{
-			edge1.p2 = vertices[vertices.size() - 2];
+			edge1.p1 = vertices[vertices.size() - 2];
 			edge2.p2 = vertices[index + 1];
 		}
 		else if (index == vertices.size() - 1)
 		{
-			edge1.p2 = vertices[index - 1];
+			edge1.p1 = vertices[index - 1];
 			edge2.p2 = vertices[1];
 		}
 		else
 		{
-			edge1.p2 = vertices[index - 1];
+			edge1.p1 = vertices[index - 1];
 			edge2.p2 = vertices[index + 1];
 		}
 		//compare which is closest to normal
-		return std::fabs((edge1.p2 - edge1.p1).dot(normal)) > std::fabs((edge2.p2 - edge2.p1).dot(normal)) ? edge2 : edge1;
+		ClipEdge finalEdge;
+		if(std::fabs((edge1.p2 - edge1.p1).dot(normal)) >= std::fabs((edge2.p2 - edge2.p1).dot(normal)))
+		{
+			finalEdge = edge2;
+			Vector2 p = (edge2.p2 - edge2.p1).normal().perpendicular();
+			finalEdge.normal = GeometryAlgorithm2D::isPointOnSameSide(edge2.p1, edge2.p2, edge1.p1, edge2.p1 + p) ? p : -p;
+		}
+		else
+		{
+			finalEdge = edge1;
+			Vector2 p = (edge1.p2 - edge1.p1).normal().perpendicular();
+			finalEdge.normal = GeometryAlgorithm2D::isPointOnSameSide(edge1.p1, edge1.p2, edge2.p2, edge1.p1 + p) ? p : -p;
+		}
+		return finalEdge;
 	}
 
 	ContactGenerator::ClipEdge ContactGenerator::dumpClipEdge(const ShapePrimitive& shape, const std::vector<Vector2>& vertices, const Vector2& normal)
@@ -81,7 +94,7 @@ namespace Physics2D
 		return edge;
 	}
 
-	void ContactGenerator::recognize(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB, const Vector2& normal)
+	std::pair<ContactGenerator::ClipEdge, ContactGenerator::ClipEdge> ContactGenerator::recognize(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB, const Vector2& normal)
 	{
 		auto typeA = shapeA.shape->type();
 		auto typeB = shapeB.shape->type();
@@ -93,11 +106,10 @@ namespace Physics2D
 		std::vector<Vector2> verticesB = dumpVertices(shapeB);
 		ClipEdge edgeA = dumpClipEdge(shapeA, verticesA, normal);
 		ClipEdge edgeB = dumpClipEdge(shapeB, verticesB, normal);
-
+		return std::make_pair(edgeA, edgeB);
 	}
 
-	std::vector<PointPair> ContactGenerator::clip(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB,
-		const Vector2& normal)
+	std::vector<PointPair> ContactGenerator::clip(const ClipEdge& clipEdgeA, const ClipEdge& clipEdgeB, const Vector2& normal)
 	{
 		std::vector<PointPair> result;
 

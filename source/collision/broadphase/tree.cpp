@@ -275,8 +275,13 @@ namespace Physics2D
 		{
 			if(m_tree[leftIndex].body->bitmask() & m_tree[rightIndex].body->bitmask())
 			{
-				std::pair pair = { m_tree[leftIndex].body, m_tree[rightIndex].body };
-				pairs.emplace_back(pair);
+				AABB a = AABB::fromBody(m_tree[leftIndex].body);
+				AABB b = AABB::fromBody(m_tree[rightIndex].body);
+				if (a.collide(b))
+				{
+					std::pair pair = { m_tree[leftIndex].body, m_tree[rightIndex].body };
+					pairs.emplace_back(pair);
+				}
 			}
 		}
 		if (m_tree[leftIndex].isLeaf() && m_tree[rightIndex].isBranch())
