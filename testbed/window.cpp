@@ -52,8 +52,8 @@ namespace Physics2D
 		m_world.setLinearVelocityDamping(0.1);
 		m_world.setAirFrictionCoefficient(0.8);
 		m_world.setAngularVelocityDamping(0.1);
-		m_world.setPositionIteration(6);
-		m_world.setVelocityIteration(4);
+		m_world.setPositionIteration(20);
+		m_world.setVelocityIteration(10);
 
 		pointPrim.bodyA = nullptr;
 		mj = m_world.createJoint(pointPrim);
