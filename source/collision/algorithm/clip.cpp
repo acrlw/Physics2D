@@ -112,7 +112,70 @@ namespace Physics2D
 	std::vector<PointPair> ContactGenerator::clip(const ClipEdge& clipEdgeA, const ClipEdge& clipEdgeB, const Vector2& normal)
 	{
 		std::vector<PointPair> result;
+		//find reference edge
+		real d1 = Vector2(clipEdgeA.p1 - clipEdgeA.p2).dot(normal);
+		real d2 = Vector2(clipEdgeB.p1 - clipEdgeB.p2).dot(normal);
+		ClipEdge referenceEdge = clipEdgeA;
+		ClipEdge incidentEdge = clipEdgeB;
+		bool swap = false;
+		if(std::fabs(d1) > std::fabs(d2))
+		{
+			//edge B is reference edge
+			referenceEdge = clipEdgeB;
+			incidentEdge = clipEdgeA;
+			swap = true;
+		}
+		//1. clip left region
+		Vector2 u = (referenceEdge.p2 - referenceEdge.p1).normal();
+		Vector2 refAnchor1 = u.perpendicular() + referenceEdge.p1;
+		if(!GeometryAlgorithm2D::isPointOnSameSide(referenceEdge.p1, refAnchor1, referenceEdge.p2, incidentEdge.p1))
+			incidentEdge.p1 = GeometryAlgorithm2D::lineIntersection(referenceEdge.p1, refAnchor1, incidentEdge.p1, incidentEdge.p2);
+		if (!GeometryAlgorithm2D::isPointOnSameSide(referenceEdge.p1, refAnchor1, referenceEdge.p2, incidentEdge.p2))
+			incidentEdge.p2 = GeometryAlgorithm2D::lineIntersection(referenceEdge.p1, refAnchor1, incidentEdge.p1, incidentEdge.p2);
+		//2. clip right region
+		u.negate();
+		Vector2 refAnchor2 = u.perpendicular() + referenceEdge.p2;
+		if (!GeometryAlgorithm2D::isPointOnSameSide(referenceEdge.p2, refAnchor2, referenceEdge.p1, incidentEdge.p1))
+			incidentEdge.p1 = GeometryAlgorithm2D::lineIntersection(referenceEdge.p2, refAnchor2, incidentEdge.p1, incidentEdge.p2);
+		if (!GeometryAlgorithm2D::isPointOnSameSide(referenceEdge.p2, refAnchor2, referenceEdge.p1, incidentEdge.p2))
+			incidentEdge.p2 = GeometryAlgorithm2D::lineIntersection(referenceEdge.p2, refAnchor2, incidentEdge.p1, incidentEdge.p2);
+		//3. clip normal region
+		Vector2 refAnchor3 = (referenceEdge.p2 + referenceEdge.p1) / 2.0 + referenceEdge.normal;
+		
+		bool p1OnClipArea = GeometryAlgorithm2D::isPointOnSameSide(referenceEdge.p1, referenceEdge.p2, refAnchor3, incidentEdge.p1);
+		bool p2OnClipArea = GeometryAlgorithm2D::isPointOnSameSide(referenceEdge.p1, referenceEdge.p2, refAnchor3, incidentEdge.p2);
 
+		if(p1OnClipArea && !p2OnClipArea)//p1 inside, p2 outside
+			incidentEdge.p2 = GeometryAlgorithm2D::lineIntersection(referenceEdge.p1, referenceEdge.p2, incidentEdge.p1, incidentEdge.p2);
+		
+		else if(!p1OnClipArea && p2OnClipArea)//p1 outside, p2 inside
+			incidentEdge.p1 = GeometryAlgorithm2D::lineIntersection(referenceEdge.p1, referenceEdge.p2, incidentEdge.p1, incidentEdge.p2);
+
+		else if (!p1OnClipArea && !p2OnClipArea) // p1 and p2 are outside, then clip and project nothing
+			return result;
+
+		//p1 and p2 are inside, clip nothing, just go to project
+		//4. project to reference edge
+		Vector2 pp1 = GeometryAlgorithm2D::pointToLineSegment(referenceEdge.p1, referenceEdge.p2, incidentEdge.p1);
+		Vector2 pp2 = GeometryAlgorithm2D::pointToLineSegment(referenceEdge.p1, referenceEdge.p2, incidentEdge.p2);
+		result.reserve(2);
+		PointPair pair1, pair2;
+		if(!swap)
+		{
+			pair1.pointA = pp1;
+			pair1.pointB = incidentEdge.p1;
+			pair2.pointA = pp2;
+			pair2.pointB = incidentEdge.p2;
+		}
+		else
+		{
+			pair1.pointA = incidentEdge.p1;
+			pair1.pointB = pp1;
+			pair2.pointA = incidentEdge.p2;
+			pair2.pointB = pp2;
+		}
+		result.emplace_back(pair1);
+		result.emplace_back(pair2);
 		return result;
 	}
 

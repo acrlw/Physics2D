@@ -59,11 +59,11 @@ namespace Physics2D
 		mj = m_world.createJoint(pointPrim);
 		mj->setActive(false);
 		//createStackBox(6, 1.1, 1.1);
-		//createBoxRoom();
-		//createBoxesAndGround(2);
+		createBoxRoom();
+		createBoxesAndGround(5);
 		//testPendulum();
 		//testCollision();
-		testJoint();
+		//testJoint();
 
 		//testBroadphase();
 		//testCCD();
@@ -82,7 +82,7 @@ namespace Physics2D
 		camera.setAxisVisible(false);
 		camera.setGridScaleLineVisible(false);
 		connect(&m_timer, &QTimer::timeout, this, &Window::process);
-		isStop = true;
+		//isStop = true;
 		
 		m_timer.setInterval(15);
 		m_timer.start();
@@ -359,7 +359,7 @@ namespace Physics2D
 		rect = m_world.createBody();
 		rect->setShape(rectangle_ptr);
 		rect->position().set({ -5, 6 });
-		rect->rotation() = 0;
+		rect->rotation() = 2.21805891827;
 		rect->setMass(1);
 		rect->setType(Body::BodyType::Dynamic);
 		rect->setFriction(0.4);
@@ -436,21 +436,21 @@ namespace Physics2D
 		//{
 		//	lines2.emplace_back(std::make_pair(polygon2[i], polygon2[i + 1]));
 		//}
-		QColor colorAccurate(Qt::green);
-		QColor colorApproximate1(Qt::red);
-		QColor colorApproximate2("#03A9F4");
-		QColor colorApproximate3("#FFEB3B");
-		QColor colorApproximate4("#FF4081");
-		colorAccurate.setAlphaF(1);
-		colorApproximate1.setAlphaF(0.8);
-		colorApproximate2.setAlphaF(0.8);
-		colorApproximate3.setAlphaF(0.8);
-		colorApproximate4.setAlphaF(0.8);
-		QPen penAccurate(colorAccurate, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		QPen penApproximate1(colorApproximate1, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		QPen penApproximate2(colorApproximate2, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		QPen penApproximate3(colorApproximate3, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		QPen penApproximate4(colorApproximate4, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		//QColor colorAccurate(Qt::green);
+		//QColor colorApproximate1(Qt::red);
+		//QColor colorApproximate2("#03A9F4");
+		//QColor colorApproximate3(Qt::magenta);
+		//QColor colorApproximate4(Qt::yellow);
+		//colorAccurate.setAlphaF(0.8);
+		//colorApproximate1.setAlphaF(1);
+		//colorApproximate2.setAlphaF(1);
+		//colorApproximate3.setAlphaF(1);
+		//colorApproximate4.setAlphaF(1);
+		//QPen penAccurate(colorAccurate, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		//QPen penApproximate1(colorApproximate1, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		//QPen penApproximate2(colorApproximate2, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		//QPen penApproximate3(colorApproximate3, 8, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		//QPen penApproximate4(colorApproximate4, 8, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 		//RendererQtImpl::renderLines(&painter, &camera, lines1, penApproximate2);
 		//RendererQtImpl::renderLines(&painter, &camera, lines2, penApproximate3);
 		//std::vector<Vector2> results = Clipper::sutherlandHodgmentPolygonClipping(polygon1, polygon2);
@@ -632,39 +632,43 @@ namespace Physics2D
 		//{
 		//	for(auto& elem:iter->second)
 		//	{
-		//		RendererQtImpl::renderPoint(&painter, &camera, elem.bodyA->toWorldPoint(elem.localA), penApproximate1);
-		//		RendererQtImpl::renderPoint(&painter, &camera, elem.bodyB->toWorldPoint(elem.localB), penApproximate1);
+		//		RendererQtImpl::renderPoint(&painter, &camera, elem.bodyA->toWorldPoint(elem.localA), penApproximate4);
+		//		RendererQtImpl::renderPoint(&painter, &camera, elem.bodyB->toWorldPoint(elem.localB), penApproximate3);
 		//	}
 		//}
 
-		auto potentialList = tree.generate();
-		for (auto pair : potentialList)
-		{
-			ShapePrimitive shapeA, shapeB;
-			shapeA.shape = pair.first->shape();
-			shapeA.rotation = pair.first->rotation();
-			shapeA.transform = pair.first->position();
+		//auto potentialList = tree.generate();
+		//for (auto pair : potentialList)
+		//{
+		//	ShapePrimitive shapeA, shapeB;
+		//	shapeA.shape = pair.first->shape();
+		//	shapeA.rotation = pair.first->rotation();
+		//	shapeA.transform = pair.first->position();
 
-			shapeB.shape = pair.second->shape();
-			shapeB.rotation = pair.second->rotation();
-			shapeB.transform = pair.second->position();
+		//	shapeB.shape = pair.second->shape();
+		//	shapeB.rotation = pair.second->rotation();
+		//	shapeB.transform = pair.second->position();
 
-			auto [isColliding, simplex] = GJK::gjk(shapeA, shapeB);
-			if (isColliding)
-			{
-				simplex = GJK::epa(shapeA, shapeB, simplex);
-				PenetrationSource source = GJK::dumpSource(simplex);
+		//	auto [isColliding, simplex] = GJK::gjk(shapeA, shapeB);
+		//	if (isColliding)
+		//	{
+		//		simplex = GJK::epa(shapeA, shapeB, simplex);
+		//		PenetrationSource source = GJK::dumpSource(simplex);
 
-				const auto info = GJK::dumpInfo(source);
-				auto [clipEdgeA, clipEdgeB] = ContactGenerator::recognize(shapeA, shapeB, info.normal);
+		//		const auto info = GJK::dumpInfo(source);
+		//		auto [clipEdgeA, clipEdgeB] = ContactGenerator::recognize(shapeA, shapeB, info.normal);
+		//		auto pairList = ContactGenerator::clip(clipEdgeA, clipEdgeB, info.normal);
 
-				RendererQtImpl::renderLine(&painter, &camera, clipEdgeA.p1, clipEdgeA.p2, penApproximate1);
-				RendererQtImpl::renderLine(&painter, &camera, clipEdgeB.p1, clipEdgeB.p2, penApproximate2);
-				//RendererQtImpl::renderPoints(&painter, &camera, points, penApproximate3);
-				//RendererQtImpl::renderPoint(&painter, &camera, (source.a1 - source.b1) + shapeB.transform, penApproximate1);
-				//RendererQtImpl::renderPoint(&painter, &camera, (source.a2 - source.b2) + shapeB.transform, penApproximate2);
-			}
-		}
+		//		RendererQtImpl::renderLine(&painter, &camera, clipEdgeA.p1, clipEdgeA.p2, penApproximate1);
+		//		RendererQtImpl::renderLine(&painter, &camera, clipEdgeB.p1, clipEdgeB.p2, penApproximate2);
+
+		//		for(auto& elem: pairList)
+		//		{
+		//			RendererQtImpl::renderPoint(&painter, &camera, elem.pointA, penApproximate3);
+		//			RendererQtImpl::renderPoint(&painter, &camera, elem.pointB, penApproximate4);
+		//		}
+		//	}
+		//}
 
 		//ShapePrimitive p1, p2;
 		//p1.rotation = rect->rotation();
@@ -785,7 +789,7 @@ namespace Physics2D
 		}
 		if(selectedBody != nullptr)
 		{
-			selectedBody->position() += tf;
+			//selectedBody->position() += tf;
 		}
 		mousePos = camera.screenToWorld(pos);
 

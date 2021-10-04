@@ -68,7 +68,24 @@ namespace Physics2D
 			const auto info = GJK::dumpInfo(source);
 			result.normal = info.normal;
 			result.penetration = info.penetration;
-			result.contactList.emplace_back(GJK::dumpPoints(source));
+
+			auto [clipEdgeA, clipEdgeB] = ContactGenerator::recognize(shapeA, shapeB, info.normal);
+			auto pairList = ContactGenerator::clip(clipEdgeA, clipEdgeB, info.normal);
+
+			bool pass = false;
+			for(auto& elem: pairList)
+				if(realEqual((elem.pointA - elem.pointB).lengthSquare(), result.penetration * result.penetration))
+					pass = true;
+
+			//if fail, there must be a deeper contact point, use it:
+			if(pass)
+			{
+				for (auto& elem : pairList)
+					if (!realEqual(elem.pointA.lengthSquare(), elem.pointB.lengthSquare()))
+						result.contactList.emplace_back(elem);
+			}
+			else 
+				result.contactList.emplace_back(GJK::dumpPoints(source));
 		}
 		assert(result.contactList.size() != 3);
 		return result;

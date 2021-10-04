@@ -132,7 +132,7 @@ namespace Physics2D
 		if (vertices.size() == 4)
 			return true;
 
-		for (uint16_t i = 0; i < vertices.size() - 1; i++)
+		for (size_t i = 0; i < vertices.size() - 1; i++)
 		{
 			Vector2 ab = vertices[i + 1] - vertices[i];
 			Vector2 ac = i + 2 != vertices.size() ? vertices[i + 2] - vertices[i] : vertices[1] - vertices[i];
@@ -175,7 +175,8 @@ namespace Physics2D
 			k++;
 		}
 		std::vector<Vector2> result;
-		for (auto index : stack)
+		result.reserve(stack.size());
+		for (const auto index : stack)
 			result.emplace_back(sort[index]);
 
 		return result;
@@ -187,6 +188,9 @@ namespace Physics2D
 		//special cases
 		if (a == b)
 			return {};
+
+		if (isCollinear(a, b, p))
+			return p;
 
 		const Vector2 ap = p - a;
 		const Vector2 ab_normal = (b - a).normal();
@@ -201,16 +205,16 @@ namespace Physics2D
 	Vector2 GeometryAlgorithm2D::shortestLengthPointOfEllipse(const real& a, const real& b, const Vector2& p,
 	                                                          const real& epsilon)
 	{
-		if (a == 0 || b == 0)
+		if (realEqual(a, 0) || realEqual(b, 0))
 			return {};
 
-		if (p.x == 0)
+		if (realEqual(p.x, 0))
 		{
 			return p.y > 0
 				       ? Vector2{0, b}
 				       : Vector2{0, -b};
 		}
-		if (p.y == 0)
+		if (realEqual(p.y, 0))
 		{
 			return p.x > 0
 				       ? Vector2{a, 0}
@@ -257,12 +261,12 @@ namespace Physics2D
 
 	Vector2 GeometryAlgorithm2D::triangleCentroid(const Vector2& a1, const Vector2& a2, const Vector2& a3)
 	{
-		return Vector2(a1 + a2 + a3) * (1.0f / 3.0f);
+		return Vector2(a1 + a2 + a3) / 3.0;
 	}
 
 	real GeometryAlgorithm2D::triangleArea(const Vector2& a1, const Vector2& a2, const Vector2& a3)
 	{
-		return abs(Vector2::crossProduct(a1 - a2, a1 - a3)) * 0.5;
+		return abs(Vector2::crossProduct(a1 - a2, a1 - a3)) / 2.0;
 	}
 
 	Vector2 GeometryAlgorithm2D::calculateCenter(const std::vector<Vector2>& vertices)

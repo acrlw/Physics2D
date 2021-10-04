@@ -49,7 +49,7 @@ namespace Physics2D
 		void clearInactivePoints();
 		void deactivateAllPoints();
 		real m_maxPenetration = 0.01;
-		real m_biasFactor = 0.2;
+		real m_biasFactor = 0.05;
 		std::map<RelationID, std::vector<ContactConstraintPoint>> m_contactTable;
 	private:
 	};

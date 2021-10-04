@@ -108,7 +108,7 @@ namespace Physics2D
 		const Body* bodyB = collision.bodyB;
 		const auto relation = generateRelation(collision.bodyA, collision.bodyB);
 		auto& contactList = m_contactTable[relation];
-		assert(contactList.size() <= 2);
+		//assert(contactList.size() <= 2);
 
 		for (const auto& elem : collision.contactList)
 		{

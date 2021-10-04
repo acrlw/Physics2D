@@ -107,7 +107,7 @@ namespace Physics2D
 		/// <returns></returns>
 		Vector2 pointToLineSegment(const Vector2& a, const Vector2& b, const Vector2& p);
 		/// <summary>
-		/// Calculate point on ellipse that is the shortest length to point p.
+		/// Calculate point on ellipse that is the shortest length to point p(aka projection point)
 		/// </summary>
 		/// <param name="a"></param>
 		/// <param name="b"></param>
