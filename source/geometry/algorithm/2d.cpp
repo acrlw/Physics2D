@@ -562,65 +562,6 @@ namespace Physics2D
 		return result;
 	}
 
-	std::vector<Vector2> GeometryAlgorithm2D::sutherlandHodgmentPolygonClipping(std::vector<Vector2>& polygon, std::vector<Vector2>& clipRegion)
-	{
-		std::vector<Vector2> result = polygon;
-
-		for(size_t i = 0;i < clipRegion.size() - 1; i++)
-		{
-			Vector2 clipPoint1 = clipRegion[i];
-			Vector2 clipPoint2 = clipRegion[i + 1];
-			Vector2 clipDirectionPoint = i + 2 == clipRegion.size() ? clipRegion[1] : clipRegion[i + 2];
-			std::vector<int8_t> testResults;
-			testResults.reserve(polygon.size());
-
-			for (size_t j = 0; j < result.size(); j++)
-			{
-				bool res = isPointOnSameSide(clipPoint1, clipPoint2, clipDirectionPoint, result[j]);
-				testResults.emplace_back(res ? 1 : -1);
-			}
-			std::vector<Vector2> newPolygon;
-			newPolygon.reserve(result.size());
-			//test result:
-			//1: inside, -1: outside
-			//2: processed, 3: need to clear
-			for(size_t j = 1; j < testResults.size(); j++)
-			{
-				bool lastInside = testResults[j - 1] == 1 ? true : false;
-				bool currentInside = testResults[j] == 1 ? true : false;
-				//last inside and current outside
-				if(lastInside && !currentInside)
-				{
-					//push last point
-					newPolygon.emplace_back(result[j - 1]);
-					//push intersection point
-					Vector2 p = lineIntersection(clipPoint1, clipPoint2, result[j - 1], result[j]);
-					newPolygon.emplace_back(p);
-				}
-				//last outside and current inside
-				if(!lastInside && currentInside)
-				{
-					//push intersection point first
-					Vector2 p = lineIntersection(clipPoint1, clipPoint2, result[j - 1], result[j]);
-					newPolygon.emplace_back(p);
-				}
-				//last outside and current outside
-				if (!lastInside && !currentInside)
-				{
-					//do nothing
-				}
-				if(lastInside && currentInside)
-				{
-					//push last vertex
-					newPolygon.emplace_back(result[j - 1]);
-				}
-			}
-			result = newPolygon;
-			result.emplace_back(result[0]);
-		}
-		return result;
-	}
-
 	bool GeometryAlgorithm2D::triangleContainsOrigin(const Vector2& a, const Vector2& b, const Vector2& c)
 	{
 		real ra = (b - a).cross(-a);

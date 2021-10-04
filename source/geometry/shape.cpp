@@ -436,6 +436,61 @@ namespace Physics2D
 		return m_height;
 	}
 
+	Vector2 Capsule::topLeft() const
+	{
+		Vector2 result;
+		real r;
+		if (m_width >= m_height)//Horizontal
+		{
+			r = m_height / 2;
+			result.set(-m_width / 2.0 + r, r);
+		}
+		else//Vertical
+		{
+			r = m_width / 2;
+			result.set(-r, m_height / 2.0 - r);
+		}
+		return result;
+	}
+	Vector2 Capsule::bottomLeft() const
+	{
+		Vector2 result;
+		real r;
+		if (m_width >= m_height)//Horizontal
+		{
+			r = m_height / 2;
+			result.set(-m_width / 2.0 + r, -r);
+		}
+		else//Vertical
+		{
+			r = m_width / 2;
+			result.set(-r, -m_height / 2.0 + r);
+		}
+		return result;
+	}
+
+	Vector2 Capsule::topRight() const
+	{
+		return -bottomLeft();
+	}
+
+	Vector2 Capsule::bottomRight() const
+	{
+		return -topLeft();
+	}
+
+	std::vector<Vector2> Capsule::boxVertices() const
+	{
+		std::vector<Vector2> vertices;
+		vertices.reserve(5);
+		vertices.emplace_back(this->topLeft());
+		vertices.emplace_back(this->bottomLeft());
+		vertices.emplace_back(this->bottomRight());
+		vertices.emplace_back(this->topRight());
+		vertices.emplace_back(this->topLeft());
+		return vertices;
+	}
+
 	Vector2 ShapePrimitive::translate(const Vector2& source)const
 	{
 		return Matrix2x2(rotation).multiply(source) + transform;
@@ -466,6 +521,16 @@ namespace Physics2D
 		normal.normalize();
 		Vector2 result = normal * (2.0 * m_radius * c / (3.0 * l));
 		return result;
+	}
+
+	std::vector<Vector2> Sector::vertices() const
+	{
+		std::vector<Vector2> vertices;
+		vertices.emplace_back(Vector2{ 0, 0 });
+		vertices.emplace_back(Matrix2x2(m_startRadian).multiply(Vector2(m_radius, 0)));
+		vertices.emplace_back(Matrix2x2(m_startRadian + m_spanRadian).multiply(Vector2(m_radius, 0)));
+		vertices.emplace_back(Vector2{ 0, 0 });
+		return vertices;
 	}
 
 	real Sector::startRadian() const

@@ -176,16 +176,6 @@ namespace Physics2D
 		Vector2 calculateEllipseProjectionPoint(const real& a, const real& b, const Vector2& direction);
 		Vector2 calculateCapsuleProjectionPoint(const real& width, const real& height, const Vector2& direction);
 		Vector2 calculateSectorProjectionPoint(const real& startRadian, const real& spanRadian, const real& radius, const Vector2& direction);
-		/// <summary>
-		/// Sutherland Hodgman Polygon Clipping
-		///	All points is stored in counter clock winding.
-		///	By convention:
-		///		p0 -> p1 -> p2 -> p0 constructs a triangle
-		/// </summary>
-		/// <param name="polygon"></param>
-		/// <param name="clipRegion"></param>
-		/// <returns></returns>
-		std::vector<Vector2> sutherlandHodgmentPolygonClipping(std::vector<Vector2>& polygon, std::vector<Vector2>& clipRegion);
 		bool triangleContainsOrigin(const Vector2& a, const Vector2& b, const Vector2& c);
 		bool isPointOnSameSide(const Vector2& edgePoint1, const Vector2& edgePoint2, const Vector2& refPoint, const Vector2 targetPoint);
 	};

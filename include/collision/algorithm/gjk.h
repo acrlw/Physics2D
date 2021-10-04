@@ -129,6 +129,13 @@ namespace Physics2D
 		/// <returns></returns>
 		static Vector2 findFarthestPoint(const ShapePrimitive& shape, const Vector2& direction);
 		/// <summary>
+		/// Find farthest projection point in given direction
+		/// </summary>
+		/// <param name="vertices"></param>
+		/// <param name="direction"></param>
+		/// <returns></returns>
+		static std::pair<Vector2, size_t> findFarthestPoint(const std::vector<Vector2>& vertices, const Vector2& direction);
+		/// <summary>
 		/// Adjust triangle simplex, remove the point that can not form a triangle that contains origin
 		/// </summary>
 		/// <param name="simplex"></param>

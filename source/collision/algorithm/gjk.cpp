@@ -210,19 +210,8 @@ namespace Physics2D
 		case Shape::Type::Polygon:
 		{
 			const Polygon* polygon = dynamic_cast<const Polygon*>(shape.shape.get());
-			Vector2 p0 = polygon->vertices()[0];
-			real max = 0;
-			target = polygon->vertices()[0];
-			for (const Vector2& vertex : polygon->vertices())
-			{
-				real result = Vector2::dotProduct(vertex - p0, rot_dir);
-
-				if (max < result)
-				{
-					max = result;
-					target = vertex;
-				}
-			}
+			auto [vertex, index] = findFarthestPoint(polygon->vertices(), rot_dir);
+			target = vertex;
 			break;
 		}
 		case Shape::Type::Circle:
@@ -267,6 +256,24 @@ namespace Physics2D
 		target = rot.multiply(target);
 		target += shape.transform;
 		return target;
+	}
+
+	std::pair<Vector2, size_t> GJK::findFarthestPoint(const std::vector<Vector2>& vertices, const Vector2& direction)
+	{
+		real max = Constant::NegativeMin;
+		Vector2 target;
+		size_t index = 0;
+		for(size_t i = 0;i < vertices.size(); i++)
+		{
+			real result = Vector2::dotProduct(vertices[i], direction);
+			if (max < result)
+			{
+				max = result;
+				target = vertices[i];
+				index = i;
+			}
+		}
+		return std::make_pair(target, index);
 	}
 
 	std::optional<Minkowski> GJK::adjustSimplex(Simplex& simplex, const size_t& closest_1, const size_t& closest_2)

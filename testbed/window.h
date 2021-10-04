@@ -17,6 +17,7 @@
 #include <include/collision/algorithm/sat.h>
 #include <include/collision/broadphase/dbvh.h>
 
+#include "include/collision/algorithm/clip.h"
 #include "include/collision/broadphase/tree.h"
 #include "include/utils/camera.h"
 #include "include/collision/continuous/ccd.h"
