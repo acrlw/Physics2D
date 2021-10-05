@@ -182,8 +182,8 @@ namespace Physics2D
 
 	void Ellipse::set(const Vector2& leftTop, const Vector2& rightBottom)
 	{
-		m_width = abs(rightBottom.x - leftTop.x);
-		m_height = abs(rightBottom.y - leftTop.y);
+		m_width = std::fabs(rightBottom.x - leftTop.x);
+		m_height = std::fabs(rightBottom.y - leftTop.y);
 	}
 
 	void Ellipse::set(const real& width, const real& height)

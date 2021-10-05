@@ -14,7 +14,7 @@ namespace Physics2D
 		Body::PhysicsAttribute end = body->physicsAttribute();
 		AABB endBox = AABB::fromBody(body);
 
-		if(startBox == endBox && start.velocity.lengthSquare() < Constant::MaxVelocity && abs(start.angularVelocity) < Constant::MaxAngularVelocity)
+		if(startBox == endBox && start.velocity.lengthSquare() < Constant::MaxVelocity && std::fabs(start.angularVelocity) < Constant::MaxAngularVelocity)
 		{
 			trajectory.emplace_back(AABBShot( startBox, body->physicsAttribute(), 0));
 			trajectory.emplace_back(AABBShot( endBox, body->physicsAttribute(), dt ));
@@ -53,7 +53,7 @@ namespace Physics2D
 		Body::PhysicsAttribute end = body->physicsAttribute();
 		AABB endBox = AABB::fromBody(body);
 
-		if (startBox == endBox && start.velocity.lengthSquare() < Constant::MaxVelocity && abs(start.angularVelocity) < Constant::MaxAngularVelocity)
+		if (startBox == endBox && start.velocity.lengthSquare() < Constant::MaxVelocity && std::fabs(start.angularVelocity) < Constant::MaxAngularVelocity)
 		{
 			trajectory.emplace_back(AABBShot(startBox, body->physicsAttribute(), 0));
 			trajectory.emplace_back(AABBShot(endBox, body->physicsAttribute(), dt));
@@ -223,7 +223,7 @@ namespace Physics2D
 				forwardSteps += step;
 				if (const auto result = Detector::detect(body1, body2); result.isColliding)
 				{
-					if (std::abs(result.penetration) < epsilon)
+					if (std::fabs(result.penetration) < epsilon)
 					{
 						body1->setPhysicsAttribute(origin1);
 						body2->setPhysicsAttribute(origin2);

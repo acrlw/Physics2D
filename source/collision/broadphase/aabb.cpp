@@ -112,8 +112,8 @@ namespace Physics2D
 				if (min_y > vertex.y)
 					min_y = vertex.y;
 			}
-			aabb.width = abs(max_x - min_x);
-			aabb.height = abs(max_y - min_y);
+			aabb.width = std::fabs(max_x - min_x);
+			aabb.height = std::fabs(max_y - min_y);
 			aabb.position.set((max_x + min_x) * 0.5, (max_y + min_y) * 0.5);
 			break;
 		}
@@ -141,8 +141,8 @@ namespace Physics2D
 			bottom = Matrix2x2(shape.rotation).multiply(bottom);
 			right = Matrix2x2(shape.rotation).multiply(right);
 
-			aabb.height = abs(top.y - bottom.y);
-			aabb.width = abs(right.x - left.x);
+			aabb.height = std::fabs(top.y - bottom.y);
+			aabb.width = std::fabs(right.x - left.x);
 			break;
 		}
 		case Shape::Type::Circle:
@@ -155,8 +155,8 @@ namespace Physics2D
 		case Shape::Type::Edge:
 		{
 			const Edge* edge = dynamic_cast<Edge*>(shape.shape.get());
-			aabb.width = abs(edge->startPoint().x - edge->endPoint().x);
-			aabb.height = abs(edge->startPoint().y - edge->endPoint().y);
+			aabb.width = std::fabs(edge->startPoint().x - edge->endPoint().x);
+			aabb.height = std::fabs(edge->startPoint().y - edge->endPoint().y);
 			aabb.position.set(edge->startPoint().x + edge->endPoint().x, edge->startPoint().y + edge->endPoint().y);
 			aabb.position *= 0.5;
 			break;

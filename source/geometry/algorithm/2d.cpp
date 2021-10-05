@@ -5,7 +5,7 @@ namespace Physics2D
 	bool GeometryAlgorithm2D::isCollinear(const Vector2& a, const Vector2& b, const Vector2& c)
 	{
 		//triangle area = 0 then collinear
-		return realEqual(abs((a - b).cross(a - c)), 0);
+		return realEqual(std::fabs((a - b).cross(a - c)), 0);
 	}
 
 	bool GeometryAlgorithm2D::isPointOnSegment(const Vector2& a, const Vector2& b, const Vector2& c)
@@ -248,7 +248,7 @@ namespace Physics2D
 			Vector2 t0p = p - t0;
 
 			const real result = t0t1.dot(t0p);
-			if (abs(result) < epsilon)
+			if (std::fabs(result) < epsilon)
 				break;
 
 			if (result > 0) // acute angle
@@ -266,7 +266,7 @@ namespace Physics2D
 
 	real GeometryAlgorithm2D::triangleArea(const Vector2& a1, const Vector2& a2, const Vector2& a3)
 	{
-		return abs(Vector2::crossProduct(a1 - a2, a1 - a3)) / 2.0;
+		return std::fabs(Vector2::crossProduct(a1 - a2, a1 - a3)) / 2.0;
 	}
 
 	Vector2 GeometryAlgorithm2D::calculateCenter(const std::vector<Vector2>& vertices)
@@ -308,7 +308,7 @@ namespace Physics2D
 			}
 			else
 			{
-				p_line.set(abs(p1.x) > abs(p2.x) ? p2.x : p1.x, p1.y);
+				p_line.set(std::fabs(p1.x) > std::fabs(p2.x) ? p2.x : p1.x, p1.y);
 				p_ellipse = shortestLengthPointOfEllipse(a, b, p_line);
 			}
 		}
@@ -321,7 +321,7 @@ namespace Physics2D
 			}
 			else
 			{
-				p_line.set(p1.x, abs(p1.y) > abs(p2.y) ? p2.y : p1.y);
+				p_line.set(p1.x, std::fabs(p1.y) > std::fabs(p2.y) ? p2.y : p1.y);
 				p_ellipse = shortestLengthPointOfEllipse(a, b, p_line);
 			}
 		}

@@ -211,7 +211,7 @@ namespace Physics2D {
             {
                 Vector2 n1 = polygon->vertices()[i] - center;
                 Vector2 n2 = polygon->vertices()[i + 1] - center;
-                real cross = abs(n1.cross(n2));
+                real cross = std::fabs(n1.cross(n2));
                 real dot = n2.dot(n2) + n2.dot(n1) + n1.dot(n1);
                 sum1 += cross * dot;
                 sum2 += cross;

@@ -402,7 +402,7 @@ namespace Physics2D
 
 		const int leftHeight = height(m_tree[targetIndex].leftIndex);
 		const int rightHeight = height(m_tree[targetIndex].rightIndex);
-		if (std::abs(leftHeight - rightHeight) <= 1)
+		if (std::fabs(leftHeight - rightHeight) <= 1)
 			return;
 
 		if (leftHeight > rightHeight) //left unbalance

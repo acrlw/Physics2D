@@ -324,7 +324,7 @@ namespace Physics2D
 
 		const int leftHeight = height(node->left);
 		const int rightHeight = height(node->right);
-		if (abs(leftHeight - rightHeight) <= 1)
+		if (std::fabs(leftHeight - rightHeight) <= 1)
 			return;
 
 		auto LL = [&](Node* node)

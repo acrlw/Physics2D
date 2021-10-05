@@ -149,7 +149,7 @@ namespace Physics2D
 		Vector2 edge1 = source.a1 - source.b1;
 		Vector2 edge2 = source.a2 - source.b2;
 		Vector2 normal = calculateDirectionByEdge(edge1, edge2, false).normal();
-		real originToEdge = abs(normal.dot(edge1));
+		real originToEdge = std::fabs(normal.dot(edge1));
 		result.normal = normal.negate();
 		result.penetration = originToEdge;
 		return result;

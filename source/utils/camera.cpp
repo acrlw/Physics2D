@@ -13,7 +13,7 @@ namespace Physics2D::Utils
 			real inv_dt = 1.0 / m_deltaTime;
 			
 			real scale = m_targetMeterToPixel - m_meterToPixel;
-			if (abs(scale) < 0.1 || m_meterToPixel < 1.0)
+			if (std::fabs(scale) < 0.1 || m_meterToPixel < 1.0)
 				m_meterToPixel = m_targetMeterToPixel;
 			else
 				m_meterToPixel -= (1.0 - std::exp(m_restitution * inv_dt)) * scale;
