@@ -1,97 +1,76 @@
 # Physics2D
-һ���򵥵� 2D ��Ϸ�������棬���ڲ��ͽ�ѧ��
-֪��ר����[ACRL's Development](https://www.zhihu.com/column/c_1262755781494808576)
-# ���ٹ���
-����Ŀʹ�� CMake ��������ʹ�� CMake 3.5 ���ϵİ汾��
+
+一个简单、用于博客教学的 2D 游戏物理引擎。
+知乎专栏：[ACRL's Development](https://www.zhihu.com/column/c_1262755781494808576)
+
+# 快速构建
+本项目使用 CMake 构建。
+请使用 CMake 3.5 以上的版本进行构建。
+
 ```
 cmake CMakeLists.txt
 ```
-# ���뻷��
+
+# 编译环境
 - C++ 17
-- vcpkg
-  - Qt
+- Qt
 
-# �����ص�
-- ���������Դ�����
-- ��ײ���
-  - �����׶�
-    - �������㷨��SAT��
-    - GJK �� EPA �� MPR �㷨
-    - Algorithm
-      - SAT
-      - GJK & EPA & MPR & Distance
-      - Contact Pair By Sutherland-Hogdman Clipping
-    - Continuous Collision Detection
-      - Sampling Trajectory of Body
-      - Time of Impact
-  - Broadphase
-    - Axis-Aligned Bounding Box
-    - Dynamic Bounding Volume Tree
-      - SAH
-      - Dynamic Tree & Array
-      - Raycast
-- Contact Maintainer
-- Rigid Body Dynamics Simulation
-- Sequential Impulse Solver
-- Joint
-  - Distance
-  - Rotation
-  - Point
-  - Mouse
-- Basic Debug Drawing
-  - Rigid Body
-  - AABB
-  - DBVH
-  - Joint
-- Basic 2D Camera
-  - Zooming
-  - Smooth Transition
-  - Tracing Specified Body
-- Simple 2D Geometry Algorithm
-  - Support Mapping
-      - Ellipse
-      - Circle
-      - Polygon
-      - Line
-      - Point
-      - Capsule
-      - Sector
-  - Intersection
-    - Raycast
-    - Line Segment
-  - Convexity
-    - Graham Scan
-    - Convexity Test
-  - Center
-    - Incenter
-    - Centroid
-    - Circumcenter
-  - Circle
-    - Circumcircle
-    - Inscribed-circle
-  - Ellipse
-    - Support Mapping
-    - Nearest Point
+# 功能特点
+- 基本的线性代数类
+- 2D 图元的碰撞检测
+  - 精检测阶段（Narrowphase）
+    - 检测算法
+      - 分离轴算法
+      - GJK 算法
+      - 多边形扩展算法
+      - 闵可夫斯基入口简化
+      - Sutherland Hodgman 多边形裁剪
+    - 连续碰撞检测
+      - 轨迹采样
+      - 冲击时间
+  - 粗检测阶段
+    - 轴对齐包围盒
+    - 动态层次包围体树
+      - 表面积启发法
+      - 光线物体查询
+- 碰撞点维护
+- 刚体模拟
+- 连续冲力解算器
+- 约束关节
+  - 鼠标约束
+  - 旋转/朝向约束
+  - 点约束
+  - 距离约束
+- 基本 Debug 绘图
+- 2D 平滑相机
+  - 缩放
+  - 平滑移动
+  - 跟踪物体
+- 基本 2D 计算几何算法
+  - 基本图元映射
+  - 相交测试
+  - 凸体检测
+  - 三角形三心计算
+  - 外/内接圆
+  - 椭圆最近点查询
+  
+# 计划清单
+- 粗检测阶段
+  - 均匀网格
+  - 扫掠剪除法
+- 测试 Demo
+- 积分器
+  - 韦尔莱
+  - 四阶龙格库塔法
+- 关节约束
+  - 结合约束
+- 软体模拟
+  - 有限元方法
+  - 质点弹簧系统
+- 绳子模拟
+  - 基于位置的动力学
 
-# Future
-- Broadphase
-  - Uniform Grid
-  - Sweep And Prune
-- Test Demo
-- Integrator
-  - Verlet
-  - Rk4
-- Joint
-  - Prismatic
-  - Weld
-- Non-Fit Polygon
-- Soft Body
-  - Finite Element Method
-  - Mass-Spring System
-- Rope
-  - Position-Based Dynamics
-
-# �ο�
+# 参考
 - [Box2D](https://github.com/erincatto/box2d)
 - [Box2D Lite](https://github.com/erincatto/box2d-lite)
 - [dyn4j](https://github.com/dyn4j/dyn4j)
@@ -115,3 +94,7 @@ cmake CMakeLists.txt
 - *Real-Time Collision Detection* by Christer Ericson
 - *Game Programming Gems 7* - Scott Jacobs
 - *Game Physics Cookbook* - Gabor Szauer
+
+
+
+
