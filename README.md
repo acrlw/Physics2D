@@ -3,10 +3,9 @@ Simple 2D Physics Engine For Tutoring.
 # Build
 cmake CMakeLists.txt
 # Requirement
-- C++ 20
+- C++ 17
 - vcpkg
   - Qt
-  - fmt
 
 # Features
 - Basic Linear Algebra
@@ -23,7 +22,8 @@ cmake CMakeLists.txt
     - Axis-Aligned Bounding Box
     - Dynamic Bounding Volume Tree
       - SAH
-      - Tree & Array
+      - Dynamic Tree & Array
+      - Raycast
 - Contact Maintainer
 - Rigid Body Dynamics Simulation
 - Sequential Impulse Solver
