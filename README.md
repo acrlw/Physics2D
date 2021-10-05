@@ -14,7 +14,8 @@ cmake CMakeLists.txt
   - Narrowphase
     - Algorithm
       - SAT
-      - GJK & EPA & MPR & Distance & Contact Pair
+      - GJK & EPA & MPR & Distance
+      - Contact Pair By Sutherland-Hogdman Clipping
     - Continuous Collision Detection
       - Sampling Trajectory of Body
       - Time of Impact
