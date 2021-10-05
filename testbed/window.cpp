@@ -60,7 +60,8 @@ namespace Physics2D
 		mj->setActive(false);
 		//createStackBox(6, 1.1, 1.1);
 		createBoxRoom();
-		createBoxesAndGround(8);
+		createPyramid();
+		//createBoxesAndGround(8);
 		//testPendulum();
 		//testCollision();
 		//testJoint();
@@ -118,6 +119,27 @@ namespace Physics2D
 		}
 
 
+	}
+	void Window::createPyramid()
+	{
+		real offset = 0.0;
+		for(real j = 0;j < 20;j += 1.0)
+		{
+			for (real i = 0.0; i < 20 - j; i += 1.0)
+			{
+				Body* body = m_world.createBody();
+				body->position().set({ -15 + i * 1.1 + offset, j * 1.1 + 2 });
+				body->setShape(rectangle_ptr);
+				body->rotation() = 0;
+				body->setMass(1);
+				body->setType(Body::BodyType::Dynamic);
+				body->setFriction(0.8);
+				body->setRestitution(0);
+				camera.setTargetBody(body);
+				tree.insert(body);
+			}
+			offset += 0.5;
+		}
 	}
 	void Window::createBoxRoom()
 	{
@@ -865,13 +887,18 @@ namespace Physics2D
 		}
 		case Qt::Key_R:
 		{
-			rect2->rotation() -= Math::degreeToRadian(1);
+			camera.setRotationLineVisible(!camera.rotationLineVisible());
 			break;
 		}
 		case Qt::Key_L:
 		{
 			if (camera.targetBody() != nullptr)
 				camera.setTargetBody(nullptr);
+			break;
+		}
+		case Qt::Key_C:
+		{
+			camera.setCenterVisible(!camera.centerVisible());
 			break;
 		}
 		default:

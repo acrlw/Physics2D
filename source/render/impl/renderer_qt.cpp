@@ -57,9 +57,7 @@ namespace Physics2D
     {
         assert(painter != nullptr && camera != nullptr);
         assert(shape.shape->type() == Shape::Type::Polygon);
-        Vector2 position = camera->worldToScreen(shape.transform);
-        QPen center(Qt::gray, 8, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-        renderPoint(painter, camera, shape.transform, center);
+
         QPolygonF polygon;
         QColor color = pen.color();
         color.setAlphaF(0.2);
@@ -76,10 +74,7 @@ namespace Physics2D
         painter->setPen(pen);
         painter->drawPath(path);
         painter->fillPath(path, brush);
-
-        center.setColor(pen.color());
-        center.setWidth(2);
-        renderAngleLine(painter, camera, shape, center);
+        
     }
 
     void RendererQtImpl::renderEdge(QPainter* painter, Utils::Camera* camera, const ShapePrimitive& shape, const QPen& pen)
@@ -101,9 +96,7 @@ namespace Physics2D
     {
         assert(painter != nullptr && camera != nullptr);
         assert(shape.shape->type() == Shape::Type::Polygon);
-        renderPoint(painter, camera, shape.transform, pen);
-
-        Vector2 position = camera->worldToScreen(shape.transform);
+        
         QPolygonF polygon;
 
         for (const Vector2& point : dynamic_cast<Rectangle*>(shape.shape.get())->vertices())
@@ -121,10 +114,7 @@ namespace Physics2D
         painter->setPen(pen);
         painter->drawPath(path);
         painter->fillPath(path, brush);
-
-        QPen center = pen;
-        center.setWidth(2);
-        renderAngleLine(painter, camera, shape, center);
+        
     }
 
     void RendererQtImpl::renderCircle(QPainter* painter, Utils::Camera* camera, const ShapePrimitive& shape, const QPen& pen)
@@ -150,10 +140,7 @@ namespace Physics2D
         painter->rotate(shape.rotation);
         painter->translate(-screen_p.x, -screen_p.y);
 
-
-        QPen center = pen;
-        center.setWidth(2);
-        renderAngleLine(painter, camera, shape, center);
+        
     }
 
     void RendererQtImpl::renderCapsule(QPainter* painter, Utils::Camera* camera, const ShapePrimitive& shape, const QPen& pen)
@@ -181,10 +168,7 @@ namespace Physics2D
         painter->rotate(Math::radianToDegree(shape.rotation));
         painter->translate(-screen_p.x, -screen_p.y);
 
-
-        QPen center = pen;
-        center.setWidth(2);
-        renderAngleLine(painter, camera, shape, center);
+        
     }
 
     void RendererQtImpl::renderSector(QPainter* painter, Utils::Camera* camera, const ShapePrimitive& shape, const QPen& pen)
@@ -216,10 +200,7 @@ namespace Physics2D
         auto span = Math::radianToDegree(sector->spanRadian()) * 16.0;
         painter->drawPie(boundingRect, start, span);
         
-
-        QPen center = pen;
-        center.setWidth(2);
-        renderAngleLine(painter, camera, shape, center);
+        
         painter->setBrush(oldBrush);
     }
 
@@ -238,10 +219,6 @@ namespace Physics2D
         color.setAlphaF(0.15f);
         QBrush brush(color);
         QPainterPath path;
-
-        QPen center = pen;
-        center.setWidth(2);
-        renderAngleLine(painter, camera, shape, center);
 
         painter->translate(screen_p.x, screen_p.y);
         painter->rotate(Math::radianToDegree(-shape.rotation));
@@ -279,7 +256,7 @@ namespace Physics2D
         painter->rotate(shape.rotation);
     }
 
-    void RendererQtImpl::renderAngleLine(QPainter* painter, Utils::Camera* camera, const ShapePrimitive& shape, const QPen& pen)
+    void RendererQtImpl::renderAngleLine(QPainter* painter, Utils::Camera* camera, const ShapePrimitive& shape)
     {
         assert(painter != nullptr && camera != nullptr);
         QColor colorX("#8BC34A");

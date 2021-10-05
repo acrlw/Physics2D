@@ -87,6 +87,10 @@ namespace Physics2D::Utils
         real deltaTime()const;
         void setDeltaTime(const real& deltaTime);
 
+        bool rotationLineVisible()const;
+        void setRotationLineVisible(bool visible);
+        bool centerVisible() const;
+        void setCenterVisible(bool visible);
 		
     private:
         void drawGridScaleLine(QPainter* painter);
@@ -100,6 +104,9 @@ namespace Physics2D::Utils
         bool m_dbvhVisible = false;
         bool m_treeVisible = false;
         bool m_gridScaleLineVisible = false;
+        bool m_rotationLineVisible = false;
+        bool m_centerVisible = false;
+
 		
 		real m_meterToPixel = 50.0;
 		real m_pixelToMeter = 0.02;

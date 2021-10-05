@@ -26,7 +26,7 @@ namespace Physics2D
         static void renderSector(QPainter* painter, Utils::Camera* camera, const ShapePrimitive& shape, const QPen& pen);
         static void renderEllipse(QPainter* painter, Utils::Camera* camera, const ShapePrimitive& shape, const QPen& pen);
         static void renderCurve(QPainter* painter, Utils::Camera* camera, const ShapePrimitive& shape, const QPen& pen);
-        static void renderAngleLine(QPainter* painter, Utils::Camera* camera, const ShapePrimitive& shape, const QPen& pen);
+        static void renderAngleLine(QPainter* painter, Utils::Camera* camera, const ShapePrimitive& shape);
 
         static void renderAABB(QPainter *painter, Utils::Camera* camera, const AABB& aabb, const QPen& pen);
 

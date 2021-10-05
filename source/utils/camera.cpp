@@ -67,6 +67,13 @@ namespace Physics2D::Utils
 					if(body->sleep())
 						pen.setColor(Qt::gray);
 					RendererQtImpl::renderShape(painter, this, primitive, pen);
+					if(m_centerVisible)
+					{
+						QPen center(Qt::gray, 8, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+						RendererQtImpl::renderPoint(painter, this, primitive.transform, center);
+					}
+					if(m_rotationLineVisible)
+						RendererQtImpl::renderAngleLine(painter, this, primitive);
 				}
 			}
 			if(m_jointVisible)
@@ -320,6 +327,26 @@ namespace Physics2D::Utils
 	void Camera::setDeltaTime(const real& deltaTime)
 	{
 		m_deltaTime = deltaTime;
+	}
+
+	bool Camera::rotationLineVisible() const
+	{
+		return m_rotationLineVisible;
+	}
+
+	void Camera::setRotationLineVisible(bool visible)
+	{
+		m_rotationLineVisible = visible;
+	}
+
+	bool Camera::centerVisible() const
+	{
+		return m_centerVisible;
+	}
+
+	void Camera::setCenterVisible(bool visible)
+	{
+		m_centerVisible = visible;
 	}
 
 	void Camera::drawTree(int nodeIndex, QPainter* painter)

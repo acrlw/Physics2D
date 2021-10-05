@@ -46,6 +46,7 @@ namespace Physics2D
 		void wheelEvent(QWheelEvent* event)override;
 	
 	private:
+		void createPyramid();
 		void testTree();
 		void createBoxRoom();
 		void createBoxesAndGround(const real& count = 10);
@@ -131,6 +132,7 @@ namespace Physics2D
 		Integrator::VerletVelocity<Vector2> vv;
 		Integrator::VerletPosition<Vector2> vp;
 	};
+
 	
 }
 #endif
