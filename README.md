@@ -1,4 +1,5 @@
 # Physics2D
+[中文](README_zh_CN.md)
 Simple 2D Physics Engine For Tutoring.
 # Build
 cmake CMakeLists.txt
