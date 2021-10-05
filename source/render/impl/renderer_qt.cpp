@@ -123,7 +123,6 @@ namespace Physics2D
         assert(shape.shape->type() == Shape::Type::Circle);
         const Circle* circle = dynamic_cast<Circle*>(shape.shape.get());
         const Vector2 screen_p = camera->worldToScreen(shape.transform);
-        renderPoint(painter, camera, shape.transform, pen);
 
         QColor color = pen.color();
         color.setAlphaF(0.15f);
@@ -149,7 +148,6 @@ namespace Physics2D
         assert(shape.shape->type() == Shape::Type::Capsule);
         const Capsule* capsule = dynamic_cast<Capsule*>(shape.shape.get());
         const Vector2 screen_p = camera->worldToScreen(shape.transform);
-        renderPoint(painter, camera, shape.transform, pen);
 
         QColor color = pen.color();
         color.setAlphaF(0.15f);
@@ -208,7 +206,7 @@ namespace Physics2D
     {
         assert(painter != nullptr && camera != nullptr);
         assert(shape.shape->type() == Shape::Type::Ellipse);
-        renderPoint(painter, camera, shape.transform, pen);
+
         const Ellipse* ellipse = dynamic_cast<Ellipse*>(shape.shape.get());
         const Vector2 screen_p = camera->worldToScreen(shape.transform);
         real A = ellipse->A() * camera->meterToPixel();

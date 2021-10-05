@@ -127,6 +127,7 @@ namespace Physics2D
 		Tree tree;
 		real roomSize = 20;
 
+
 		ContactMaintainer contactMaintainer;
 		Integrator::SemiImplicitEuler<Vector2> euler;
 		Integrator::VerletVelocity<Vector2> vv;

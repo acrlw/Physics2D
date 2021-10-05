@@ -16,13 +16,13 @@ namespace Physics2D
 
 		rectangle.set(1, 1);
 		land.set(32, 0.2);
-		//polygon.append({{3, 0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3}, {2, -3}, {3, 0}});
-		polygon.append({ {-2, 0}, {0, 4}, {4, 6}, {10, 4}, {4, -2}, {-2, 0} });
+		polygon.append({{3, 0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3}, {2, -3}, {3, 0}});
+		//polygon.append({ {-2, 0}, {0, 4}, {4, 6}, {10, 4}, {4, -2}, {-2, 0} });
 		//polygon.append({ {0, 6}, {6, -4}, {-6, -4}, {0, 6}});
-		polygon.scale(0.22);
+		polygon.scale(0.16);
 		ellipse.set({-5, 4}, {5, -4});
-		ellipse.scale(0.15);
-		circle.setRadius(1);
+		ellipse.scale(0.1);
+		circle.setRadius(0.5);
 		//circle.scale(7);
 		edge.set({-20, 5}, {20, 0});
 		capsule.set(1, 2);
@@ -43,25 +43,23 @@ namespace Physics2D
 
 		horizontalWall = std::make_shared<Edge>(boxHorizontal);
 		verticalWall = std::make_shared<Edge>(boxVertical);
-		
-
 
 
 		m_world.setEnableGravity(true);
-		m_world.setGravity({0, -3.0});
+		m_world.setGravity({0, -4.0});
 		m_world.setLinearVelocityDamping(0.1);
 		m_world.setAirFrictionCoefficient(0.8);
 		m_world.setAngularVelocityDamping(0.1);
-		m_world.setPositionIteration(10);
-		m_world.setVelocityIteration(8);
+		m_world.setPositionIteration(8);
+		m_world.setVelocityIteration(6);
 
 		pointPrim.bodyA = nullptr;
 		mj = m_world.createJoint(pointPrim);
 		mj->setActive(false);
 		//createStackBox(6, 1.1, 1.1);
 		createBoxRoom();
-		createPyramid();
-		//createBoxesAndGround(8);
+		//createPyramid();
+		createBoxesAndGround(20);
 		//testPendulum();
 		//testCollision();
 		//testJoint();
@@ -123,12 +121,13 @@ namespace Physics2D
 	void Window::createPyramid()
 	{
 		real offset = 0.0;
-		for(real j = 0;j < 20;j += 1.0)
+		real max = 20;
+		for(real j = 0;j < max;j += 1.0)
 		{
-			for (real i = 0.0; i < 20 - j; i += 1.0)
+			for (real i = 0.0; i < max - j; i += 1.0)
 			{
 				Body* body = m_world.createBody();
-				body->position().set({ -15 + i * 1.1 + offset, j * 1.1 + 2 });
+				body->position().set({ -15 + i * 1.1 + offset, j * 1.1 + 1.5 });
 				body->setShape(rectangle_ptr);
 				body->rotation() = 0;
 				body->setMass(1);
@@ -299,7 +298,7 @@ namespace Physics2D
 		for (auto& body : m_world.bodyList())
 			tree.update(body.get());
 
-
+		
 
 
 		repaint();
@@ -447,6 +446,7 @@ namespace Physics2D
 	{
 		QPainter painter(this);
 		camera.render(&painter);
+		
 		//std::vector<Vector2> polygon1 = { {0, 6}, {-4, 4},{-6, 2}, {-6, 0}, {-4, -2},{4, -4},{6, 2},{4, 6}, {0, 6} };
 		//std::vector<Vector2> polygon2 = { {-10, 1}, {-8, 6},{0, 4},{6, -2}, {-8, -1}, {-10, 1} };
 		//std::vector<std::pair<Vector2, Vector2>> lines1, lines2, lines3;
@@ -750,6 +750,7 @@ namespace Physics2D
 
 		camera.setViewport({ {0, 0}, {e->size().width() - camera.viewport().topLeft.x,
 									   e->size().height() - camera.viewport().topLeft.y } });
+		
 		this->repaint();
 	}
 

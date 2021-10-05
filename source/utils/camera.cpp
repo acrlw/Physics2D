@@ -74,6 +74,8 @@ namespace Physics2D::Utils
 					}
 					if(m_rotationLineVisible)
 						RendererQtImpl::renderAngleLine(painter, this, primitive);
+					if(body->type() == Body::BodyType::Dynamic)
+						break;
 				}
 			}
 			if(m_jointVisible)
