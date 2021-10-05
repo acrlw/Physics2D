@@ -69,7 +69,7 @@ namespace Physics2D
 
 	real AABB::surfaceArea() const
 	{
-		return (width + height) * 2;
+		return (width + height) * 2.0;
 	}
 
 	real AABB::volume() const

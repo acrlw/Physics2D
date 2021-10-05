@@ -59,11 +59,11 @@ namespace Physics2D
 		mj = m_world.createJoint(pointPrim);
 		mj->setActive(false);
 		//createStackBox(6, 1.1, 1.1);
-		//createBoxRoom();
-		//createBoxesAndGround(10);
+		createBoxRoom();
+		createBoxesAndGround(8);
 		//testPendulum();
 		//testCollision();
-		testJoint();
+		//testJoint();
 
 		//testBroadphase();
 		//testCCD();

@@ -5,7 +5,7 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTORCC ON)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
@@ -88,8 +88,18 @@ add_executable(physics-engine
     "include/collision/broadphase/grid.h" 
     "source/collision/broadphase/grid.cpp" 
     "include/collision/broadphase/tree.h" 
-    "source/collision/broadphase/tree.cpp" "testbed/frame.h" "testbed/frame.cpp" "testbed/scenes/bitmask.cpp" "testbed/scenes/geometry.cpp" "testbed/scenes/collision.cpp" "testbed/scenes/broadphase.cpp" "testbed/scenes/narrowphase.cpp" "testbed/scenes/bridge.cpp" "testbed/scenes/restitution.cpp" "testbed/scenes/raycast.cpp" "testbed/scenes/sensor.cpp" "testbed/scenes/chain.cpp")
-
-find_package(fmt CONFIG REQUIRED)
+    "source/collision/broadphase/tree.cpp" 
+    "testbed/frame.h" "testbed/frame.cpp" 
+    "testbed/scenes/bitmask.cpp" 
+    "testbed/scenes/geometry.cpp" 
+    "testbed/scenes/collision.cpp" 
+    "testbed/scenes/broadphase.cpp" 
+    "testbed/scenes/narrowphase.cpp" 
+    "testbed/scenes/bridge.cpp" 
+    "testbed/scenes/restitution.cpp" 
+    "testbed/scenes/raycast.cpp" 
+    "testbed/scenes/sensor.cpp" 
+    "testbed/scenes/chain.cpp")
+    
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
-target_link_libraries(physics-engine PRIVATE Qt5::Widgets fmt::fmt)
+target_link_libraries(physics-engine PRIVATE Qt5::Widgets)

@@ -11,8 +11,7 @@
 #include "include/dynamics/body.h"
 #include "include/math/math.h"
 #include "include/math/linear/linear.h"
-#include <fmt/core.h>
-#include <fmt/format.h>
+
 
 
 #endif

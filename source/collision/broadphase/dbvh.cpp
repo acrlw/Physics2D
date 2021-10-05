@@ -134,7 +134,8 @@ namespace Physics2D
 
 	void DBVH::insert(Body* body)
 	{
-		if(m_leaves.contains(body))
+		auto iter = m_leaves.find(body);
+		if (iter == m_leaves.end())
 			return;
 		
 		AABB aabb = AABB::fromBody(body);

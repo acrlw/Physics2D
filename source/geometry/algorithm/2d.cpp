@@ -34,7 +34,7 @@ namespace Physics2D
 		const Vector2 bd = d - b;
 		const real ab_length = ab.length();
 
-		if (realEqual(ab_length, 0.0f))
+		if (realEqual(ab_length, 0.0))
 		{
 			if (fuzzyIsCollinear(c, d, a))
 				return std::optional(a);
@@ -47,11 +47,11 @@ namespace Physics2D
 		const real bc_proj = bc.dot(ba.normal());
 		const real cproj_dproj = ab_length - ad_proj - bc_proj;
 
-		if (realEqual(cc_proj, 0.0f))
+		if (realEqual(cc_proj, 0.0))
 			return std::nullopt;
 
 		const real denominator = (1 + (dd_proj / cc_proj));
-		if (realEqual(denominator, 0.0f))
+		if (realEqual(denominator, 0.0))
 			return std::nullopt;
 
 		const real cp = cproj_dproj / denominator;
