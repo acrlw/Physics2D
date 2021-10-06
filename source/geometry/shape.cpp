@@ -230,12 +230,12 @@ namespace Physics2D
 
 	real Ellipse::A() const
 	{
-		return m_width / 2.0;
+		return m_width / 2.0f;
 	}
 
 	real Ellipse::B() const
 	{
-		return m_height / 2.0;
+		return m_height / 2.0f;
 	}
 
 	real Ellipse::C() const
@@ -290,7 +290,7 @@ namespace Physics2D
 
 	Vector2 Edge::center()const
 	{
-		return (m_startPoint + m_endPoint) / 2.0;
+		return (m_startPoint + m_endPoint) / 2.0f;
 	}
 
 	Vector2 Edge::normal() const
@@ -454,13 +454,13 @@ namespace Physics2D
 		real r;
 		if (m_width >= m_height)//Horizontal
 		{
-			r = m_height / 2;
-			result.set(-m_width / 2.0 + r, r);
+			r = m_height / 2.0f;
+			result.set(-m_width / 2.0f + r, r);
 		}
 		else//Vertical
 		{
-			r = m_width / 2;
-			result.set(-r, m_height / 2.0 - r);
+			r = m_width / 2.0f;
+			result.set(-r, m_height / 2.0f - r);
 		}
 		return result;
 	}
@@ -470,13 +470,13 @@ namespace Physics2D
 		real r;
 		if (m_width >= m_height)//Horizontal
 		{
-			r = m_height / 2;
-			result.set(-m_width / 2.0 + r, -r);
+			r = m_height / 2.0f;
+			result.set(-m_width / 2.0f + r, -r);
 		}
 		else//Vertical
 		{
-			r = m_width / 2;
-			result.set(-r, -m_height / 2.0 + r);
+			r = m_width / 2.0f;
+			result.set(-r, -m_height / 2.0f + r);
 		}
 		return result;
 	}
@@ -531,7 +531,7 @@ namespace Physics2D
 		real c = (st - ed).length();
 		real l = m_spanRadian * m_radius;
 		normal.normalize();
-		Vector2 result = normal * (2.0 * m_radius * c / (3.0 * l));
+		Vector2 result = normal * (2.0f * m_radius * c / (3.0f * l));
 		return result;
 	}
 
@@ -561,7 +561,7 @@ namespace Physics2D
 
 	real Sector::area() const
 	{
-		return m_spanRadian * m_radius * m_radius / 2.0;
+		return m_spanRadian * m_radius * m_radius / 2.0f;
 	}
 
 	void Sector::setStartRadian(const real& radian)

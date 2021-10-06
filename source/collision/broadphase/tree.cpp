@@ -118,7 +118,7 @@ namespace Physics2D
 			return;
 
 		AABB thin = AABB::fromBody(body);
-		thin.expand(0.1);
+		thin.expand(0.1f);
 		if (!thin.isSubset(m_tree[iter->second].aabb))
 		{
 			extract(iter->second);
@@ -190,8 +190,8 @@ namespace Physics2D
 		real area = m_tree[boxIndex].aabb.surfaceArea();
 		real unionArea = AABB::unite(m_tree[nodeIndex].aabb, m_tree[boxIndex].aabb).surfaceArea();
 
-		cost = 2.0 * area;
-		real inheritanceCost = 2.0 * (unionArea - area);
+		cost = 2.0f * area;
+		real inheritanceCost = 2.0f * (unionArea - area);
 
 		auto accumulateCost = [&](int nodeIndex, int boxIndex)
 		{

@@ -10,12 +10,12 @@ namespace Physics2D
 		Vector2 localPointA;
 		Vector2 localPointB;
 
-		real damping = 0.0;
-		real stiffness = 0.0;
-		real frequency = 8;
-		real maxForce = 200;
-		real dampingRatio = 0.2;
-		real gamma = 0.0;
+		real damping = 0.0f;
+		real stiffness = 0.0f;
+		real frequency = 8.0f;
+		real maxForce = 200.0f;
+		real dampingRatio = 0.2f;
+		real gamma = 0.0f;
 		Vector2 bias;
 		Matrix2x2 effectiveMass;
 		Vector2 impulse;

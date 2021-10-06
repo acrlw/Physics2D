@@ -69,7 +69,7 @@ namespace Physics2D
 
 	real AABB::surfaceArea() const
 	{
-		return (width + height) * 2.0;
+		return (width + height) * 2.0f;
 	}
 
 	real AABB::volume() const
@@ -114,7 +114,7 @@ namespace Physics2D
 			}
 			aabb.width = std::fabs(max_x - min_x);
 			aabb.height = std::fabs(max_y - min_y);
-			aabb.position.set((max_x + min_x) * 0.5, (max_y + min_y) * 0.5);
+			aabb.position.set((max_x + min_x) * 0.5f, (max_y + min_y) * 0.5f);
 			break;
 		}
 		case Shape::Type::Ellipse:
@@ -158,7 +158,7 @@ namespace Physics2D
 			aabb.width = std::fabs(edge->startPoint().x - edge->endPoint().x);
 			aabb.height = std::fabs(edge->startPoint().y - edge->endPoint().y);
 			aabb.position.set(edge->startPoint().x + edge->endPoint().x, edge->startPoint().y + edge->endPoint().y);
-			aabb.position *= 0.5;
+			aabb.position *= 0.5f;
 			break;
 		}
 		case Shape::Type::Curve:
@@ -178,8 +178,8 @@ namespace Physics2D
 			Vector2 p2 = GJK::findFarthestPoint(shape, { 0, 1 });
 			p1 -= shape.transform;
 			p2 -= shape.transform;
-			aabb.width = p1.x * 2.0;
-			aabb.height = p2.y * 2.0;
+			aabb.width = p1.x * 2.0f;
+			aabb.height = p2.y * 2.0f;
 			break;
 		}
 		case Shape::Type::Sector:
@@ -194,7 +194,7 @@ namespace Physics2D
 			p4 -= shape.transform;
 			aabb.width = p1.x - p3.x;
 			aabb.height = p2.y - p4.y;
-			aabb.position.set({ (p1.x + p3.x) / 2, (p2.y + p4.y) / 2 });
+			aabb.position.set({ (p1.x + p3.x) / 2.0f, (p2.y + p4.y) / 2.0f });
 			break;
 		}
 		}
@@ -248,7 +248,7 @@ namespace Physics2D
 		const real high_y = Math::max(srcTopLeft.y, targetTopLeft.y);
 
 		AABB aabb;
-		aabb.position.set((low_x + high_x) * 0.5, (low_y + high_y) * 0.5);
+		aabb.position.set((low_x + high_x) * 0.5f, (low_y + high_y) * 0.5f);
 		aabb.width = high_x - low_x;
 		aabb.height = high_y - low_y;
 

@@ -214,8 +214,8 @@ namespace Physics2D
 			}
 
 			//retracing
-			step /= 2.0;
-			const real epsilon = 0.01;
+			step /= 2.0f;
+			const real epsilon = 0.01f;
 			while (startTimestep + forwardSteps <= endTimestep)
 			{
 				lastAttribute = dynamicBody->physicsAttribute();

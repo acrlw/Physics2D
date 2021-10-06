@@ -87,9 +87,9 @@ namespace Physics2D
         renderLine(painter, camera, edge->startPoint() + shape.transform, edge->endPoint() + shape.transform, pen);
         QColor colorY("#FFEB3B");
         QPen yAxis(colorY, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-        Vector2 center = (edge->startPoint() + edge->endPoint()) / 2.0;
+        Vector2 center = (edge->startPoint() + edge->endPoint()) / 2.0f;
         center += shape.transform;
-        renderLine(painter, camera, center, center + 0.1 * edge->normal(), yAxis);
+        renderLine(painter, camera, center, center + 0.1f * edge->normal(), yAxis);
     }
 
     void RendererQtImpl::renderRectangle(QPainter* painter, Utils::Camera* camera, const ShapePrimitive& shape, const QPen& pen)
@@ -261,8 +261,8 @@ namespace Physics2D
         QColor colorY("#FFEB3B");
         QPen xAxis(colorX, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
         QPen yAxis(colorY, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-        Vector2 xP(0.1, 0);
-        Vector2 yP(0, 0.1);
+        Vector2 xP(0.1f, 0);
+        Vector2 yP(0, 0.1f);
         Vector2 mc = Matrix2x2(shape.rotation).multiply(shape.shape->center());
         xP = Matrix2x2(shape.rotation).multiply(xP) + shape.transform + mc;
         yP = Matrix2x2(shape.rotation).multiply(yP) + shape.transform + mc;

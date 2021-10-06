@@ -112,7 +112,7 @@ namespace Physics2D
 		}
 	private:
 		PointJointPrimitive m_primitive;
-		real m_factor = 0.22;
+		real m_factor = 0.22f;
 	};
 }
 #endif

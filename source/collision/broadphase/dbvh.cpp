@@ -195,7 +195,7 @@ namespace Physics2D
 		
 		
 		AABB thin = AABB::fromBody(body);
-		thin.expand(0.1);
+		thin.expand(0.1f);
 		if(!thin.isSubset(iter->second->aabb))
 		{
 			Node* node = extract(body);

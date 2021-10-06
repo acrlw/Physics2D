@@ -79,6 +79,7 @@ namespace Physics2D
 		real m_angle = 0;
 		Body* m_lastBody = nullptr;
 		QTimer m_timer;
+		QTimer m_paintTimer;
 		Body* rect;
 		Body* rect2;
 		Body* rect3;

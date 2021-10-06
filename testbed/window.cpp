@@ -15,14 +15,14 @@ namespace Physics2D
 		this->setMouseTracking(true);
 
 		rectangle.set(1, 1);
-		land.set(32, 0.2);
+		land.set(32.0f, 0.2f);
 		polygon.append({{3, 0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3}, {2, -3}, {3, 0}});
 		//polygon.append({ {-2, 0}, {0, 4}, {4, 6}, {10, 4}, {4, -2}, {-2, 0} });
 		//polygon.append({ {0, 6}, {6, -4}, {-6, -4}, {0, 6}});
-		polygon.scale(0.16);
+		polygon.scale(0.16f);
 		ellipse.set({-5, 4}, {5, -4});
-		ellipse.scale(0.1);
-		circle.setRadius(0.5);
+		ellipse.scale(0.1f);
+		circle.setRadius(0.5f);
 		//circle.scale(7);
 		edge.set({-20, 5}, {20, 0});
 		capsule.set(1, 2);
@@ -46,10 +46,10 @@ namespace Physics2D
 
 
 		m_world.setEnableGravity(true);
-		m_world.setGravity({0, -4.0});
-		m_world.setLinearVelocityDamping(0.1);
-		m_world.setAirFrictionCoefficient(0.8);
-		m_world.setAngularVelocityDamping(0.1);
+		m_world.setGravity({0, -4.0f});
+		m_world.setLinearVelocityDamping(0.1f);
+		m_world.setAirFrictionCoefficient(0.8f);
+		m_world.setAngularVelocityDamping(0.1f);
 		m_world.setPositionIteration(8);
 		m_world.setVelocityIteration(6);
 
@@ -58,8 +58,8 @@ namespace Physics2D
 		mj->setActive(false);
 		//createStackBox(6, 1.1, 1.1);
 		createBoxRoom();
-		//createPyramid();
-		createBoxesAndGround(20);
+		createPyramid();
+		//createBoxesAndGround(32);
 		//testPendulum();
 		//testCollision();
 		//testJoint();
@@ -81,11 +81,16 @@ namespace Physics2D
 		camera.setAxisVisible(false);
 		camera.setGridScaleLineVisible(false);
 		connect(&m_timer, &QTimer::timeout, this, &Window::process);
+		connect(&m_paintTimer, &QTimer::timeout, this, [=]
+		{
+				this->repaint();
+		});
 		//isStop = true;
 		
 		m_timer.setInterval(15);
 		m_timer.start();
-
+		m_paintTimer.setInterval(15);
+		m_paintTimer.start();
 		
 	}
 
@@ -100,7 +105,7 @@ namespace Physics2D
 		ground->position().set({ 0, 0 });
 		ground->setMass(Constant::Max);
 		ground->setType(Body::BodyType::Static);
-		ground->setFriction(0.7);
+		ground->setFriction(0.7f);
 
 		tree.insert(ground);
 
@@ -112,7 +117,7 @@ namespace Physics2D
 			rect->rotation() = 0;
 			rect->setMass(200);
 			rect->setType(Body::BodyType::Dynamic);
-			rect->setFriction(0.1);
+			rect->setFriction(0.1f);
 			tree.insert(rect);
 		}
 
@@ -120,24 +125,24 @@ namespace Physics2D
 	}
 	void Window::createPyramid()
 	{
-		real offset = 0.0;
-		real max = 20;
-		for(real j = 0;j < max;j += 1.0)
+		real offset = 0.0f;
+		real max = 30.0f;
+		for(real j = 0;j < max;j += 1.0f)
 		{
-			for (real i = 0.0; i < max - j; i += 1.0)
+			for (real i = 0.0; i < max - j; i += 1.0f)
 			{
 				Body* body = m_world.createBody();
-				body->position().set({ -15 + i * 1.1 + offset, j * 1.1 + 1.5 });
+				body->position().set({ -18.0f + i * 1.1f + offset, j * 1.2f + 3.0f });
 				body->setShape(rectangle_ptr);
 				body->rotation() = 0;
-				body->setMass(1);
+				body->setMass(1.0f);
 				body->setType(Body::BodyType::Dynamic);
-				body->setFriction(0.8);
-				body->setRestitution(0);
+				body->setFriction(0.8f);
+				body->setRestitution(0.0f);
 				camera.setTargetBody(body);
 				tree.insert(body);
 			}
-			offset += 0.5;
+			offset += 0.5f;
 		}
 	}
 	void Window::createBoxRoom()
@@ -146,7 +151,7 @@ namespace Physics2D
 
 		ground = m_world.createBody();
 		ground->setShape(horizontalWall);
-		ground->position().set({ 0, (roomSize + 0.04) * 2 });
+		ground->position().set({ 0, (roomSize + 0.04f) * 2.0f });
 		ground->setMass(Constant::Max);
 		ground->setType(Body::BodyType::Static);
 		//camera.setMeterToPixel(120);
@@ -154,7 +159,7 @@ namespace Physics2D
 
 		ground = m_world.createBody();
 		ground->setShape(verticalWall);
-		ground->position().set({ (roomSize + 0.04), (roomSize + 0.04) });
+		ground->position().set({ (roomSize + 0.04f), (roomSize + 0.04f) });
 		ground->setMass(Constant::Max);
 		ground->setType(Body::BodyType::Static);
 		//camera.setMeterToPixel(120);
@@ -162,7 +167,7 @@ namespace Physics2D
 
 		ground = m_world.createBody();
 		ground->setShape(verticalWall);
-		ground->position().set({ -(roomSize + 0.04), (roomSize + 0.04) });
+		ground->position().set({ -(roomSize + 0.04f), (roomSize + 0.04f) });
 		ground->setMass(Constant::Max);
 		ground->setType(Body::BodyType::Static);
 		camera.setTargetBody(ground);
@@ -171,7 +176,7 @@ namespace Physics2D
 
 		ground = m_world.createBody();
 		ground->setShape(horizontalWall);
-		ground->position().set({ 0, -(0 + 0.04) });
+		ground->position().set({ 0, -(0 + 0.04f) });
 		ground->setMass(Constant::Max);
 		ground->setType(Body::BodyType::Static);
 		//camera.setMeterToPixel(120);
@@ -182,8 +187,8 @@ namespace Physics2D
 		for (int i = 0; i < 500; i++)
 		{
 			Body* body = m_world.createBody();
-			body->position().set(-9.0 + QRandomGenerator::global()->bounded(18.0),
-			                     -9.0 + QRandomGenerator::global()->bounded(18.0));
+			body->position().set(-9.0f + QRandomGenerator::global()->bounded(18.0f),
+			                     -9.0f + QRandomGenerator::global()->bounded(18.0f));
 			body->setShape(rectangle_ptr);
 			body->rotation() = -360 + QRandomGenerator::global()->bounded(720);
 			body->setMass(400);
@@ -197,14 +202,14 @@ namespace Physics2D
 	{
 		rect = m_world.createBody();
 		rect->setShape(rectangle_ptr);
-		rect->position().set({ 8, -5.4 });
+		rect->position().set({ 8, -5.4f });
 		rect->setMass(Constant::Max);
 		rect->rotation() = 90;
 		rect->setType(Body::BodyType::Dynamic);
 
 		rect2 = m_world.createBody();
 		rect2->setShape(rectangle_ptr);
-		rect2->position().set({ -5.5, -6 });
+		rect2->position().set({ -5.5f, -6 });
 		rect2->rotation() = 90;
 		rect2->setMass(200);
 		rect2->setType(Body::BodyType::Bullet);
@@ -213,7 +218,7 @@ namespace Physics2D
 
 		rect3 = m_world.createBody();
 		rect3->setShape(rectangle_ptr);
-		rect3->position().set({ 8, -6.6 });
+		rect3->position().set({ 8, -6.6f });
 		rect3->rotation() = 180;
 		rect3->setMass(200);
 		rect3->setType(Body::BodyType::Dynamic);
@@ -227,17 +232,17 @@ namespace Physics2D
 	void Window::testRaycast()
 	{
 		isStop = true;
-		for (real j = 0; j < 20; j++)
+		for (real j = 0; j < 20.0f; j++)
 		{
-			for (real i = 0; i < 20; i++)
+			for (real i = 0; i < 20.0f; i++)
 			{
 				Body* body = m_world.createBody();
-				body->position().set({ i * 0.5 - 8, j * 0.5 + 5 });
+				body->position().set({ i * 0.5f - 8.0f, j * 0.5f + 5.0f });
 				body->setShape(rectangle_ptr);
-				body->rotation() = 0;
-				body->setMass(200);
+				body->rotation() = 0.0f;
+				body->setMass(200.0f);
 				body->setType(Body::BodyType::Static);
-				body->setFriction(0.8);
+				body->setFriction(0.8f);
 				camera.setTargetBody(body);
 				tree.insert(body);
 			}
@@ -263,10 +268,10 @@ namespace Physics2D
 		{
 			for (auto& body : m_world.bodyList())
 				tree.update(body.get());
-			repaint();
+
 			return;
 		}
-		const real dt = 1.0 / 60.0;
+		const real dt = 1.0f / 60.0f;
 
 		m_world.stepVelocity(dt);
 
@@ -299,9 +304,7 @@ namespace Physics2D
 			tree.update(body.get());
 
 		
-
-
-		repaint();
+		
 	}
 
 	void Window::testJoint()
@@ -312,23 +315,23 @@ namespace Physics2D
 		ground->position().set({ 0, -10 });
 		ground->setMass(Constant::Max);
 		ground->setType(Body::BodyType::Static);
-		ground->setRestitution(1);
+		ground->setRestitution(1.0f);
 		
 		rect = m_world.createBody();
 		rect->setShape(rectangle_ptr);
 		rect->position().set({-0.5, -1});
 		rect->rotation() = 0;
-		rect->setMass(0.5);
-		rect->setRestitution(0.2);
-		rect->setFriction(0.8);
+		rect->setMass(0.5f);
+		rect->setRestitution(0.2f);
+		rect->setFriction(0.8f);
 		rect->setType(Body::BodyType::Dynamic);
 
 		rect2 = m_world.createBody();
 		rect2->setShape(capsule_ptr);
 		rect2->position().set({-5, -5});
 		rect2->rotation() = 0;
-		rect2->setMass(1.5);
-		rect2->setFriction(0.4);
+		rect2->setMass(1.5f);
+		rect2->setFriction(0.4f);
 		rect2->setType(Body::BodyType::Dynamic);
 		
 
@@ -373,18 +376,18 @@ namespace Physics2D
 		ground->position().set({ 0, 0 });
 		ground->setMass(Constant::Max);
 		ground->setType(Body::BodyType::Static);
-		ground->setFriction(0.7);
+		ground->setFriction(0.7f);
 		ground->setRestitution(1.0);
 		tree.insert(ground);
 
 		rect = m_world.createBody();
 		rect->setShape(rectangle_ptr);
 		rect->position().set({ -5, 6 });
-		rect->rotation() = 2.21805891827;
+		rect->rotation() = 2.21805891827f;
 		rect->setMass(1);
 		rect->setType(Body::BodyType::Dynamic);
-		rect->setFriction(0.4);
-		rect->setRestitution(0);
+		rect->setFriction(0.4f);
+		rect->setRestitution(0.0f);
 		tree.insert(rect);
 
 
@@ -954,18 +957,18 @@ namespace Physics2D
 
 	void Window::createBoxesAndGround(const real& count)
 	{
-		for (real j = 0; j < count; j++)
+		for (real j = 0; j < count; j+=1.0f)
 		{
-			for(real i = 0;i < count; i++)
+			for(real i = 0;i < count; i+=1.0f)
 			{
 				Body* body = m_world.createBody();
-				body->position().set({ i * 1 - 15, j * 1.1 + 2});
+				body->position().set({ i - 15.0f, j * 1.1f + 2.0f});
 				body->setShape(rectangle_ptr);
-				body->rotation() = 0;
-				body->setMass(1);
+				body->rotation() = 0.0f;
+				body->setMass(1.0f);
 				body->setType(Body::BodyType::Dynamic);
-				body->setFriction(0.8);
-				body->setRestitution(0);
+				body->setFriction(0.8f);
+				body->setRestitution(0.0f);
 				camera.setTargetBody(body);
 				tree.insert(body);
 			}

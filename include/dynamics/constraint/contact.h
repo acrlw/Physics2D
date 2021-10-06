@@ -18,8 +18,8 @@ namespace Physics2D
 		Vector2 normal;
 		Vector2 tangent;
 		real bias = 0;
-		real penetration = 0;
-		real restitution = 0.8;
+		real penetration = 0.0f;
+		real restitution = 0.8f;
 		real effectiveMassNormal = 0;
 		real effectiveMassTangent = 0;
 		real accumulatedNormalImpulse = 0;
@@ -31,7 +31,7 @@ namespace Physics2D
 	{
 		ContactConstraintPoint() = default;
 		RelationID relation = 0;
-		real friction = 0.2;
+		real friction = 0.2f;
 		bool active = true;
 		Vector2 localA;
 		Vector2 localB;
@@ -48,8 +48,8 @@ namespace Physics2D
 		void prepare(ContactConstraintPoint& ccp, const PointPair& pair, const Collision& collision);
 		void clearInactivePoints();
 		void deactivateAllPoints();
-		real m_maxPenetration = 0.01;
-		real m_biasFactor = 0.02;
+		real m_maxPenetration = 0.005f;
+		real m_biasFactor = 0.01f;
 		std::map<RelationID, std::vector<ContactConstraintPoint>> m_contactTable;
 	private:
 	};

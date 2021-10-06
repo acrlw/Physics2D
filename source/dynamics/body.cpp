@@ -72,7 +72,7 @@ namespace Physics2D {
     	if(realEqual(mass,Constant::Max))
             m_invMass = 0;
         else
-			m_invMass = !realEqual(mass, 0) ? 1.0 / mass : 0;
+			m_invMass = !realEqual(mass, 0) ? 1.0f / mass : 0;
     	
         calcInertia();
     }
@@ -217,7 +217,7 @@ namespace Physics2D {
                 sum2 += cross;
             }
 
-            m_inertia = m_mass * (1.0 / 6.0) * sum1 / sum2;
+            m_inertia = m_mass * (1.0f / 6.0f) * sum1 / sum2;
             break;
         }
         case Shape::Type::Ellipse:
@@ -226,7 +226,7 @@ namespace Physics2D {
 
             const real a = ellipse->A();
             const real b = ellipse->B();
-            m_inertia = m_mass * (a * a + b * b) * (1.0 / 5.0);
+            m_inertia = m_mass * (a * a + b * b) * (1.0f / 5.0f);
 
             break;
         }
@@ -237,22 +237,22 @@ namespace Physics2D {
 
             if (capsule->width() >= capsule->height())//Horizontal
             {
-                r = capsule->height() / 2;
+                r = capsule->height() / 2.0f;
                 h = capsule->width() - capsule->height();
             }
             else//Vertical
             {
-                r = capsule->width() / 2;
+                r = capsule->width() / 2.0f;
                 h = capsule->height() - capsule->width();
             }
 
             volume = Constant::Pi * r * r + h * 2 * r;
             real rho = m_mass / volume;
             massS = rho * Constant::Pi * r * r;
-            massC = rho * h * 2 * r;
-            inertiaC = (1.0 / 12.0) * massC * (h * h + (2 * r) * (2 * r));
-            inertiaS = massS * r * r * 0.5;
-            m_inertia = inertiaC + inertiaS + massS * (3 * r + 2 * h) * h / 8.0;
+            massC = rho * h * 2.0f * r;
+            inertiaC = (1.0f / 12.0f) * massC * (h * h + (2.0f * r) * (2.0f * r));
+            inertiaS = massS * r * r * 0.5f;
+            m_inertia = inertiaC + inertiaS + massS * (3.0f * r + 2.0f * h) * h / 8.0f;
             break;
         }
         case Shape::Type::Sector:
@@ -267,7 +267,7 @@ namespace Physics2D {
         if (realEqual(m_mass, Constant::Max))
             m_invInertia = 0;
         else
-			m_invInertia = !realEqual(m_inertia, 0) ? 1.0 / m_inertia : 0;
+			m_invInertia = !realEqual(m_inertia, 0) ? 1.0f / m_inertia : 0;
     }
 
     void Body::PhysicsAttribute::step(const real& dt)

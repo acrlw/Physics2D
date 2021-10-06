@@ -108,11 +108,11 @@ namespace Physics2D::Utils
         bool m_centerVisible = false;
 
 		
-		real m_meterToPixel = 50.0;
-		real m_pixelToMeter = 0.02;
+		real m_meterToPixel = 50.0f;
+		real m_pixelToMeter = 0.02f;
 
-        real m_targetMeterToPixel = 80.0;
-        real m_targetPixelToMeter = 0.02;
+        real m_targetMeterToPixel = 80.0f;
+        real m_targetPixelToMeter = 0.02f;
 		
         Vector2 m_transform;
         Vector2 m_origin;
@@ -122,10 +122,10 @@ namespace Physics2D::Utils
         DBVH* m_dbvh = nullptr;
         Tree* m_tree = nullptr;
 
-		real m_zoomFactor = 1.0;
-        real m_restitution = 2;
-        real m_deltaTime = 15.0;
-        real m_axisPointCount = 20;
+		real m_zoomFactor = 1.0f;
+        real m_restitution = 2.0f;
+        real m_deltaTime = 15.0f;
+        real m_axisPointCount = 20.0f;
         
         
 	};

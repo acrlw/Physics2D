@@ -80,7 +80,7 @@ namespace Physics2D
 
 	real Vector2::length() const
 	{
-		return sqrt(lengthSquare());
+		return std::sqrt(lengthSquare());
 	}
 
 	real Vector2::theta() const
@@ -111,8 +111,8 @@ namespace Physics2D
 
 	Vector2& Vector2::negate()
 	{
-		x *= -1;
-		y *= -1;
+		x *= -1.0f;
+		y *= -1.0f;
 		return *this;
 	}
 

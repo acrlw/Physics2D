@@ -74,8 +74,6 @@ namespace Physics2D::Utils
 					}
 					if(m_rotationLineVisible)
 						RendererQtImpl::renderAngleLine(painter, this, primitive);
-					if(body->type() == Body::BodyType::Dynamic)
-						break;
 				}
 			}
 			if(m_jointVisible)
@@ -402,25 +400,25 @@ namespace Physics2D::Utils
 		if(fineEnough)
 		{
 			if (m_meterToPixel < 400)
-				h = 0.2;
+				h = 0.2f;
 			else if (m_meterToPixel < 800)
-				h = 0.1;
+				h = 0.1f;
 			else if (m_meterToPixel < 1600)
-				h = 0.05;
+				h = 0.05f;
 			else if (m_meterToPixel < 4000)
-				h = 0.02;
+				h = 0.02f;
 			else
-				h = 0.005;
+				h = 0.005f;
 
 			lines.clear();
-			lines.reserve(static_cast<size_t>(m_axisPointCount * 2 / 0.2));
+			lines.reserve(static_cast<size_t>(m_axisPointCount * 2.0f / 0.2f));
 			color.setAlphaF(0.3);
 			pen.setColor(color);
 			for (real i = -m_axisPointCount; i <= m_axisPointCount; i += h)
 			{
-				if (realEqual(i, 0.0))
+				if (realEqual(i, 0.0f))
 					continue;
-				if(realEqual(i - std::floor(i), 0.0))
+				if(realEqual(i - std::floor(i), 0.0f))
 					continue;
 				Vector2 p1 = { i, m_axisPointCount };
 				Vector2 p2 = { i, -m_axisPointCount };

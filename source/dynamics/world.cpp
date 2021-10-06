@@ -39,8 +39,8 @@ namespace Physics2D
 				body->angularVelocity() += body->inverseInertia() * body->torques() * dt;
 
 					//damping
-				body->velocity() *= 1.0 / (1.0 + dt * m_linearVelocityDamping);
-				body->angularVelocity() *= 1.0 / (1.0 + dt * m_angularVelocityDamping);
+				body->velocity() *= 1.0f / (1.0f + dt * m_linearVelocityDamping);
+				body->angularVelocity() *= 1.0f / (1.0f + dt * m_angularVelocityDamping);
 
 				break;
 			}
@@ -49,8 +49,8 @@ namespace Physics2D
 				body->velocity() += body->inverseMass() * body->forces() * dt;
 				body->angularVelocity() += body->inverseInertia() * body->torques() * dt;
 
-				body->velocity() *= 1.0 / (1.0 + dt * m_linearVelocityDamping);
-				body->angularVelocity() *= 1.0 / (1.0 + dt * m_angularVelocityDamping);
+				body->velocity() *= 1.0f / (1.0f + dt * m_linearVelocityDamping);
+				body->angularVelocity() *= 1.0f / (1.0f + dt * m_angularVelocityDamping);
 				break;
 			}
 			case Body::BodyType::Bullet:

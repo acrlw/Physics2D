@@ -30,7 +30,7 @@ namespace Physics2D
 				vcp.vb = ccp.bodyB->velocity() + wb;
 
 				Vector2 dv = vcp.va - vcp.vb;
-				real jv = -(1 + vcp.restitution) * vcp.normal.dot(dv);
+				real jv = -(1.0f + vcp.restitution) * vcp.normal.dot(dv);
 				real lambda_n = vcp.effectiveMassNormal * jv;
 				real oldImpulse = vcp.accumulatedNormalImpulse;
 				vcp.accumulatedNormalImpulse = Math::max(oldImpulse + lambda_n, 0);
@@ -80,9 +80,9 @@ namespace Physics2D
 				Vector2 pa = vcp.ra + bodyA->position();
 				Vector2 pb = vcp.rb + bodyB->position();
 				Vector2 c = pb - pa;
-				if (c.dot(vcp.normal) < 0) //already solve by velocity
+				if (c.dot(vcp.normal) < 0.0f) //already solve by velocity
 					continue;
-				real bias = m_biasFactor * Math::max(c.length() - m_maxPenetration, 0);
+				real bias = m_biasFactor * Math::max(c.length() - m_maxPenetration, 0.0f);
 				real lambda = vcp.effectiveMassNormal * bias;
 
 				Vector2 impulse = lambda * vcp.normal;
@@ -117,8 +117,8 @@ namespace Physics2D
 			Vector2 localB = bodyB->toLocalPoint(elem.pointB);
 			for (auto& contact : contactList)
 			{
-				const bool isPointA = localA.fuzzyEqual(contact.localA, 0.2);
-				const bool isPointB = localB.fuzzyEqual(contact.localB, 0.2);
+				const bool isPointA = localA.fuzzyEqual(contact.localA, 0.1f);
+				const bool isPointB = localB.fuzzyEqual(contact.localB, 0.1f);
 				if (isPointA && isPointB)
 				{
 					//satisfy the condition, transmit the old accumulated value to new value
@@ -227,8 +227,8 @@ namespace Physics2D
 		const real kTangent = im_a + ii_a * rt_a * rt_a +
 			im_b + ii_b * rt_b * rt_b;
 
-		vcp.effectiveMassNormal = realEqual(kNormal, 0.0) ? 0 : 1.0 / kNormal;
-		vcp.effectiveMassTangent = realEqual(kTangent, 0.0) ? 0 : 1.0 / kTangent;
+		vcp.effectiveMassNormal = realEqual(kNormal, 0.0f) ? 0 : 1.0f / kNormal;
+		vcp.effectiveMassTangent = realEqual(kTangent, 0.0f) ? 0 : 1.0f / kTangent;
 
 		//vcp.bias = 0;
 		vcp.restitution = Math::min(ccp.bodyA->restitution(), ccp.bodyB->restitution());

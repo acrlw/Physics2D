@@ -85,7 +85,7 @@ namespace Physics2D
 
 		//2 * (x2 - x1) * x + 2 * (y2 - y1) y = x2 ^ 2 + y2 ^ 2 - x1 ^ 2 - y1 ^ 2;
 		//2 * (x3 - x2) * x + 2 * (y3 - y2) y = x3 ^ 2 + y3 ^ 2 - x2 ^ 2 - y2 ^ 2;
-		Matrix2x2 coef_mat{2 * (b.x - a.x), 2 * (c.x - b.x), 2 * (b.y - a.y), 2 * (c.y - b.y)};
+		Matrix2x2 coef_mat{2.0f * (b.x - a.x), 2.0f * (c.x - b.x), 2.0f * (b.y - a.y), 2 * (c.y - b.y)};
 		const Vector2 constant{b.lengthSquare() - a.lengthSquare(), c.lengthSquare() - b.lengthSquare()};
 		return std::optional(coef_mat.invert().multiply(constant));
 	}
@@ -123,7 +123,7 @@ namespace Physics2D
 		const real bc = (c - b).length();
 		const real ca = (a - c).length();
 		Vector2 p = (ab * c + bc * a + ca * b) / (ab + bc + ca);
-		real radius = 2 * area / (ab + bc + ca);
+		real radius = 2.0f * area / (ab + bc + ca);
 		return std::make_tuple(p, radius);
 	}
 
@@ -237,12 +237,12 @@ namespace Physics2D
 		int iteration = 0;
 		while (++iteration)
 		{
-			real temp_x = (x_left + x_right) * 0.5;
-			real temp_y = sgn * sqrt(pow(b, 2) - pow(b / a, 2) * pow(temp_x, 2));
+			real temp_x = (x_left + x_right) * 0.5f;
+			real temp_y = sgn * sqrt(pow(b, 2.0f) - pow(b / a, 2.0f) * pow(temp_x, 2.0f));
 			Vector2 t0(temp_x, temp_y);
 			t0.set(temp_x, temp_y);
 			real t1_x = temp_x + 1;
-			real t1_y = (pow(b, 2) - pow(b / a, 2) * t1_x * temp_x) / temp_y;
+			real t1_y = (pow(b, 2.0f) - pow(b / a, 2.0f) * t1_x * temp_x) / temp_y;
 			t1.set(t1_x, t1_y);
 			Vector2 t0t1 = t1 - t0;
 			Vector2 t0p = p - t0;
@@ -261,12 +261,12 @@ namespace Physics2D
 
 	Vector2 GeometryAlgorithm2D::triangleCentroid(const Vector2& a1, const Vector2& a2, const Vector2& a3)
 	{
-		return Vector2(a1 + a2 + a3) / 3.0;
+		return Vector2(a1 + a2 + a3) / 3.0f;
 	}
 
 	real GeometryAlgorithm2D::triangleArea(const Vector2& a1, const Vector2& a2, const Vector2& a3)
 	{
-		return std::fabs(Vector2::crossProduct(a1 - a2, a1 - a3)) / 2.0;
+		return std::fabs(Vector2::crossProduct(a1 - a2, a1 - a3)) / 2.0f;
 	}
 
 	Vector2 GeometryAlgorithm2D::calculateCenter(const std::vector<Vector2>& vertices)
@@ -475,9 +475,9 @@ namespace Physics2D
 		{
 			const real k = direction.y / direction.x;
 			//line offset constant d
-			const real a2 = pow(a, 2);
-			const real b2 = pow(b, 2);
-			const real k2 = pow(k, 2);
+			const real a2 = pow(a, 2.0f);
+			const real b2 = pow(b, 2.0f);
+			const real k2 = pow(k, 2.0f);
 			real d = sqrt((a2 + b2 * k2) / k2);
 			if (Vector2::dotProduct(Vector2(0, d), direction) < 0)
 				d = d * -1;
@@ -493,14 +493,14 @@ namespace Physics2D
 		Vector2 target;
 		if (width >= height) // Horizontal
 		{
-			real radius = height / 2;
+			real radius = height / 2.0f;
 			real offset = direction.x >= 0 ? width / 2 - radius : radius - width / 2;
 			target = direction.normal() * radius;
 			target.x += offset;
 		}
 		else // Vertical
 		{
-			real radius = width / 2;
+			real radius = width / 2.0f;
 			real offset = direction.y >= 0 ? height / 2 - radius : radius - height / 2;
 			target = direction.normal() * radius;
 			target.y += offset;

@@ -39,7 +39,7 @@ namespace Physics2D
 		}
 		static real springDampingCoefficient(real mass, real naturalFrequency, real dampingRatio)
 		{
-			return dampingRatio * 2.0 * mass * naturalFrequency;
+			return dampingRatio * 2.0f * mass * naturalFrequency;
 		}
 		static real springStiffness(real mass, real naturalFrequency)
 		{
@@ -48,12 +48,12 @@ namespace Physics2D
 		static real constraintImpulseMixing(real dt, real stiffness, real damping)
 		{
 			real cim = dt * (dt * stiffness + damping);
-			return realEqual(cim, 0) ? 0.0 : 1.0 / cim;
+			return realEqual(cim, 0.0f) ? 0.0f : 1.0f / cim;
 		}
 		static real errorReductionParameter(real dt, real stiffness, real damping)
 		{
 			real erp = dt * stiffness + damping;
-			return realEqual(erp, 0.0) ? 0.0 : stiffness / erp;
+			return realEqual(erp, 0.0f) ? 0.0f : stiffness / erp;
 		}
 	protected:
 		bool m_active = true;

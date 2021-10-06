@@ -9,12 +9,12 @@ namespace Physics2D
 		Vector2 localPointA;
 		Vector2 targetPoint;
 		Vector2 normal;
-		real biasFactor = 0.3;
-		real bias = 0;
-		real minDistance = 0;
-		real maxDistance = 0;
-		real effectiveMass = 0;
-		real accumulatedImpulse = 0;
+		real biasFactor = 0.3f;
+		real bias = 0.0f;
+		real minDistance = 0.0f;
+		real maxDistance = 0.0f;
+		real effectiveMass = 0.0f;
+		real accumulatedImpulse = 0.0f;
 	};
 	class DistanceJoint : public Joint
 	{
@@ -69,7 +69,7 @@ namespace Physics2D
 				return;
 			}
 			real rn_a = m_primitive.normal.dot(ra);
-			m_primitive.effectiveMass = 1.0 / (im_a + ii_a * rn_a * rn_a);
+			m_primitive.effectiveMass = 1.0f / (im_a + ii_a * rn_a * rn_a);
  			m_primitive.bias = m_primitive.biasFactor * c / dt;
 
 			//Vector2 impulse = m_primitive.accumulatedImpulse * m_primitive.normal;
@@ -107,7 +107,7 @@ namespace Physics2D
 		}
 	private:
 		DistanceJointPrimitive m_primitive;
-		real m_factor = 0.4;
+		real m_factor = 0.4f;
 	};
 }
 #endif

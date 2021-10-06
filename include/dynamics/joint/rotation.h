@@ -41,8 +41,8 @@ namespace Physics2D
 
 			real ii_a = m_primitive.bodyA->inverseInertia();
 			real ii_b = m_primitive.bodyB->inverseInertia();
-			real inv_dt = 1.0 / dt;
-			m_primitive.effectiveMass = 1.0 / (ii_a + ii_b);
+			real inv_dt = 1.0f / dt;
+			m_primitive.effectiveMass = 1.0f / (ii_a + ii_b);
 			real c = m_primitive.bodyA->rotation() - m_primitive.bodyB->rotation() - m_primitive.referenceRotation;
 			m_primitive.bias = -m_factor * inv_dt * c;
 		}
@@ -65,7 +65,7 @@ namespace Physics2D
 		}
 	private:
 		RotationJointPrimitive m_primitive;
-		real m_factor = 0.2;
+		real m_factor = 0.2f;
 	};
 	class OrientationJoint : public Joint
 	{
@@ -93,16 +93,16 @@ namespace Physics2D
 			real targetRotation = point.theta();
 
 			real ii_a = m_primitive.bodyA->inverseInertia();
-			real inv_dt = 1.0 / dt;
-			m_primitive.effectiveMass = 1.0 / ii_a;
+			real inv_dt = 1.0f / dt;
+			m_primitive.effectiveMass = 1.0f / ii_a;
 			real c = targetRotation - m_primitive.bodyA->rotation() - m_primitive.referenceRotation;
-			if(fuzzyRealEqual(c, 2 * Constant::Pi, 0.1))
+			if(fuzzyRealEqual(c, 2.0f * Constant::Pi, 0.1f))
 			{
 				c = 0;
 				bodyA->rotation() = targetRotation;
 				return;
 			}
-			if (fuzzyRealEqual(c, -2 * Constant::Pi, 0.1))
+			if (fuzzyRealEqual(c, -2.0f * Constant::Pi, 0.1f))
 			{
 				c = 0;
 				bodyA->rotation() = targetRotation;

@@ -140,7 +140,7 @@ namespace Physics2D
 		if (!GeometryAlgorithm2D::isPointOnSameSide(referenceEdge.p2, refAnchor2, referenceEdge.p1, incidentEdge.p2))
 			incidentEdge.p2 = GeometryAlgorithm2D::lineIntersection(referenceEdge.p2, refAnchor2, incidentEdge.p1, incidentEdge.p2);
 		//3. clip normal region
-		Vector2 refAnchor3 = (referenceEdge.p2 + referenceEdge.p1) / 2.0 + referenceEdge.normal;
+		Vector2 refAnchor3 = (referenceEdge.p2 + referenceEdge.p1) / 2.0f + referenceEdge.normal;
 		
 		bool p1OnClipArea = GeometryAlgorithm2D::isPointOnSameSide(referenceEdge.p1, referenceEdge.p2, refAnchor3, incidentEdge.p1);
 		bool p2OnClipArea = GeometryAlgorithm2D::isPointOnSameSide(referenceEdge.p1, referenceEdge.p2, refAnchor3, incidentEdge.p2);
