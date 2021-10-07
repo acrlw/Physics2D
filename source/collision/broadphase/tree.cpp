@@ -38,6 +38,20 @@ namespace Physics2D
 		m_tree.reserve(10);
 	}
 
+	std::vector<Body*> Tree::query(Body* body)
+	{
+		std::vector<Body*> result;
+		queryNodes(m_rootIndex, AABB::fromBody(body), result);
+		return result;
+	}
+
+	std::vector<Body*> Tree::query(const AABB& aabb)
+	{
+		std::vector<Body*> result;
+		queryNodes(m_rootIndex, aabb, result);
+		return result;
+	}
+
 	std::vector<Body*> Tree::raycast(const Vector2& point, const Vector2& direction)
 	{
 		std::vector<Body*> result;
@@ -126,14 +140,37 @@ namespace Physics2D
 		}
 	}
 
+	int Tree::rootIndex() const
+	{
+		return m_rootIndex;
+	}
+
 	const std::vector<Tree::Node>& Tree::tree()
 	{
 		return m_tree;
 	}
 
-	int Tree::rootIndex()const
+	void Tree::queryNodes(int nodeIndex, const AABB& aabb, std::vector<Body*>& result)
 	{
-		return m_rootIndex;
+		if (nodeIndex == -1)
+			return;
+		const bool overlap = m_tree[nodeIndex].aabb.collide(aabb) || m_tree[nodeIndex].aabb.isSubset(aabb)
+			|| aabb.isSubset(m_tree[nodeIndex].aabb);
+
+		if (!overlap)
+			return;
+
+		if (m_tree[nodeIndex].isLeaf())
+		{
+			result.emplace_back(m_tree[nodeIndex].body);
+			return;
+		}
+		if (m_tree[nodeIndex].isBranch() || m_tree[nodeIndex].isRoot())
+		{
+			queryNodes(m_tree[nodeIndex].leftIndex, aabb, result);
+			queryNodes(m_tree[nodeIndex].rightIndex, aabb, result);
+		}
+
 	}
 
 	void Tree::traverseLowestCost(int nodeIndex, int boxIndex, real& cost, int& finalIndex)
@@ -265,7 +302,8 @@ namespace Physics2D
 		if (leftIndex < 0 || rightIndex < 0)
 			return;
 
-		bool result = m_tree[leftIndex].aabb.collide(m_tree[rightIndex].aabb) || m_tree[leftIndex].aabb.isSubset(m_tree[rightIndex].aabb);
+		bool result = m_tree[leftIndex].aabb.collide(m_tree[rightIndex].aabb) || m_tree[leftIndex].aabb.isSubset(m_tree[rightIndex].aabb)
+		|| m_tree[rightIndex].aabb.isSubset(m_tree[leftIndex].aabb);
 
 		if (!result)
 			return;

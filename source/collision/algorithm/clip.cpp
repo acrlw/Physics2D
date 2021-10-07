@@ -198,9 +198,7 @@ namespace Physics2D
 			}
 			std::vector<Vector2> newPolygon;
 			newPolygon.reserve(result.size());
-			//test result:
-			//1: inside, -1: outside
-			//2: processed, 3: need to clear
+
 			for (size_t j = 1; j < testResults.size(); j++)
 			{
 				bool lastInside = testResults[j - 1] == 1 ? true : false;

@@ -9,11 +9,10 @@ namespace Physics2D
 		Body* bodyB = nullptr;
 		Vector2 localPointA;
 		Vector2 localPointB;
-
 		real damping = 0.0f;
 		real stiffness = 0.0f;
 		real frequency = 8.0f;
-		real maxForce = 200.0f;
+		real maxForce = 5000.0f;
 		real dampingRatio = 0.2f;
 		real gamma = 0.0f;
 		Vector2 bias;
@@ -55,8 +54,8 @@ namespace Physics2D
 			if (m_primitive.frequency > 0.0)
 			{
 				real nf = naturalFrequency(m_primitive.frequency);
-				m_primitive.stiffness = springStiffness(m_a, nf);
-				m_primitive.damping = springDampingCoefficient(m_a, nf, m_primitive.dampingRatio);
+				m_primitive.stiffness = springStiffness(m_a + m_b, nf);
+				m_primitive.damping = springDampingCoefficient(m_a + m_b, nf, m_primitive.dampingRatio);
 			}
 			else
 			{
@@ -68,7 +67,7 @@ namespace Physics2D
 
 			Vector2 pa = bodyA->toWorldPoint(m_primitive.localPointA);
 			Vector2 ra = pa - bodyA->position();
-			Vector2 pb = bodyA->toWorldPoint(m_primitive.localPointB);
+			Vector2 pb = bodyB->toWorldPoint(m_primitive.localPointB);
 			Vector2 rb = pb - bodyB->position();
 
 			m_primitive.bias = (pa - pb) * erp;
@@ -82,6 +81,8 @@ namespace Physics2D
 			k.e22() += m_primitive.gamma;
 
 			m_primitive.effectiveMass = k.invert();
+			m_primitive.bodyA->applyImpulse(m_primitive.impulse, ra);
+			m_primitive.bodyB->applyImpulse(-m_primitive.impulse, rb);
 
 		}
 		void solveVelocity(const real& dt) override
@@ -116,9 +117,29 @@ namespace Physics2D
 		{
 			if (m_primitive.bodyA == nullptr || m_primitive.bodyB == nullptr)
 				return;
-			Body* bodyA = m_primitive.bodyA;
-			Body* bodyB = m_primitive.bodyB;
+			//Body* bodyA = m_primitive.bodyA;
+			//Body* bodyB = m_primitive.bodyB;
+			//Vector2 pa = bodyA->toWorldPoint(m_primitive.localPointA);
+			//Vector2 ra = pa - bodyA->position();
+			//Vector2 pb = bodyB->toWorldPoint(m_primitive.localPointB);
+			//Vector2 rb = pb - bodyB->position();
 
+			//Vector2 bias = (pa - pb) * 0.01f;
+			//Vector2 impulse = m_primitive.effectiveMass.multiply(bias);
+			//if (bodyA->type() != Body::BodyType::Static && !bodyA->sleep())
+			//{
+			//	bodyA->position() += bodyA->inverseMass() * impulse;
+			//	bodyA->rotation() += bodyA->inverseInertia() * ra.cross(impulse);
+			//}
+			//if (bodyB->type() != Body::BodyType::Static && !bodyB->sleep())
+			//{
+			//	bodyB->position() -= bodyB->inverseMass() * impulse;
+			//	bodyB->rotation() -= bodyB->inverseInertia() * rb.cross(impulse);
+			//}
+		}
+		RevoluteJointPrimitive& primitive()
+		{
+			return m_primitive;
 		}
 	private:
 		RevoluteJointPrimitive m_primitive;

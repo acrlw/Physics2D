@@ -16,6 +16,19 @@ namespace Physics2D
 		real effectiveMass = 0.0f;
 		real accumulatedImpulse = 0.0f;
 	};
+	struct DistanceConstraintPrimitive
+	{
+		Body* bodyA = nullptr;
+		Body* bodyB = nullptr;
+		Vector2 nearestPointA;
+		Vector2 nearestPointB;
+		Vector2 ra;
+		Vector2 rb;
+		Vector2 bias;
+		Matrix2x2 effectiveMass;
+		Vector2 impulse;
+		real maxForce = 200.0f;
+	};
 	class DistanceJoint : public Joint
 	{
 	public:
@@ -93,8 +106,9 @@ namespace Physics2D
 			lambda_n = m_primitive.accumulatedImpulse - oldImpulse;
 
 			Vector2 impulse = lambda_n * m_primitive.normal;
-			m_primitive.bodyA->velocity() += m_primitive.bodyA->inverseMass() * impulse;
-			m_primitive.bodyA->angularVelocity() += m_primitive.bodyA->inverseInertia() * ra.cross(impulse);
+			m_primitive.bodyA->applyImpulse(impulse, ra);
+			//m_primitive.bodyA->velocity() += m_primitive.bodyA->inverseMass() * impulse;
+			//m_primitive.bodyA->angularVelocity() += m_primitive.bodyA->inverseInertia() * ra.cross(impulse);
 		}
 		void solvePosition(const real& dt) override
 		{
@@ -108,6 +122,90 @@ namespace Physics2D
 	private:
 		DistanceJointPrimitive m_primitive;
 		real m_factor = 0.4f;
+	};
+	class DistanceConstraint : public Joint
+	{
+		DistanceConstraint()
+		{
+		}
+		DistanceConstraint(const DistanceConstraintPrimitive& primitive) : m_primitive(primitive)
+		{
+		}
+		void set(const DistanceConstraintPrimitive& primitive)
+		{
+			m_primitive = primitive;
+		}
+		void prepare(const real& dt) override
+		{
+			if (m_primitive.bodyA == nullptr || m_primitive.bodyB == nullptr)
+				return;
+
+			Body* bodyA = m_primitive.bodyB;
+			Body* bodyB = m_primitive.bodyB;
+
+			real im_a = bodyA->inverseMass();
+			real ii_a = bodyA->inverseInertia();
+
+			real im_b = bodyB->inverseMass();
+			real ii_b = bodyB->inverseInertia();
+
+			m_primitive.ra = m_primitive.nearestPointA - bodyA->position();
+			m_primitive.rb = m_primitive.nearestPointB - bodyB->position();
+			Vector2& ra = m_primitive.ra;
+			Vector2& rb = m_primitive.rb;
+			Vector2 error = m_primitive.nearestPointA - m_primitive.nearestPointB;
+
+			Matrix2x2 k;
+			k.e11() = im_a + ra.y * ra.y * ii_a + im_b + rb.y * rb.y * ii_b;
+			k.e12() = -ra.x * ra.y * ii_a - rb.x * rb.y * ii_b;
+			k.e21() = k.e12();
+			k.e22() = im_a + ra.x * ra.x * ii_a + im_b + rb.x * rb.x * ii_b;
+			m_primitive.bias = error * m_factor;
+			m_primitive.effectiveMass = k.invert();
+
+		}
+		void solveVelocity(const real& dt) override
+		{
+			if (m_primitive.bodyA == nullptr || m_primitive.bodyB == nullptr)
+				return;
+			Vector2 va = m_primitive.bodyA->velocity() + Vector2::crossProduct(m_primitive.bodyA->angularVelocity(), m_primitive.ra);
+			Vector2 vb = m_primitive.bodyB->velocity() + Vector2::crossProduct(m_primitive.bodyB->angularVelocity(), m_primitive.rb);
+
+			Vector2 jvb = va - vb;
+			jvb += m_primitive.bias;
+			jvb.negate();
+			Vector2 J = m_primitive.effectiveMass.multiply(jvb);
+			Vector2 oldImpulse = m_primitive.impulse;
+			m_primitive.impulse += J;
+			real maxImpulse = dt * m_primitive.maxForce;
+			if (m_primitive.impulse.lengthSquare() > maxImpulse * maxImpulse)
+			{
+				m_primitive.impulse.normalize();
+				m_primitive.impulse *= maxImpulse;
+			}
+			J = m_primitive.impulse - oldImpulse;
+			m_primitive.bodyA->applyImpulse(J, m_primitive.ra);
+			m_primitive.bodyB->applyImpulse(-J, m_primitive.rb);
+
+		}
+		void set(const Vector2& pointA, const Vector2& pointB)
+		{
+			m_primitive.nearestPointA = pointA;
+			m_primitive.nearestPointB = pointB;
+		}
+		void solvePosition(const real& dt) override
+		{
+
+
+		}
+
+		DistanceConstraintPrimitive primitive()const
+		{
+			return m_primitive;
+		}
+	private:
+		DistanceConstraintPrimitive m_primitive;
+		real m_factor = 0.1f;
 	};
 }
 #endif

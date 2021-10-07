@@ -27,6 +27,8 @@ namespace Physics2D
 			
 		};
 		Tree();
+		std::vector<Body*> query(Body* body);
+		std::vector<Body*> query(const AABB& aabb);
 		std::vector<Body*> raycast(const Vector2& point, const Vector2& direction);
 		std::vector<std::pair<Body*, Body*>> generate();
 		void insert(Body* body);
@@ -35,6 +37,7 @@ namespace Physics2D
 		const std::vector<Node>& tree();
 		int rootIndex()const;
 	private:
+		void queryNodes(int nodeIndex, const AABB& aabb, std::vector<Body*>& result);
 		void traverseLowestCost(int nodeIndex, int boxIndex, real& cost, int& finalIndex);
 		void raycast(std::vector<Body*>& result, int nodeIndex, const Vector2& p, const Vector2& d);
 		void generate(int nodeIndex, std::vector<std::pair<Body*, Body*>>& pairs);

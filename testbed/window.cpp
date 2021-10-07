@@ -7,6 +7,8 @@
 #include <iostream>
 namespace Physics2D
 {
+
+
 	Window::Window(QWidget* parent)
 	{
 		this->setParent(parent);
@@ -14,7 +16,8 @@ namespace Physics2D
 		this->resize(1920, 1080);
 		this->setMouseTracking(true);
 
-		rectangle.set(1, 1);
+		brick.set(1.5f, 0.5f);
+		rectangle.set(1.0f, 1.0f);
 		land.set(32.0f, 0.2f);
 		polygon.append({{3, 0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3}, {2, -3}, {3, 0}});
 		//polygon.append({ {-2, 0}, {0, 4}, {4, 6}, {10, 4}, {4, -2}, {-2, 0} });
@@ -24,7 +27,7 @@ namespace Physics2D
 		ellipse.scale(0.1f);
 		circle.setRadius(0.5f);
 		//circle.scale(7);
-		edge.set({-20, 5}, {20, 0});
+		edge.set({-32, 0}, {32, 0});
 		capsule.set(1, 2);
 		sector.set(Math::degreeToRadian(0), Math::degreeToRadian(90), 2);
 
@@ -39,6 +42,7 @@ namespace Physics2D
 		edge_ptr = std::make_shared<Edge>(edge);
 		capsule_ptr = std::make_shared<Capsule>(capsule);
 		sector_ptr = std::make_shared<Sector>(sector);
+		brick_ptr = std::make_shared<Rectangle>(brick);
 		
 
 		horizontalWall = std::make_shared<Edge>(boxHorizontal);
@@ -57,12 +61,15 @@ namespace Physics2D
 		mj = m_world.createJoint(pointPrim);
 		mj->setActive(false);
 		//createStackBox(6, 1.1, 1.1);
-		createBoxRoom();
-		createPyramid();
+		//createBoxRoom();
+		//createPyramid();
+		createGround();
 		//createBoxesAndGround(32);
 		//testPendulum();
 		//testCollision();
 		//testJoint();
+		createBridge();
+
 
 		//testBroadphase();
 		//testCCD();
@@ -98,6 +105,15 @@ namespace Physics2D
 	{
 
 	}
+	void Window::createGround()
+	{
+		ground = m_world.createBody();
+		ground->setShape(edge_ptr);
+		ground->position().set({ 0, -15.0 });
+		ground->setMass(Constant::Max);
+		ground->setType(Body::BodyType::Static);
+		tree.insert(ground);
+	}
 	void Window::testTree()
 	{
 		ground = m_world.createBody();
@@ -126,13 +142,13 @@ namespace Physics2D
 	void Window::createPyramid()
 	{
 		real offset = 0.0f;
-		real max = 30.0f;
+		real max = 20.0f;
 		for(real j = 0;j < max;j += 1.0f)
 		{
 			for (real i = 0.0; i < max - j; i += 1.0f)
 			{
 				Body* body = m_world.createBody();
-				body->position().set({ -18.0f + i * 1.1f + offset, j * 1.2f + 3.0f });
+				body->position().set({ -12.0f + i * 1.1f + offset, j * 1.1f + 3.0f });
 				body->setShape(rectangle_ptr);
 				body->rotation() = 0;
 				body->setMass(1.0f);
@@ -261,6 +277,58 @@ namespace Physics2D
 		dbvh.insert(rect);
 	}
 
+	void Window::createBridge()
+	{
+		real half = brick_ptr->width() / 2.0f;
+		rect = m_world.createBody();
+		rect->setShape(brick_ptr);
+		rect->position().set({ -5.0f, 0.0f });
+		rect->rotation() = 0;
+		rect->setMass(1.0f);
+		rect->setRestitution(0.2f);
+		rect->setFriction(0.8f);
+		rect->setType(Body::BodyType::Dynamic);
+
+
+		PointJointPrimitive ppm;
+		ppm.bodyA = rect;
+		ppm.localPointA.set(-half, 0);
+		ppm.targetPoint.set(-5.0f - half, 0.0f);
+		ppm.dampingRatio = 0.2f;
+		ppm.frequency = 2;
+		m_world.createJoint(ppm);
+		real max = 14.0f;
+		tree.insert(rect);
+		for(real i = 1.0f;i < max;i += 1.0f)
+		{
+			rect2 = m_world.createBody();
+			rect2->setShape(brick_ptr);
+			rect2->position().set({ -5.0f + i * brick_ptr->width(), 0.0f });
+			rect2->rotation() = 0;
+			rect2->setMass(1.0f);
+			rect2->setFriction(0.1f);
+			rect2->setType(Body::BodyType::Dynamic);
+
+			tree.insert(rect2);
+			RevoluteJointPrimitive revolutePrim;
+			revolutePrim.bodyA = rect;
+			revolutePrim.bodyB = rect2;
+			revolutePrim.localPointA.set(half, 0);
+			revolutePrim.localPointB.set(-half, 0);
+			revolutePrim.dampingRatio = 0.8f;
+			revolutePrim.frequency = 2;
+			rj = m_world.createJoint(revolutePrim);
+			rect = rect2;
+		}
+		
+		//ppm.bodyA = rect2;
+		//ppm.localPointA.set(0.75f, 0);
+		//ppm.targetPoint.set(-5.0f + max * brick_ptr->width(), 0.0f);
+		//ppm.dampingRatio = 0.2f;
+		//ppm.frequency = 2;
+		//m_world.createJoint(ppm);
+	}
+
 
 	void Window::process()
 	{
@@ -318,40 +386,50 @@ namespace Physics2D
 		ground->setRestitution(1.0f);
 		
 		rect = m_world.createBody();
-		rect->setShape(rectangle_ptr);
+		rect->setShape(brick_ptr);
 		rect->position().set({-0.5, -1});
 		rect->rotation() = 0;
-		rect->setMass(0.5f);
+		rect->setMass(1.0f);
 		rect->setRestitution(0.2f);
 		rect->setFriction(0.8f);
 		rect->setType(Body::BodyType::Dynamic);
 
 		rect2 = m_world.createBody();
-		rect2->setShape(capsule_ptr);
+		rect2->setShape(brick_ptr);
 		rect2->position().set({-5, -5});
 		rect2->rotation() = 0;
-		rect2->setMass(1.5f);
+		rect2->setMass(1.0f);
 		rect2->setFriction(0.4f);
 		rect2->setType(Body::BodyType::Dynamic);
-		
+
+
+
+		RevoluteJointPrimitive revolutePrim;
+		revolutePrim.bodyA = rect;
+		revolutePrim.bodyB = rect2;
+		revolutePrim.localPointA.set(-0.75f, 0);
+		revolutePrim.localPointB.set(0.75f, 0);
+		revolutePrim.dampingRatio = 0.1f;
+		revolutePrim.frequency = 2;
+		rj = m_world.createJoint(revolutePrim);
 
 		//rotationPrim.bodyA = rect;
 		//rotationPrim.bodyB = rect2;
 		//rotationPrim.referenceRotation = Math::degreeToRadian(45);
 		//RotationJoint* rj = m_world.createJoint(rotationPrim);
 
-		distancePrim.bodyA = rect;
-		distancePrim.localPointA.set({ 0, 0 });
-		distancePrim.minDistance = 3;
-		distancePrim.maxDistance = 7;
-		distancePrim.targetPoint.set({ 1, 1 });
-		
-		m_world.createJoint(distancePrim);
+		//distancePrim.bodyA = rect;
+		//distancePrim.localPointA.set({ 0, 0 });
+		//distancePrim.minDistance = 3;
+		//distancePrim.maxDistance = 7;
+		//distancePrim.targetPoint.set({ 1, 1 });
+		//
+		//m_world.createJoint(distancePrim);
 
-		orientationPrim.bodyA = rect;
-		orientationPrim.targetPoint.set({ 1, 1 });
-		orientationPrim.referenceRotation = Math::degreeToRadian(90);
-		m_world.createJoint(orientationPrim);
+		//orientationPrim.bodyA = rect;
+		//orientationPrim.targetPoint.set({ 1, 1 });
+		//orientationPrim.referenceRotation = Math::degreeToRadian(90);
+		//m_world.createJoint(orientationPrim);
 
 		//pointPrim.localPointA.set(0, 0);
 		//pointPrim.targetPoint.set(0, 0);

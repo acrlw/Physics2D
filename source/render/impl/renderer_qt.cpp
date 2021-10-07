@@ -364,7 +364,19 @@ namespace Physics2D
     void RendererQtImpl::renderRevoluteJoint(QPainter* painter, Utils::Camera* camera, Joint* joint, const QPen& pen)
     {
         assert(joint != nullptr);
+        RevoluteJoint* revoluteJoint = dynamic_cast<RevoluteJoint*>(joint);
+        Vector2 pa = revoluteJoint->primitive().bodyA->toWorldPoint(revoluteJoint->primitive().localPointA);
+        Vector2 pb = revoluteJoint->primitive().bodyB->toWorldPoint(revoluteJoint->primitive().localPointB);
 
+        QColor pColor = Qt::gray;
+        QPen p(pColor, 8, Qt::DashDotLine, Qt::RoundCap, Qt::RoundJoin);
+
+        QColor color = Qt::green;
+        color.setAlphaF(0.45);
+        QPen line(color, 1, Qt::DashDotLine, Qt::RoundCap, Qt::RoundJoin);
+        renderPoint(painter, camera, pa, p);
+        renderPoint(painter, camera, pb, p);
+        renderLine(painter, camera, pa, pb, line);
     }
 
     void RendererQtImpl::renderWheelJoint(QPainter* painter, Utils::Camera* camera, Joint* joint, const QPen& pen)

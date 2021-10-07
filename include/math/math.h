@@ -1,6 +1,7 @@
 #ifndef PHYSICS2D_MATH_H
 #define PHYSICS2D_MATH_H
 #include "include/common/common.h"
+#include "immintrin.h"
 
 namespace Physics2D
 {

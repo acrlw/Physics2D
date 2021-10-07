@@ -29,6 +29,7 @@ namespace Physics2D
 		Q_OBJECT
 
 	public:
+		void createGround();
 		Window(QWidget* parent = nullptr);
 		~Window();
 	public slots:
@@ -60,7 +61,9 @@ namespace Physics2D
 		void testCCD();
 		void testRaycast();
 		void testCapsule();
+		void createBridge();
 		World m_world;
+		Rectangle brick;
 		Rectangle rectangle;
 		Rectangle land;
 		Ellipse ellipse;
@@ -103,6 +106,7 @@ namespace Physics2D
 		PointJointPrimitive pointPrim;
 
 		PointJoint* mj = nullptr;
+		RevoluteJoint* rj = nullptr;
 		DBVH dbvh;
 		int counter = 0;
 		
@@ -116,6 +120,7 @@ namespace Physics2D
 		std::shared_ptr<Polygon> polygon_ptr;
 		std::shared_ptr<Rectangle> land_ptr;
 		std::shared_ptr<Rectangle> rectangle_ptr;
+		std::shared_ptr<Rectangle> brick_ptr;
 		std::shared_ptr<Circle> circle_ptr;
 		std::shared_ptr<Capsule> capsule_ptr;
 		std::shared_ptr<Sector> sector_ptr;
