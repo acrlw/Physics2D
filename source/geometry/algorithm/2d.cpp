@@ -582,6 +582,6 @@ namespace Physics2D
 		real d1 = u.cross(v);
 		real d2 = u.cross(w);
 		//same side or on the edge
-		return Math::sign(d1) == Math::sign(d2) || realEqual(d2, 0);
+		return Math::sign(d1) == Math::sign(d2) ;
 	}
 }

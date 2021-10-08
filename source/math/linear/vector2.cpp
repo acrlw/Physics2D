@@ -148,7 +148,7 @@ namespace Physics2D
 
 	bool Vector2::fuzzyEqual(const Vector2& rhs, const real& epsilon)const
 	{
-		return (*this - rhs).lengthSquare() < epsilon;
+		return fuzzyRealEqual(x, rhs.x, epsilon) && fuzzyRealEqual(y, rhs.y, epsilon);
 	}
 
 	bool Vector2::isOrigin(const real& epsilon) const

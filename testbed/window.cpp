@@ -25,10 +25,10 @@ namespace Physics2D
 		polygon.scale(0.16f);
 		ellipse.set({-5, 4}, {5, -4});
 		ellipse.scale(0.1f);
-		circle.setRadius(0.5f);
+		circle.setRadius(brick.width());
 		//circle.scale(7);
-		edge.set({-32, 0}, {32, 0});
-		capsule.set(1, 2);
+		edge.set({-100, 0}, {100, 0});
+		capsule.set(0.4f, 0.8f);
 		sector.set(Math::degreeToRadian(0), Math::degreeToRadian(90), 2);
 
 		boxHorizontal.set({ -roomSize, 0 }, { roomSize, 0 });
@@ -50,25 +50,26 @@ namespace Physics2D
 
 
 		m_world.setEnableGravity(true);
-		m_world.setGravity({0, -4.0f});
+		m_world.setGravity({0, -9.8f});
 		m_world.setLinearVelocityDamping(0.1f);
 		m_world.setAirFrictionCoefficient(0.8f);
 		m_world.setAngularVelocityDamping(0.1f);
 		m_world.setPositionIteration(8);
-		m_world.setVelocityIteration(6);
+		m_world.setVelocityIteration(8);
 
 		pointPrim.bodyA = nullptr;
 		mj = m_world.createJoint(pointPrim);
 		mj->setActive(false);
-		//createStackBox(6, 1.1, 1.1);
+		//createStackBox(3, 1.1, 1.1);
 		//createBoxRoom();
 		//createPyramid();
 		createGround();
-		//createBoxesAndGround(32);
+		createBoxesAndGround(20);
 		//testPendulum();
 		//testCollision();
 		//testJoint();
-		createBridge();
+		//createBridge();
+		//createPendulum();
 
 
 		//testBroadphase();
@@ -92,7 +93,7 @@ namespace Physics2D
 		{
 				this->repaint();
 		});
-		//isStop = true;
+		isStop = true;
 		
 		m_timer.setInterval(15);
 		m_timer.start();
@@ -109,11 +110,125 @@ namespace Physics2D
 	{
 		ground = m_world.createBody();
 		ground->setShape(edge_ptr);
-		ground->position().set({ 0, -15.0 });
+		ground->position().set({ 0, 0.0 });
 		ground->setMass(Constant::Max);
 		ground->setType(Body::BodyType::Static);
 		tree.insert(ground);
 	}
+
+	void Window::createPendulum()
+	{
+		createGround();
+		for (real j = 0; j < 10.0f; j += 1.0f)
+		{
+			for (real i = 0; i < 5.0; i += 1.0f)
+			{
+				Body* body = m_world.createBody();
+				body->position().set({ i - 30.0f, j * 1.0f - 15.0f + 0.55f });
+				body->setShape(rectangle_ptr);
+				body->rotation() = 0.0f;
+				body->setMass(1.0f);
+				body->setType(Body::BodyType::Dynamic);
+				body->setFriction(0.8f);
+				body->setRestitution(0.0f);
+				tree.insert(body);
+			}
+		}
+		for (real j = 0; j < 10.0f; j += 1.0f)
+		{
+			for (real i = 0; i < 5.0; i += 1.0f)
+			{
+				Body* body = m_world.createBody();
+				body->position().set({ i, j * 1.0f - 15.0f + 0.55f });
+				body->setShape(rectangle_ptr);
+				body->rotation() = 0.0f;
+				body->setMass(1.0f);
+				body->setType(Body::BodyType::Dynamic);
+				body->setFriction(0.8f);
+				body->setRestitution(0.0f);
+				tree.insert(body);
+			}
+		}
+
+		real half = brick_ptr->width() / 2.0f;
+		rect = m_world.createBody();
+		rect->setShape(brick_ptr);
+		rect->position().set({ -20.0f, 0.0f });
+		rect->rotation() = 0;
+		rect->setMass(1.0f);
+		rect->setRestitution(0.2f);
+		rect->setFriction(0.8f);
+		rect->setType(Body::BodyType::Dynamic);
+
+
+		PointJointPrimitive ppm;
+		ppm.bodyA = rect;
+		ppm.localPointA.set(-half, 0);
+		ppm.targetPoint.set(-20.0f - half, 0.0f);
+		ppm.dampingRatio = 0.1f;
+		ppm.frequency = 100;
+		m_world.createJoint(ppm);
+		real max = 7.0f;
+		tree.insert(rect);
+		for (real i = 1.0f; i < max; i += 1.0f)
+		{
+			rect2 = m_world.createBody();
+			rect2->setShape(brick_ptr);
+			rect2->position().set({ -20.0f + i * brick_ptr->width(), 0.0f });
+			rect2->rotation() = 0;
+			rect2->setMass(1.0f);
+			rect2->setFriction(0.1f);
+			rect2->setType(Body::BodyType::Dynamic);
+
+			tree.insert(rect2);
+			RevoluteJointPrimitive revolutePrim;
+			revolutePrim.bodyA = rect;
+			revolutePrim.bodyB = rect2;
+			revolutePrim.localPointA.set(half, 0);
+			revolutePrim.localPointB.set(-half, 0);
+			revolutePrim.dampingRatio = 0.1f;
+			revolutePrim.frequency = 10;
+			rj = m_world.createJoint(revolutePrim);
+			rect = rect2;
+		}
+		rect2 = m_world.createBody();
+		rect2->setShape(circle_ptr);
+		rect2->position().set({ -20.0f + max * brick_ptr->width() + half, 0.0f });
+		rect2->rotation() = 0;
+		rect2->setMass(10.0f);
+		rect2->setFriction(0.1f);
+		rect2->setType(Body::BodyType::Dynamic);
+
+		tree.insert(rect2);
+		RevoluteJointPrimitive revolutePrim;
+		revolutePrim.bodyA = rect;
+		revolutePrim.bodyB = rect2;
+		revolutePrim.localPointA.set(half, 0);
+		revolutePrim.localPointB.set(-half * 2.0f, 0);
+		revolutePrim.dampingRatio = 0.1f;
+		revolutePrim.frequency = 10;
+		rj = m_world.createJoint(revolutePrim);
+
+
+		rect2 = m_world.createBody();
+		rect2->setShape(circle_ptr);
+		rect2->position().set({ 21.5f + half, 0.0f });
+		rect2->rotation() = 0;
+		rect2->setMass(10.0f);
+		rect2->setFriction(0.1f);
+		rect2->setType(Body::BodyType::Dynamic);
+		tree.insert(rect2);
+
+		distancePrim.bodyA = rect2;
+		distancePrim.localPointA.set({ 0, 0 });
+		distancePrim.minDistance = 3;
+		distancePrim.maxDistance = 11.5f + half;
+		distancePrim.targetPoint.set({ 10, 0 });
+
+		m_world.createJoint(distancePrim);
+
+	}
+
 	void Window::testTree()
 	{
 		ground = m_world.createBody();
@@ -148,7 +263,7 @@ namespace Physics2D
 			for (real i = 0.0; i < max - j; i += 1.0f)
 			{
 				Body* body = m_world.createBody();
-				body->position().set({ -12.0f + i * 1.1f + offset, j * 1.1f + 3.0f });
+				body->position().set({ 2.5f + i * 1.1f + offset, j * 1.8f + 2.0f });
 				body->setShape(rectangle_ptr);
 				body->rotation() = 0;
 				body->setMass(1.0f);
@@ -294,8 +409,8 @@ namespace Physics2D
 		ppm.bodyA = rect;
 		ppm.localPointA.set(-half, 0);
 		ppm.targetPoint.set(-5.0f - half, 0.0f);
-		ppm.dampingRatio = 0.2f;
-		ppm.frequency = 2;
+		ppm.dampingRatio = 0.1f;
+		ppm.frequency = 100;
 		m_world.createJoint(ppm);
 		real max = 14.0f;
 		tree.insert(rect);
@@ -315,8 +430,8 @@ namespace Physics2D
 			revolutePrim.bodyB = rect2;
 			revolutePrim.localPointA.set(half, 0);
 			revolutePrim.localPointB.set(-half, 0);
-			revolutePrim.dampingRatio = 0.8f;
-			revolutePrim.frequency = 2;
+			revolutePrim.dampingRatio = 0.1f;
+			revolutePrim.frequency = 10;
 			rj = m_world.createJoint(revolutePrim);
 			rect = rect2;
 		}
@@ -324,8 +439,8 @@ namespace Physics2D
 		//ppm.bodyA = rect2;
 		//ppm.localPointA.set(0.75f, 0);
 		//ppm.targetPoint.set(-5.0f + max * brick_ptr->width(), 0.0f);
-		//ppm.dampingRatio = 0.2f;
-		//ppm.frequency = 2;
+		//ppm.dampingRatio = 0.1f;
+		//ppm.frequency = 100;
 		//m_world.createJoint(ppm);
 	}
 
@@ -539,21 +654,21 @@ namespace Physics2D
 		//{
 		//	lines2.emplace_back(std::make_pair(polygon2[i], polygon2[i + 1]));
 		//}
-		//QColor colorAccurate(Qt::green);
-		//QColor colorApproximate1(Qt::red);
-		//QColor colorApproximate2("#03A9F4");
-		//QColor colorApproximate3(Qt::magenta);
-		//QColor colorApproximate4(Qt::yellow);
-		//colorAccurate.setAlphaF(0.8);
-		//colorApproximate1.setAlphaF(1);
-		//colorApproximate2.setAlphaF(1);
-		//colorApproximate3.setAlphaF(1);
-		//colorApproximate4.setAlphaF(1);
-		//QPen penAccurate(colorAccurate, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		//QPen penApproximate1(colorApproximate1, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		//QPen penApproximate2(colorApproximate2, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		//QPen penApproximate3(colorApproximate3, 8, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		//QPen penApproximate4(colorApproximate4, 8, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		QColor colorAccurate(Qt::green);
+		QColor colorApproximate1(Qt::red);
+		QColor colorApproximate2("#03A9F4");
+		QColor colorApproximate3(Qt::magenta);
+		QColor colorApproximate4(Qt::yellow);
+		colorAccurate.setAlphaF(0.8);
+		colorApproximate1.setAlphaF(1);
+		colorApproximate2.setAlphaF(1);
+		colorApproximate3.setAlphaF(1);
+		colorApproximate4.setAlphaF(1);
+		QPen penAccurate(colorAccurate, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		QPen penApproximate1(colorApproximate1, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		QPen penApproximate2(colorApproximate2, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		QPen penApproximate3(colorApproximate3, 8, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		QPen penApproximate4(colorApproximate4, 8, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 		//RendererQtImpl::renderLines(&painter, &camera, lines1, penApproximate2);
 		//RendererQtImpl::renderLines(&painter, &camera, lines2, penApproximate3);
 		//std::vector<Vector2> results = Clipper::sutherlandHodgmentPolygonClipping(polygon1, polygon2);
@@ -1018,34 +1133,34 @@ namespace Physics2D
 				});
 				body->setShape(rectangle_ptr);
 				body->rotation() = 0;
-				body->setMass(400);
+				body->setMass(1.0);
 				body->setType(Body::BodyType::Dynamic);
-				dbvh.insert(body);
+				tree.insert(body);
 			}
 		}
 
 
-		ground = m_world.createBody();
-		ground->setShape(land_ptr);
-		ground->position().set({0, -8});
-		ground->setMass(Constant::Max);
-		ground->setType(Body::BodyType::Static);
-		dbvh.insert(ground);
+		//ground = m_world.createBody();
+		//ground->setShape(land_ptr);
+		//ground->position().set({0, -8});
+		//ground->setMass(Constant::Max);
+		//ground->setType(Body::BodyType::Static);
+		//dbvh.insert(ground);
 	}
 
 	void Window::createBoxesAndGround(const real& count)
 	{
 		for (real j = 0; j < count; j+=1.0f)
 		{
-			for(real i = 0;i < count; i+=1.0f)
+			for(real i = 0;i < 1; i+=1.0f)
 			{
 				Body* body = m_world.createBody();
-				body->position().set({ i - 15.0f, j * 1.1f + 2.0f});
+				body->position().set({ i * 1.1f - 15.0f, j * 1.1f + 1.5f});
 				body->setShape(rectangle_ptr);
 				body->rotation() = 0.0f;
-				body->setMass(1.0f);
+				body->setMass(2.0f);
 				body->setType(Body::BodyType::Dynamic);
-				body->setFriction(0.8f);
+				body->setFriction(1.0f);
 				body->setRestitution(0.0f);
 				camera.setTargetBody(body);
 				tree.insert(body);

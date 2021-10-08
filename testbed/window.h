@@ -29,7 +29,6 @@ namespace Physics2D
 		Q_OBJECT
 
 	public:
-		void createGround();
 		Window(QWidget* parent = nullptr);
 		~Window();
 	public slots:
@@ -47,6 +46,8 @@ namespace Physics2D
 		void wheelEvent(QWheelEvent* event)override;
 	
 	private:
+		void createGround();
+		void createPendulum();
 		void createPyramid();
 		void testTree();
 		void createBoxRoom();

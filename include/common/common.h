@@ -26,7 +26,7 @@ namespace Physics2D
 		constexpr real HalfPi = Constant::Pi / 2.0f;
 		constexpr real DoublePi = Constant::Pi * 2.0f;
 		constexpr real ReciprocalOfPi = 0.3183098861f;
-		constexpr real GeometryEpsilon = 0.0001f;
+		constexpr real GeometryEpsilon = 0.00001f;
 		constexpr real MaxVelocity = 1000.0f;
 		constexpr real MaxAngularVelocity = 1000.0f;
 	}

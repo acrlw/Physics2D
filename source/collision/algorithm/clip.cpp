@@ -145,14 +145,15 @@ namespace Physics2D
 		bool p1OnClipArea = GeometryAlgorithm2D::isPointOnSameSide(referenceEdge.p1, referenceEdge.p2, refAnchor3, incidentEdge.p1);
 		bool p2OnClipArea = GeometryAlgorithm2D::isPointOnSameSide(referenceEdge.p1, referenceEdge.p2, refAnchor3, incidentEdge.p2);
 
+		if (!(p1OnClipArea && p2OnClipArea))
+			return result;
+
 		if(p1OnClipArea && !p2OnClipArea)//p1 inside, p2 outside
 			incidentEdge.p2 = GeometryAlgorithm2D::lineIntersection(referenceEdge.p1, referenceEdge.p2, incidentEdge.p1, incidentEdge.p2);
 		
 		else if(!p1OnClipArea && p2OnClipArea)//p1 outside, p2 inside
 			incidentEdge.p1 = GeometryAlgorithm2D::lineIntersection(referenceEdge.p1, referenceEdge.p2, incidentEdge.p1, incidentEdge.p2);
 
-		else if (!p1OnClipArea && !p2OnClipArea) // p1 and p2 are outside, then clip and project nothing
-			return result;
 
 		//p1 and p2 are inside, clip nothing, just go to project
 		//4. project to reference edge
