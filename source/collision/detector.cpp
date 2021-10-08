@@ -79,11 +79,7 @@ namespace Physics2D
 
 			//if fail, there must be a deeper contact point, use it:
 			if(pass)
-			{
-				for (auto& elem : pairList)
-					if (!realEqual(elem.pointA.lengthSquare(), elem.pointB.lengthSquare()))
-						result.contactList.emplace_back(elem);
-			}
+				result.contactList = pairList;
 			else 
 				result.contactList.emplace_back(GJK::dumpPoints(source));
 		}

@@ -29,6 +29,10 @@ namespace Physics2D
 			Vector2 p1;
 			Vector2 p2;
 			Vector2 normal;
+			bool isEmpty()const
+			{
+				return p1.isOrigin() && p2.isOrigin();
+			}
 		};
 		static std::vector<Vector2> dumpVertices(const ShapePrimitive& primitive);
 		static ClipEdge findClipEdge(const std::vector<Vector2>& vertices, size_t index, const Vector2& normal);

@@ -112,6 +112,8 @@ namespace Physics2D
 	std::vector<PointPair> ContactGenerator::clip(const ClipEdge& clipEdgeA, const ClipEdge& clipEdgeB, const Vector2& normal)
 	{
 		std::vector<PointPair> result;
+		if (clipEdgeA.isEmpty() || clipEdgeB.isEmpty())
+			return result;
 		//find reference edge
 		real d1 = Vector2(clipEdgeA.p1 - clipEdgeA.p2).dot(normal);
 		real d2 = Vector2(clipEdgeB.p1 - clipEdgeB.p2).dot(normal);
