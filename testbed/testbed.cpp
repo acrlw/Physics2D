@@ -18,8 +18,8 @@ namespace Physics2D
 		m_world.setAirFrictionCoefficient(0.8f);
 		m_world.setAngularVelocityDamping(0.1f);
 		m_world.setEnableDamping(true);
-		m_world.setPositionIteration(10);
-		m_world.setVelocityIteration(8);
+		m_world.setPositionIteration(8);
+		m_world.setVelocityIteration(6);
 
 		m_pointJointPrimitive.bodyA = nullptr;
 		m_mouseJoint = m_world.createJoint(m_pointJointPrimitive);
@@ -187,10 +187,13 @@ namespace Physics2D
 		QSlider* velIter = new QSlider(Qt::Horizontal);
 		QSlider* deltaTime = new QSlider(Qt::Horizontal);
 		QFormLayout* formLayout = new QFormLayout;
+		QLabel* lblPosIter = new QLabel("Position Iterations: ");
+		QLabel* lblVelIter = new QLabel("Velocity Iterations: ");
+		QLabel* lblDtIter = new QLabel("Delta Time: ");
 		formLayout->addRow(new QLabel("Scenes: "), scenes);
-		formLayout->addRow(new QLabel("Position Iterations: "), posIter);
-		formLayout->addRow(new QLabel("Velocity Iterations: "), velIter);
-		formLayout->addRow(new QLabel("Delta Time: "), deltaTime);
+		formLayout->addRow(lblPosIter, posIter);
+		formLayout->addRow(lblVelIter, velIter);
+		formLayout->addRow(lblDtIter, deltaTime);
 
 		posIter->setTracking(true);
 		velIter->setTracking(true);
@@ -203,15 +206,23 @@ namespace Physics2D
 		connect(posIter, &QSlider::valueChanged, this, [=](int value)
 			{
 				m_world.setPositionIteration(value);
+				lblPosIter->setText("Position Iterations: " + QString::number(value));
 			});
 		connect(velIter, &QSlider::valueChanged, this, [=](int value)
 			{
 				m_world.setVelocityIteration(value);
+				lblVelIter->setText("Velocity Iterations: " + QString::number(value));
 			});
 		connect(deltaTime, &QSlider::valueChanged, this, [=](int value)
 			{
 				dt = 1.0f / static_cast<real>(value);
+				lblDtIter->setText("Delta Time: " + QString::number(value) + " Hz");
 			});
+
+
+		posIter->setValue(8);
+		velIter->setValue(6);
+		deltaTime->setValue(60);
 
 
 		QGroupBox* groupBox = new QGroupBox("Scenes And Sliders");

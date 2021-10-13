@@ -14,7 +14,7 @@ namespace Physics2D
 		void load() override
 		{
 			Edge edge;
-			edge.set({ -100, 5 }, { 100, 0 });
+			edge.set({ -10, 2 }, { 10, 0 });
 			edge_ptr = std::make_unique<Edge>(edge);
 
 			Rectangle rectangle;
@@ -35,7 +35,7 @@ namespace Physics2D
 
 			rect = m_world->createBody();
 			rect->setShape(rectangle_ptr.get());
-			rect->position().set({ -5, 6 });
+			rect->position().set({ 0, 6 });
 			rect->rotation() = 2.21805891827f;
 			rect->setMass(1);
 			rect->setType(Body::BodyType::Dynamic);
