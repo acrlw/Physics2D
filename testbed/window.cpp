@@ -114,16 +114,6 @@ namespace Physics2D
 		ground->setType(Body::BodyType::Static);
 		tree.insert(ground);
 	}
-	void Window::createSpringDamper()
-	{
-		//ground = m_world.createBody();
-		//ground->setShape(edge_ptr.get());
-		//ground->position().set({ 0, 0.0 });
-		//ground->setMass(Constant::Max);
-		//ground->setType(Body::BodyType::Static);
-		//tree.insert(ground);
-		
-	}
 	void Window::createPendulum()
 	{
 		for (real j = 0; j < 10.0f; j += 1.0f)
@@ -491,11 +481,6 @@ namespace Physics2D
 		for (auto& body : m_world.bodyList())
 			tree.update(body.get());
 		
-		//rectPoints.emplace_back(Vector2(m_timeline, rect->position().y));
-		//m_timeline += dt;
-		
-		
-		
 	}
 
 	void Window::testJoint()
@@ -609,21 +594,7 @@ namespace Physics2D
 
 		//rect->velocity().set(0, -4);
 	}
-
-	void Window::createSnakeBody()
-	{
-		for (size_t i = 0; i < 15; i++)
-		{
-			Body* rect = m_world.createBody();
-			rect->setShape(rectangle_ptr.get());
-			rect->position().set({-600 + static_cast<real>(i * 60), 250});
-			rect->rotation() = 45;
-			rect->setMass(2);
-			rect->setType(Body::BodyType::Dynamic);
-			if (i == 0)
-				rect2 = rect;
-		}
-	}
+	
 
 	void Window::testDistanceJoint()
 	{
@@ -1273,7 +1244,6 @@ namespace Physics2D
 
 	void Window::keyReleaseEvent(QKeyEvent* event)
 	{
-
 		repaint();
 	}
 
@@ -1286,61 +1256,6 @@ namespace Physics2D
 			camera.setMeterToPixel(camera.meterToPixel() - camera.meterToPixel() / 4.0);
 		repaint();
 	}
-	
-
-	void Window::createStackBox(const uint16_t& row = 10, const real& margin = 65, const real& spacing = 55)
-	{
-		for (real j = row; j > 0; j--)
-		{
-			for (real i = 0; i < 2 * (row - j) + 1; i++)
-			{
-				Body* body = m_world.createBody();
-				body->position().set({
-					(-spacing * (row - j) + i * spacing), j * margin + margin - 6
-				});
-				body->setShape(rectangle_ptr.get());
-				body->rotation() = 0;
-				body->setMass(1.0);
-				body->setType(Body::BodyType::Dynamic);
-				tree.insert(body);
-			}
-		}
 
 
-		//ground = m_world.createBody();
-		//ground->setShape(land_ptr.get());
-		//ground->position().set({0, -8});
-		//ground->setMass(Constant::Max);
-		//ground->setType(Body::BodyType::Static);
-		//dbvh.insert(ground);
-	}
-
-	void Window::createBoxesAndGround(const real& count)
-	{
-		for (real j = 0; j < count; j+=1.0f)
-		{
-			for(real i = 0;i < 1; i+=1.0f)
-			{
-				Body* body = m_world.createBody();
-				body->position().set({ i * 1.1f - 15.0f, j * 1.1f + 1.5f});
-				body->setShape(rectangle_ptr.get());
-				body->rotation() = 0.0f;
-				body->setMass(2.0f);
-				body->setType(Body::BodyType::Dynamic);
-				body->setFriction(1.0f);
-				body->setRestitution(0.0f);
-				camera.setTargetBody(body);
-				tree.insert(body);
-			}
-		}
-
-		//ground = m_world.createBody();
-		//ground->setShape(edge_ptr.get());
-		//ground->position().set({0, -1.0});
-		//ground->setMass(Constant::Max);
-		//ground->setType(Body::BodyType::Static);
-		//camera.setTargetBody(ground);
-		//camera.setMeterToPixel(120);
-		//dbvh.insert(ground);
-	}
 }

@@ -2,5 +2,9 @@
 
 int main(int argc, char* argv[])
 {
-	return Physics2D::TestBedApplication::exec(argc, argv);
+
+	QApplication app(argc, argv);
+	Physics2D::TestBed testbed;
+	testbed.show();
+	return app.exec();
 }

@@ -3,10 +3,10 @@
 #include "testbed/frame.h"
 namespace Physics2D
 {
-	class BroadphaseFrame : public Frame
+	class BroadPhaseFrame : public Frame
 	{
 	public:
-		BroadphaseFrame(PhysicsWorld* world, ContactMaintainer* maintainer,
+		BroadPhaseFrame(PhysicsWorld* world, ContactMaintainer* maintainer,
 			Tree* tree, DBVH* dbvh) : Frame("Broadphase", world, maintainer, tree, dbvh)
 		{
 
