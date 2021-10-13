@@ -63,7 +63,7 @@ namespace Physics2D
         color.setAlphaF(0.2);
         QBrush brush(color);
 
-        for (const Vector2& point : dynamic_cast<Polygon*>(shape.shape.get())->vertices())
+        for (const Vector2& point : dynamic_cast<Polygon*>(shape.shape)->vertices())
         {
             const Vector2 world_p = Matrix2x2(shape.rotation).multiply(point) + shape.transform;
             const Vector2 screen_p = camera->worldToScreen(world_p);
@@ -81,7 +81,7 @@ namespace Physics2D
     {
         assert(painter != nullptr && camera != nullptr);
         assert(shape.shape->type() == Shape::Type::Edge);
-        Edge* edge = dynamic_cast<Edge*>(shape.shape.get());
+        Edge* edge = dynamic_cast<Edge*>(shape.shape);
         renderPoint(painter, camera, edge->startPoint() + shape.transform, pen);
         renderPoint(painter, camera, edge->endPoint() + shape.transform, pen);
         renderLine(painter, camera, edge->startPoint() + shape.transform, edge->endPoint() + shape.transform, pen);
@@ -99,7 +99,7 @@ namespace Physics2D
         
         QPolygonF polygon;
 
-        for (const Vector2& point : dynamic_cast<Rectangle*>(shape.shape.get())->vertices())
+        for (const Vector2& point : dynamic_cast<Rectangle*>(shape.shape)->vertices())
         {
             const Vector2 world_p = Matrix2x2(shape.rotation).multiply(point) + shape.transform;
             const Vector2 screen_p = camera->worldToScreen(world_p);
@@ -121,7 +121,7 @@ namespace Physics2D
     {
         assert(painter != nullptr && camera != nullptr);
         assert(shape.shape->type() == Shape::Type::Circle);
-        const Circle* circle = dynamic_cast<Circle*>(shape.shape.get());
+        const Circle* circle = dynamic_cast<Circle*>(shape.shape);
         const Vector2 screen_p = camera->worldToScreen(shape.transform);
 
         QColor color = pen.color();
@@ -146,7 +146,7 @@ namespace Physics2D
     {
         assert(painter != nullptr && camera != nullptr);
         assert(shape.shape->type() == Shape::Type::Capsule);
-        const Capsule* capsule = dynamic_cast<Capsule*>(shape.shape.get());
+        const Capsule* capsule = dynamic_cast<Capsule*>(shape.shape);
         const Vector2 screen_p = camera->worldToScreen(shape.transform);
 
         QColor color = pen.color();
@@ -173,13 +173,13 @@ namespace Physics2D
     {
         assert(painter != nullptr && camera != nullptr);
         assert(shape.shape->type() == Shape::Type::Sector);
-        const Sector* sector = dynamic_cast<Sector*>(shape.shape.get());
+        const Sector* sector = dynamic_cast<Sector*>(shape.shape);
         
         Vector2 offset(sector->radius(), sector->radius());
         Vector2 topLeft = camera->worldToScreen(shape.transform - offset);
         Vector2 bottomRight = camera->worldToScreen(shape.transform + offset);
         QPen gc(Qt::gray, 8, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-        renderPoint(painter, camera, Matrix2x2(shape.rotation).multiply(dynamic_cast<Sector*>(shape.shape.get())->center()) + shape.transform, gc);
+        renderPoint(painter, camera, Matrix2x2(shape.rotation).multiply(dynamic_cast<Sector*>(shape.shape)->center()) + shape.transform, gc);
 
         QColor color = pen.color();
         color.setAlphaF(0.15f);
@@ -207,7 +207,7 @@ namespace Physics2D
         assert(painter != nullptr && camera != nullptr);
         assert(shape.shape->type() == Shape::Type::Ellipse);
 
-        const Ellipse* ellipse = dynamic_cast<Ellipse*>(shape.shape.get());
+        const Ellipse* ellipse = dynamic_cast<Ellipse*>(shape.shape);
         const Vector2 screen_p = camera->worldToScreen(shape.transform);
         real A = ellipse->A() * camera->meterToPixel();
         real B = ellipse->B() * camera->meterToPixel();
@@ -234,7 +234,7 @@ namespace Physics2D
     {
         assert(painter != nullptr && camera != nullptr);
         assert(shape.shape->type() == Shape::Type::Curve);
-        const Curve* curve = dynamic_cast<Curve*>(shape.shape.get());
+        const Curve* curve = dynamic_cast<Curve*>(shape.shape);
 
         renderPoint(painter, camera, curve->startPoint() + shape.transform, pen);
         renderPoint(painter, camera, curve->endPoint() + shape.transform, pen);

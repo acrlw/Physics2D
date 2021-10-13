@@ -3,6 +3,11 @@
 
 #include "include/physics2d.h"
 #include "include/utils/camera.h"
+
+#include <QMouseEvent>
+#include <QKeyEvent>
+#include <QWheelEvent>
+#include <QPaintEvent>
 #include <string>
 namespace Physics2D
 {
@@ -12,8 +17,16 @@ namespace Physics2D
 		Frame(std::string name, PhysicsWorld* world, ContactMaintainer* maintainer,
 			Tree* tree, DBVH* dbvh) : m_name(name), m_world(world), m_maintainer(maintainer),
 		m_tree(tree), m_dbvh(dbvh){}
-		virtual void load() = 0;
-		virtual ~Frame() = 0;
+		virtual void load();
+		virtual void release();
+		virtual void render(QPainter* painter);
+		virtual void onMousePress(QMouseEvent* event);
+		virtual void onMouseRelease(QMouseEvent* event);
+		virtual void onMouseMove(QMouseEvent* event);
+		virtual void onMouseDoubleClick(QMouseEvent* event);
+		virtual void onKeyPress(QKeyEvent* event);
+		virtual void onKeyRelease(QKeyEvent* event);
+		
 		std::string name()const
 		{
 			return m_name;

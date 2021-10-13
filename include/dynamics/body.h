@@ -42,8 +42,8 @@ namespace Physics2D
 
 		real& torques();
 
-		std::shared_ptr<Shape> shape() const;
-		void setShape(std::shared_ptr<Shape> shape);
+		Shape* shape() const;
+		void setShape(Shape* shape);
 
 		BodyType type() const;
 		void setType(const BodyType& type);
@@ -101,7 +101,7 @@ namespace Physics2D
 		Vector2 m_forces;
 		real m_torques = 0;
 
-		std::shared_ptr<Shape> m_shape;
+		Shape* m_shape;
 		BodyType m_type = BodyType::Static;
 
 		bool m_sleep = false;

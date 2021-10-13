@@ -39,12 +39,12 @@ namespace Physics2D {
         return m_torques;
     }
 
-    std::shared_ptr<Shape> Body::shape() const
+    Shape* Body::shape() const
     {
         return m_shape;
     }
 
-    void Body::setShape(std::shared_ptr<Shape> shape)
+    void Body::setShape(Shape* shape)
     {
         m_shape = shape;
         calcInertia();
@@ -194,14 +194,14 @@ namespace Physics2D {
         switch (m_shape->type()) {
         case Shape::Type::Circle:
         {
-            const Circle* circle = dynamic_cast<Circle*>(m_shape.get());
+            const Circle* circle = dynamic_cast<Circle*>(m_shape);
 
             m_inertia = m_mass * circle->radius() * circle->radius() / 2;
             break;
         }
         case Shape::Type::Polygon:
         {
-            const Polygon* polygon = dynamic_cast<Polygon*>(m_shape.get());
+            const Polygon* polygon = dynamic_cast<Polygon*>(m_shape);
 
             const Vector2 center = polygon->center();
             real sum1 = 0.0;
@@ -222,7 +222,7 @@ namespace Physics2D {
         }
         case Shape::Type::Ellipse:
         {
-            const Ellipse* ellipse = dynamic_cast<Ellipse*>(m_shape.get());
+            const Ellipse* ellipse = dynamic_cast<Ellipse*>(m_shape);
 
             const real a = ellipse->A();
             const real b = ellipse->B();
@@ -232,7 +232,7 @@ namespace Physics2D {
         }
         case Shape::Type::Capsule:
         {
-            const Capsule* capsule = dynamic_cast<Capsule*>(m_shape.get());
+            const Capsule* capsule = dynamic_cast<Capsule*>(m_shape);
             real r = 0, h = 0, massS = 0, inertiaS = 0, massC = 0, inertiaC = 0, volume = 0;
 
             if (capsule->width() >= capsule->height())//Horizontal
@@ -257,7 +257,7 @@ namespace Physics2D {
         }
         case Shape::Type::Sector:
         {
-            const Sector* sector = dynamic_cast<Sector*>(m_shape.get());
+            const Sector* sector = dynamic_cast<Sector*>(m_shape);
             m_inertia = m_mass * (sector->spanRadian() - Math::sinx(sector->spanRadian())) * sector->radius() * sector->radius() / 4 * sector->spanRadian();
             break;
         }

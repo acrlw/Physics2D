@@ -34,19 +34,19 @@ namespace Physics2D
 		boxHorizontal.set({ -roomSize, 0 }, { roomSize, 0 });
 		boxVertical.set({ 0, roomSize }, { 0, -roomSize });
 
-		rectangle_ptr = std::make_shared<Rectangle>(rectangle);
-		land_ptr = std::make_shared<Rectangle>(land);
-		polygon_ptr = std::make_shared<Polygon>(polygon);
-		ellipse_ptr = std::make_shared<Ellipse>(ellipse);
-		circle_ptr = std::make_shared<Circle>(circle);
-		edge_ptr = std::make_shared<Edge>(edge);
-		capsule_ptr = std::make_shared<Capsule>(capsule);
-		sector_ptr = std::make_shared<Sector>(sector);
-		brick_ptr = std::make_shared<Rectangle>(brick);
+		rectangle_ptr = std::make_unique<Rectangle>(rectangle);
+		land_ptr = std::make_unique<Rectangle>(land);
+		polygon_ptr = std::make_unique<Polygon>(polygon);
+		ellipse_ptr = std::make_unique<Ellipse>(ellipse);
+		circle_ptr = std::make_unique<Circle>(circle);
+		edge_ptr = std::make_unique<Edge>(edge);
+		capsule_ptr = std::make_unique<Capsule>(capsule);
+		sector_ptr = std::make_unique<Sector>(sector);
+		brick_ptr = std::make_unique<Rectangle>(brick);
 		
 
-		horizontalWall = std::make_shared<Edge>(boxHorizontal);
-		verticalWall = std::make_shared<Edge>(boxVertical);
+		horizontalWall = std::make_unique<Edge>(boxHorizontal);
+		verticalWall = std::make_unique<Edge>(boxVertical);
 
 
 		m_world.setEnableGravity(true);
@@ -108,7 +108,7 @@ namespace Physics2D
 	void Window::createGround()
 	{
 		ground = m_world.createBody();
-		ground->setShape(edge_ptr);
+		ground->setShape(edge_ptr.get());
 		ground->position().set({ 0, -15.0 });
 		ground->setMass(Constant::Max);
 		ground->setType(Body::BodyType::Static);
@@ -117,7 +117,7 @@ namespace Physics2D
 	void Window::createSpringDamper()
 	{
 		//ground = m_world.createBody();
-		//ground->setShape(edge_ptr);
+		//ground->setShape(edge_ptr.get());
 		//ground->position().set({ 0, 0.0 });
 		//ground->setMass(Constant::Max);
 		//ground->setType(Body::BodyType::Static);
@@ -132,7 +132,7 @@ namespace Physics2D
 			{
 				Body* body = m_world.createBody();
 				body->position().set({ i - 30.0f, j * 1.0f - 15.0f + 0.55f });
-				body->setShape(rectangle_ptr);
+				body->setShape(rectangle_ptr.get());
 				body->rotation() = 0.0f;
 				body->setMass(1.0f);
 				body->setType(Body::BodyType::Dynamic);
@@ -147,7 +147,7 @@ namespace Physics2D
 			{
 				Body* body = m_world.createBody();
 				body->position().set({ i, j * 1.0f - 15.0f + 0.55f });
-				body->setShape(rectangle_ptr);
+				body->setShape(rectangle_ptr.get());
 				body->rotation() = 0.0f;
 				body->setMass(1.0f);
 				body->setType(Body::BodyType::Dynamic);
@@ -159,7 +159,7 @@ namespace Physics2D
 
 		real half = brick_ptr->width() / 2.0f;
 		rect = m_world.createBody();
-		rect->setShape(brick_ptr);
+		rect->setShape(brick_ptr.get());
 		rect->position().set({ -20.0f, 0.0f });
 		rect->rotation() = 0;
 		rect->setMass(1.0f);
@@ -180,7 +180,7 @@ namespace Physics2D
 		for (real i = 1.0f; i < max; i += 1.0f)
 		{
 			rect2 = m_world.createBody();
-			rect2->setShape(brick_ptr);
+			rect2->setShape(brick_ptr.get());
 			rect2->position().set({ -20.0f + i * brick_ptr->width(), 0.0f });
 			rect2->rotation() = 0;
 			rect2->setMass(1.0f);
@@ -199,7 +199,7 @@ namespace Physics2D
 			rect = rect2;
 		}
 		rect2 = m_world.createBody();
-		rect2->setShape(circle_ptr);
+		rect2->setShape(circle_ptr.get());
 		rect2->position().set({ -20.0f + max * brick_ptr->width() + half, 0.0f });
 		rect2->rotation() = 0;
 		rect2->setMass(25.0f);
@@ -218,7 +218,7 @@ namespace Physics2D
 
 
 		rect2 = m_world.createBody();
-		rect2->setShape(circle_ptr);
+		rect2->setShape(circle_ptr.get());
 		rect2->position().set({ 21.5f + half, 0.0f });
 		rect2->rotation() = 0;
 		rect2->setMass(25.0f);
@@ -239,7 +239,7 @@ namespace Physics2D
 	void Window::testTree()
 	{
 		ground = m_world.createBody();
-		ground->setShape(edge_ptr);
+		ground->setShape(edge_ptr.get());
 		ground->position().set({ 0, 0 });
 		ground->setMass(Constant::Max);
 		ground->setType(Body::BodyType::Static);
@@ -250,7 +250,7 @@ namespace Physics2D
 		for(real i = 0;i < 6;i++)
 		{
 			rect = m_world.createBody();
-			rect->setShape(capsule_ptr);
+			rect->setShape(capsule_ptr.get());
 			rect->position().set({ -5 + 2 * i, 5 + i * 2 });
 			rect->rotation() = 0;
 			rect->setMass(200);
@@ -271,7 +271,7 @@ namespace Physics2D
 			{
 				Body* body = m_world.createBody();
 				body->position().set({ 0.0f + i * 1.1f + offset, j * 1.8f + 2.0f });
-				body->setShape(rectangle_ptr);
+				body->setShape(rectangle_ptr.get());
 				body->rotation() = 0;
 				body->setMass(1.0f);
 				body->setType(Body::BodyType::Dynamic);
@@ -288,7 +288,7 @@ namespace Physics2D
 
 
 		ground = m_world.createBody();
-		ground->setShape(horizontalWall);
+		ground->setShape(horizontalWall.get());
 		ground->position().set({ 0, (roomSize + 0.04f) * 2.0f });
 		ground->setMass(Constant::Max);
 		ground->setType(Body::BodyType::Static);
@@ -296,7 +296,7 @@ namespace Physics2D
 		tree.insert(ground);
 
 		ground = m_world.createBody();
-		ground->setShape(verticalWall);
+		ground->setShape(verticalWall.get());
 		ground->position().set({ (roomSize + 0.04f), (roomSize + 0.04f) });
 		ground->setMass(Constant::Max);
 		ground->setType(Body::BodyType::Static);
@@ -304,7 +304,7 @@ namespace Physics2D
 		tree.insert(ground);
 
 		ground = m_world.createBody();
-		ground->setShape(verticalWall);
+		ground->setShape(verticalWall.get());
 		ground->position().set({ -(roomSize + 0.04f), (roomSize + 0.04f) });
 		ground->setMass(Constant::Max);
 		ground->setType(Body::BodyType::Static);
@@ -313,7 +313,7 @@ namespace Physics2D
 		tree.insert(ground);
 
 		ground = m_world.createBody();
-		ground->setShape(horizontalWall);
+		ground->setShape(horizontalWall.get());
 		ground->position().set({ 0, -(0 + 0.04f) });
 		ground->setMass(Constant::Max);
 		ground->setType(Body::BodyType::Static);
@@ -327,7 +327,7 @@ namespace Physics2D
 			Body* body = m_world.createBody();
 			body->position().set(-9.0f + QRandomGenerator::global()->bounded(18.0f),
 			                     -9.0f + QRandomGenerator::global()->bounded(18.0f));
-			body->setShape(rectangle_ptr);
+			body->setShape(rectangle_ptr.get());
 			body->rotation() = -360 + QRandomGenerator::global()->bounded(720);
 			body->setMass(400);
 			body->setType(Body::BodyType::Static);
@@ -339,14 +339,14 @@ namespace Physics2D
 	void Window::testCCD()
 	{
 		rect = m_world.createBody();
-		rect->setShape(rectangle_ptr);
+		rect->setShape(rectangle_ptr.get());
 		rect->position().set({ 8, -5.4f });
 		rect->setMass(Constant::Max);
 		rect->rotation() = 90;
 		rect->setType(Body::BodyType::Dynamic);
 
 		rect2 = m_world.createBody();
-		rect2->setShape(rectangle_ptr);
+		rect2->setShape(rectangle_ptr.get());
 		rect2->position().set({ -5.5f, -6 });
 		rect2->rotation() = 90;
 		rect2->setMass(200);
@@ -355,7 +355,7 @@ namespace Physics2D
 		rect2->angularVelocity() = 0;
 
 		rect3 = m_world.createBody();
-		rect3->setShape(rectangle_ptr);
+		rect3->setShape(rectangle_ptr.get());
 		rect3->position().set({ 8, -6.6f });
 		rect3->rotation() = 180;
 		rect3->setMass(200);
@@ -376,7 +376,7 @@ namespace Physics2D
 			{
 				Body* body = m_world.createBody();
 				body->position().set({ i * 0.5f - 8.0f, j * 0.5f + 5.0f });
-				body->setShape(rectangle_ptr);
+				body->setShape(rectangle_ptr.get());
 				body->rotation() = 0.0f;
 				body->setMass(200.0f);
 				body->setType(Body::BodyType::Static);
@@ -390,7 +390,7 @@ namespace Physics2D
 	void Window::testCapsule()
 	{
 		rect = m_world.createBody();
-		rect->setShape(capsule_ptr);
+		rect->setShape(capsule_ptr.get());
 		rect->position().set({ 0, 0 });
 		rect->rotation() = 0;
 		rect->setMass(20);
@@ -403,7 +403,7 @@ namespace Physics2D
 	{
 		real half = brick_ptr->width() / 2.0f;
 		rect = m_world.createBody();
-		rect->setShape(brick_ptr);
+		rect->setShape(brick_ptr.get());
 		rect->position().set({ -5.0f, 0.0f });
 		rect->rotation() = 0;
 		rect->setMass(1.0f);
@@ -424,7 +424,7 @@ namespace Physics2D
 		for(real i = 1.0f;i < max;i += 1.0f)
 		{
 			rect2 = m_world.createBody();
-			rect2->setShape(brick_ptr);
+			rect2->setShape(brick_ptr.get());
 			rect2->position().set({ -5.0f + i * brick_ptr->width(), 0.0f });
 			rect2->rotation() = 0;
 			rect2->setMass(1.0f);
@@ -502,14 +502,14 @@ namespace Physics2D
 	{
 
 		ground = m_world.createBody();
-		ground->setShape(edge_ptr);
+		ground->setShape(edge_ptr.get());
 		ground->position().set({ 0, -10 });
 		ground->setMass(Constant::Max);
 		ground->setType(Body::BodyType::Static);
 		ground->setRestitution(1.0f);
 		
 		rect = m_world.createBody();
-		rect->setShape(brick_ptr);
+		rect->setShape(brick_ptr.get());
 		rect->position().set({-0.5, -1});
 		rect->rotation() = 0;
 		rect->setMass(1.0f);
@@ -518,7 +518,7 @@ namespace Physics2D
 		rect->setType(Body::BodyType::Dynamic);
 
 		rect2 = m_world.createBody();
-		rect2->setShape(brick_ptr);
+		rect2->setShape(brick_ptr.get());
 		rect2->position().set({-5, -5});
 		rect2->rotation() = 0;
 		rect2->setMass(1.0f);
@@ -573,7 +573,7 @@ namespace Physics2D
 	void Window::testCollision()
 	{
 		ground = m_world.createBody();
-		ground->setShape(edge_ptr);
+		ground->setShape(edge_ptr.get());
 		ground->position().set({ 0, 0 });
 		ground->setMass(Constant::Max);
 		ground->setType(Body::BodyType::Static);
@@ -582,7 +582,7 @@ namespace Physics2D
 		tree.insert(ground);
 
 		rect = m_world.createBody();
-		rect->setShape(rectangle_ptr);
+		rect->setShape(rectangle_ptr.get());
 		rect->position().set({ -5, 6 });
 		rect->rotation() = 2.21805891827f;
 		rect->setMass(1);
@@ -593,7 +593,7 @@ namespace Physics2D
 
 
 		//rect2 = m_world.createBody();
-		//rect2->setShape(circle_ptr);
+		//rect2->setShape(circle_ptr.get());
 		//rect2->position().set({ 0, 2 });
 		//rect2->rotation() = -20;
 		//rect2->setMass(200);
@@ -615,7 +615,7 @@ namespace Physics2D
 		for (size_t i = 0; i < 15; i++)
 		{
 			Body* rect = m_world.createBody();
-			rect->setShape(rectangle_ptr);
+			rect->setShape(rectangle_ptr.get());
 			rect->position().set({-600 + static_cast<real>(i * 60), 250});
 			rect->rotation() = 45;
 			rect->setMass(2);
@@ -632,14 +632,14 @@ namespace Physics2D
 	void Window::testPendulum()
 	{
 		rect = m_world.createBody();
-		rect->setShape(circle_ptr);
+		rect->setShape(circle_ptr.get());
 		rect->position().set({0, 4});
 		rect->rotation() = 0;
 		rect->setMass(Constant::Max);
 		rect->setType(Body::BodyType::Kinematic);
 
 		rect2 = m_world.createBody();
-		rect2->setShape(rectangle_ptr);
+		rect2->setShape(rectangle_ptr.get());
 		rect2->position().set(-12, -9);
 		rect2->rotation() = 0;
 		rect2->setMass(100);
@@ -1298,7 +1298,7 @@ namespace Physics2D
 				body->position().set({
 					(-spacing * (row - j) + i * spacing), j * margin + margin - 6
 				});
-				body->setShape(rectangle_ptr);
+				body->setShape(rectangle_ptr.get());
 				body->rotation() = 0;
 				body->setMass(1.0);
 				body->setType(Body::BodyType::Dynamic);
@@ -1308,7 +1308,7 @@ namespace Physics2D
 
 
 		//ground = m_world.createBody();
-		//ground->setShape(land_ptr);
+		//ground->setShape(land_ptr.get());
 		//ground->position().set({0, -8});
 		//ground->setMass(Constant::Max);
 		//ground->setType(Body::BodyType::Static);
@@ -1323,7 +1323,7 @@ namespace Physics2D
 			{
 				Body* body = m_world.createBody();
 				body->position().set({ i * 1.1f - 15.0f, j * 1.1f + 1.5f});
-				body->setShape(rectangle_ptr);
+				body->setShape(rectangle_ptr.get());
 				body->rotation() = 0.0f;
 				body->setMass(2.0f);
 				body->setType(Body::BodyType::Dynamic);
@@ -1335,7 +1335,7 @@ namespace Physics2D
 		}
 
 		//ground = m_world.createBody();
-		//ground->setShape(edge_ptr);
+		//ground->setShape(edge_ptr.get());
 		//ground->position().set({0, -1.0});
 		//ground->setMass(Constant::Max);
 		//ground->setType(Body::BodyType::Static);

@@ -15,6 +15,10 @@ namespace Physics2D
 		{
 
 		}
+		void render(QPainter* painter) override
+		{
+
+		}
 	private:
 
 	};

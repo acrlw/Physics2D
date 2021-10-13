@@ -11,6 +11,7 @@
 #include <QPaintEvent>
 #include <QPainterPath>
 #include <QRandomGenerator>
+
 #include <include/physics2d.h>
 #include <include/render/impl/renderer_qt.h>
 #include <include/collision/algorithm/mpr.h>
@@ -21,6 +22,22 @@
 #include "include/collision/broadphase/tree.h"
 #include "include/utils/camera.h"
 #include "include/collision/continuous/ccd.h"
+
+#include "scenes/bitmask.h"
+#include "scenes/bridge.h"
+#include "scenes/broadphase.h"
+#include "scenes/chain.h"
+#include "scenes/collision.h"
+#include "scenes/domino.h"
+#include "scenes/friction.h"
+#include "scenes/geometry.h"
+#include "scenes/joints.h"
+#include "scenes/narrowphase.h"
+#include "scenes/raycast.h"
+#include "scenes/restitution.h"
+#include "scenes/sensor.h"
+#include "scenes/stacking.h"
+
 
 namespace Physics2D
 {
@@ -112,20 +129,20 @@ namespace Physics2D
 		DBVH dbvh;
 		int counter = 0;
 		
-		std::shared_ptr<Ellipse> ellipse_ptr;
-		std::shared_ptr<Edge> edge_ptr;
+		std::unique_ptr<Ellipse> ellipse_ptr;
+		std::unique_ptr<Edge> edge_ptr;
 
-		std::shared_ptr<Edge> horizontalWall;
-		std::shared_ptr<Edge> verticalWall;
+		std::unique_ptr<Edge> horizontalWall;
+		std::unique_ptr<Edge> verticalWall;
 
-		std::shared_ptr<Curve> curve_ptr;
-		std::shared_ptr<Polygon> polygon_ptr;
-		std::shared_ptr<Rectangle> land_ptr;
-		std::shared_ptr<Rectangle> rectangle_ptr;
-		std::shared_ptr<Rectangle> brick_ptr;
-		std::shared_ptr<Circle> circle_ptr;
-		std::shared_ptr<Capsule> capsule_ptr;
-		std::shared_ptr<Sector> sector_ptr;
+		std::unique_ptr<Curve> curve_ptr;
+		std::unique_ptr<Polygon> polygon_ptr;
+		std::unique_ptr<Rectangle> land_ptr;
+		std::unique_ptr<Rectangle> rectangle_ptr;
+		std::unique_ptr<Rectangle> brick_ptr;
+		std::unique_ptr<Circle> circle_ptr;
+		std::unique_ptr<Capsule> capsule_ptr;
+		std::unique_ptr<Sector> sector_ptr;
 
 		Utils::Camera camera;
 		bool cameraTransform = false;
@@ -142,6 +159,9 @@ namespace Physics2D
 		Integrator::SemiImplicitEuler<Vector2> euler;
 		Integrator::VerletVelocity<Vector2> vv;
 		Integrator::VerletPosition<Vector2> vp;
+
+		Frame* m_currentFrame = nullptr;
+
 	};
 
 	

@@ -91,16 +91,16 @@ add_executable(physics-engine
     "source/collision/broadphase/tree.cpp" 
     "testbed/frame.h" 
     "testbed/frame.cpp" 
-    "testbed/scenes/bitmask.cpp" 
-    "testbed/scenes/geometry.cpp" 
-    "testbed/scenes/collision.cpp" 
-    "testbed/scenes/broadphase.cpp" 
-    "testbed/scenes/narrowphase.cpp" 
-    "testbed/scenes/bridge.cpp" 
-    "testbed/scenes/restitution.cpp" 
-    "testbed/scenes/raycast.cpp" 
-    "testbed/scenes/sensor.cpp" 
-    "testbed/scenes/chain.cpp")
+    "testbed/scenes/bitmask.h" 
+    "testbed/scenes/geometry.h" 
+    "testbed/scenes/collision.h" 
+    "testbed/scenes/broadphase.h" 
+    "testbed/scenes/narrowphase.h" 
+    "testbed/scenes/bridge.h" 
+    "testbed/scenes/restitution.h" 
+    "testbed/scenes/raycast.h" 
+    "testbed/scenes/sensor.h" 
+    "testbed/scenes/chain.h")
     
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 target_link_libraries(physics-engine PRIVATE Qt5::Widgets)
