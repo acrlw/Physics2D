@@ -330,7 +330,6 @@ namespace Physics2D
         renderPoint(painter, camera, pb, p);
         renderLine(painter, camera, pa, pb, line);
     }
-
     void RendererQtImpl::renderOrientationJoint(QPainter* painter, Utils::Camera* camera, Joint* joint, const QPen& pen)
     {
         assert(joint != nullptr);

@@ -42,6 +42,7 @@ namespace Physics2D
 	class ContactMaintainer
 	{
 	public:
+		void clearAll();
 		void solveVelocity(real dt);
 		void solvePosition(real dt);
 		void add(const Collision& collision);

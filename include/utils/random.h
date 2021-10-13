@@ -10,7 +10,7 @@ namespace Physics2D
 	static std::mt19937_64 randomEngine(randomDevice());
 	static std::uniform_int_distribution<uint32_t> uniformDistribution(10000, 99999);
 	static std::vector<uint32_t> m_emptyList;
-	static uint32_t m_startId = 10000;
+	static uint32_t m_startId = 1000;
 	class RandomGenerator
 	{
 	public:

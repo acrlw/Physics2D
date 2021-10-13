@@ -2,25 +2,30 @@
 
 namespace Physics2D
 {
-	World::~World()
+	PhysicsWorld::~PhysicsWorld()
 	{
-		for (auto& body : m_bodyList)
-			body.release();
+		clearAllBodies();
 
-		for (auto& joint : m_jointList)
-			joint.release();
+		clearAllJoints();
 	}
 
-	void World::prepareVelocityConstraint(const real& dt)
+	void PhysicsWorld::prepareVelocityConstraint(const real& dt)
 	{
 		for (auto& joint : m_jointList)
 			if (joint->active())
 				joint->prepare(dt);
 	}
 
-	void World::stepVelocity(const real& dt)
+	void PhysicsWorld::stepVelocity(const real& dt)
 	{
 		const Vector2 g = m_enableGravity ? m_gravity : Vector2{0.0, 0.0};
+		real lvd = 1.0f;
+		real avd = 1.0f;
+		if(m_enableDamping)
+		{
+			lvd = 1.0f / (1.0f + dt * m_linearVelocityDamping);
+			avd = 1.0f / (1.0f + dt * m_angularVelocityDamping);
+		}
 		for (auto& body : m_bodyList)
 		{
 			switch (body->type())
@@ -38,9 +43,9 @@ namespace Physics2D
 				body->velocity() += body->inverseMass() * body->forces() * dt;
 				body->angularVelocity() += body->inverseInertia() * body->torques() * dt;
 
-					//damping
-				body->velocity() *= 1.0f / (1.0f + dt * m_linearVelocityDamping);
-				body->angularVelocity() *= 1.0f / (1.0f + dt * m_angularVelocityDamping);
+				
+				body->velocity() *= lvd;
+				body->angularVelocity() *= avd;
 
 				break;
 			}
@@ -49,8 +54,8 @@ namespace Physics2D
 				body->velocity() += body->inverseMass() * body->forces() * dt;
 				body->angularVelocity() += body->inverseInertia() * body->torques() * dt;
 
-				body->velocity() *= 1.0f / (1.0f + dt * m_linearVelocityDamping);
-				body->angularVelocity() *= 1.0f / (1.0f + dt * m_angularVelocityDamping);
+				body->velocity() *= lvd;
+				body->angularVelocity() *= avd;
 				break;
 			}
 			case Body::BodyType::Bullet:
@@ -60,14 +65,14 @@ namespace Physics2D
 			}
 		}
 	}
-	void World::solveVelocityConstraint(real dt)
+	void PhysicsWorld::solveVelocityConstraint(real dt)
 	{
 		for (int i = 0; i < m_velocityIteration; i++)
 			for (auto& joint : m_jointList)
 				if (joint->active())
 					joint->solveVelocity(dt);
 	}
-	void World::solvePositionConstraint(real dt)
+	void PhysicsWorld::solvePositionConstraint(real dt)
 	{
 		for (int i = 0; i < m_positionIteration; i++)
 			for (auto& joint : m_jointList)
@@ -75,7 +80,7 @@ namespace Physics2D
 					joint->solvePosition(dt);
 	}
 
-	void World::stepPosition(const real& dt)
+	void PhysicsWorld::stepPosition(const real& dt)
 	{
 
 		for (auto& body : m_bodyList)
@@ -111,120 +116,129 @@ namespace Physics2D
 
 	}
 	
-	real World::bias() const
+	real PhysicsWorld::bias() const
 	{
 		return m_bias;
 	}
 
-	void World::setBias(const real& bias)
+	void PhysicsWorld::setBias(const real& bias)
 	{
 		m_bias = bias;
 	}
 
-	real World::velocityIteration() const
+	real PhysicsWorld::velocityIteration() const
 	{
 		return m_velocityIteration;
 	}
 
-	void World::setVelocityIteration(const real& velocityIteration)
+	void PhysicsWorld::setVelocityIteration(const real& velocityIteration)
 	{
 		m_velocityIteration = velocityIteration;
 	}
 
-	real World::positionIteration() const
+	real PhysicsWorld::positionIteration() const
 	{
 		return m_positionIteration;
 	}
 
-	void World::setPositionIteration(const real& positionIteration)
+	void PhysicsWorld::setPositionIteration(const real& positionIteration)
 	{
 		m_positionIteration = positionIteration;
 	}
 	
-	std::vector<std::unique_ptr<Body>>& World::bodyList()
+	std::vector<std::unique_ptr<Body>>& PhysicsWorld::bodyList()
 	{
 		return m_bodyList;
 	}
 
-	std::vector<std::unique_ptr<Joint>>& World::jointList()
+	std::vector<std::unique_ptr<Joint>>& PhysicsWorld::jointList()
 	{
 		return m_jointList;
 	}
 	
-	Vector2 World::gravity() const
+	Vector2 PhysicsWorld::gravity() const
 	{
 		return m_gravity;
 	}
 
-	void World::setGravity(const Vector2& gravity)
+	void PhysicsWorld::setGravity(const Vector2& gravity)
 	{
 		m_gravity = gravity;
 	}
 
-	real World::linearVelocityDamping() const
+	real PhysicsWorld::linearVelocityDamping() const
 	{
 		return m_linearVelocityDamping;
 	}
 
-	void World::setLinearVelocityDamping(const real& linearVelocityDamping)
+	void PhysicsWorld::setLinearVelocityDamping(const real& linearVelocityDamping)
 	{
 		m_linearVelocityDamping = linearVelocityDamping;
 	}
 
-	real World::angularVelocityDamping() const
+	real PhysicsWorld::angularVelocityDamping() const
 	{
 		return m_angularVelocityDamping;
 	}
 
-	void World::setAngularVelocityDamping(const real& angularVelocityDamping)
+	void PhysicsWorld::setAngularVelocityDamping(const real& angularVelocityDamping)
 	{
 		m_angularVelocityDamping = angularVelocityDamping;
 	}
 
-	real World::linearVelocityThreshold() const
+	real PhysicsWorld::linearVelocityThreshold() const
 	{
 		return m_linearVelocityThreshold;
 	}
 
-	void World::setLinearVelocityThreshold(const real& linearVelocityThreshold)
+	void PhysicsWorld::setLinearVelocityThreshold(const real& linearVelocityThreshold)
 	{
 		m_linearVelocityThreshold = linearVelocityThreshold;
 	}
 
-	real World::angularVelocityThreshold() const
+	real PhysicsWorld::angularVelocityThreshold() const
 	{
 		return m_angularVelocityThreshold;
 	}
 
-	void World::setAngularVelocityThreshold(const real& angularVelocityThreshold)
+	void PhysicsWorld::setAngularVelocityThreshold(const real& angularVelocityThreshold)
 	{
 		m_angularVelocityThreshold = angularVelocityThreshold;
 	}
 
-	real World::airFrictionCoefficient() const
+	real PhysicsWorld::airFrictionCoefficient() const
 	{
 		return m_airFrictionCoefficient;
 	}
 
-	void World::setAirFrictionCoefficient(const real& airFrictionCoefficient)
+	void PhysicsWorld::setAirFrictionCoefficient(const real& airFrictionCoefficient)
 	{
 		m_airFrictionCoefficient = airFrictionCoefficient;
 	}
 
-	bool World::enableGravity() const
+	bool PhysicsWorld::enableGravity() const
 	{
 		return m_enableGravity;
 	}
 
-	void World::setEnableGravity(bool enableGravity)
+	void PhysicsWorld::setEnableGravity(bool enableGravity)
 	{
 		m_enableGravity = enableGravity;
 	}
-	
 
-	Body* World::createBody()
+	bool PhysicsWorld::enableDamping() const
 	{
-		//Body* body = new Body;
+		return m_enableDamping;
+	}
+
+	void PhysicsWorld::setEnableDamping(bool enableDamping)
+	{
+		m_enableDamping = enableDamping;
+	}
+
+
+	Body* PhysicsWorld::createBody()
+	{
 		auto body = std::make_unique<Body>();
 		Body* temp = body.get();
 		temp->setId(RandomGenerator::unique());
@@ -232,7 +246,7 @@ namespace Physics2D
 		return temp;
 	}
 
-	void World::removeBody(Body* body)
+	void PhysicsWorld::removeBody(Body* body)
 	{
 		for(auto iter = m_bodyList.begin(); iter != m_bodyList.end(); ++iter)
 		{
@@ -246,51 +260,86 @@ namespace Physics2D
 		}
 	}
 
-	RotationJoint* World::createJoint(const RotationJointPrimitive& primitive)
+	void PhysicsWorld::removeJoint(Joint* joint)
+	{
+		for (auto iter = m_jointList.begin(); iter != m_jointList.end(); ++iter)
+		{
+			if (iter->get() == joint)
+			{
+				RandomGenerator::pop(joint->id());
+				iter->release();
+				m_jointList.erase(iter);
+				break;
+			}
+		}
+	}
+
+	void PhysicsWorld::clearAllBodies()
+	{
+		for (auto& body : m_bodyList)
+			body.release();
+		m_bodyList.clear();
+	}
+
+	void PhysicsWorld::clearAllJoints()
+	{
+		for (auto& joint : m_jointList)
+			joint.release();
+		m_jointList.clear();
+	}
+
+	RotationJoint* PhysicsWorld::createJoint(const RotationJointPrimitive& primitive)
 	{
 		auto joint = std::make_unique<RotationJoint>(primitive);
 		RotationJoint* temp = joint.get();
+		temp->setId(RandomGenerator::unique());
 		m_jointList.emplace_back(std::move(joint));
 		return temp;
 	}
 
-	PointJoint* World::createJoint(const PointJointPrimitive& primitive)
+	PointJoint* PhysicsWorld::createJoint(const PointJointPrimitive& primitive)
 	{
 		auto joint = std::make_unique<PointJoint>(primitive);
 		PointJoint* temp = joint.get();
+		temp->setId(RandomGenerator::unique());
 		m_jointList.emplace_back(std::move(joint));
 		return temp;
 	}
 
-	DistanceJoint* World::createJoint(const DistanceJointPrimitive& primitive)
+	DistanceJoint* PhysicsWorld::createJoint(const DistanceJointPrimitive& primitive)
 	{
 		auto joint = std::make_unique<DistanceJoint>(primitive);
 		DistanceJoint* temp = joint.get();
+		temp->setId(RandomGenerator::unique());
 		m_jointList.emplace_back(std::move(joint));
 		return temp;
 	}
 	
-	PulleyJoint* World::createJoint(const PulleyJointPrimitive& primitive)
+	PulleyJoint* PhysicsWorld::createJoint(const PulleyJointPrimitive& primitive)
 	{
 		auto joint = std::make_unique<PulleyJoint>(primitive);
 		PulleyJoint* temp = joint.get();
+		temp->setId(RandomGenerator::unique());
 		m_jointList.emplace_back(std::move(joint));
 		return temp;
 	}
 
-	RevoluteJoint* World::createJoint(const RevoluteJointPrimitive& primitive)
+	RevoluteJoint* PhysicsWorld::createJoint(const RevoluteJointPrimitive& primitive)
 	{
 		auto joint = std::make_unique<RevoluteJoint>(primitive);
 		RevoluteJoint* temp = joint.get();
+		temp->setId(RandomGenerator::unique());
 		m_jointList.emplace_back(std::move(joint));
 		return temp;
 	}
 
-	OrientationJoint* World::createJoint(const OrientationJointPrimitive& primitive)
+	OrientationJoint* PhysicsWorld::createJoint(const OrientationJointPrimitive& primitive)
 	{
 		auto joint = std::make_unique<OrientationJoint>(primitive);
 		OrientationJoint* temp = joint.get();
+		temp->setId(RandomGenerator::unique());
 		m_jointList.emplace_back(std::move(joint));
 		return temp;
 	}
+	
 }

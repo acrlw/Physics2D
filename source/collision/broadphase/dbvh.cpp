@@ -55,6 +55,7 @@ namespace Physics2D
 		if (node->isLeaf())
 			nodes.emplace_back(node);
 	}
+	
 
 	void DBVH::raycast(std::vector<Body*>& result, Node* node, const Vector2& start, const Vector2& direction)
 	{
@@ -203,6 +204,8 @@ namespace Physics2D
 		}
 
 	}
+	
+
 	DBVH::Node* DBVH::extract(Body* body)
 	{
 		auto moveup = [&](Node* branch)

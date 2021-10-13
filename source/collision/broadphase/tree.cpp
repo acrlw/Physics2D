@@ -125,6 +125,14 @@ namespace Physics2D
 		m_bodyTable.erase(iter);
 	}
 
+	void Tree::clearAll()
+	{
+		m_tree.clear();
+		m_emptyList.clear();
+		m_bodyTable.clear();
+		m_rootIndex = -1;
+	}
+
 	void Tree::update(Body* body)
 	{
 		auto iter = m_bodyTable.find(body);

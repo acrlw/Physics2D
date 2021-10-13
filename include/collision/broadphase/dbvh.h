@@ -34,6 +34,7 @@ namespace Physics2D
 			void update(Body* body);
 			Node* extract(Body* body);
 			void erase(Body* body);
+			void cleanUp(Node* node);
 			Node* root()const;
 			std::vector<Body*> raycast(const Vector2& start, const Vector2& direction);
 			std::vector<std::pair<Body*, Body*>> generate();
@@ -43,7 +44,6 @@ namespace Physics2D
 		private:
 			void raycast(std::vector<Body*>& result, Node* node, const Vector2& start, const Vector2& direction);
 			void insert(Node* node);
-			void cleanUp(Node* node);
 			real deltaCost(Node* node, const AABB& aabb)const;
 			void totalCost(Node* node, const AABB& aabb, real& cost)const;
 			Node* merge(Node* node, const AABB& aabb, Body* body);

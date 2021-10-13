@@ -33,6 +33,14 @@ namespace Physics2D
 		{
 			return m_type;
 		}
+		uint32_t id()const
+		{
+			return m_id;
+		}
+		void setId(const uint32_t& id)
+		{
+			m_id = id;
+		}
 		static real naturalFrequency(real frequency)
 		{
 			return Constant::DoublePi * frequency;
@@ -58,6 +66,7 @@ namespace Physics2D
 	protected:
 		bool m_active = true;
 		JointType m_type;
+		uint32_t m_id;
 	};
 	
 }

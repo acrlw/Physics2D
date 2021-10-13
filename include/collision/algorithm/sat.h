@@ -10,6 +10,7 @@ namespace Physics2D
     {
         Vector2 vertex;
         real value = 0;
+        int index = -1;
         bool operator==(const ProjectedPoint& rhs);
     };
     struct ProjectedEdge
@@ -26,7 +27,8 @@ namespace Physics2D
 	
     struct SATResult
     {
-        PointPair pointPair[2];
+        PointPair contactPair[2];
+        uint contactPairCount = 0;
         Vector2 normal;
         real penetration = 0;
         bool isColliding = false;

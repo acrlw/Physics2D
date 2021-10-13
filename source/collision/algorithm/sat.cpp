@@ -4,59 +4,54 @@ namespace Physics2D
 {
 	SATResult SAT::circleVsCapsule(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB)
 	{
-		return SATResult();
+		//Convention: A is circle, B is capsule
+		assert(shapeA.shape->type() == Shape::Type::Circle);
+		assert(shapeB.shape->type() == Shape::Type::Capsule);
+		SATResult result;
+		return result;
 	}
 
 	SATResult SAT::circleVsSector(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB)
 	{
-		return SATResult();
+		assert(shapeA.shape->type() == Shape::Type::Circle);
+		assert(shapeB.shape->type() == Shape::Type::Sector);
+		SATResult result;
+		return result;
 	}
 
 	SATResult SAT::circleVsEdge(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB)
 	{
-		//Default sign: A is circle, B is edge
+		//Convention: A is circle, B is capsule
+		assert(shapeA.shape->type() == Shape::Type::Circle);
+		assert(shapeB.shape->type() == Shape::Type::Edge);
+
 		SATResult result;
-		Circle* circle = nullptr;
-		Edge* edge = nullptr;
-		const ShapePrimitive* shapeCircle;
-		const ShapePrimitive* shapeEdge;
-		auto* pointCircle = &result.pointPair[0].pointA;
-		auto* pointEdge = &result.pointPair[0].pointB;
-		if (shapeA.shape->type() == Shape::Type::Circle && shapeB.shape->type() == Shape::Type::Edge)
-		{
-			circle = dynamic_cast<Circle*>(shapeA.shape.get());
-			edge = dynamic_cast<Edge*>(shapeB.shape.get());
-			shapeCircle = &shapeA;
-			shapeEdge = &shapeB;
-		}
-		else if (shapeA.shape->type() == Shape::Type::Edge && shapeB.shape->type() == Shape::Type::Circle)
-		{
-			circle = dynamic_cast<Circle*>(shapeB.shape.get());
-			edge = dynamic_cast<Edge*>(shapeA.shape.get());
-			shapeCircle = &shapeB;
-			shapeEdge = &shapeA;
-			pointEdge = &result.pointPair[0].pointA;
-			pointCircle = &result.pointPair[0].pointB;
-		}
-		assert(circle != nullptr && edge != nullptr);
-		Vector2 actualStart = shapeEdge->transform + edge->startPoint();
-		Vector2 actualEnd = shapeEdge->transform + edge->endPoint();
+		Circle* circle = dynamic_cast<Circle*>(shapeA.shape.get());
+		Edge* edge = dynamic_cast<Edge*>(shapeB.shape.get());
+
+		auto* pointCircle = &result.contactPair[0].pointA;
+		auto* pointEdge = &result.contactPair[0].pointB;
+		
+		Vector2 actualStart = shapeB.transform + edge->startPoint();
+		Vector2 actualEnd = shapeB.transform + edge->endPoint();
 		Vector2 normal = (actualStart - actualEnd).normal();
 
-		if ((actualStart - shapeCircle->transform).dot(normal) < 0 &&
-			(actualEnd - shapeCircle->transform).dot(normal) < 0)
+		if ((actualStart - shapeA.transform).dot(normal) < 0 &&
+			(actualEnd - shapeB.transform).dot(normal) < 0)
 			normal.negate();
 
-		Vector2 projectedPoint = GeometryAlgorithm2D::pointToLineSegment(actualStart, actualEnd, shapeCircle->transform);
-		Vector2 diff = projectedPoint - shapeCircle->transform;
+		Vector2 projectedPoint = GeometryAlgorithm2D::pointToLineSegment(actualStart, actualEnd, shapeA.transform);
+		Vector2 diff = projectedPoint - shapeA.transform;
 		result.normal = diff.normal();
 		real length = diff.length();
 		result.isColliding = length < circle->radius();
 		result.penetration = circle->radius() - length;
-		*pointCircle = shapeCircle->transform + circle->radius() * result.normal;
+		*pointCircle = shapeA.transform + circle->radius() * result.normal;
 		*pointEdge = projectedPoint;
+		result.contactPairCount++;
 		return result;
 	}
+	
 
 	SATResult SAT::circleVsCircle(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB)
 	{
@@ -74,8 +69,9 @@ namespace Physics2D
 			result.normal = ba.normal();
 			result.penetration = dp - length;
 			result.isColliding = true;
-			result.pointPair[0].pointA = shapeA.transform - circleA->radius() * result.normal;
-			result.pointPair[0].pointB = shapeB.transform + circleB->radius() * result.normal;
+			result.contactPair[0].pointA = shapeA.transform - circleA->radius() * result.normal;
+			result.contactPair[0].pointB = shapeB.transform + circleB->radius() * result.normal;
+			result.contactPairCount++;
 		}
 		return result;
 	}
@@ -156,8 +152,9 @@ namespace Physics2D
 		if (collidingAxis == polygonB->vertices().size())
 			result.isColliding = true;
 		
-		result.pointPair[0].pointA = circlePoint.vertex;
-		result.pointPair[0].pointB = circlePoint.vertex + -result.normal * result.penetration;
+		result.contactPair[0].pointA = circlePoint.vertex;
+		result.contactPair[0].pointB = circlePoint.vertex + -result.normal * result.penetration;
+		result.contactPairCount++;
 
 
 		return result;
@@ -217,52 +214,76 @@ namespace Physics2D
 
 		auto [normal1, length1, axis1, polyAPoint1, polyBPoint1] = test(shapeA, shapeB);
 		auto [normal2, length2, axis2, polyBPoint2, polyAPoint2] = test(shapeB, shapeA);
-		if ((axis1 + axis2) == polyA->vertices().size() + polyB->vertices().size() - 2)
+		if ( axis1 + axis2 == polyA->vertices().size() + polyB->vertices().size() - 2 )
 			result.isColliding = true;
+
+		ProjectedPoint* pointA;
+		ProjectedPoint* pointB;
 
 		if(length1 < length2)
 		{
 			result.penetration = length1;
 			result.normal = normal1;
+			pointA = &polyAPoint1;
+			pointB = &polyBPoint1;
 			//do clipping
 		}
 		else
 		{
 			result.penetration = length2;
 			result.normal = normal2;
+			pointA = &polyAPoint2;
+			pointB = &polyBPoint2;
 			//do clipping
 		}
+		//auto clipEdgeA = ContactGenerator::findClipEdge(polyA->vertices(), pointA->index, result.normal);
+		//auto clipEdgeB = ContactGenerator::findClipEdge(polyB->vertices(), pointB->index, -result.normal);
+		//auto pairList = ContactGenerator::clip(clipEdgeA, clipEdgeB, result.normal);
 
 		return result;
 	}
 
 	SATResult SAT::polygonVsCapsule(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB)
 	{
+		assert(shapeA.shape->type() == Shape::Type::Polygon);
+		assert(shapeB.shape->type() == Shape::Type::Capsule);
 		return SATResult();
 	}
 
 	SATResult SAT::polygonVsSector(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB)
 	{
+		assert(shapeA.shape->type() == Shape::Type::Polygon);
+		assert(shapeB.shape->type() == Shape::Type::Sector);
 		return SATResult();
 	}
 	SATResult SAT::capsuleVsEdge(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB)
 	{
+		assert(shapeA.shape->type() == Shape::Type::Capsule);
+		assert(shapeB.shape->type() == Shape::Type::Edge);
 		return SATResult();
 	}
 	SATResult SAT::capsuleVsCapsule(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB)
 	{
+		assert(shapeA.shape->type() == Shape::Type::Capsule);
+		assert(shapeB.shape->type() == Shape::Type::Capsule);
 		return SATResult();
 	}
 	SATResult SAT::capsuleVsSector(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB)
 	{
+		assert(shapeA.shape->type() == Shape::Type::Capsule);
+		assert(shapeB.shape->type() == Shape::Type::Sector);
 		return SATResult();
 	}
 	SATResult SAT::sectorVsSector(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB)
 	{
+		assert(shapeA.shape->type() == Shape::Type::Sector);
+		assert(shapeB.shape->type() == Shape::Type::Sector);
 		return SATResult();
 	}
 	SATResult SAT::polygonVsEdge(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB)
 	{
+		assert(shapeA.shape->type() == Shape::Type::Polygon);
+		assert(shapeB.shape->type() == Shape::Type::Edge);
 		return SATResult();
 	}
 	
@@ -273,28 +294,29 @@ namespace Physics2D
 		minPoint.value = Constant::Max;
 		maxPoint.value = Constant::NegativeMin;
 
-		for (const Vector2& elem : polygon->vertices())
+		for(size_t i = 0;i < polygon->vertices().size();i++)
 		{
-			Vector2 vertex = shape.translate(elem);
+			Vector2 vertex = shape.translate(polygon->vertices()[i]);
 			real value = vertex.dot(normal);
 
 			if (value < minPoint.value)
 			{
 				minPoint.vertex = vertex;
 				minPoint.value = value;
+				minPoint.index = i;
 			}
 
 			if (value > maxPoint.value)
 			{
 				maxPoint.vertex = vertex;
 				maxPoint.value = value;
+				maxPoint.index = i;
 			}
 		}
 
 		ProjectedSegment segment;
 		segment.max = maxPoint;
 		segment.min = minPoint;
-
 		return segment;
 	}
 

@@ -33,6 +33,7 @@ namespace Physics2D
 		std::vector<std::pair<Body*, Body*>> generate();
 		void insert(Body* body);
 		void remove(Body* body);
+		void clearAll();
 		void update(Body* body);
 		const std::vector<Node>& tree();
 		int rootIndex()const;

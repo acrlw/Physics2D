@@ -54,7 +54,8 @@ namespace Physics2D
 		m_world.setLinearVelocityDamping(0.1f);
 		m_world.setAirFrictionCoefficient(0.8f);
 		m_world.setAngularVelocityDamping(0.1f);
-		m_world.setPositionIteration(8);
+		m_world.setEnableDamping(true);
+		m_world.setPositionIteration(10);
 		m_world.setVelocityIteration(8);
 
 		pointPrim.bodyA = nullptr;
@@ -63,14 +64,12 @@ namespace Physics2D
 		//createStackBox(3, 1.1, 1.1);
 		//createBoxRoom();
 		//createPyramid();
-		createGround();
-		createBoxesAndGround(20);
+		//createGround();
+		//createBoxesAndGround(20);
 		//testPendulum();
 		//testCollision();
 		//testJoint();
-		//createBridge();
-		//createPendulum();
-
+		//rectPoints.reserve(5000);
 
 		//testBroadphase();
 		//testCCD();
@@ -110,15 +109,23 @@ namespace Physics2D
 	{
 		ground = m_world.createBody();
 		ground->setShape(edge_ptr);
-		ground->position().set({ 0, 0.0 });
+		ground->position().set({ 0, -15.0 });
 		ground->setMass(Constant::Max);
 		ground->setType(Body::BodyType::Static);
 		tree.insert(ground);
 	}
-
+	void Window::createSpringDamper()
+	{
+		//ground = m_world.createBody();
+		//ground->setShape(edge_ptr);
+		//ground->position().set({ 0, 0.0 });
+		//ground->setMass(Constant::Max);
+		//ground->setType(Body::BodyType::Static);
+		//tree.insert(ground);
+		
+	}
 	void Window::createPendulum()
 	{
-		createGround();
 		for (real j = 0; j < 10.0f; j += 1.0f)
 		{
 			for (real i = 0; i < 5.0; i += 1.0f)
@@ -195,7 +202,7 @@ namespace Physics2D
 		rect2->setShape(circle_ptr);
 		rect2->position().set({ -20.0f + max * brick_ptr->width() + half, 0.0f });
 		rect2->rotation() = 0;
-		rect2->setMass(10.0f);
+		rect2->setMass(25.0f);
 		rect2->setFriction(0.1f);
 		rect2->setType(Body::BodyType::Dynamic);
 
@@ -214,7 +221,7 @@ namespace Physics2D
 		rect2->setShape(circle_ptr);
 		rect2->position().set({ 21.5f + half, 0.0f });
 		rect2->rotation() = 0;
-		rect2->setMass(10.0f);
+		rect2->setMass(25.0f);
 		rect2->setFriction(0.1f);
 		rect2->setType(Body::BodyType::Dynamic);
 		tree.insert(rect2);
@@ -257,13 +264,13 @@ namespace Physics2D
 	void Window::createPyramid()
 	{
 		real offset = 0.0f;
-		real max = 20.0f;
+		real max = 10.0;
 		for(real j = 0;j < max;j += 1.0f)
 		{
 			for (real i = 0.0; i < max - j; i += 1.0f)
 			{
 				Body* body = m_world.createBody();
-				body->position().set({ 2.5f + i * 1.1f + offset, j * 1.8f + 2.0f });
+				body->position().set({ 0.0f + i * 1.1f + offset, j * 1.8f + 2.0f });
 				body->setShape(rectangle_ptr);
 				body->rotation() = 0;
 				body->setMass(1.0f);
@@ -401,7 +408,7 @@ namespace Physics2D
 		rect->rotation() = 0;
 		rect->setMass(1.0f);
 		rect->setRestitution(0.2f);
-		rect->setFriction(0.8f);
+		rect->setFriction(0.01f);
 		rect->setType(Body::BodyType::Dynamic);
 
 
@@ -412,7 +419,7 @@ namespace Physics2D
 		ppm.dampingRatio = 0.1f;
 		ppm.frequency = 100;
 		m_world.createJoint(ppm);
-		real max = 14.0f;
+		real max = 12.0f;
 		tree.insert(rect);
 		for(real i = 1.0f;i < max;i += 1.0f)
 		{
@@ -421,7 +428,7 @@ namespace Physics2D
 			rect2->position().set({ -5.0f + i * brick_ptr->width(), 0.0f });
 			rect2->rotation() = 0;
 			rect2->setMass(1.0f);
-			rect2->setFriction(0.1f);
+			rect2->setFriction(0.01f);
 			rect2->setType(Body::BodyType::Dynamic);
 
 			tree.insert(rect2);
@@ -431,14 +438,14 @@ namespace Physics2D
 			revolutePrim.localPointA.set(half, 0);
 			revolutePrim.localPointB.set(-half, 0);
 			revolutePrim.dampingRatio = 0.1f;
-			revolutePrim.frequency = 10;
+			revolutePrim.frequency = 5;
 			rj = m_world.createJoint(revolutePrim);
 			rect = rect2;
 		}
 		
 		//ppm.bodyA = rect2;
 		//ppm.localPointA.set(0.75f, 0);
-		//ppm.targetPoint.set(-5.0f + max * brick_ptr->width(), 0.0f);
+		//ppm.targetPoint.set(-5.0f + max * brick_ptr->width() - half, 0.0f);
 		//ppm.dampingRatio = 0.1f;
 		//ppm.frequency = 100;
 		//m_world.createJoint(ppm);
@@ -451,13 +458,11 @@ namespace Physics2D
 		{
 			for (auto& body : m_world.bodyList())
 				tree.update(body.get());
-
 			return;
 		}
 		const real dt = 1.0f / 60.0f;
 
 		m_world.stepVelocity(dt);
-
 
 		auto potentialList = tree.generate();
 		for (auto pair : potentialList)
@@ -485,7 +490,10 @@ namespace Physics2D
 
 		for (auto& body : m_world.bodyList())
 			tree.update(body.get());
-
+		
+		//rectPoints.emplace_back(Vector2(m_timeline, rect->position().y));
+		//m_timeline += dt;
+		
 		
 		
 	}
@@ -642,7 +650,7 @@ namespace Physics2D
 	{
 		QPainter painter(this);
 		camera.render(&painter);
-		
+
 		//std::vector<Vector2> polygon1 = { {0, 6}, {-4, 4},{-6, 2}, {-6, 0}, {-4, -2},{4, -4},{6, 2},{4, 6}, {0, 6} };
 		//std::vector<Vector2> polygon2 = { {-10, 1}, {-8, 6},{0, 4},{6, -2}, {-8, -1}, {-10, 1} };
 		//std::vector<std::pair<Vector2, Vector2>> lines1, lines2, lines3;
@@ -654,21 +662,150 @@ namespace Physics2D
 		//{
 		//	lines2.emplace_back(std::make_pair(polygon2[i], polygon2[i + 1]));
 		//}
-		QColor colorAccurate(Qt::green);
-		QColor colorApproximate1(Qt::red);
-		QColor colorApproximate2("#03A9F4");
-		QColor colorApproximate3(Qt::magenta);
-		QColor colorApproximate4(Qt::yellow);
-		colorAccurate.setAlphaF(0.8);
-		colorApproximate1.setAlphaF(1);
-		colorApproximate2.setAlphaF(1);
-		colorApproximate3.setAlphaF(1);
-		colorApproximate4.setAlphaF(1);
-		QPen penAccurate(colorAccurate, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		QPen penApproximate1(colorApproximate1, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		QPen penApproximate2(colorApproximate2, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		QPen penApproximate3(colorApproximate3, 8, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		QPen penApproximate4(colorApproximate4, 8, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		//QColor colorAccurate(Qt::green);
+		//QColor colorApproximate1(Qt::cyan);
+		//QColor colorApproximate2("#03A9F4");
+		//QColor colorApproximate3(Qt::magenta);
+		//QColor colorApproximate4(Qt::yellow);
+		//colorAccurate.setAlphaF(0.8);
+		//colorApproximate1.setAlphaF(1);
+		//colorApproximate2.setAlphaF(1);
+		//colorApproximate3.setAlphaF(1);
+		//colorApproximate4.setAlphaF(1);
+		//QPen penAccurate(colorAccurate, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		//QPen penApproximate1(colorApproximate1, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		//QPen penApproximate2(colorApproximate2, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		//QPen penApproximate3(colorApproximate3, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		//QPen penApproximate4(colorApproximate4, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		//QPen penApproximate5(QColor("#388E3C"), 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+
+		//real h = 0.5f;
+		//real y = 0;
+		//real x = 0;
+		//std::vector<std::pair<Vector2, Vector2>> lines;
+		//lines.reserve(100);
+		//auto dy = [](const real& x, const real& y)
+		//{
+		//	return (1.0f / (1.0f + x * x) - 2 * y * y);
+		//};
+		//for (int i = 0; i < 50; i++)
+		//{
+		//	Vector2 p1(x, y);
+		//	x += h;
+		//	y = y + dy(x, y) * h;
+		//	Vector2 p2(x, y);
+		//	lines.emplace_back(std::make_pair(p1, p2));
+		//}
+		//RendererQtImpl::renderLines(&painter, &camera, lines, penApproximate1);
+		//lines.clear();
+
+		//x = 0;
+		//y = 0;
+		//real yp = 0;
+		//real yc = 0;
+		//for (int i = 0; i < 50; i++)
+		//{
+		//	Vector2 p1(x, y);
+		//	x += h;
+		//	yp = y + h * dy(x, y);
+		//	yc = y + h * dy(x, yp);
+		//	y = 0.5f * (yp + yc);
+		//	Vector2 p2(x, y);
+		//	lines.emplace_back(std::make_pair(p1, p2));
+
+		//	//	x += h;
+
+		//}
+		//RendererQtImpl::renderLines(&painter, &camera, lines, penApproximate2);
+		//lines.clear();
+
+		//x = 0;
+		//y = 0;
+		//real k1, k2, k3, k4;
+		//
+		//for (int i = 0; i < 50; i++)
+		//{
+		//	Vector2 p1(x, y);
+		//	x += h;
+		//	k1 = dy(x, y);
+		//	k2 = dy(x + k1 * h / 2.0f, y);
+		//	k3 = dy(x + k2 * h / 2.0f, y);
+		//	k4 = dy(x + k3 * h, y);
+		//	y = y + h * (k1 + 2 * k2 + 2 * k3 + k4) / 6.0f;
+		//	Vector2 p2(x, y);
+		//	lines.emplace_back(std::make_pair(p1, p2));
+
+		//	//	x += h;
+
+		//}
+		//RendererQtImpl::renderLines(&painter, &camera, lines, penApproximate3);
+		//lines.clear();
+
+		//x = 0;
+		//y = 0;
+
+		//for (int i = 1; i < 4; i++)
+		//{
+		//	Vector2 p1(x, y);
+		//	x += h;
+		//	k1 = dy(x, y);
+		//	k2 = dy(x + k1 * h / 2.0f, y);
+		//	k3 = dy(x + k2 * h / 2.0f, y);
+		//	k4 = dy(x + k3 * h, y);
+		//	y = y + h * (k1 + 2 * k2 + 2 * k3 + k4) / 6.0f;
+		//	Vector2 p2(x, y);
+		//	lines.emplace_back(std::make_pair(p1, p2));
+		//}
+		//for (int i = 0; i < 46; i++)
+		//{
+		//	Vector2 p1(x, y);
+		//	x += h;
+		//	y = y + (h / 24.0f) * (55 * dy(x, y) - 59 * dy(x - h * 1, y) + 37 * dy(x - h * 2, y) - 9 * dy(x - h * 3, y));
+		//	Vector2 p2(x, y);
+		//	lines.emplace_back(std::make_pair(p1, p2));
+		//}
+		//RendererQtImpl::renderLines(&painter, &camera, lines, penApproximate4);
+		//lines.clear();
+
+		//x = 0;
+		//y = 0;
+
+		//for (int i = 1; i < 4; i++)
+		//{
+		//	Vector2 p1(x, y);
+		//	x += h;
+		//	k1 = dy(x, y);
+		//	k2 = dy(x + k1 * h / 2.0f, y);
+		//	k3 = dy(x + k2 * h / 2.0f, y);
+		//	k4 = dy(x + k3 * h, y);
+		//	y = y + h * (k1 + 2 * k2 + 2 * k3 + k4) / 6.0f;
+		//	Vector2 p2(x, y);
+		//	lines.emplace_back(std::make_pair(p1, p2));
+		//}
+		//for (int i = 0; i < 46; i++)
+		//{
+		//	Vector2 p1(x, y);
+		//	x += h;
+		//	y = y + (h / 24.0f) * (9 * dy(x + h, y) + 19 * dy(x, y) - 5 * dy(x - h * 1, y) + dy(x - h * 2, y));
+		//	Vector2 p2(x, y);
+		//	lines.emplace_back(std::make_pair(p1, p2));
+		//}
+		//RendererQtImpl::renderLines(&painter, &camera, lines, penApproximate5);
+		//lines.clear();
+		//y = 0;
+		//x = 0;
+		//for (int i = 0; i < 50; i++)
+		//{
+		//	
+		//}
+
+
+		//real dt = 1.0f / 60.0f;
+		//for (auto& elem : rectPoints)
+		//{
+		//	RendererQtImpl::renderPoint(&painter, &camera, elem, penApproximate1);
+		//}
+
 		//RendererQtImpl::renderLines(&painter, &camera, lines1, penApproximate2);
 		//RendererQtImpl::renderLines(&painter, &camera, lines2, penApproximate3);
 		//std::vector<Vector2> results = Clipper::sutherlandHodgmentPolygonClipping(polygon1, polygon2);
@@ -680,8 +817,7 @@ namespace Physics2D
 
 		//real y0 = 1;
 		//real y = 0;
-		//std::vector<std::pair<Vector2, Vector2>> lines;
-		//lines.reserve(100);
+
 
 		//real x = 0;
 		//real h = 0.1;
@@ -824,7 +960,7 @@ namespace Physics2D
 
 		//
 		//
-		
+
 		//Vector2 direction = mousePos - Vector2(9, 9);
 		//direction.normalize();
 		//
@@ -919,7 +1055,7 @@ namespace Physics2D
 
 		//	RendererQtImpl::renderLine(&painter, &camera, result.contactList[0].pointA, result.contactList[0].pointB, pen2);
 		//}
-		
+
 		//QPen pen(Qt::cyan, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 		//auto result = CCD::query(dbvh.root(), rect2, dt);
 		////fmt::print("toi exist:{}\n", result.has_value());
@@ -954,6 +1090,7 @@ namespace Physics2D
 	{
 		Vector2 pos(e->pos().x(), e->pos().y());
 		mousePos = camera.screenToWorld(pos);
+		std::cout << mousePos.x << ", " << mousePos.y << std::endl;
 		if (e->button() == Qt::RightButton)
 		{
 			cameraTransform = true;
@@ -1040,8 +1177,38 @@ namespace Physics2D
 
 	void Window::keyPressEvent(QKeyEvent* event)
 	{
+		auto clearAll = [&]()
+		{
+			m_world.clearAllBodies();
+			m_world.clearAllJoints();
+			contactMaintainer.clearAll();
+			tree.clearAll();
+			dbvh.cleanUp(dbvh.root());
+			pointPrim.bodyA = nullptr;
+			mj = m_world.createJoint(pointPrim);
+			mj->setActive(false);
+		};
 		switch (event->key())
 		{
+		case Qt::Key_1:
+		{
+			clearAll();
+			createGround();
+			createPendulum();
+			break;
+		}
+		case Qt::Key_2:
+		{
+			clearAll();
+			createGround();
+			createBridge();
+			break;
+		}
+		case Qt::Key_3:
+		{
+
+			break;
+		}
 		case Qt::Key_J:
 		{
 			camera.setJointVisible(!camera.jointVisible());

@@ -53,8 +53,8 @@ namespace Physics2D::Utils
         Vector2 transform() const;
         void setTransform(const Vector2 &transform);
 
-        void setWorld(World *world);
-        World* world()const;
+        void setWorld(PhysicsWorld *world);
+        PhysicsWorld* world()const;
 
         Body *targetBody() const;
         void setTargetBody(Body *targetBody);
@@ -117,7 +117,7 @@ namespace Physics2D::Utils
         Vector2 m_transform;
         Vector2 m_origin;
         Viewport m_viewport;
-        World *m_world = nullptr;
+        PhysicsWorld *m_world = nullptr;
         Body *m_targetBody = nullptr;
         DBVH* m_dbvh = nullptr;
         Tree* m_tree = nullptr;

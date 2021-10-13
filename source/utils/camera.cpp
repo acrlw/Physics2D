@@ -44,18 +44,22 @@ namespace Physics2D::Utils
 				
 			}
 
-			
+			QBrush bgBrush(QColor(50, 50, 50));
+			//QBrush bgBrush(QColor(237, 237, 237));
 			painter->setRenderHint(QPainter::Antialiasing);
 			painter->setClipRect(m_viewport.topLeft.x, m_viewport.topLeft.y, m_viewport.width(), m_viewport.height());
-			painter->setBackground(QBrush(QColor(50, 50, 50)));
+			//painter->setBackground(QBrush(QColor(50, 50, 50)));
+			painter->setBackground(bgBrush);
+
 			painter->fillRect(QRectF(m_viewport.topLeft.x, m_viewport.topLeft.y, m_viewport.width(), m_viewport.height()),
-				QBrush(QColor(50, 50, 50)));
+				bgBrush);
 			QPen origin(Qt::green, 10, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 
 
 			//RendererQtImpl::renderPoint(painter, this, Vector2(0, 0), origin);
-
-			QPen pen(Qt::green, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+			//QColor primary("#212121");
+			QColor primary(Qt::green);
+			QPen pen(primary, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 			if(m_bodyVisible)
 			{
 				for (auto& body : m_world->bodyList())
@@ -203,7 +207,7 @@ namespace Physics2D::Utils
 			return;
 		}
 		m_targetMeterToPixel = meterToPixel;
-		m_targetPixelToMeter = 1.0 / meterToPixel;
+		m_targetPixelToMeter = 1.0f / meterToPixel;
 	}
 
 	Vector2 Camera::transform() const
@@ -216,12 +220,12 @@ namespace Physics2D::Utils
 		m_transform = transform;
 	}
 
-	void Camera::setWorld(World* world)
+	void Camera::setWorld(PhysicsWorld* world)
 	{
 		m_world = world;
 	}
 
-	World* Camera::world() const
+	PhysicsWorld* Camera::world() const
 	{
 		return m_world;
 	}

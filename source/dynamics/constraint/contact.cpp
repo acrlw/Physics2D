@@ -11,7 +11,12 @@ namespace Physics2D
 		auto result = reinterpret_cast<uint64_t&>(pair);
 		return result;
 	}
-	
+
+
+	void ContactMaintainer::clearAll()
+	{
+		m_contactTable.clear();
+	}
 
 	void ContactMaintainer::solveVelocity(real dt)
 	{

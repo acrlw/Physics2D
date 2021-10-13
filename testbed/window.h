@@ -46,6 +46,7 @@ namespace Physics2D
 		void wheelEvent(QWheelEvent* event)override;
 	
 	private:
+		void createSpringDamper();
 		void createGround();
 		void createPendulum();
 		void createPyramid();
@@ -63,7 +64,7 @@ namespace Physics2D
 		void testRaycast();
 		void testCapsule();
 		void createBridge();
-		World m_world;
+		PhysicsWorld m_world;
 		Rectangle brick;
 		Rectangle rectangle;
 		Rectangle land;
@@ -134,6 +135,8 @@ namespace Physics2D
 		Tree tree;
 		real roomSize = 20;
 
+		std::vector<Vector2> rectPoints;
+		real m_timeline = 0.0;
 
 		ContactMaintainer contactMaintainer;
 		Integrator::SemiImplicitEuler<Vector2> euler;
