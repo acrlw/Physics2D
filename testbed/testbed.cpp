@@ -8,6 +8,10 @@ namespace Physics2D
 		this->resize(1920, 1080);
 		this->setMouseTracking(true);
 
+		this->setFont(QFont("Consolas", 10));
+
+		createControlPanel();
+
 		m_world.setEnableGravity(true);
 		m_world.setGravity({ 0, -9.8f });
 		m_world.setLinearVelocityDamping(0.1f);
@@ -21,16 +25,18 @@ namespace Physics2D
 		m_mouseJoint = m_world.createJoint(m_pointJointPrimitive);
 		m_mouseJoint->setActive(false);
 
-		m_camera.setViewport(Utils::Camera::Viewport((0, 0), (1920, 1080)));
+		m_camera.setViewport(Utils::Camera::Viewport(Vector2(0, 0), Vector2(1920, 1080)));
 		m_camera.setWorld(&m_world);
 		m_camera.setDbvh(&m_dbvh);
 		m_camera.setTree(&m_tree);
+		m_camera.setContactMaintainer(&m_maintainer);
 
 		m_camera.setAabbVisible(false);
 		m_camera.setDbvhVisible(false);
 		m_camera.setTreeVisible(false);
-		m_camera.setAxisVisible(true);
-		m_camera.setGridScaleLineVisible(true);
+		m_camera.setAxisVisible(false);
+		m_camera.setGridScaleLineVisible(false);
+
 
 		connect(&m_worldTimer, &QTimer::timeout, this, &TestBed::step);
 		connect(&m_painterTimer, &QTimer::timeout, this, [=]
@@ -51,10 +57,247 @@ namespace Physics2D
 	}
 	void TestBed::step()
 	{
+		for (auto& elem : m_world.bodyList())
+			m_tree.update(elem.get());
+
+		if(m_isStop)
+			return;
+
+		m_world.stepVelocity(dt);
+
+		auto potentialList = m_tree.generate();
+		for (auto pair : potentialList)
+		{
+			auto result = Detector::detect(pair.first, pair.second);
+			if (result.isColliding)
+				m_maintainer.add(result);
+		}
+		m_maintainer.clearInactivePoints();
+		m_world.prepareVelocityConstraint(dt);
+
+		for (int i = 0; i < m_world.velocityIteration(); ++i)
+		{
+			m_world.solveVelocityConstraint(dt);
+			m_maintainer.solveVelocity(dt);
+		}
+
+		m_world.stepPosition(dt);
+
+		for (int i = 0; i < m_world.positionIteration(); ++i)
+		{
+			m_maintainer.solvePosition(dt);
+			m_world.solvePositionConstraint(dt);
+		}
+		m_maintainer.deactivateAllPoints();
+		
+	}
+
+	void TestBed::changeFrame(const QString& text)
+	{
+		clearAll();
+		switch (qobject_cast<QComboBox*>(sender())->currentIndex())
+		{
+		case 0:
+			m_currentFrame = new BitmaskFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh);
+			break;
+		case 1:
+			m_currentFrame = new BridgeFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh);
+			break;
+		case 2:
+			m_currentFrame = new BroadPhaseFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh);
+			break;
+		case 3:
+			m_currentFrame = new ChainFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh);
+			break;
+		case 4:
+			m_currentFrame = new CollisionFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh);
+			break;
+		case 5:
+			m_currentFrame = new DominoFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh);
+			break;
+		case 6:
+			m_currentFrame = new FrictionFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh);
+			break;
+		case 7:
+			m_currentFrame = new GeometryFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh);
+			break;
+		case 8:
+			m_currentFrame = new JointsFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh);
+			break;
+		case 9:
+			m_currentFrame = new NarrowphaseFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh);
+			break;
+		case 10:
+			m_currentFrame = new RaycastFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh);
+			break;
+		case 11:
+			m_currentFrame = new RestitutionFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh);
+			break;
+		case 12:
+			m_currentFrame = new SensorFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh);
+			break;
+		case 13:
+			m_currentFrame = new StackingFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh);
+			break;
+		case 14:
+			m_currentFrame = new WreckingBallFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh);
+			break;
+			default:
+				break;
+		}
+		if(m_currentFrame != nullptr)
+			m_currentFrame->load();
 	}
 
 	void TestBed::clearAll()
 	{
+		m_world.clearAllBodies();
+		m_world.clearAllJoints();
+		m_maintainer.clearAll();
+		m_tree.clearAll();
+		m_dbvh.cleanUp(m_dbvh.root());
+		m_pointJointPrimitive.bodyA = nullptr;
+		m_mouseJoint = m_world.createJoint(m_pointJointPrimitive);
+		m_mouseJoint->setActive(false);
+		if(m_currentFrame != nullptr)
+		{
+			m_currentFrame->release();
+			delete m_currentFrame;
+			m_currentFrame = nullptr;
+		}
+	}
+
+	void TestBed::createControlPanel()
+	{
+		m_controlPanel = new QWidget(this);
+
+		QPalette palette;
+		palette.setColor(QPalette::WindowText, Qt::green);
+		QVBoxLayout* mainLayout = new QVBoxLayout;
+		QComboBox* scenes = new QComboBox;
+		QStringList items;
+		items << "Bitmask" << "Bridge" << "Broadphase" << "Chain" << "Collision" << "Domino" << "Friction" <<
+			"Geometry" << "Joints" << "Narrowphase" << "Raycast" << "Restitution" << "Sensor" << "Stacking" <<
+			"Wrecking Ball";
+		scenes->addItems(items);
+		connect(scenes, &QComboBox::currentTextChanged, this, &TestBed::changeFrame);
+
+
+		QSlider* posIter = new QSlider(Qt::Horizontal);
+		QSlider* velIter = new QSlider(Qt::Horizontal);
+		QSlider* deltaTime = new QSlider(Qt::Horizontal);
+		QFormLayout* formLayout = new QFormLayout;
+		formLayout->addRow(new QLabel("Scenes: "), scenes);
+		formLayout->addRow(new QLabel("Position Iterations: "), posIter);
+		formLayout->addRow(new QLabel("Velocity Iterations: "), velIter);
+		formLayout->addRow(new QLabel("Delta Time: "), deltaTime);
+
+		posIter->setTracking(true);
+		velIter->setTracking(true);
+		deltaTime->setTracking(true);
+
+		posIter->setRange(1, 20);
+		velIter->setRange(1, 20);
+		deltaTime->setRange(1, 120);
+
+		connect(posIter, &QSlider::valueChanged, this, [=](int value)
+			{
+				m_world.setPositionIteration(value);
+			});
+		connect(velIter, &QSlider::valueChanged, this, [=](int value)
+			{
+				m_world.setVelocityIteration(value);
+			});
+		connect(deltaTime, &QSlider::valueChanged, this, [=](int value)
+			{
+				dt = 1.0f / static_cast<real>(value);
+			});
+
+
+		QGroupBox* groupBox = new QGroupBox("Scenes And Sliders");
+		groupBox->setPalette(palette);
+		groupBox->setLayout(formLayout);
+
+		QVBoxLayout* vbSwitchers = new QVBoxLayout;
+		QCheckBox* cbBodyVisible = new QCheckBox("Body Visible");
+		QCheckBox* cbAABBVisible = new QCheckBox("AABB Visible");
+		QCheckBox* cbJointVisible = new QCheckBox("Joint Visible");
+		QCheckBox* cbCenterVisible = new QCheckBox("Center Visible");
+		QCheckBox* cbAngleVisible = new QCheckBox("Angle Visible");
+		QCheckBox* cbGridVisible = new QCheckBox("Grid Scale Line Visible");
+		QCheckBox* cbTreeVisible = new QCheckBox("Tree Visible");
+		QCheckBox* cbContactVisible = new QCheckBox("Contacts Visible");
+		QCheckBox* cbAxisVisible = new QCheckBox("Axis Visible");
+		QCheckBox* cbUserDrawVisible = new QCheckBox("User Draw Visible");
+		QCheckBox* cbStop = new QCheckBox("Stop");
+		cbStop->setChecked(true);
+
+		connect(cbGridVisible, &QCheckBox::stateChanged, this, [=](int state)
+			{
+				m_camera.setGridScaleLineVisible(state);
+			});
+		connect(cbBodyVisible, &QCheckBox::stateChanged, this, [=](int state)
+			{
+				m_camera.setBodyVisible(state);
+			});
+		connect(cbJointVisible, &QCheckBox::stateChanged, this, [=](int state)
+			{
+				m_camera.setJointVisible(state);
+			});
+		connect(cbTreeVisible, &QCheckBox::stateChanged, this, [=](int state)
+			{
+				m_camera.setTreeVisible(state);
+			});
+		connect(cbContactVisible, &QCheckBox::stateChanged, this, [=](int state)
+			{
+				m_camera.setContactVisible(state);
+			});
+		connect(cbAxisVisible, &QCheckBox::stateChanged, this, [=](int state)
+			{
+				m_camera.setAxisVisible(state);
+			});
+		connect(cbUserDrawVisible, &QCheckBox::stateChanged, this, [=](int state)
+			{
+				m_userDraw = state;
+			});
+		connect(cbCenterVisible, &QCheckBox::stateChanged, this, [=](int state)
+			{
+				m_camera.setCenterVisible(state);
+			});
+		connect(cbAngleVisible, &QCheckBox::stateChanged, this, [=](int state)
+			{
+				m_camera.setRotationLineVisible(state);
+			});
+		connect(cbStop, &QCheckBox::stateChanged, this, [=](int state)
+			{
+				m_isStop = state;
+			});
+
+
+		vbSwitchers->addWidget(cbBodyVisible);
+		vbSwitchers->addWidget(cbAABBVisible);
+		vbSwitchers->addWidget(cbJointVisible);
+		vbSwitchers->addWidget(cbGridVisible);
+		vbSwitchers->addWidget(cbTreeVisible);
+		vbSwitchers->addWidget(cbContactVisible);
+		vbSwitchers->addWidget(cbAxisVisible);
+		vbSwitchers->addWidget(cbUserDrawVisible);
+		vbSwitchers->addWidget(cbAngleVisible);
+		vbSwitchers->addWidget(cbCenterVisible);
+		vbSwitchers->addWidget(cbStop);
+
+		QGroupBox* groupSwitchers = new QGroupBox("Switchers");
+		groupSwitchers->setPalette(palette);
+		groupSwitchers->setLayout(vbSwitchers);
+
+
+		mainLayout->addWidget(groupBox);
+		mainLayout->addWidget(groupSwitchers);
+
+		m_controlPanel->setLayout(mainLayout);
+		m_controlPanel->setPalette(palette);
+
+		m_controlPanel->show();
 
 	}
 
@@ -198,6 +441,7 @@ namespace Physics2D
 	}
 	void TestBed::keyReleaseEvent(QKeyEvent* event)
 	{
+
 	}
 	void TestBed::wheelEvent(QWheelEvent* event)
 	{

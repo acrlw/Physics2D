@@ -14,6 +14,21 @@ namespace Physics2D
 
 		void load() override
 		{
+			Body* rect;
+			Body* rect2;
+
+			Rectangle rectangle(1.0f, 1.0f);
+			Circle circle(1.5f);
+			Rectangle brick(1.5f, 0.5f);
+			Edge edge;
+			edge.set({ -100, 0 }, { 100, 0 });
+			brick_ptr = std::make_unique<Rectangle>(brick);
+			edge_ptr = std::make_unique<Edge>(edge);
+			circle_ptr = std::make_unique<Circle>(circle);
+			rectangle_ptr = std::make_unique<Rectangle>(rectangle);
+
+			DistanceJointPrimitive distancePrim;
+
 			for (real j = 0; j < 10.0f; j += 1.0f)
 			{
 				for (real i = 0; i < 5.0; i += 1.0f)
@@ -62,7 +77,7 @@ namespace Physics2D
 			ppm.targetPoint.set(-20.0f - half, 0.0f);
 			ppm.dampingRatio = 0.1f;
 			ppm.frequency = 100;
-			m_world.createJoint(ppm);
+			m_world->createJoint(ppm);
 			real max = 7.0f;
 			m_tree->insert(rect);
 			for (real i = 1.0f; i < max; i += 1.0f)
@@ -83,7 +98,7 @@ namespace Physics2D
 				revolutePrim.localPointB.set(-half, 0);
 				revolutePrim.dampingRatio = 0.1f;
 				revolutePrim.frequency = 10;
-				rj = m_world->createJoint(revolutePrim);
+				m_world->createJoint(revolutePrim);
 				rect = rect2;
 			}
 			rect2 = m_world->createBody();
@@ -102,7 +117,7 @@ namespace Physics2D
 			revolutePrim.localPointB.set(-half * 2.0f, 0);
 			revolutePrim.dampingRatio = 0.1f;
 			revolutePrim.frequency = 10;
-			rj = m_world->createJoint(revolutePrim);
+			m_world->createJoint(revolutePrim);
 
 
 			rect2 = m_world->createBody();
@@ -128,8 +143,10 @@ namespace Physics2D
 
 		}
 	private:
+		std::unique_ptr<Rectangle> brick_ptr;
 		std::unique_ptr<Rectangle> rectangle_ptr;
 		std::unique_ptr<Edge> edge_ptr;
+		std::unique_ptr<Circle> circle_ptr;
 
 	};
 }

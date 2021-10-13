@@ -66,11 +66,11 @@ namespace Physics2D
             real bias() const;
             void setBias(const real &bias);
 
-            real velocityIteration() const;
-            void setVelocityIteration(const real &velocityIteration);
+            int velocityIteration() const;
+            void setVelocityIteration(const int&velocityIteration);
 
-            real positionIteration() const;
-            void setPositionIteration(const real &positionIteration);
+            int positionIteration() const;
+            void setPositionIteration(const int&positionIteration);
 
             std::vector<std::unique_ptr<Body>>& bodyList();
     	
@@ -85,8 +85,8 @@ namespace Physics2D
             real m_airFrictionCoefficient;
 
             real m_bias;
-            real m_velocityIteration;
-            real m_positionIteration;
+            int m_velocityIteration;
+            int m_positionIteration;
     		
     		bool m_enableGravity = true;
     		bool m_enableDamping = true;

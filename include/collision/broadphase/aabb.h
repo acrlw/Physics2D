@@ -37,6 +37,7 @@ namespace Physics2D
 		/// <returns></returns>
 		static AABB fromShape(const ShapePrimitive& shape, const real& factor = 0);
 		static AABB fromBody(Body* body, const real& factor = 0);
+		static AABB fromBox(const Vector2& topLeft, const Vector2& bottomRight);
 		/// <summary>
 		/// Check if two aabbs are overlapping
 		/// </summary>

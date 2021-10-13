@@ -23,20 +23,7 @@
 #include "include/utils/camera.h"
 #include "include/collision/continuous/ccd.h"
 
-#include "scenes/bitmask.h"
-#include "scenes/bridge.h"
-#include "scenes/broadphase.h"
-#include "scenes/chain.h"
-#include "scenes/collision.h"
-#include "scenes/domino.h"
-#include "scenes/friction.h"
-#include "scenes/geometry.h"
-#include "scenes/joints.h"
-#include "scenes/narrowphase.h"
-#include "scenes/raycast.h"
-#include "scenes/restitution.h"
-#include "scenes/sensor.h"
-#include "scenes/stacking.h"
+
 
 
 namespace Physics2D
@@ -159,8 +146,7 @@ namespace Physics2D
 		Integrator::SemiImplicitEuler<Vector2> euler;
 		Integrator::VerletVelocity<Vector2> vv;
 		Integrator::VerletPosition<Vector2> vp;
-
-		Frame* m_currentFrame = nullptr;
+		
 
 	};
 

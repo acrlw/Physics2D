@@ -4,6 +4,29 @@
 #include "QApplication"
 #include "testbed/window.h"
 
+#include "scenes/bitmask.h"
+#include "scenes/bridge.h"
+#include "scenes/broadphase.h"
+#include "scenes/chain.h"
+#include "scenes/collision.h"
+#include "scenes/domino.h"
+#include "scenes/friction.h"
+#include "scenes/geometry.h"
+#include "scenes/joints.h"
+#include "scenes/narrowphase.h"
+#include "scenes/raycast.h"
+#include "scenes/restitution.h"
+#include "scenes/sensor.h"
+#include "scenes/stacking.h"
+#include "scenes/wreckingball.h"
+
+#include <QSlider>
+#include <QVBoxLayout>
+#include <QLabel>
+#include <QComboBox>
+#include <QCheckBox>
+#include <QFormLayout>
+#include <QGroupBox>
 
 namespace Physics2D
 {
@@ -28,30 +51,37 @@ namespace Physics2D
 
 	public slots:
 		void step();
-
+		void changeFrame(const QString& index);
 	private:
 		void clearAll();
+		void createControlPanel();
 
+		bool m_userDraw = false;
 		bool m_isStop = true;
 		bool m_cameraViewportMovement = false;
+
+		QWidget* m_controlPanel;
 
 		PhysicsWorld m_world;
 		ContactMaintainer m_maintainer;
 		Tree m_tree;
 		DBVH m_dbvh;
 		Body* m_selectedBody;
+		PointJoint* m_mouseJoint;
+		PointJointPrimitive m_pointJointPrimitive;
+		
 
 		Utils::Camera m_camera;
 
-		PointJoint* m_mouseJoint;
-		PointJointPrimitive m_pointJointPrimitive;
 
 		QTimer m_worldTimer;
 		QTimer m_painterTimer;
 
-		Frame* m_currentFrame;
+		Frame* m_currentFrame = nullptr;
 
 		Vector2 m_mousePos;
+
+		real dt = 1.0f / 60.0f;
 	};
 
 	

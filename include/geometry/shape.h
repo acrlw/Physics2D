@@ -100,7 +100,7 @@ namespace Physics2D
     {
 
         public:
-            Circle();
+            Circle(real radius = 0);
 
             real radius() const;
             void setRadius(const real& radius);

@@ -144,7 +144,7 @@ namespace Physics2D
 		m_vertices.emplace_back(Vector2(-m_width * (0.5f), m_height * (0.5f)));
 	}
 
-	Circle::Circle() : m_radius(0)
+	Circle::Circle(real radius) : m_radius(radius)
 	{
 		m_type = Type::Circle;
 	}

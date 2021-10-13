@@ -17,15 +17,15 @@ namespace Physics2D
 		Frame(std::string name, PhysicsWorld* world, ContactMaintainer* maintainer,
 			Tree* tree, DBVH* dbvh) : m_name(name), m_world(world), m_maintainer(maintainer),
 		m_tree(tree), m_dbvh(dbvh){}
-		virtual void load();
-		virtual void release();
-		virtual void render(QPainter* painter);
-		virtual void onMousePress(QMouseEvent* event);
-		virtual void onMouseRelease(QMouseEvent* event);
-		virtual void onMouseMove(QMouseEvent* event);
-		virtual void onMouseDoubleClick(QMouseEvent* event);
-		virtual void onKeyPress(QKeyEvent* event);
-		virtual void onKeyRelease(QKeyEvent* event);
+		virtual void load() {}
+		virtual void release() {}
+		virtual void render(QPainter* painter) {}
+		virtual void onMousePress(QMouseEvent* event){}
+		virtual void onMouseRelease(QMouseEvent* event) {}
+		virtual void onMouseMove(QMouseEvent* event) {}
+		virtual void onMouseDoubleClick(QMouseEvent* event) {}
+		virtual void onKeyPress(QKeyEvent* event) {}
+		virtual void onKeyRelease(QKeyEvent* event) {}
 		
 		std::string name()const
 		{

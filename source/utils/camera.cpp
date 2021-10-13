@@ -130,6 +130,10 @@ namespace Physics2D::Utils
 			{
 				drawGridScaleLine(painter);
 			}
+			if(m_contactVisible)
+			{
+				drawContacts(painter);
+			}
 		}
 	}
 
@@ -353,6 +357,26 @@ namespace Physics2D::Utils
 		m_centerVisible = visible;
 	}
 
+	bool Camera::contactVisible() const
+	{
+		return m_contactVisible;
+	}
+
+	void Camera::setContactVisible(bool visible)
+	{
+		m_contactVisible = visible;
+	}
+
+	ContactMaintainer* Camera::maintainer() const
+	{
+		return m_maintainer;
+	}
+
+	void Camera::setContactMaintainer(ContactMaintainer* maintainer)
+	{
+		m_maintainer = maintainer;
+	}
+
 	void Camera::drawTree(int nodeIndex, QPainter* painter)
 	{
 		if (nodeIndex == -1)
@@ -366,6 +390,23 @@ namespace Physics2D::Utils
 		//aabb.expand(0.5);
 		if (!m_tree->tree()[nodeIndex].isLeaf())
 			RendererQtImpl::renderAABB(painter, this, aabb, pen);
+	}
+	void Camera::drawContacts(QPainter* painter)
+	{
+		QColor colorApproximate3(Qt::magenta);
+		QColor colorApproximate4(Qt::yellow);
+		colorApproximate3.setAlphaF(0.5);
+		colorApproximate4.setAlphaF(0.5);
+		QPen penApproximate3(colorApproximate3, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		QPen penApproximate4(colorApproximate4, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+		for (auto iter = m_maintainer->m_contactTable.begin(); iter != m_maintainer->m_contactTable.end(); ++iter)
+		{
+			for (auto& elem : iter->second)
+			{
+				RendererQtImpl::renderPoint(painter, this, elem.bodyA->toWorldPoint(elem.localA), penApproximate4);
+				RendererQtImpl::renderPoint(painter, this, elem.bodyB->toWorldPoint(elem.localB), penApproximate3);
+			}
+		}
 	}
 	void Camera::drawGridScaleLine(QPainter* painter)
 	{

@@ -67,17 +67,15 @@ namespace Physics2D
 	}
 	void PhysicsWorld::solveVelocityConstraint(real dt)
 	{
-		for (int i = 0; i < m_velocityIteration; i++)
-			for (auto& joint : m_jointList)
-				if (joint->active())
-					joint->solveVelocity(dt);
+		for (auto& joint : m_jointList)
+			if (joint->active())
+				joint->solveVelocity(dt);
 	}
 	void PhysicsWorld::solvePositionConstraint(real dt)
 	{
-		for (int i = 0; i < m_positionIteration; i++)
-			for (auto& joint : m_jointList)
-				if (joint->active())
-					joint->solvePosition(dt);
+		for (auto& joint : m_jointList)
+			if (joint->active())
+				joint->solvePosition(dt);
 	}
 
 	void PhysicsWorld::stepPosition(const real& dt)
@@ -126,22 +124,22 @@ namespace Physics2D
 		m_bias = bias;
 	}
 
-	real PhysicsWorld::velocityIteration() const
+	int PhysicsWorld::velocityIteration() const
 	{
 		return m_velocityIteration;
 	}
 
-	void PhysicsWorld::setVelocityIteration(const real& velocityIteration)
+	void PhysicsWorld::setVelocityIteration(const int& velocityIteration)
 	{
 		m_velocityIteration = velocityIteration;
 	}
 
-	real PhysicsWorld::positionIteration() const
+	int PhysicsWorld::positionIteration() const
 	{
 		return m_positionIteration;
 	}
 
-	void PhysicsWorld::setPositionIteration(const real& positionIteration)
+	void PhysicsWorld::setPositionIteration(const int& positionIteration)
 	{
 		m_positionIteration = positionIteration;
 	}

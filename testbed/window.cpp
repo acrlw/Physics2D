@@ -17,7 +17,6 @@ namespace Physics2D
 		this->setMouseTracking(true);
 
 		brick.set(1.5f, 0.5f);
-		rectangle.set(1.0f, 1.0f);
 		land.set(32.0f, 0.2f);
 		polygon.append({{3, 0}, {2, 3}, {-2, 3}, {-3, 0}, {-2, -3}, {2, -3}, {3, 0}});
 		//polygon.append({ {-2, 0}, {0, 4}, {4, 6}, {10, 4}, {4, -2}, {-2, 0} });
@@ -25,7 +24,8 @@ namespace Physics2D
 		polygon.scale(0.16f);
 		ellipse.set({-5, 4}, {5, -4});
 		ellipse.scale(0.1f);
-		circle.setRadius(brick.width());
+		rectangle.set(1.0f, 1.0f);
+		circle.setRadius(1.5f);
 		//circle.scale(7);
 		edge.set({-100, 0}, {100, 0});
 		capsule.set(0.4f, 0.8f);
@@ -633,22 +633,6 @@ namespace Physics2D
 		//{
 		//	lines2.emplace_back(std::make_pair(polygon2[i], polygon2[i + 1]));
 		//}
-		//QColor colorAccurate(Qt::green);
-		//QColor colorApproximate1(Qt::cyan);
-		//QColor colorApproximate2("#03A9F4");
-		//QColor colorApproximate3(Qt::magenta);
-		//QColor colorApproximate4(Qt::yellow);
-		//colorAccurate.setAlphaF(0.8);
-		//colorApproximate1.setAlphaF(1);
-		//colorApproximate2.setAlphaF(1);
-		//colorApproximate3.setAlphaF(1);
-		//colorApproximate4.setAlphaF(1);
-		//QPen penAccurate(colorAccurate, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		//QPen penApproximate1(colorApproximate1, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		//QPen penApproximate2(colorApproximate2, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		//QPen penApproximate3(colorApproximate3, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		//QPen penApproximate4(colorApproximate4, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-		//QPen penApproximate5(QColor("#388E3C"), 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 
 		//real h = 0.5f;
 		//real y = 0;
@@ -953,14 +937,7 @@ namespace Physics2D
 		//	RendererQtImpl::renderShape(&painter, &camera, p1, pen3);
 		//}
 
-		//for(auto iter = contactMaintainer.m_contactTable.begin(); iter != contactMaintainer.m_contactTable.end(); ++iter)
-		//{
-		//	for(auto& elem:iter->second)
-		//	{
-		//		RendererQtImpl::renderPoint(&painter, &camera, elem.bodyA->toWorldPoint(elem.localA), penApproximate4);
-		//		RendererQtImpl::renderPoint(&painter, &camera, elem.bodyB->toWorldPoint(elem.localB), penApproximate3);
-		//	}
-		//}
+
 
 		//auto potentialList = tree.generate();
 		//for (auto pair : potentialList)

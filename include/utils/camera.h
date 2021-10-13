@@ -89,13 +89,21 @@ namespace Physics2D::Utils
 
         bool rotationLineVisible()const;
         void setRotationLineVisible(bool visible);
+
         bool centerVisible() const;
         void setCenterVisible(bool visible);
+
+        bool contactVisible() const;
+        void setContactVisible(bool visible);
+
+        ContactMaintainer* maintainer()const;
+        void setContactMaintainer(ContactMaintainer* maintainer);
 		
     private:
         void drawGridScaleLine(QPainter* painter);
         void drawDbvh(DBVH::Node* node, QPainter* painter);
         void drawTree(int nodeIndex, QPainter* painter);
+        void drawContacts(QPainter* painter);
         bool m_visible = true;
         bool m_aabbVisible = true;
         bool m_jointVisible = true;
@@ -106,6 +114,7 @@ namespace Physics2D::Utils
         bool m_gridScaleLineVisible = false;
         bool m_rotationLineVisible = false;
         bool m_centerVisible = false;
+        bool m_contactVisible = false;
 
 		
 		real m_meterToPixel = 50.0f;
@@ -121,13 +130,14 @@ namespace Physics2D::Utils
         Body *m_targetBody = nullptr;
         DBVH* m_dbvh = nullptr;
         Tree* m_tree = nullptr;
+        ContactMaintainer* m_maintainer = nullptr;
 
 		real m_zoomFactor = 1.0f;
         real m_restitution = 2.0f;
         real m_deltaTime = 15.0f;
         real m_axisPointCount = 20.0f;
         
-        
+
 	};
 
 	

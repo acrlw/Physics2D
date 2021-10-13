@@ -215,6 +215,15 @@ namespace Physics2D
 		return fromShape(primitive, factor);
 	}
 
+	AABB AABB::fromBox(const Vector2& topLeft, const Vector2& bottomRight)
+	{
+		AABB result;
+		result.width = bottomRight.x - topLeft.x;
+		result.height = topLeft.y - bottomRight.y;
+		result.position = (topLeft + bottomRight) / 2.0f;
+		return result;
+	}
+
 	bool AABB::collide(const AABB& src, const AABB& target)
 	{
 		const Vector2 srcTopLeft = src.topLeft();
