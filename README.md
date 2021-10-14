@@ -110,7 +110,7 @@ cmake CMakeLists.txt
 
 ![stacking](./screenshots/stacking.png)
 
-![wrecking ball](./screenshots/wrecking ball.png)
+![wrecking ball](./screenshots/wrecking-ball.png)
 
 # Reference
 - [Box2D](https://github.com/erincatto/box2d)

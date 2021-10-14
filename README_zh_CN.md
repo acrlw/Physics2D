@@ -41,6 +41,7 @@ cmake CMakeLists.txt
   - 旋转/朝向约束
   - 点约束
   - 距离约束
+- 测试 Demo
 - 基本 Debug 绘图
 - 2D 平滑相机
   - 缩放
@@ -58,7 +59,6 @@ cmake CMakeLists.txt
 - 粗检测阶段
   - 均匀网格
   - 扫掠剪除法
-- 测试 Demo
 - 积分器
   - 韦尔莱
   - 四阶龙格库塔法
@@ -69,6 +69,26 @@ cmake CMakeLists.txt
   - 质点弹簧系统
 - 绳子模拟
   - 基于位置的动力学
+
+# 运行截图
+
+![bitmask](./screenshots/bitmask.png)
+
+![bridge](./screenshots/bridge.png)
+
+![chain](./screenshots/chain.png)
+
+![domino](./screenshots/domino.png)
+
+![friction](./screenshots/friction.png)
+
+![newtoncradle](./screenshots/newtoncradle.png)
+
+![restitution](./screenshots/restitution.png)
+
+![stacking](./screenshots/stacking.png)
+
+![wrecking ball](./screenshots/wrecking-ball.png)
 
 # 参考
 - [Box2D](https://github.com/erincatto/box2d)
