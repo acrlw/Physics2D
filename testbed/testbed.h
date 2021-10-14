@@ -27,6 +27,7 @@
 #include <QCheckBox>
 #include <QFormLayout>
 #include <QGroupBox>
+#include <QPushButton>
 
 namespace Physics2D
 {
@@ -51,13 +52,12 @@ namespace Physics2D
 
 	public slots:
 		void step();
-		void changeFrame(const QString& index);
+		void changeFrame();
 	private:
 		void clearAll();
 		void createControlPanel();
 
 		bool m_userDraw = false;
-		bool m_isStop = true;
 		bool m_cameraViewportMovement = false;
 
 		QWidget* m_controlPanel;
@@ -73,6 +73,7 @@ namespace Physics2D
 
 		Utils::Camera m_camera;
 
+		int m_currentFrameIndex = 0;
 
 		QTimer m_worldTimer;
 		QTimer m_painterTimer;

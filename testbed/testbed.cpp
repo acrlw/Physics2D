@@ -60,9 +60,6 @@ namespace Physics2D
 		for (auto& elem : m_world.bodyList())
 			m_tree.update(elem.get());
 
-		if(m_isStop)
-			return;
-
 		m_world.stepVelocity(dt);
 
 		auto potentialList = m_tree.generate();
@@ -92,10 +89,10 @@ namespace Physics2D
 		
 	}
 
-	void TestBed::changeFrame(const QString& text)
+	void TestBed::changeFrame()
 	{
 		clearAll();
-		switch (qobject_cast<QComboBox*>(sender())->currentIndex())
+		switch (m_currentFrameIndex)
 		{
 		case 0:
 			m_currentFrame = new BitmaskFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh);
@@ -180,8 +177,11 @@ namespace Physics2D
 			"Geometry" << "Joints" << "Narrowphase" << "Raycast" << "Restitution" << "Sensor" << "Stacking" <<
 			"Wrecking Ball";
 		scenes->addItems(items);
-		connect(scenes, &QComboBox::currentTextChanged, this, &TestBed::changeFrame);
-
+		connect(scenes, &QComboBox::currentTextChanged, this, [&]
+			{
+				m_currentFrameIndex = qobject_cast<QComboBox*>(sender())->currentIndex();
+				changeFrame();
+			});
 
 		QSlider* posIter = new QSlider(Qt::Horizontal);
 		QSlider* velIter = new QSlider(Qt::Horizontal);
@@ -201,7 +201,7 @@ namespace Physics2D
 
 		posIter->setRange(1, 20);
 		velIter->setRange(1, 20);
-		deltaTime->setRange(1, 120);
+		deltaTime->setRange(30, 240);
 
 		connect(posIter, &QSlider::valueChanged, this, [=](int value)
 			{
@@ -240,48 +240,49 @@ namespace Physics2D
 		QCheckBox* cbContactVisible = new QCheckBox("Contacts Visible");
 		QCheckBox* cbAxisVisible = new QCheckBox("Axis Visible");
 		QCheckBox* cbUserDrawVisible = new QCheckBox("User Draw Visible");
-		QCheckBox* cbStop = new QCheckBox("Stop");
-		cbStop->setChecked(true);
+		cbBodyVisible->setChecked(true);
+		cbJointVisible->setChecked(true);
 
-		connect(cbGridVisible, &QCheckBox::stateChanged, this, [=](int state)
+
+		connect(cbGridVisible, &QCheckBox::stateChanged, this, [&](int state)
 			{
 				m_camera.setGridScaleLineVisible(state);
 			});
-		connect(cbBodyVisible, &QCheckBox::stateChanged, this, [=](int state)
+		connect(cbBodyVisible, &QCheckBox::stateChanged, this, [&](int state)
 			{
 				m_camera.setBodyVisible(state);
 			});
-		connect(cbJointVisible, &QCheckBox::stateChanged, this, [=](int state)
+		connect(cbAABBVisible, &QCheckBox::stateChanged, this, [&](int state)
+			{
+				m_camera.setAabbVisible(state);
+			});
+		connect(cbJointVisible, &QCheckBox::stateChanged, this, [&](int state)
 			{
 				m_camera.setJointVisible(state);
 			});
-		connect(cbTreeVisible, &QCheckBox::stateChanged, this, [=](int state)
+		connect(cbTreeVisible, &QCheckBox::stateChanged, this, [&](int state)
 			{
 				m_camera.setTreeVisible(state);
 			});
-		connect(cbContactVisible, &QCheckBox::stateChanged, this, [=](int state)
+		connect(cbContactVisible, &QCheckBox::stateChanged, this, [&](int state)
 			{
 				m_camera.setContactVisible(state);
 			});
-		connect(cbAxisVisible, &QCheckBox::stateChanged, this, [=](int state)
+		connect(cbAxisVisible, &QCheckBox::stateChanged, this, [&](int state)
 			{
 				m_camera.setAxisVisible(state);
 			});
-		connect(cbUserDrawVisible, &QCheckBox::stateChanged, this, [=](int state)
+		connect(cbUserDrawVisible, &QCheckBox::stateChanged, this, [&](int state)
 			{
 				m_userDraw = state;
 			});
-		connect(cbCenterVisible, &QCheckBox::stateChanged, this, [=](int state)
+		connect(cbCenterVisible, &QCheckBox::stateChanged, this, [&](int state)
 			{
 				m_camera.setCenterVisible(state);
 			});
-		connect(cbAngleVisible, &QCheckBox::stateChanged, this, [=](int state)
+		connect(cbAngleVisible, &QCheckBox::stateChanged, this, [&](int state)
 			{
 				m_camera.setRotationLineVisible(state);
-			});
-		connect(cbStop, &QCheckBox::stateChanged, this, [=](int state)
-			{
-				m_isStop = state;
 			});
 
 
@@ -295,15 +296,42 @@ namespace Physics2D
 		vbSwitchers->addWidget(cbUserDrawVisible);
 		vbSwitchers->addWidget(cbAngleVisible);
 		vbSwitchers->addWidget(cbCenterVisible);
-		vbSwitchers->addWidget(cbStop);
 
 		QGroupBox* groupSwitchers = new QGroupBox("Switchers");
 		groupSwitchers->setPalette(palette);
 		groupSwitchers->setLayout(vbSwitchers);
 
+		QPushButton* btnPause = new QPushButton("Pause");
+		QPushButton* btnStep = new QPushButton("Step");
+		QPushButton* btnRestart = new QPushButton("Restart");
+		connect(btnPause, &QPushButton::clicked, this, [&]
+			{
+				if (m_worldTimer.isActive())
+					m_worldTimer.stop();
+				else
+					m_worldTimer.start();
+			});
+		connect(btnStep, &QPushButton::clicked, this, [&]
+			{
+				step();
+			});
+		connect(btnRestart, &QPushButton::clicked, this, [&]
+			{
+				changeFrame();
+			});
 
+
+		QVBoxLayout* vbButtons = new QVBoxLayout;
+		vbButtons->addWidget(btnPause);
+		vbButtons->addWidget(btnStep);
+		vbButtons->addWidget(btnRestart);
+		QGroupBox* groupButton = new QGroupBox("Timestep");
+		groupButton->setPalette(palette);
+		groupButton->setLayout(vbButtons);
+		
 		mainLayout->addWidget(groupBox);
 		mainLayout->addWidget(groupSwitchers);
+		mainLayout->addWidget(groupButton);
 
 		m_controlPanel->setLayout(mainLayout);
 		m_controlPanel->setPalette(palette);
@@ -427,7 +455,10 @@ namespace Physics2D
 		}
 		case Qt::Key_Space:
 		{
-			m_isStop = !m_isStop;
+			if (m_worldTimer.isActive())
+				m_worldTimer.stop();
+			else
+				m_worldTimer.start();
 			break;
 		}
 		case Qt::Key_R:
@@ -457,9 +488,9 @@ namespace Physics2D
 	void TestBed::wheelEvent(QWheelEvent* event)
 	{
 		if (event->angleDelta().y() > 0)
-			m_camera.setMeterToPixel(m_camera.meterToPixel() + m_camera.meterToPixel() / 4.0);
+			m_camera.setMeterToPixel(m_camera.meterToPixel() + m_camera.meterToPixel() / 4.0f);
 		else
-			m_camera.setMeterToPixel(m_camera.meterToPixel() - m_camera.meterToPixel() / 4.0);
+			m_camera.setMeterToPixel(m_camera.meterToPixel() - m_camera.meterToPixel() / 4.0f);
 		
 	}
 }
