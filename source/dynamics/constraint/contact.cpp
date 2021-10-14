@@ -35,7 +35,7 @@ namespace Physics2D
 				vcp.vb = ccp.bodyB->velocity() + wb;
 
 				Vector2 dv = vcp.va - vcp.vb;
-				real jv = -(1.0f + vcp.restitution) * vcp.normal.dot(dv);
+				real jv = -1.0f * vcp.normal.dot(dv - vcp.velocityBias);
 				real lambda_n = vcp.effectiveMassNormal * jv;
 				real oldImpulse = vcp.accumulatedNormalImpulse;
 				vcp.accumulatedNormalImpulse = Math::max(oldImpulse + lambda_n, 0);
@@ -238,6 +238,14 @@ namespace Physics2D
 		//vcp.bias = 0;
 		vcp.restitution = Math::min(ccp.bodyA->restitution(), ccp.bodyB->restitution());
 		vcp.penetration = collision.penetration;
+
+		Vector2 wa = Vector2::crossProduct(ccp.bodyA->angularVelocity(), vcp.ra);
+		Vector2 wb = Vector2::crossProduct(ccp.bodyB->angularVelocity(), vcp.rb);
+		vcp.va = ccp.bodyA->velocity() + wa;
+		vcp.vb = ccp.bodyB->velocity() + wb;
+
+		vcp.velocityBias = -vcp.restitution * (vcp.va - vcp.vb);
+
 		//accumulate inherited impulse
 		Vector2 impulse = vcp.accumulatedNormalImpulse * vcp.normal + vcp.accumulatedTangentImpulse * vcp.tangent;
 		//Vector2 impulse;

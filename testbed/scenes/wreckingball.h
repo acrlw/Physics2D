@@ -43,7 +43,7 @@ namespace Physics2D
 				for (real i = 0; i < 5.0; i += 1.0f)
 				{
 					Body* body = m_world->createBody();
-					body->position().set({ i - 30.0f, j * 1.0f - ground->position().y + 0.55f });
+					body->position().set({ i * 1.05f - 30.0f, j * 1.05f - ground->position().y + 0.55f });
 					body->setShape(rectangle_ptr.get());
 					body->rotation() = 0.0f;
 					body->setMass(1.0f);
@@ -58,7 +58,7 @@ namespace Physics2D
 				for (real i = 0; i < 5.0; i += 1.0f)
 				{
 					Body* body = m_world->createBody();
-					body->position().set({ i, j * 1.0f - ground->position().y + 0.55f });
+					body->position().set({ i * 1.05f, j * 1.05f - ground->position().y + 0.55f });
 					body->setShape(rectangle_ptr.get());
 					body->rotation() = 0.0f;
 					body->setMass(1.0f);

@@ -17,6 +17,7 @@ namespace Physics2D
 		Vector2 vb;
 		Vector2 normal;
 		Vector2 tangent;
+		Vector2 velocityBias;
 		real bias = 0;
 		real penetration = 0.0f;
 		real restitution = 0.8f;

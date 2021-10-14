@@ -106,7 +106,7 @@ namespace Physics2D
 
 		bool m_sleep = false;
 		real m_friction = 0.2f;
-		real m_restitution = 0.8f;
+		real m_restitution = 0.0f;
 		
 
 		
