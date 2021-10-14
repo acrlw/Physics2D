@@ -7,7 +7,7 @@ namespace Physics2D
 	{
 	public:
 		BridgeFrame(PhysicsWorld* world, ContactMaintainer* maintainer,
-			Tree* tree, DBVH* dbvh) : Frame("Bridge", world, maintainer, tree, dbvh)
+			Tree* tree, DBVH* dbvh, Utils::Camera* camera) : Frame("Bridge", world, maintainer, tree, dbvh, camera)
 		{
 
 		}

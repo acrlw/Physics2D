@@ -7,7 +7,7 @@ namespace Physics2D
 	{
 	public:
 		JointsFrame(PhysicsWorld* world, ContactMaintainer* maintainer,
-			Tree* tree, DBVH* dbvh) : Frame("Joints", world, maintainer, tree, dbvh)
+			Tree* tree, DBVH* dbvh, Utils::Camera* camera) : Frame("Joints", world, maintainer, tree, dbvh, camera)
 		{
 
 		}

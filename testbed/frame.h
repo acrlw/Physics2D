@@ -3,11 +3,13 @@
 
 #include "include/physics2d.h"
 #include "include/utils/camera.h"
+#include "include/render/impl/renderer_qt.h"
 
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QWheelEvent>
 #include <QPaintEvent>
+#include <QRandomGenerator>
 #include <string>
 namespace Physics2D
 {
@@ -15,8 +17,8 @@ namespace Physics2D
 	{
 	public:
 		Frame(std::string name, PhysicsWorld* world, ContactMaintainer* maintainer,
-			Tree* tree, DBVH* dbvh) : m_name(name), m_world(world), m_maintainer(maintainer),
-		m_tree(tree), m_dbvh(dbvh){}
+			Tree* tree, DBVH* dbvh, Utils::Camera* camera) : m_name(name), m_world(world), m_maintainer(maintainer),
+		m_tree(tree), m_dbvh(dbvh), m_camera(camera){}
 		virtual void load() {}
 		virtual void release() {}
 		virtual void render(QPainter* painter) {}
@@ -41,6 +43,7 @@ namespace Physics2D
 		ContactMaintainer* m_maintainer = nullptr;
 		Tree* m_tree = nullptr;
 		DBVH* m_dbvh = nullptr;
+		Utils::Camera* m_camera = nullptr;
 	};
 }
 

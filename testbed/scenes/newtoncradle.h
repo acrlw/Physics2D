@@ -8,7 +8,7 @@ namespace Physics2D
 	{
 	public:
 		NewtonCradleFrame(PhysicsWorld* world, ContactMaintainer* maintainer,
-			Tree* tree, DBVH* dbvh) : Frame("Newton's Cradle", world, maintainer, tree, dbvh)
+			Tree* tree, DBVH* dbvh, Utils::Camera* camera) : Frame("Newton's Cradle", world, maintainer, tree, dbvh, camera)
 		{
 
 		}
@@ -38,7 +38,7 @@ namespace Physics2D
 
 			for(real i = 0;i < 5.0f; i++)
 			{
-				startX += 2.05f;
+				startX += 2.01f;
 				ball = m_world->createBody();
 				ball->setShape(circle_ptr.get());
 				ball->setMass(1.0f);
@@ -52,7 +52,7 @@ namespace Physics2D
 				m_tree->insert(ball);
 			}
 
-			startX += 2.05f;
+			startX += 2.01f;
 			ball = m_world->createBody();
 			ball->setShape(circle_ptr.get());
 			ball->setMass(1.0f);

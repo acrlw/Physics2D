@@ -7,7 +7,7 @@ namespace Physics2D
 	{
 	public:
 		BitmaskFrame(PhysicsWorld* world, ContactMaintainer* maintainer,
-			Tree* tree, DBVH* dbvh) : Frame("Bitmask", world, maintainer, tree, dbvh)
+			Tree* tree, DBVH* dbvh, Utils::Camera* camera) : Frame("Bitmask", world, maintainer, tree, dbvh, camera)
 		{
 			
 		}

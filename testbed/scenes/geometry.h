@@ -7,7 +7,7 @@ namespace Physics2D
 	{
 	public:
 		GeometryFrame(PhysicsWorld* world, ContactMaintainer* maintainer,
-			Tree* tree, DBVH* dbvh) : Frame("Geometry", world, maintainer, tree, dbvh)
+			Tree* tree, DBVH* dbvh, Utils::Camera* camera) : Frame("Geometry", world, maintainer, tree, dbvh, camera)
 		{
 
 		}

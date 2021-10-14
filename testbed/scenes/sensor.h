@@ -7,7 +7,7 @@ namespace Physics2D
 	{
 	public:
 		SensorFrame(PhysicsWorld* world, ContactMaintainer* maintainer,
-			Tree* tree, DBVH* dbvh) : Frame("Sensor", world, maintainer, tree, dbvh)
+			Tree* tree, DBVH* dbvh, Utils::Camera* camera) : Frame("Sensor", world, maintainer, tree, dbvh, camera)
 		{
 
 		}

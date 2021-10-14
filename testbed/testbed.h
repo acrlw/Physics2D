@@ -58,7 +58,7 @@ namespace Physics2D
 		void clearAll();
 		void createControlPanel();
 
-		bool m_userDraw = false;
+		bool m_userDraw = true;
 		bool m_cameraViewportMovement = false;
 
 		QWidget* m_controlPanel;

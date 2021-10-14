@@ -26,6 +26,7 @@ namespace Physics2D
 			}
 			return m_startId++;
 		}
+
 		static void pop(uint32_t id)
 		{
 			m_emptyList.push_back(id);

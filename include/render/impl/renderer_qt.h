@@ -34,8 +34,7 @@ namespace Physics2D
         static void renderRotationJoint(QPainter* painter, Utils::Camera* camera, Joint* joint, const QPen& pen);
         static void renderDistanceJoint(QPainter* painter, Utils::Camera* camera, Joint* joint, const QPen& pen);
         static void renderPointJoint(QPainter* painter, Utils::Camera* camera, Joint* joint, const QPen& pen);
-
-        static void renderSpringConstraint(QPainter* painter, Utils::Camera* camera, Joint* joint, const QPen& pen);
+        
 
         static void renderOrientationJoint(QPainter* painter, Utils::Camera* camera, Joint* joint, const QPen& pen);
         static void renderPulleyJoint(QPainter* painter, Utils::Camera* camera, Joint* joint, const QPen& pen);

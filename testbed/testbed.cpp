@@ -94,52 +94,52 @@ namespace Physics2D
 		switch (m_currentFrameIndex)
 		{
 		case 0:
-			m_currentFrame = new BitmaskFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh);
+			m_currentFrame = new BitmaskFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh, &m_camera);
 			break;
 		case 1:
-			m_currentFrame = new BridgeFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh);
+			m_currentFrame = new BridgeFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh, &m_camera);
 			break;
 		case 2:
-			m_currentFrame = new BroadPhaseFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh);
+			m_currentFrame = new BroadPhaseFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh, &m_camera);
 			break;
 		case 3:
-			m_currentFrame = new ChainFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh);
+			m_currentFrame = new ChainFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh, &m_camera);
 			break;
 		case 4:
-			m_currentFrame = new CollisionFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh);
+			m_currentFrame = new CollisionFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh, &m_camera);
 			break;
 		case 5:
-			m_currentFrame = new DominoFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh);
+			m_currentFrame = new DominoFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh, &m_camera);
 			break;
 		case 6:
-			m_currentFrame = new FrictionFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh);
+			m_currentFrame = new FrictionFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh, &m_camera);
 			break;
 		case 7:
-			m_currentFrame = new GeometryFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh);
+			m_currentFrame = new GeometryFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh, &m_camera);
 			break;
 		case 8:
-			m_currentFrame = new JointsFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh);
+			m_currentFrame = new JointsFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh, &m_camera);
 			break;
 		case 9:
-			m_currentFrame = new NarrowphaseFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh);
+			m_currentFrame = new NarrowphaseFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh, &m_camera);
 			break;
 		case 10:
-			m_currentFrame = new NewtonCradleFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh);
+			m_currentFrame = new NewtonCradleFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh, &m_camera);
 			break;
 		case 11:
-			m_currentFrame = new RaycastFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh);
+			m_currentFrame = new RaycastFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh, &m_camera);
 			break;
 		case 12:
-			m_currentFrame = new RestitutionFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh);
+			m_currentFrame = new RestitutionFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh, &m_camera);
 			break;
 		case 13:
-			m_currentFrame = new SensorFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh);
+			m_currentFrame = new SensorFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh, &m_camera);
 			break;
 		case 14:
-			m_currentFrame = new StackingFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh);
+			m_currentFrame = new StackingFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh, &m_camera);
 			break;
 		case 15:
-			m_currentFrame = new WreckingBallFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh);
+			m_currentFrame = new WreckingBallFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh, &m_camera);
 			break;
 			default:
 				break;
@@ -177,7 +177,7 @@ namespace Physics2D
 		QComboBox* scenes = new QComboBox;
 		QStringList items;
 		items << "Bitmask" << "Bridge" << "Broadphase" << "Chain" << "Collision" << "Domino" << "Friction" <<
-			"Geometry" << "Joints" << "Narrowphase" << "Newton's Cradle" << "Raycast" << "Restitution" << "Sensor" << "Stacking" <<
+			"Geometry" << "Joints" << "Narrowphase" << "Newton's Cradle" << "AABB Raycast" << "Restitution" << "Sensor" << "Stacking" <<
 			"Wrecking Ball";
 		scenes->addItems(items);
 		connect(scenes, &QComboBox::currentTextChanged, this, [&]
@@ -238,7 +238,7 @@ namespace Physics2D
 		posIter->setValue(8);
 		velIter->setValue(6);
 		deltaTime->setValue(60);
-		bias->setValue(10);
+		bias->setValue(20);
 
 
 		QGroupBox* groupBox = new QGroupBox("Scenes And Sliders");
@@ -258,6 +258,7 @@ namespace Physics2D
 		QCheckBox* cbUserDrawVisible = new QCheckBox("User Draw Visible");
 		cbBodyVisible->setChecked(true);
 		cbJointVisible->setChecked(true);
+		cbUserDrawVisible->setChecked(true);
 
 
 		connect(cbGridVisible, &QCheckBox::stateChanged, this, [&](int state)

@@ -7,7 +7,7 @@ namespace Physics2D
 	{
 	public:
 		DominoFrame(PhysicsWorld* world, ContactMaintainer* maintainer,
-			Tree* tree, DBVH* dbvh) : Frame("Domino", world, maintainer, tree, dbvh)
+			Tree* tree, DBVH* dbvh, Utils::Camera* camera) : Frame("Domino", world, maintainer, tree, dbvh, camera)
 		{
 
 		}
@@ -63,7 +63,7 @@ namespace Physics2D
 			tile->position().set({ -5, 10 });
 			m_tree->insert(tile);
 
-			for(real i = 0;i < 8.0; i += 1.0f)
+			for(real i = 0;i < 9.0; i += 1.0f)
 			{
 				Body* card = m_world->createBody();
 				card->setShape(brick_ptr.get());
@@ -71,7 +71,7 @@ namespace Physics2D
 				card->setFriction(0.1f);
 				card->setRestitution(0);
 				card->setType(Body::BodyType::Dynamic);
-				card->position().set({ -10.0f + i * 1.5f, 12.0f });
+				card->position().set({ -9.0f + i * 1.2f, 12.0f });
 				m_tree->insert(card);
 			}
 

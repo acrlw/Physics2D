@@ -7,19 +7,19 @@ namespace Physics2D
 	{
 	public:
 		CollisionFrame(PhysicsWorld* world, ContactMaintainer* maintainer,
-			Tree* tree, DBVH* dbvh) : Frame("Collision", world, maintainer, tree, dbvh)
+			Tree* tree, DBVH* dbvh, Utils::Camera* camera) : Frame("Collision", world, maintainer, tree, dbvh, camera)
 		{
 
 		}
 		void load() override
 		{
 			Edge edge;
-			edge.set({ -10, 2 }, { 10, 0 });
+			edge.set({ -10, 0 }, { 10, 0 });
 			edge_ptr = std::make_unique<Edge>(edge);
 
-			Rectangle rectangle;
-			rectangle.set(1.0f, 1.0f);
-			rectangle_ptr = std::make_unique<Rectangle>(rectangle);
+			Capsule capsule;
+			capsule.set(2.0f, 1.0f);
+			capsule_ptr = std::make_unique<Capsule>(capsule);
 
 			Body* ground;
 			Body* rect;
@@ -34,7 +34,7 @@ namespace Physics2D
 			m_tree->insert(ground);
 
 			rect = m_world->createBody();
-			rect->setShape(rectangle_ptr.get());
+			rect->setShape(capsule_ptr.get());
 			rect->position().set({ 0, 6 });
 			rect->rotation() = 2.21805891827f;
 			rect->setMass(1);
@@ -48,7 +48,7 @@ namespace Physics2D
 
 		}
 	private:
-		std::unique_ptr<Rectangle> rectangle_ptr;
+		std::unique_ptr<Capsule> capsule_ptr;
 		std::unique_ptr<Edge> edge_ptr;
 
 	};

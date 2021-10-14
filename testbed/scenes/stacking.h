@@ -7,7 +7,7 @@ namespace Physics2D
 	{
 	public:
 		StackingFrame(PhysicsWorld* world, ContactMaintainer* maintainer,
-			Tree* tree, DBVH* dbvh) : Frame("Stacking", world, maintainer, tree, dbvh)
+			Tree* tree, DBVH* dbvh, Utils::Camera* camera) : Frame("Stacking", world, maintainer, tree, dbvh, camera)
 		{
 
 		}

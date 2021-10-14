@@ -7,7 +7,7 @@ namespace Physics2D
 	{
 	public:
 		WreckingBallFrame(PhysicsWorld* world, ContactMaintainer* maintainer,
-			Tree* tree, DBVH* dbvh) : Frame("WreckingBall", world, maintainer, tree, dbvh)
+			Tree* tree, DBVH* dbvh, Utils::Camera* camera) : Frame("Wrecking Ball", world, maintainer, tree, dbvh, camera)
 		{
 
 		}
