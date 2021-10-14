@@ -24,7 +24,7 @@ namespace Physics2D
 			{
 				Body* ground = m_world->createBody();
 				ground->setShape(edge_ptr.get());
-				ground->position().set({ 0, i * 3.0f });
+				ground->position().set({ 0, -6 + i * 3.0f });
 				ground->setFriction(0.9f);
 				ground->setBitmask(mask);
 				ground->setRestitution(0);
@@ -38,7 +38,7 @@ namespace Physics2D
 			{
 				Body* body = m_world->createBody();
 				body->setShape(rectangle_ptr.get());
-				body->position().set({ i * 3.0f, 10.0f });
+				body->position().set({ i * 3.0f, 6.0f });
 				body->setFriction(0.9f);
 				body->setBitmask(mask);
 				body->setRestitution(0);
