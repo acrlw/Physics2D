@@ -67,8 +67,8 @@ add_executable(physics-engine
     "source/collision/broadphase/dbvh.cpp"
     "source/collision/broadphase/aabb.cpp"
     "source/render/impl/renderer_qt.cpp"
-    "testbed/window.h"
-    "testbed/window.cpp"
+    
+    
     "include/dynamics/joint/joint.h"
     
     "include/dynamics/joint/revolute.h"

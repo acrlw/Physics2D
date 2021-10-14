@@ -2,7 +2,6 @@
 #define PHYSICS2D_TESTBED_H
 #include "include/physics2d.h"
 #include "QApplication"
-#include "testbed/window.h"
 
 #include "scenes/bitmask.h"
 #include "scenes/bridge.h"
@@ -28,6 +27,7 @@
 #include <QFormLayout>
 #include <QGroupBox>
 #include <QPushButton>
+#include <QTimer>
 
 namespace Physics2D
 {
