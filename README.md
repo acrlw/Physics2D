@@ -39,6 +39,7 @@ cmake CMakeLists.txt
   - Rotation
   - Point
   - Mouse
+- TestBed
 - Basic Debug Drawing
   - Rigid Body
   - AABB
@@ -78,7 +79,6 @@ cmake CMakeLists.txt
 - Broadphase
   - Uniform Grid
   - Sweep And Prune
-- Test Demo
 - Integrator
   - Verlet
   - Rk4

@@ -186,22 +186,28 @@ namespace Physics2D
 		QSlider* posIter = new QSlider(Qt::Horizontal);
 		QSlider* velIter = new QSlider(Qt::Horizontal);
 		QSlider* deltaTime = new QSlider(Qt::Horizontal);
+		QSlider* bias = new QSlider(Qt::Horizontal);
 		QFormLayout* formLayout = new QFormLayout;
 		QLabel* lblPosIter = new QLabel("Position Iterations: ");
 		QLabel* lblVelIter = new QLabel("Velocity Iterations: ");
 		QLabel* lblDtIter = new QLabel("Delta Time: ");
+		QLabel* lblBias = new QLabel("Contact Bias Factor: ");
 		formLayout->addRow(new QLabel("Scenes: "), scenes);
 		formLayout->addRow(lblPosIter, posIter);
 		formLayout->addRow(lblVelIter, velIter);
 		formLayout->addRow(lblDtIter, deltaTime);
+		formLayout->addRow(lblBias, bias);
 
 		posIter->setTracking(true);
 		velIter->setTracking(true);
 		deltaTime->setTracking(true);
+		bias->setTracking(true);
 
 		posIter->setRange(1, 20);
 		velIter->setRange(1, 20);
 		deltaTime->setRange(30, 240);
+		bias->setRange(1, 100);
+		bias->setValue(1);
 
 		connect(posIter, &QSlider::valueChanged, this, [=](int value)
 			{
@@ -217,6 +223,11 @@ namespace Physics2D
 			{
 				dt = 1.0f / static_cast<real>(value);
 				lblDtIter->setText("Delta Time: " + QString::number(value) + " Hz");
+			});
+		connect(bias, &QSlider::valueChanged, this, [=](int value)
+			{
+				m_maintainer.m_biasFactor = static_cast<real>(value) / 1000.0f;
+				lblBias->setText("Contact Bias Factor: " + QString::number(m_maintainer.m_biasFactor));
 			});
 
 
@@ -344,6 +355,8 @@ namespace Physics2D
 	{
 		QPainter painter(this);
 		m_camera.render(&painter);
+		if (m_userDraw && m_currentFrame != nullptr)
+			m_currentFrame->render(&painter);
 	}
 	void TestBed::resizeEvent(QResizeEvent* e)
 	{
@@ -358,6 +371,9 @@ namespace Physics2D
 		m_mousePos = m_camera.screenToWorld(pos);
 		if (e->button() == Qt::RightButton)
 			m_cameraViewportMovement = true;
+
+		if (m_currentFrame != nullptr)
+			m_currentFrame->onMousePress(e);
 
 		if (m_mouseJoint == nullptr)
 			return;
@@ -379,11 +395,15 @@ namespace Physics2D
 				break;
 			}
 		}
+
 	}
 	void TestBed::mouseReleaseEvent(QMouseEvent* e)
 	{
 		Vector2 pos(e->pos().x(), e->pos().y());
 		m_mousePos = m_camera.screenToWorld(pos);
+
+		if (m_currentFrame != nullptr)
+			m_currentFrame->onMouseRelease(e);
 
 		if (m_mouseJoint == nullptr)
 			return;
@@ -404,6 +424,9 @@ namespace Physics2D
 		}
 		m_mousePos = m_camera.screenToWorld(pos);
 
+		if (m_currentFrame != nullptr)
+			m_currentFrame->onMouseMove(e);
+
 		if (m_mouseJoint == nullptr)
 			return;
 
@@ -413,77 +436,18 @@ namespace Physics2D
 	}
 	void TestBed::mouseDoubleClickEvent(QMouseEvent* event)
 	{
+		if (m_currentFrame != nullptr)
+			m_currentFrame->onMouseDoubleClick(event);
 	}
 	void TestBed::keyPressEvent(QKeyEvent* event)
 	{
-		switch (event->key())
-		{
-		case Qt::Key_J:
-		{
-			m_camera.setJointVisible(!m_camera.jointVisible());
-			break;
-		}
-		case Qt::Key_B:
-		{
-			m_camera.setBodyVisible(!m_camera.bodyVisible());
-			break;
-		}
-		case Qt::Key_D:
-		{
-			m_camera.setDbvhVisible(!m_camera.dbvhVisible());
-			break;
-		}
-		case Qt::Key_A:
-		{
-			m_camera.setAabbVisible(!m_camera.aabbVisible());
-			break;
-		}
-		case Qt::Key_T:
-		{
-			m_camera.setTreeVisible(!m_camera.treeVisible());
-			break;
-		}
-		case Qt::Key_X:
-		{
-			m_camera.setAxisVisible(!m_camera.axisVisible());
-			break;
-		}
-		case Qt::Key_G:
-		{
-			m_camera.setGridScaleLineVisible(!m_camera.gridScaleLineVisible());
-			break;
-		}
-		case Qt::Key_Space:
-		{
-			if (m_worldTimer.isActive())
-				m_worldTimer.stop();
-			else
-				m_worldTimer.start();
-			break;
-		}
-		case Qt::Key_R:
-		{
-			m_camera.setRotationLineVisible(!m_camera.rotationLineVisible());
-			break;
-		}
-		case Qt::Key_L:
-		{
-			if (m_camera.targetBody() != nullptr)
-				m_camera.setTargetBody(nullptr);
-			break;
-		}
-		case Qt::Key_C:
-		{
-			m_camera.setCenterVisible(!m_camera.centerVisible());
-			break;
-		}
-		default:
-			break;
-		}
+		if (m_currentFrame != nullptr)
+			m_currentFrame->onKeyPress(event);
 	}
 	void TestBed::keyReleaseEvent(QKeyEvent* event)
 	{
-
+		if (m_currentFrame != nullptr)
+			m_currentFrame->onKeyRelease(event);
 	}
 	void TestBed::wheelEvent(QWheelEvent* event)
 	{

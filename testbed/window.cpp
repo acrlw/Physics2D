@@ -206,7 +206,6 @@ namespace Physics2D
 		revolutePrim.frequency = 10;
 		rj = m_world.createJoint(revolutePrim);
 
-
 		rect2 = m_world.createBody();
 		rect2->setShape(circle_ptr.get());
 		rect2->position().set({ 21.5f + half, 0.0f });
