@@ -47,7 +47,7 @@ namespace Physics2D
 
 		m_worldTimer.setInterval(15);
 		m_worldTimer.start();
-		m_painterTimer.setInterval(15);
+		m_painterTimer.setInterval(30);
 		m_painterTimer.start();
 
 	}
@@ -182,6 +182,8 @@ namespace Physics2D
 				m_currentFrameIndex = qobject_cast<QComboBox*>(sender())->currentIndex();
 				changeFrame();
 			});
+		m_currentFrameIndex = 0;
+		changeFrame();
 
 		QSlider* posIter = new QSlider(Qt::Horizontal);
 		QSlider* velIter = new QSlider(Qt::Horizontal);
@@ -191,7 +193,7 @@ namespace Physics2D
 		QLabel* lblPosIter = new QLabel("Position Iterations: ");
 		QLabel* lblVelIter = new QLabel("Velocity Iterations: ");
 		QLabel* lblDtIter = new QLabel("Delta Time: ");
-		QLabel* lblBias = new QLabel("Contact Bias Factor: ");
+		QLabel* lblBias = new QLabel("Contact Bias Factor: " + QString::number(m_maintainer.m_biasFactor));
 		formLayout->addRow(new QLabel("Scenes: "), scenes);
 		formLayout->addRow(lblPosIter, posIter);
 		formLayout->addRow(lblVelIter, velIter);
@@ -207,7 +209,6 @@ namespace Physics2D
 		velIter->setRange(1, 20);
 		deltaTime->setRange(30, 240);
 		bias->setRange(1, 100);
-		bias->setValue(1);
 
 		connect(posIter, &QSlider::valueChanged, this, [=](int value)
 			{
@@ -234,6 +235,7 @@ namespace Physics2D
 		posIter->setValue(8);
 		velIter->setValue(6);
 		deltaTime->setValue(60);
+		bias->setValue(10);
 
 
 		QGroupBox* groupBox = new QGroupBox("Scenes And Sliders");

@@ -45,7 +45,6 @@ namespace Physics2D
     class Point: public Shape
     {
         public:
-
             Point();
 
             Vector2 position() const;
@@ -188,7 +187,7 @@ namespace Physics2D
 	class Capsule : public Shape
 	{
 	public:
-        Capsule();
+        Capsule(real width = 0.0f, real height = 0.0f);
 		bool contains(const Vector2& point, const real& epsilon) override;
 		void scale(const real& factor) override;
         Vector2 center() const override;

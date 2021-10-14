@@ -174,10 +174,9 @@ namespace Physics2D
 		return Vector2();
 	}
 
-	Ellipse::Ellipse(const real& width, const real& height)
+	Ellipse::Ellipse(const real& width, const real& height) : m_width(width), m_height(height)
 	{
 		m_type = Type::Ellipse;
-		this->set(width, height);
 	}
 
 	void Ellipse::set(const Vector2& leftTop, const Vector2& rightBottom)
@@ -372,11 +371,9 @@ namespace Physics2D
 		return Vector2();
 	}
 
-	Capsule::Capsule()
+	Capsule::Capsule(real width, real height) : m_width(width), m_height(height)
 	{
 		m_type = Type::Capsule;
-		m_width = 0;
-		m_height = 0;
 	}
 
 	bool Capsule::contains(const Vector2& point, const real& epsilon)

@@ -20,7 +20,8 @@ namespace Physics2D
 
 		}
 	private:
-
+		std::unique_ptr<Circle> circle_ptr;
+		std::unique_ptr<Edge> edge_ptr;
 	};
 }
 #endif

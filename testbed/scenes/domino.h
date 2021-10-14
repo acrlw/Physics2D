@@ -20,7 +20,10 @@ namespace Physics2D
 
 		}
 	private:
-
+		std::unique_ptr<Rectangle> brick_ptr;
+		std::unique_ptr<Rectangle> floor_ptr;
+		std::unique_ptr<Edge> edge_ptr;
+		std::unique_ptr<Rectangle> rectangle_ptr;
 	};
 }
 #endif

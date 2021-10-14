@@ -20,7 +20,9 @@ namespace Physics2D
 
 		}
 	private:
-
+		std::unique_ptr<Rectangle> rectangle_ptr;
+		std::unique_ptr<Edge> edge_ptr;
+		std::unique_ptr<Edge> ramp_ptr;
 	};
 }
 #endif
