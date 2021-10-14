@@ -13,6 +13,7 @@
 #include "scenes/geometry.h"
 #include "scenes/joints.h"
 #include "scenes/narrowphase.h"
+#include "scenes/newtoncradle.h"
 #include "scenes/raycast.h"
 #include "scenes/restitution.h"
 #include "scenes/sensor.h"

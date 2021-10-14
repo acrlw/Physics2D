@@ -27,7 +27,7 @@ namespace Physics2D
 			real half = brick_ptr->width() / 2.0f;
 			rect = m_world->createBody();
 			rect->setShape(brick_ptr.get());
-			rect->position().set({ -5.0f, 0.0f });
+			rect->position().set({ -15.0f, 0.0f });
 			rect->rotation() = 0;
 			rect->setMass(1.0f);
 			rect->setRestitution(0.2f);
@@ -46,17 +46,18 @@ namespace Physics2D
 
 			ppm.bodyA = rect;
 			ppm.localPointA.set(-half, 0);
-			ppm.targetPoint.set(-5.0f - half, 0.0f);
+			ppm.targetPoint.set(-15.0f - half, 0.0f);
 			ppm.dampingRatio = 0.1f;
-			ppm.frequency = 100;
+			ppm.frequency = 1000;
+			ppm.maxForce = 10000;
 			m_world->createJoint(ppm);
-			real max = 12.0f;
+			real max = 20.0f;
 			m_tree->insert(rect);
 			for (real i = 1.0f; i < max; i += 1.0f)
 			{
 				rect2 = m_world->createBody();
 				rect2->setShape(brick_ptr.get());
-				rect2->position().set({ -5.0f + i * brick_ptr->width(), 0.0f });
+				rect2->position().set({ -15.0f + i * brick_ptr->width(), 0.0f });
 				rect2->rotation() = 0;
 				rect2->setMass(1.0f);
 				rect2->setFriction(0.01f);
@@ -67,17 +68,19 @@ namespace Physics2D
 				revolutePrim.bodyB = rect2;
 				revolutePrim.localPointA.set(half, 0);
 				revolutePrim.localPointB.set(-half, 0);
-				revolutePrim.dampingRatio = 0.1f;
-				revolutePrim.frequency = 5;
+				revolutePrim.dampingRatio = 0.8f;
+				revolutePrim.frequency = 10;
+				revolutePrim.maxForce = 10000;
 				m_world->createJoint(revolutePrim);
 				rect = rect2;
 			}
 
 			ppm.bodyA = rect2;
 			ppm.localPointA.set(0.75f, 0);
-			ppm.targetPoint.set(-5.0f + max * brick_ptr->width() - half, 0.0f);
+			ppm.targetPoint.set(-15.0f + max * brick_ptr->width() - half, 0.0f);
 			ppm.dampingRatio = 0.1f;
-			ppm.frequency = 100;
+			ppm.frequency = 1000;
+			ppm.maxForce = 10000;
 			m_world->createJoint(ppm);
 
 		}

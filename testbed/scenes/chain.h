@@ -47,8 +47,9 @@ namespace Physics2D
 			ppm.bodyA = rect;
 			ppm.localPointA.set(-half, 0);
 			ppm.targetPoint.set(-5.0f - half, 0.0f);
-			ppm.dampingRatio = 0.1f;
-			ppm.frequency = 100;
+			ppm.dampingRatio = 0.8f;
+			ppm.frequency = 1000;
+			ppm.maxForce = 10000;
 			m_world->createJoint(ppm);
 			real max = 12.0f;
 			m_tree->insert(rect);
@@ -67,8 +68,9 @@ namespace Physics2D
 				revolutePrim.bodyB = rect2;
 				revolutePrim.localPointA.set(half, 0);
 				revolutePrim.localPointB.set(-half, 0);
-				revolutePrim.dampingRatio = 0.1f;
+				revolutePrim.dampingRatio = 0.8f;
 				revolutePrim.frequency = 5;
+				revolutePrim.maxForce = 10000;
 				m_world->createJoint(revolutePrim);
 				rect = rect2;
 			}
