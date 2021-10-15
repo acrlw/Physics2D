@@ -46,6 +46,7 @@ namespace Physics2D
 
 
 		m_worldTimer.setInterval(15);
+		m_worldTimer.start();
 		m_painterTimer.setInterval(15);
 		m_painterTimer.start();
 

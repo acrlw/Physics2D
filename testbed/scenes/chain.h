@@ -69,7 +69,7 @@ namespace Physics2D
 				revolutePrim.localPointA.set(half, 0);
 				revolutePrim.localPointB.set(-half, 0);
 				revolutePrim.dampingRatio = 0.8f;
-				revolutePrim.frequency = 5;
+				revolutePrim.frequency = 10;
 				revolutePrim.maxForce = 10000;
 				m_world->createJoint(revolutePrim);
 				rect = rect2;
