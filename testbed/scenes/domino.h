@@ -71,7 +71,7 @@ namespace Physics2D
 				card->setFriction(0.1f);
 				card->setRestitution(0);
 				card->setType(Body::BodyType::Dynamic);
-				card->position().set({ -9.0f + i * 1.2f, 12.0f });
+				card->position().set({ -10.0f + i * 1.2f, 12.0f });
 				m_tree->insert(card);
 			}
 

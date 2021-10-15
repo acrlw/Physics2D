@@ -19,6 +19,7 @@
 #include "scenes/sensor.h"
 #include "scenes/stacking.h"
 #include "scenes/wreckingball.h"
+#include "scenes/pendulum.h"
 
 #include <QSlider>
 #include <QVBoxLayout>

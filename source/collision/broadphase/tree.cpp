@@ -560,7 +560,9 @@ namespace Physics2D
 	{
 		if (nodeIndex < 0 || m_tree[nodeIndex].isLeaf())
 			return;
+		
 		m_tree[nodeIndex].aabb = AABB::unite(m_tree[m_tree[nodeIndex].leftIndex].aabb, m_tree[m_tree[nodeIndex].rightIndex].aabb);
+
 		upgrade(m_tree[nodeIndex].parentIndex);
 	}
 	real Tree::deltaCost(int nodeIndex, int boxIndex)

@@ -46,7 +46,7 @@ namespace Physics2D
 
 
 		m_worldTimer.setInterval(15);
-		m_painterTimer.setInterval(30);
+		m_painterTimer.setInterval(15);
 		m_painterTimer.start();
 
 	}
@@ -127,18 +127,21 @@ namespace Physics2D
 			m_currentFrame = new NewtonCradleFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh, &m_camera);
 			break;
 		case 11:
-			m_currentFrame = new RaycastFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh, &m_camera);
+			m_currentFrame = new PendulumFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh, &m_camera);
 			break;
 		case 12:
-			m_currentFrame = new RestitutionFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh, &m_camera);
+			m_currentFrame = new RaycastFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh, &m_camera);
 			break;
 		case 13:
-			m_currentFrame = new SensorFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh, &m_camera);
+			m_currentFrame = new RestitutionFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh, &m_camera);
 			break;
 		case 14:
-			m_currentFrame = new StackingFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh, &m_camera);
+			m_currentFrame = new SensorFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh, &m_camera);
 			break;
 		case 15:
+			m_currentFrame = new StackingFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh, &m_camera);
+			break;
+		case 16:
 			m_currentFrame = new WreckingBallFrame(&m_world, &m_maintainer, &m_tree, &m_dbvh, &m_camera);
 			break;
 			default:
@@ -177,7 +180,7 @@ namespace Physics2D
 		QComboBox* scenes = new QComboBox;
 		QStringList items;
 		items << "Bitmask" << "Bridge" << "Broadphase" << "Chain" << "Collision" << "Domino" << "Friction" <<
-			"Geometry" << "Joints" << "Narrowphase" << "Newton's Cradle" << "AABB Raycast" << "Restitution" << "Sensor" << "Stacking" <<
+			"Geometry" << "Joints" << "Narrowphase" << "Newton's Cradle" << "Pendulum" << "AABB Raycast" << "Restitution" << "Sensor" << "Stacking" <<
 			"Wrecking Ball";
 		scenes->addItems(items);
 		connect(scenes, &QComboBox::currentTextChanged, this, [&]
