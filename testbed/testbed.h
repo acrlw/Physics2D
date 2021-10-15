@@ -84,7 +84,7 @@ namespace Physics2D
 
 		Vector2 m_mousePos;
 
-		real dt = 1.0f / 60.0f;
+		real dt = 1.0f / 120.0f;
 	};
 
 	

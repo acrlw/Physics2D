@@ -39,13 +39,14 @@ namespace Physics2D
 
 
 		connect(&m_worldTimer, &QTimer::timeout, this, &TestBed::step);
+
 		connect(&m_painterTimer, &QTimer::timeout, this, [=]
 		{
 				this->repaint();
 		});
 
 
-		m_worldTimer.setInterval(15);
+		m_worldTimer.setInterval(5);
 		m_worldTimer.start();
 		m_painterTimer.setInterval(15);
 		m_painterTimer.start();
@@ -241,8 +242,8 @@ namespace Physics2D
 
 		posIter->setValue(8);
 		velIter->setValue(6);
-		deltaTime->setValue(60);
-		bias->setValue(20);
+		deltaTime->setValue(120);
+		bias->setValue(30);
 
 
 		QGroupBox* groupBox = new QGroupBox("Scenes And Sliders");
