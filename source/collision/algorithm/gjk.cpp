@@ -124,7 +124,6 @@ namespace Physics2D
 
 			auto [index1, index2] = findEdgeClosestToOrigin(simplex);
 
-			//fmt::print("closest edge: ({0}, {1}), ({2}, {3})\n", simplex.vertices[index1].result.x, simplex.vertices[index1].result.y, simplex.vertices[index2].result.x, simplex.vertices[index2].result.y);
 			normal = calculateDirectionByEdge(simplex.vertices[index1].result, simplex.vertices[index2].result, false).
 				normal();
 			

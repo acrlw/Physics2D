@@ -1,6 +1,9 @@
 #ifndef PHYSICS2D_SCENES_GEOMETRY_H
 #define PHYSICS2D_SCENES_GEOMETRY_H
 #include "testbed/frame.h"
+#include <iostream>
+#include <deque>
+
 namespace Physics2D
 {
 	class GeometryFrame : public Frame
@@ -20,7 +23,6 @@ namespace Physics2D
 
 		}
 	private:
-
 	};
 }
 #endif
