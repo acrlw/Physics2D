@@ -20,10 +20,7 @@ namespace Physics2D
 
 		}
 	private:
-		std::unique_ptr<Capsule> capsule_ptr;
-		std::unique_ptr<Circle> sensor_ptr;
-		std::unique_ptr<Circle> circle_ptr;
-		std::unique_ptr<Rectangle> rectangle_ptr;
+
 	};
 }
 #endif

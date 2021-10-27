@@ -18,33 +18,29 @@ namespace Physics2D
 			Body* rect2;
 			Body* ground;
 
-			Rectangle rectangle(1.0f, 1.0f);
-			Circle circle(1.5f);
-			Rectangle brick(1.5f, 0.5f);
-			Edge edge;
+			rectangle.set(1.0f, 1.0f);
+			circle.setRadius(1.5f);
+			brick.set(1.5f, 0.5f);
 			edge.set({ -100, 0 }, { 100, 0 });
-			brick_ptr = std::make_unique<Rectangle>(brick);
-			edge_ptr = std::make_unique<Edge>(edge);
-			circle_ptr = std::make_unique<Circle>(circle);
-			rectangle_ptr = std::make_unique<Rectangle>(rectangle);
+
 
 			DistanceJointPrimitive distancePrim;
 
 
 			ground = m_world->createBody();
-			ground->setShape(edge_ptr.get());
+			ground->setShape(&edge);
 			ground->position().set({ 0, 0.0 });
 			ground->setMass(Constant::Max);
 			ground->setType(Body::BodyType::Static);
 			m_tree->insert(ground);
 
-			for (real j = 0; j < 10.0f; j += 1.0f)
+			for (real j = 0; j < 15.0f; j += 1.0f)
 			{
-				for (real i = 0; i < 5.0; i += 1.0f)
+				for (real i = 0; i < 6.0; i += 1.0f)
 				{
 					Body* body = m_world->createBody();
-					body->position().set({ i * 1.05f - 30.0f, j * 1.05f - ground->position().y + 0.55f });
-					body->setShape(rectangle_ptr.get());
+					body->position().set({ i * 1.05f - 32.0f, j * 1.05f - ground->position().y + 0.55f });
+					body->setShape(&rectangle);
 					body->rotation() = 0.0f;
 					body->setMass(1.0f);
 					body->setType(Body::BodyType::Dynamic);
@@ -53,13 +49,13 @@ namespace Physics2D
 					m_tree->insert(body);
 				}
 			}
-			for (real j = 0; j < 10.0f; j += 1.0f)
+			for (real j = 0; j < 15.0f; j += 1.0f)
 			{
-				for (real i = 0; i < 5.0; i += 1.0f)
+				for (real i = 0; i < 6.0; i += 1.0f)
 				{
 					Body* body = m_world->createBody();
-					body->position().set({ i * 1.05f, j * 1.05f - ground->position().y + 0.55f });
-					body->setShape(rectangle_ptr.get());
+					body->position().set({ i * 1.05f - 2.0f, j * 1.05f - ground->position().y + 0.55f });
+					body->setShape(&rectangle);
 					body->rotation() = 0.0f;
 					body->setMass(1.0f);
 					body->setType(Body::BodyType::Dynamic);
@@ -69,10 +65,10 @@ namespace Physics2D
 				}
 			}
 
-			real half = brick_ptr->width() / 2.0f;
+			real half = brick.width() / 2.0f;
 			rect = m_world->createBody();
-			rect->setShape(brick_ptr.get());
-			rect->position().set({ -20.0f, 15.0f });
+			rect->setShape(&brick);
+			rect->position().set({ -20.0f, 20.0f });
 			rect->rotation() = 0;
 			rect->setMass(1.0f);
 			rect->setRestitution(0.2f);
@@ -83,7 +79,7 @@ namespace Physics2D
 			PointJointPrimitive ppm;
 			ppm.bodyA = rect;
 			ppm.localPointA.set(-half, 0);
-			ppm.targetPoint.set(-20.0f - half, 15.0f);
+			ppm.targetPoint.set(-20.0f - half, 20.0f);
 			ppm.dampingRatio = 0.8f;
 			ppm.frequency = 1000;
 			ppm.maxForce = 10000;
@@ -93,8 +89,8 @@ namespace Physics2D
 			for (real i = 1.0f; i < max; i += 1.0f)
 			{
 				rect2 = m_world->createBody();
-				rect2->setShape(brick_ptr.get());
-				rect2->position().set({ -20.0f + i * brick_ptr->width(), 15.0f });
+				rect2->setShape(&brick);
+				rect2->position().set({ -20.0f + i * brick.width(), 20.0f });
 				rect2->rotation() = 0;
 				rect2->setMass(1.0f);
 				rect2->setFriction(0.1f);
@@ -107,16 +103,16 @@ namespace Physics2D
 				revolutePrim.localPointA.set(half, 0);
 				revolutePrim.localPointB.set(-half, 0);
 				revolutePrim.dampingRatio = 0.8f;
-				revolutePrim.frequency = 10;
-				revolutePrim.maxForce = 10000;
+				revolutePrim.frequency = 20;
+				revolutePrim.maxForce = 100000;
 				m_world->createJoint(revolutePrim);
 				rect = rect2;
 			}
 			rect2 = m_world->createBody();
-			rect2->setShape(circle_ptr.get());
-			rect2->position().set({ -20.0f + max * brick_ptr->width() + half, 15.0f });
+			rect2->setShape(&circle);
+			rect2->position().set({ -20.0f + max * brick.width() + half, 20.0f });
 			rect2->rotation() = 0;
-			rect2->setMass(25.0f);
+			rect2->setMass(50.0f);
 			rect2->setFriction(0.1f);
 			rect2->setType(Body::BodyType::Dynamic);
 
@@ -126,25 +122,26 @@ namespace Physics2D
 			revolutePrim.bodyB = rect2;
 			revolutePrim.localPointA.set(half, 0);
 			revolutePrim.localPointB.set(-half * 2.0f, 0);
-			revolutePrim.dampingRatio = 0.1f;
-			revolutePrim.frequency = 10;
+			revolutePrim.dampingRatio = 0.8f;
+			revolutePrim.frequency = 20;
+			revolutePrim.maxForce = 100000;
 			m_world->createJoint(revolutePrim);
 
 
 			rect2 = m_world->createBody();
-			rect2->setShape(circle_ptr.get());
-			rect2->position().set({ 21.5f + half, 15.0f });
+			rect2->setShape(&circle);
+			rect2->position().set({ 21.5f + half, 20.0f });
 			rect2->rotation() = 0;
-			rect2->setMass(25.0f);
+			rect2->setMass(50.0f);
 			rect2->setFriction(0.1f);
 			rect2->setType(Body::BodyType::Dynamic);
 			m_tree->insert(rect2);
 
 			distancePrim.bodyA = rect2;
 			distancePrim.localPointA.set({ 0, 0 });
-			distancePrim.minDistance = 3;
+			distancePrim.minDistance = 11.5f + half;
 			distancePrim.maxDistance = 11.5f + half;
-			distancePrim.targetPoint.set({ 10, 15 });
+			distancePrim.targetPoint.set({ 10, 20 });
 
 			m_world->createJoint(distancePrim);
 
@@ -154,10 +151,10 @@ namespace Physics2D
 
 		}
 	private:
-		std::unique_ptr<Rectangle> brick_ptr;
-		std::unique_ptr<Rectangle> rectangle_ptr;
-		std::unique_ptr<Edge> edge_ptr;
-		std::unique_ptr<Circle> circle_ptr;
+		Rectangle rectangle;
+		Rectangle brick;
+		Edge edge;
+		Circle circle;
 
 	};
 }

@@ -18,6 +18,7 @@ namespace Physics2D
 	using real = float;
 	namespace Constant
 	{
+		constexpr unsigned int SimplexMax = 8;
 		constexpr real Epsilon = FLT_EPSILON;
 		constexpr real Max = FLT_MAX;
 		constexpr real PositiveMin = FLT_MIN;
@@ -34,6 +35,7 @@ namespace Physics2D
 	using real = double;
 	namespace Constant
 	{
+		constexpr unsigned int SimplexMax = 8;
 		constexpr real Epsilon = DBL_EPSILON;
 		constexpr real Max = DBL_MAX;
 		constexpr real PositiveMin = DBL_MIN;

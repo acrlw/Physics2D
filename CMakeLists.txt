@@ -31,6 +31,8 @@ add_executable(physics-engine
     "include/render/renderer.h"
     "include/math/linear/vector2.h"
     "include/math/linear/vector3.h"
+    
+    
     "include/math/linear/matrix2x2.h"
     "include/math/linear/linear.h"
     "include/physics2d.h"
@@ -60,6 +62,8 @@ add_executable(physics-engine
     "source/math/linear/vector3.cpp"
     "source/math/linear/matrix2x2.cpp"
     "source/math/linear/matrix3x3.cpp"
+    
+    
     "source/utils/profiler.cpp"
     "source/render/renderer.cpp"
     "include/collision/broadphase/dbvh.h"
@@ -101,7 +105,10 @@ add_executable(physics-engine
     "testbed/scenes/raycast.h" 
     "testbed/scenes/sensor.h" 
     "testbed/scenes/chain.h" 
-    "testbed/scenes/wreckingball.h" "testbed/scenes/newtoncradle.h" "testbed/scenes/pendulum.h")
+    "testbed/scenes/wreckingball.h"
+    "testbed/scenes/newtoncradle.h"
+    "testbed/scenes/pendulum.h"
+    )
     
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 target_link_libraries(physics-engine PRIVATE Qt5::Widgets)

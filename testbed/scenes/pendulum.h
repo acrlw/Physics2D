@@ -18,17 +18,17 @@ namespace Physics2D
 			points.resize(400);
 
 			uint32_t mask = 0x01;
-			Rectangle rect(4.0f, 0.25f);
-			rectangle_ptr = std::make_unique<Rectangle>(rect);
+			rectangle.set(4.0f, 0.25f);
+
 			stick1 = m_world->createBody();
-			stick1->setShape(rectangle_ptr.get());
+			stick1->setShape(&rectangle);
 			stick1->setMass(2.0f);
 			stick1->setBitmask(mask << 1);
 			stick1->setType(Body::BodyType::Dynamic);
 			stick1->position().set(0, 0);
 
 			stick2 = m_world->createBody();
-			stick2->setShape(rectangle_ptr.get());
+			stick2->setShape(&rectangle);
 			stick2->setMass(2.0f);
 			stick2->setBitmask(mask << 2);
 			stick2->setType(Body::BodyType::Dynamic);
@@ -81,7 +81,7 @@ namespace Physics2D
 		Body* stick1 = nullptr;
 		Body* stick2 = nullptr;
 		std::deque<Vector2> points;
-		std::unique_ptr<Rectangle> rectangle_ptr;
+		Rectangle rectangle;
 		real lvd;
 		real avd;
 

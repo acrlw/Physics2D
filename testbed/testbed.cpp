@@ -319,7 +319,7 @@ namespace Physics2D
 		vbSwitchers->addWidget(cbAngleVisible);
 		vbSwitchers->addWidget(cbCenterVisible);
 
-		QGroupBox* groupSwitchers = new QGroupBox("Switchers");
+		QGroupBox* groupSwitchers = new QGroupBox("Switches");
 		groupSwitchers->setPalette(palette);
 		groupSwitchers->setLayout(vbSwitchers);
 

@@ -2,7 +2,7 @@
 #define PHYSICS2D_MATH_H
 #include "include/common/common.h"
 #include "immintrin.h"
-
+#include "xmmintrin.h"
 namespace Physics2D
 {
 

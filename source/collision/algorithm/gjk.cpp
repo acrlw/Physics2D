@@ -37,17 +37,17 @@ namespace Physics2D
 
 	bool Simplex::contains(const Minkowski& minkowski)
 	{
-		return std::find(vertices.begin(), vertices.end(), minkowski) != vertices.end();
+		return std::find(std::begin(vertices), std::end(vertices), minkowski) != std::end(vertices);
 	}
 
 	bool Simplex::fuzzyContains(const Minkowski& minkowski, const real& epsilon)
 	{
-		return std::find_if(vertices.begin(), vertices.end(),
+		return std::find_if(std::begin(vertices), std::end(vertices),
 			[=](const Minkowski& element)
 			{
 				return (minkowski.result - element.result).lengthSquare() < epsilon;
 			})
-			!= vertices.end();
+			!= std::end(vertices);
 	}
 
 	Vector2 Simplex::lastVertex() const

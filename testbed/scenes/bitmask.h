@@ -13,17 +13,14 @@ namespace Physics2D
 		}
 		void load() override
 		{
-			Rectangle rect(1.0f, 1.0f);
-			Edge edge;
+			rectangle.set(1.0f, 1.0f);
 			edge.set(Vector2{ -10.0f, 0.0f }, Vector2{ 10.0f, 0.0f });
-
-			edge_ptr = std::make_unique<Edge>(edge);
-			rectangle_ptr = std::make_unique<Rectangle>(rect);
+			
 			uint32_t mask = 0x01;
 			for(real i = 0;i < 3.0;i += 1.0f)
 			{
 				Body* ground = m_world->createBody();
-				ground->setShape(edge_ptr.get());
+				ground->setShape(&edge);
 				ground->position().set({ 0, -6 + i * 3.0f });
 				ground->setFriction(0.9f);
 				ground->setBitmask(mask);
@@ -37,7 +34,7 @@ namespace Physics2D
 			for (real i = 0; i < 3.0; i += 1.0f)
 			{
 				Body* body = m_world->createBody();
-				body->setShape(rectangle_ptr.get());
+				body->setShape(&rectangle);
 				body->position().set({ i * 3.0f, 6.0f });
 				body->setFriction(0.9f);
 				body->setBitmask(mask);
@@ -53,8 +50,8 @@ namespace Physics2D
 			
 		}
 	private:
-		std::unique_ptr<Rectangle> rectangle_ptr;
-		std::unique_ptr<Edge> edge_ptr;
+		Rectangle rectangle;
+		Edge edge;
 	};
 }
 #endif

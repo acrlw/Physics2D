@@ -13,15 +13,12 @@ namespace Physics2D
 		}
 		void load() override
 		{
-			Circle circle(1.0f);
-			circle_ptr = std::make_unique<Circle>(circle);
-
-			Edge edge;
+			circle.setRadius(1.0f);
+			
 			edge.set(Vector2{ -100.0, 0 }, Vector2{ 100.0, 0 });
-			edge_ptr = std::make_unique<Edge>(edge);
 
 			Body* ground = m_world->createBody();
-			ground->setShape(edge_ptr.get());
+			ground->setShape(&edge);
 			ground->setMass(Constant::Max);
 			ground->setRestitution(1.0f);
 			ground->setFriction(0.9f);
@@ -32,7 +29,7 @@ namespace Physics2D
 			for(real i = 0;i < 10.0f;i += 1.0f)
 			{
 				Body* body = m_world->createBody();
-				body->setShape(circle_ptr.get());
+				body->setShape(&circle);
 				body->setMass(10.0f);
 				body->setFriction(0.1f);
 				body->setRestitution(i / 10.0f);
@@ -46,8 +43,8 @@ namespace Physics2D
 
 		}
 	private:
-		std::unique_ptr<Circle> circle_ptr;
-		std::unique_ptr<Edge> edge_ptr;
+		Circle circle;
+		Edge edge;
 	};
 }
 #endif

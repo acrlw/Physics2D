@@ -15,15 +15,14 @@ namespace Physics2D
 		void load() override
 		{
 			real startX = -5.0f;
-			Circle circle(1.0f);
-			circle_ptr = std::make_unique<Circle>(circle);
+			circle.setRadius(1.0f);
 			DistanceJointPrimitive djp;
 			djp.minDistance = 4.9f;
 			djp.maxDistance = 5.0f;
 			djp.localPointA.set(0, 0);
 
 			Body* ball = m_world->createBody();
-			ball->setShape(circle_ptr.get());
+			ball->setShape(&circle);
 			ball->setMass(1.0f);
 			ball->setType(Body::BodyType::Dynamic);
 			ball->position().set(startX, 5.0);
@@ -40,7 +39,7 @@ namespace Physics2D
 			{
 				startX += 2.01f;
 				ball = m_world->createBody();
-				ball->setShape(circle_ptr.get());
+				ball->setShape(&circle);
 				ball->setMass(1.0f);
 				ball->setType(Body::BodyType::Dynamic);
 				ball->setFriction(0.1f);
@@ -54,7 +53,7 @@ namespace Physics2D
 
 			startX += 2.01f;
 			ball = m_world->createBody();
-			ball->setShape(circle_ptr.get());
+			ball->setShape(&circle);
 			ball->setMass(1.0f);
 			ball->setType(Body::BodyType::Dynamic);
 			ball->position().set(startX + 5.0f, 10.0f);
@@ -72,7 +71,7 @@ namespace Physics2D
 
 		}
 	private:
-		std::unique_ptr<Circle> circle_ptr;
+		Circle circle;
 
 	};
 }
