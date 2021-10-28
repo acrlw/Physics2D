@@ -109,6 +109,5 @@ add_executable(physics-engine
     "testbed/scenes/newtoncradle.h"
     "testbed/scenes/pendulum.h"
     )
-    
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 target_link_libraries(physics-engine PRIVATE Qt5::Widgets)
