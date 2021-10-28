@@ -31,7 +31,7 @@ namespace Physics2D
 			rect = m_world->createBody();
 			rect->setShape(&capsule);
 			rect->position().set({ 0, 6 });
-			rect->rotation() = 2.21805891827f;
+			rect->rotation() = Math::degreeToRadian(45);
 			rect->setMass(1);
 			rect->setType(Body::BodyType::Dynamic);
 			rect->setFriction(0.4f);

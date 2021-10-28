@@ -61,6 +61,9 @@ namespace Physics2D
 		for (auto& elem : m_world.bodyList())
 			m_tree.update(elem.get());
 
+		if (m_currentFrame != nullptr)
+			m_currentFrame->update(dt);
+
 		m_world.stepVelocity(dt);
 
 		auto potentialList = m_tree.generate();
@@ -389,17 +392,22 @@ namespace Physics2D
 		if (m_mouseJoint == nullptr)
 			return;
 
-		for (auto& body : m_world.bodyList())
+		AABB mouseBox;
+		mouseBox.position = m_mousePos;
+		mouseBox.width = 0.01f;
+		mouseBox.height = 0.01f;
+
+		for(auto& body : m_tree.query(mouseBox))
 		{
 			Vector2 point = m_mousePos - body->position();
 			point = Matrix2x2(-body->rotation()).multiply(point);
 			if (body->shape()->contains(point) && m_selectedBody == nullptr)
 			{
-				m_selectedBody = body.get();
+				m_selectedBody = body;
 
 				auto prim = m_mouseJoint->primitive();
 				prim.localPointA = body->toLocalPoint(m_mousePos);
-				prim.bodyA = body.get();
+				prim.bodyA = body;
 				prim.targetPoint = m_mousePos;
 				m_mouseJoint->setActive(true);
 				m_mouseJoint->set(prim);

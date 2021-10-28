@@ -182,61 +182,6 @@ namespace Physics2D
 		return result;
 	}
 
-	std::vector<Vector2> Clipper::sutherlandHodgmentPolygonClipping(const std::vector<Vector2>& polygon, const std::vector<Vector2>& clipRegion)
-	{
-		std::vector<Vector2> result = polygon;
 
-		for (size_t i = 0; i < clipRegion.size() - 1; i++)
-		{
-			Vector2 clipPoint1 = clipRegion[i];
-			Vector2 clipPoint2 = clipRegion[i + 1];
-			Vector2 clipDirectionPoint = i + 2 == clipRegion.size() ? clipRegion[1] : clipRegion[i + 2];
-			std::vector<int8_t> testResults;
-			testResults.reserve(polygon.size());
-
-			for (size_t j = 0; j < result.size(); j++)
-			{
-				bool res = GeometryAlgorithm2D::isPointOnSameSide(clipPoint1, clipPoint2, clipDirectionPoint, result[j]);
-				testResults.emplace_back(res ? 1 : -1);
-			}
-			std::vector<Vector2> newPolygon;
-			newPolygon.reserve(result.size());
-
-			for (size_t j = 1; j < testResults.size(); j++)
-			{
-				bool lastInside = testResults[j - 1] == 1 ? true : false;
-				bool currentInside = testResults[j] == 1 ? true : false;
-				//last inside and current outside
-				if (lastInside && !currentInside)
-				{
-					//push last point
-					newPolygon.emplace_back(result[j - 1]);
-					//push intersection point
-					Vector2 p = GeometryAlgorithm2D::lineIntersection(clipPoint1, clipPoint2, result[j - 1], result[j]);
-					newPolygon.emplace_back(p);
-				}
-				//last outside and current inside
-				if (!lastInside && currentInside)
-				{
-					//push intersection point first
-					Vector2 p = GeometryAlgorithm2D::lineIntersection(clipPoint1, clipPoint2, result[j - 1], result[j]);
-					newPolygon.emplace_back(p);
-				}
-				//last outside and current outside
-				if (!lastInside && !currentInside)
-				{
-					//do nothing
-				}
-				if (lastInside && currentInside)
-				{
-					//push last vertex
-					newPolygon.emplace_back(result[j - 1]);
-				}
-			}
-			result = newPolygon;
-			result.emplace_back(result[0]);
-		}
-		return result;
-	}
 
 }

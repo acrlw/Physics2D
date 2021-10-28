@@ -104,7 +104,7 @@ namespace Physics2D
 				revolutePrim.localPointB.set(-half, 0);
 				revolutePrim.dampingRatio = 0.8f;
 				revolutePrim.frequency = 20;
-				revolutePrim.maxForce = 100000;
+				revolutePrim.maxForce = Constant::Max;
 				m_world->createJoint(revolutePrim);
 				rect = rect2;
 			}
@@ -112,7 +112,7 @@ namespace Physics2D
 			rect2->setShape(&circle);
 			rect2->position().set({ -20.0f + max * brick.width() + half, 20.0f });
 			rect2->rotation() = 0;
-			rect2->setMass(50.0f);
+			rect2->setMass(25.0f);
 			rect2->setFriction(0.1f);
 			rect2->setType(Body::BodyType::Dynamic);
 
@@ -124,7 +124,7 @@ namespace Physics2D
 			revolutePrim.localPointB.set(-half * 2.0f, 0);
 			revolutePrim.dampingRatio = 0.8f;
 			revolutePrim.frequency = 20;
-			revolutePrim.maxForce = 100000;
+			revolutePrim.maxForce = Constant::Max;
 			m_world->createJoint(revolutePrim);
 
 
@@ -132,7 +132,7 @@ namespace Physics2D
 			rect2->setShape(&circle);
 			rect2->position().set({ 21.5f + half, 20.0f });
 			rect2->rotation() = 0;
-			rect2->setMass(50.0f);
+			rect2->setMass(25.0f);
 			rect2->setFriction(0.1f);
 			rect2->setType(Body::BodyType::Dynamic);
 			m_tree->insert(rect2);
