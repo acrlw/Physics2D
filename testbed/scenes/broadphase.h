@@ -15,28 +15,22 @@ namespace Physics2D
 		}
 		void load() override
 		{
-			Rectangle rect(0.5f, 0.5f);
-			Circle circle(0.5f);
-			Capsule capsule(1.5f, 0.5f);
-			Polygon triangle, polygon;
+			rectangle.set(0.5f, 0.5f);
+			circle.setRadius(0.5f);
+			capsule.set(1.5f, 0.5f);
 			triangle.append({ {-1.0f, 1.0f},{0.0f, -2.0f},{1.0f, -1.0f},{-1.0f, 1.0f} });
 			polygon.append({ {0.0f, 4.0f},{-3.0f, 3.0f},{-4.0f, 0.0f},{-3.0f, -3.0f},{0, -4.0f},
 			{3.0f, -3.0f}, {4.0f, 0.0f }, {3.0f, 3.0f },{0.0f, 4.0f } });
 			triangle.scale(0.5f);
 			polygon.scale(0.1f);
-
-			rectangle_ptr = std::make_unique<Rectangle>(rect);
-			circle_ptr = std::make_unique<Circle>(circle);
-			triangle_ptr = std::make_unique<Polygon>(triangle);
-			polygon_ptr = std::make_unique<Polygon>(polygon);
-			capsule_ptr = std::make_unique<Capsule>(capsule);
+			
 
 			Shape* shapeArray[5];
-			shapeArray[0] = rectangle_ptr.get();
-			shapeArray[1] = circle_ptr.get();
-			shapeArray[2] = triangle_ptr.get();
-			shapeArray[3] = polygon_ptr.get();
-			shapeArray[4] = capsule_ptr.get();
+			shapeArray[0] = &rectangle;
+			shapeArray[1] = &circle;
+			shapeArray[2] = &triangle;
+			shapeArray[3] = &polygon;
+			shapeArray[4] = &capsule;
 
 			for (int i = 0; i < 100; i++)
 			{
@@ -69,11 +63,11 @@ namespace Physics2D
 				RendererQtImpl::renderAABB(painter, m_camera, elem->aabb(), hit);
 		}
 	private:
-		std::unique_ptr<Rectangle> rectangle_ptr;
-		std::unique_ptr<Circle> circle_ptr;
-		std::unique_ptr<Polygon> polygon_ptr;
-		std::unique_ptr<Capsule> capsule_ptr;
-		std::unique_ptr<Polygon> triangle_ptr;
+		Rectangle rectangle;
+		Circle circle;
+		Polygon polygon;
+		Capsule capsule;
+		Polygon triangle;
 	};
 }
 #endif

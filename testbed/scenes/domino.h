@@ -13,18 +13,13 @@ namespace Physics2D
 		}
 		void load() override
 		{
-			Rectangle floor(15.0f, 0.5f);
-			Rectangle rect(0.5f, 0.5f);
-			Rectangle brick(0.3f, 3.0f);
-			Edge edge;
+			floor.set(15.0f, 0.5f);
+			rectangle.set(0.5f, 0.5f);
+			brick.set(0.3f, 3.0f);
 			edge.set(Vector2{ -100.0f, 0 }, Vector2{ 100.0f, 0 });
-			brick_ptr = std::make_unique<Rectangle>(brick);
-			rectangle_ptr = std::make_unique<Rectangle>(rect);
-			floor_ptr = std::make_unique<Rectangle>(floor);
-			edge_ptr = std::make_unique<Edge>(edge);
 
 			Body* ground = m_world->createBody();
-			ground->setShape(edge_ptr.get());
+			ground->setShape(&edge);
 			ground->setType(Body::BodyType::Static);
 			ground->setMass(Constant::Max);
 			ground->position().set({ 0, 0.0f });
@@ -33,7 +28,7 @@ namespace Physics2D
 			m_tree->insert(ground);
 
 			Body* tile = m_world->createBody();
-			tile->setShape(floor_ptr.get());
+			tile->setShape(&floor);
 			tile->setType(Body::BodyType::Static);
 			tile->setMass(Constant::Max);
 			tile->setFriction(0.1f);
@@ -43,7 +38,7 @@ namespace Physics2D
 			m_tree->insert(tile);
 
 			tile = m_world->createBody();
-			tile->setShape(floor_ptr.get());
+			tile->setShape(&floor);
 			tile->setType(Body::BodyType::Static);
 			tile->setMass(Constant::Max);
 			tile->setFriction(0.1f);
@@ -54,7 +49,7 @@ namespace Physics2D
 
 
 			tile = m_world->createBody();
-			tile->setShape(floor_ptr.get());
+			tile->setShape(&floor);
 			tile->setType(Body::BodyType::Static);
 			tile->setMass(Constant::Max);
 			tile->setFriction(0.1f);
@@ -66,7 +61,7 @@ namespace Physics2D
 			for(real i = 0;i < 9.0; i += 1.0f)
 			{
 				Body* card = m_world->createBody();
-				card->setShape(brick_ptr.get());
+				card->setShape(&brick);
 				card->setMass(1.0f);
 				card->setFriction(0.1f);
 				card->setRestitution(0);
@@ -76,7 +71,7 @@ namespace Physics2D
 			}
 
 			Body* stammer = m_world->createBody();
-			stammer->setShape(rectangle_ptr.get());
+			stammer->setShape(&rectangle);
 			stammer->setMass(10.0f);
 			stammer->setFriction(0.1f);
 			stammer->setType(Body::BodyType::Dynamic);
@@ -105,10 +100,10 @@ namespace Physics2D
 
 		}
 	private:
-		std::unique_ptr<Rectangle> brick_ptr;
-		std::unique_ptr<Rectangle> floor_ptr;
-		std::unique_ptr<Edge> edge_ptr;
-		std::unique_ptr<Rectangle> rectangle_ptr;
+		Rectangle brick;
+		Rectangle floor;
+		Edge edge;
+		Rectangle rectangle;
 	};
 }
 #endif

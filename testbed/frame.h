@@ -19,6 +19,7 @@ namespace Physics2D
 		Frame(std::string name, PhysicsWorld* world, ContactMaintainer* maintainer,
 			Tree* tree, DBVH* dbvh, Utils::Camera* camera) : m_name(name), m_world(world), m_maintainer(maintainer),
 		m_tree(tree), m_dbvh(dbvh), m_camera(camera){}
+		virtual void update(real dt) {}
 		virtual void load() {}
 		virtual void release() {}
 		virtual void render(QPainter* painter) {}

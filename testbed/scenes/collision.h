@@ -13,19 +13,14 @@ namespace Physics2D
 		}
 		void load() override
 		{
-			Edge edge;
 			edge.set({ -10, 0 }, { 10, 0 });
-			edge_ptr = std::make_unique<Edge>(edge);
-
-			Capsule capsule;
 			capsule.set(2.0f, 1.0f);
-			capsule_ptr = std::make_unique<Capsule>(capsule);
 
 			Body* ground;
 			Body* rect;
 
 			ground = m_world->createBody();
-			ground->setShape(edge_ptr.get());
+			ground->setShape(&edge);
 			ground->position().set({ 0, 0 });
 			ground->setMass(Constant::Max);
 			ground->setType(Body::BodyType::Static);
@@ -34,9 +29,9 @@ namespace Physics2D
 			m_tree->insert(ground);
 
 			rect = m_world->createBody();
-			rect->setShape(capsule_ptr.get());
+			rect->setShape(&capsule);
 			rect->position().set({ 0, 6 });
-			rect->rotation() = 2.21805891827f;
+			rect->rotation() = Math::degreeToRadian(45);
 			rect->setMass(1);
 			rect->setType(Body::BodyType::Dynamic);
 			rect->setFriction(0.4f);
@@ -48,8 +43,8 @@ namespace Physics2D
 
 		}
 	private:
-		std::unique_ptr<Capsule> capsule_ptr;
-		std::unique_ptr<Edge> edge_ptr;
+		Capsule capsule;
+		Edge edge;
 
 	};
 }

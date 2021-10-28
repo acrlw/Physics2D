@@ -13,44 +13,38 @@ namespace Physics2D
 		}
 		void load() override
 		{
-			Edge edge;
 			edge.set({ 0, 0 }, { 10, 0 });
-			edge_ptr = std::make_unique<Edge>(edge);
-
-			Edge ramp;
+			
 			ramp.set({ -10, 4 }, { 0, 0 });
-			ramp_ptr = std::make_unique<Edge>(ramp);
 
-
-			Rectangle rect(0.5f, 0.5f);
-			rectangle_ptr = std::make_unique<Rectangle>(rect);
-
+			rectangle.set(0.5f, 0.5f);
+			
 			for(real i = 0;i < 3.0f;i += 1.0f)
 			{
 				Body* ground = m_world->createBody();
-				ground->setShape(edge_ptr.get());
+				ground->setShape(&edge);
 				ground->setFriction(0.1f);
 				ground->setMass(Constant::Max);
 				ground->position().set(0, i * 3.0f);
 				ground->setRestitution(0);
 				ground->setType(Body::BodyType::Static);
 
-				Body* ramp = m_world->createBody();
-				ramp->setShape(ramp_ptr.get());
-				ramp->setFriction(0.1f);
-				ramp->setMass(Constant::Max);
-				ramp->position().set(0, i * 3.0f);
-				ramp->setRestitution(0);
-				ramp->setType(Body::BodyType::Static);
+				Body* rampBody = m_world->createBody();
+				rampBody->setShape(&ramp);
+				rampBody->setFriction(0.1f);
+				rampBody->setMass(Constant::Max);
+				rampBody->position().set(0, i * 3.0f);
+				rampBody->setRestitution(0);
+				rampBody->setType(Body::BodyType::Static);
 
 				m_tree->insert(ground);
-				m_tree->insert(ramp);
+				m_tree->insert(rampBody);
 			}
 
 			for (real i = 1; i < 4.0f; i += 1.0f)
 			{
 				Body* cube = m_world->createBody();
-				cube->setShape(rectangle_ptr.get());
+				cube->setShape(&rectangle);
 				cube->setFriction(i * 0.3f);
 				cube->setMass(1);
 				cube->position().set(-5.0f, i * 3.5f);
@@ -66,9 +60,9 @@ namespace Physics2D
 
 		}
 	private:
-		std::unique_ptr<Rectangle> rectangle_ptr;
-		std::unique_ptr<Edge> edge_ptr;
-		std::unique_ptr<Edge> ramp_ptr;
+		Rectangle rectangle;
+		Edge edge;
+		Edge ramp;
 	};
 }
 #endif

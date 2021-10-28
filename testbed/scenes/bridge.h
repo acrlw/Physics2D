@@ -13,20 +13,17 @@ namespace Physics2D
 		}
 		void load() override
 		{
-			Rectangle brick(1.5f, 0.5f);
-			brick_ptr = std::make_unique<Rectangle>(brick);
-
-			Edge edge;
+			brick.set(1.5f, 0.5f);
+			
 			edge.set({ -100, 0 }, { 100, 0 });
-			edge_ptr = std::make_unique<Edge>(edge);
 
 			Body* rect;
 			Body* rect2;
 			Body* ground;
 
-			real half = brick_ptr->width() / 2.0f;
+			real half = brick.width() / 2.0f;
 			rect = m_world->createBody();
-			rect->setShape(brick_ptr.get());
+			rect->setShape(&brick);
 			rect->position().set({ -15.0f, 0.0f });
 			rect->rotation() = 0;
 			rect->setMass(1.0f);
@@ -35,7 +32,7 @@ namespace Physics2D
 			rect->setType(Body::BodyType::Dynamic);
 
 			ground = m_world->createBody();
-			ground->setShape(edge_ptr.get());
+			ground->setShape(&edge);
 			ground->position().set({ 0, -15.0 });
 			ground->setMass(Constant::Max);
 			ground->setType(Body::BodyType::Static);
@@ -56,8 +53,8 @@ namespace Physics2D
 			for (real i = 1.0f; i < max; i += 1.0f)
 			{
 				rect2 = m_world->createBody();
-				rect2->setShape(brick_ptr.get());
-				rect2->position().set({ -15.0f + i * brick_ptr->width(), 0.0f });
+				rect2->setShape(&brick);
+				rect2->position().set({ -15.0f + i * brick.width(), 0.0f });
 				rect2->rotation() = 0;
 				rect2->setMass(1.0f);
 				rect2->setFriction(0.01f);
@@ -77,7 +74,7 @@ namespace Physics2D
 
 			ppm.bodyA = rect2;
 			ppm.localPointA.set(0.75f, 0);
-			ppm.targetPoint.set(-15.0f + max * brick_ptr->width() - half, 0.0f);
+			ppm.targetPoint.set(-15.0f + max * brick.width() - half, 0.0f);
 			ppm.dampingRatio = 0.1f;
 			ppm.frequency = 1000;
 			ppm.maxForce = 10000;
@@ -89,8 +86,8 @@ namespace Physics2D
 
 		}
 	private:
-		std::unique_ptr<Rectangle> brick_ptr;
-		std::unique_ptr<Edge> edge_ptr;
+		Rectangle brick;
+		Edge edge;
 	};
 }
 #endif
