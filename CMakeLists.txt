@@ -1,4 +1,4 @@
-﻿cmake_minimum_required(VERSION 3.5)
+﻿cmake_minimum_required(VERSION 3.6)
 
 project(physics-engine LANGUAGES CXX)
 set(CMAKE_AUTOUIC ON)
@@ -109,5 +109,6 @@ add_executable(physics-engine
     "testbed/scenes/newtoncradle.h"
     "testbed/scenes/pendulum.h"
     )
-find_package(Qt5 COMPONENTS Widgets REQUIRED)
-target_link_libraries(physics-engine PRIVATE Qt5::Widgets)
+    find_package(Qt5Widgets CONFIG REQUIRED)
+    # Note: 1 target(s) were omitted.
+    target_link_libraries(physics-engine PRIVATE Qt::Widgets Qt5::Widgets Qt::WidgetsPrivate Qt5::WidgetsPrivate)

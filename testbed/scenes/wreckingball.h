@@ -42,7 +42,7 @@ namespace Physics2D
 					body->position().set({ i * 1.05f - 32.0f, j * 1.05f - ground->position().y + 0.55f });
 					body->setShape(&rectangle);
 					body->rotation() = 0.0f;
-					body->setMass(1.0f);
+					body->setMass(0.1f);
 					body->setType(Body::BodyType::Dynamic);
 					body->setFriction(0.8f);
 					body->setRestitution(0.0f);
@@ -57,7 +57,7 @@ namespace Physics2D
 					body->position().set({ i * 1.05f - 2.0f, j * 1.05f - ground->position().y + 0.55f });
 					body->setShape(&rectangle);
 					body->rotation() = 0.0f;
-					body->setMass(1.0f);
+					body->setMass(0.1f);
 					body->setType(Body::BodyType::Dynamic);
 					body->setFriction(0.8f);
 					body->setRestitution(0.0f);
