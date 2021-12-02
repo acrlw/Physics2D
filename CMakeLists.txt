@@ -107,7 +107,7 @@ add_executable(physics-engine
     "testbed/scenes/chain.h" 
     "testbed/scenes/wreckingball.h"
     "testbed/scenes/newtoncradle.h"
-    "testbed/scenes/pendulum.h
+    "testbed/scenes/pendulum.h"
      "include/geometry/shape/point.h" 
      "include/geometry/shape/polygon.h" 
      "include/geometry/shape/rectangle.h" 
