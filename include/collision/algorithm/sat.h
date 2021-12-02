@@ -28,7 +28,7 @@ namespace Physics2D
     struct SATResult
     {
         PointPair contactPair[2];
-        uint contactPairCount = 0;
+        uint32_t contactPairCount = 0;
         Vector2 normal;
         real penetration = 0;
         bool isColliding = false;

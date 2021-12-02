@@ -6,6 +6,16 @@
 #include "include/geometry/shape.h"
 #include "include/math/integrator.h"
 
+#include "include/geometry/shape/capsule.h"
+#include "include/geometry/shape/circle.h"
+#include "include/geometry/shape/curve.h"
+#include "include/geometry/shape/edge.h"
+#include "include/geometry/shape/ellipse.h"
+#include "include/geometry/shape/point.h"
+#include "include/geometry/shape/polygon.h"
+#include "include/geometry/shape/rectangle.h"
+#include "include/geometry/shape/sector.h"
+
 namespace Physics2D
 {
 	class Body

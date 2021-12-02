@@ -57,7 +57,7 @@ add_executable(physics-engine
     "source/math/integrator.cpp"
     "source/math/math.cpp"
     "source/geometry/algorithm/2d.cpp"
-    "source/geometry/shape.cpp"
+    
     "source/math/linear/vector2.cpp"
     "source/math/linear/vector3.cpp"
     "source/math/linear/matrix2x2.cpp"
@@ -108,6 +108,19 @@ add_executable(physics-engine
     "testbed/scenes/wreckingball.h"
     "testbed/scenes/newtoncradle.h"
     "testbed/scenes/pendulum.h"
-    )
+
+     "include/geometry/shape/point.h" 
+     "include/geometry/shape/polygon.h" 
+     "include/geometry/shape/rectangle.h" 
+     "include/geometry/shape/circle.h" 
+     "include/geometry/shape/ellipse.h" 
+     "include/geometry/shape/capsule.h" 
+     "include/geometry/shape/edge.h" 
+     "include/geometry/shape/curve.h" 
+     "include/geometry/shape/sector.h" 
+     "include/collision/algorithm/simplex.h" 
+     "include/collision/algorithm/minkowski.h" 
+     "source/collision/algorithm/simplex.cpp" 
+      "source/geometry/shape/point.cpp" "source/geometry/shape/polygon.cpp" "source/geometry/shape/rectangle.cpp" "source/geometry/shape/circle.cpp" "source/geometry/shape/ellipse.cpp" "source/geometry/shape/edge.cpp" "source/geometry/shape/curve.cpp" "source/geometry/shape/capsule.cpp" "source/geometry/shape/sector.cpp")
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 target_link_libraries(physics-engine PRIVATE Qt5::Widgets)
