@@ -54,7 +54,7 @@ namespace Physics2D
 			{
 				rect2 = m_world->createBody();
 				rect2->setShape(&brick);
-				rect2->position().set({ -15.0f + i * brick.width(), 0.0f });
+				rect2->position().set({ -15.0f + i * brick.width() * 1.2f, 0.0f });
 				rect2->rotation() = 0;
 				rect2->setMass(1.0f);
 				rect2->setFriction(0.01f);
@@ -63,8 +63,8 @@ namespace Physics2D
 				this->m_tree->insert(rect2);
 				revolutePrim.bodyA = rect;
 				revolutePrim.bodyB = rect2;
-				revolutePrim.localPointA.set(half, 0);
-				revolutePrim.localPointB.set(-half, 0);
+				revolutePrim.localPointA.set(half + brick.width() * 0.1f, 0);
+				revolutePrim.localPointB.set(-half - brick.width() * 0.1f, 0);
 				revolutePrim.dampingRatio = 0.8f;
 				revolutePrim.frequency = 10;
 				revolutePrim.maxForce = 10000;
@@ -74,7 +74,7 @@ namespace Physics2D
 
 			ppm.bodyA = rect2;
 			ppm.localPointA.set(0.75f, 0);
-			ppm.targetPoint.set(-15.0f + max * brick.width() - half, 0.0f);
+			ppm.targetPoint.set(rect2->toWorldPoint(Vector2(0.75f, 0.0f)));
 			ppm.dampingRatio = 0.1f;
 			ppm.frequency = 1000;
 			ppm.maxForce = 10000;

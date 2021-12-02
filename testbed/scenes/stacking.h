@@ -26,7 +26,7 @@ namespace Physics2D
 			m_tree->insert(ground);
 
 			real offset = 0.0f;
-			real max = 20.0;
+			real max = 25.0;
 			for (real j = 0; j < max; j += 1.0f)
 			{
 				for (real i = 0.0; i < max - j; i += 1.0f)
@@ -35,7 +35,7 @@ namespace Physics2D
 					body->position().set({ -10.0f + i * 1.1f + offset, j * 1.8f + 2.0f });
 					body->setShape(&rectangle);
 					body->rotation() = 0;
-					body->setMass(1.0f);
+					body->setMass(0.2f);
 					body->setType(Body::BodyType::Dynamic);
 					body->setFriction(0.8f);
 					body->setRestitution(0.0f);

@@ -1,4 +1,4 @@
-﻿cmake_minimum_required(VERSION 3.5)
+﻿cmake_minimum_required(VERSION 3.6)
 
 project(physics-engine LANGUAGES CXX)
 set(CMAKE_AUTOUIC ON)
@@ -107,8 +107,7 @@ add_executable(physics-engine
     "testbed/scenes/chain.h" 
     "testbed/scenes/wreckingball.h"
     "testbed/scenes/newtoncradle.h"
-    "testbed/scenes/pendulum.h"
-
+    "testbed/scenes/pendulum.h
      "include/geometry/shape/point.h" 
      "include/geometry/shape/polygon.h" 
      "include/geometry/shape/rectangle.h" 
@@ -121,6 +120,15 @@ add_executable(physics-engine
      "include/collision/algorithm/simplex.h" 
      "include/collision/algorithm/minkowski.h" 
      "source/collision/algorithm/simplex.cpp" 
-      "source/geometry/shape/point.cpp" "source/geometry/shape/polygon.cpp" "source/geometry/shape/rectangle.cpp" "source/geometry/shape/circle.cpp" "source/geometry/shape/ellipse.cpp" "source/geometry/shape/edge.cpp" "source/geometry/shape/curve.cpp" "source/geometry/shape/capsule.cpp" "source/geometry/shape/sector.cpp")
-find_package(Qt5 COMPONENTS Widgets REQUIRED)
-target_link_libraries(physics-engine PRIVATE Qt5::Widgets)
+      "source/geometry/shape/point.cpp"
+      "source/geometry/shape/polygon.cpp"
+      "source/geometry/shape/rectangle.cpp"
+      "source/geometry/shape/circle.cpp"
+      "source/geometry/shape/ellipse.cpp"
+      "source/geometry/shape/edge.cpp"
+      "source/geometry/shape/curve.cpp"
+      "source/geometry/shape/capsule.cpp"
+      "source/geometry/shape/sector.cpp"
+      )
+      find_package(Qt5 COMPONENTS Widgets REQUIRED)
+      target_link_libraries(physics-engine PRIVATE Qt5::Widgets)
