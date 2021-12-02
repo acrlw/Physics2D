@@ -1,4 +1,4 @@
-#include "../include/collision/algorithm/clip.h"
+#include "../../../include/collision/algorithm/clip.h"
 namespace Physics2D
 {
 	std::vector<Vector2> ContactGenerator::dumpVertices(const ShapePrimitive& primitive)

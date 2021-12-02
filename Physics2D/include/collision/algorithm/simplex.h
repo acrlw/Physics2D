@@ -1,7 +1,7 @@
 #ifndef PHYSICS2D_SIMPLEX_H
 #define PHYSICS2D_SIMPLEX_H
-#include "../include/collision/algorithm/minkowski.h"
-#include "../include/geometry/algorithm/2d.h"
+#include "../../collision/algorithm/minkowski.h"
+#include "../../geometry/algorithm/2d.h"
 namespace Physics2D
 {
 

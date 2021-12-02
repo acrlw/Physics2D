@@ -1,4 +1,4 @@
-#include "../include/collision/algorithm/sat.h"
+#include "../../../include/collision/algorithm/sat.h"
 
 namespace Physics2D
 {

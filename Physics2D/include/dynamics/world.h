@@ -1,12 +1,12 @@
 #ifndef PHYSICS2D_WORLD_H
 #define PHYSICS2D_WORLD_H
-#include "../include/common/common.h"
-#include "../include/dynamics/body.h"
-#include "../include/math/math.h"
-#include "../include/math/integrator.h"
-#include "../include/dynamics/joint/joints.h"
-#include "../include/utils/random.h"
-#include "../include/dynamics/constraint/contact.h"
+#include "../common/common.h"
+#include "../dynamics/body.h"
+#include "../math/math.h"
+#include "../math/integrator.h"
+#include "../dynamics/joint/joints.h"
+#include "../utils/random.h"
+#include "../dynamics/constraint/contact.h"
 namespace Physics2D
 {
     class PhysicsWorld

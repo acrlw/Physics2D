@@ -1,20 +1,20 @@
 #ifndef PHYSICS2D_BODY_H
 #define PHYSICS2D_BODY_H
-#include "../include/collision/broadphase/aabb.h"
-#include "../include/math/math.h"
-#include "../include/common/common.h"
-#include "../include/geometry/shape.h"
-#include "../include/math/integrator.h"
+#include "../collision/broadphase/aabb.h"
+#include "../math/math.h"
+#include "../common/common.h"
+#include "../geometry/shape.h"
+#include "../math/integrator.h"
 
-#include "../include/geometry/shape/capsule.h"
-#include "../include/geometry/shape/circle.h"
-#include "../include/geometry/shape/curve.h"
-#include "../include/geometry/shape/edge.h"
-#include "../include/geometry/shape/ellipse.h"
-#include "../include/geometry/shape/point.h"
-#include "../include/geometry/shape/polygon.h"
-#include "../include/geometry/shape/rectangle.h"
-#include "../include/geometry/shape/sector.h"
+#include "../geometry/shape/capsule.h"
+#include "../geometry/shape/circle.h"
+#include "../geometry/shape/curve.h"
+#include "../geometry/shape/edge.h"
+#include "../geometry/shape/ellipse.h"
+#include "../geometry/shape/point.h"
+#include "../geometry/shape/polygon.h"
+#include "../geometry/shape/rectangle.h"
+#include "../geometry/shape/sector.h"
 
 namespace Physics2D
 {

@@ -1,6 +1,6 @@
 #ifndef PHYSICS2D_SHAPE_EDGE_H
 #define PHYSICS2D_SHAPE_EDGE_H
-#include "../include/geometry/shape.h"
+#include "../../geometry/shape.h"
 namespace Physics2D
 {
     class Edge : public Shape

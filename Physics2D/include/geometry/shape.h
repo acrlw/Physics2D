@@ -1,7 +1,7 @@
 #ifndef PHYSICS2D_SHAPE_H
 #define PHYSICS2D_SHAPE_H
-#include "../include/math/linear/linear.h"
-#include "../include/common/common.h"
+#include "../../math/linear/linear.h"
+#include "../../common/common.h"
 
 namespace Physics2D
 {

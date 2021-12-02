@@ -1,8 +1,8 @@
 #ifndef PHYSICS2D_COLLISION_CCD_H
 #define PHYSICS2D_COLLISION_CCD_H
-#include "../include/collision/detector.h"
-#include "../include/collision/broadphase/dbvh.h"
-#include "../include/dynamics/body.h"
+#include "../../collision/detector.h"
+#include "../../collision/broadphase/dbvh.h"
+#include "../../dynamics/body.h"
 namespace Physics2D
 {
 	/// <summary>

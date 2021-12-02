@@ -1,4 +1,4 @@
-#include "../include/collision/algorithm/simplex.h"
+#include "../../../include/collision/algorithm/simplex.h"
 namespace Physics2D
 {
 	bool Simplex::containOrigin(bool strict)
