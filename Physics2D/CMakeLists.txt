@@ -102,12 +102,8 @@ set(HEADERS_FILE
     "include/physics2d.h"
 )
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-add_library(Physics2D ${SOURCES_FILES} ${HEADERS_FILE})
+add_library(Physics2D STATIC ${SOURCES_FILES} ${HEADERS_FILE})
 
 target_include_directories(Physics2D
-  PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-  PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}
-)
+                           INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include
+                           )

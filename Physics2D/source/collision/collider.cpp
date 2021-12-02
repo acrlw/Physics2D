@@ -1,1 +1,1 @@
-#include "../../../include/collision/collider.h"
+#include "include/collision/collider.h"
