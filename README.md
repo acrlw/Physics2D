@@ -11,8 +11,6 @@ cmake CMakeLists.txt
 
 # Requirement
 - C++ 17
-- vcpkg
-  - Qt
 
 # Features
 - Basic Linear Algebra
@@ -39,16 +37,6 @@ cmake CMakeLists.txt
   - Rotation
   - Point
   - Mouse
-- TestBed
-- Basic Debug Drawing
-  - Rigid Body
-  - AABB
-  - DBVH
-  - Joint
-- Basic 2D Camera
-  - Zooming
-  - Smooth Transition
-  - Tracing Specified Body
 - Simple 2D Geometry Algorithm
   - Support Mapping
       - Ellipse
@@ -91,27 +79,7 @@ cmake CMakeLists.txt
   - Mass-Spring System
 - Rope
   - Position-Based Dynamics
-
-# Screenshot
-
-![bitmask](./screenshots/bitmask.png)
-
-![bridge](./screenshots/bridge.png)
-
-![chain](./screenshots/chain.png)
-
-![domino](./screenshots/domino.png)
-
-![friction](./screenshots/friction.png)
-
-![newtoncradle](./screenshots/newtoncradle.png)
-
-![restitution](./screenshots/restitution.png)
-
-![stacking](./screenshots/stacking.png)
-
-![wrecking ball](./screenshots/wrecking-ball.png)
-
+ 
 # Reference
 - [Box2D](https://github.com/erincatto/box2d)
 - [Box2D Lite](https://github.com/erincatto/box2d-lite)
