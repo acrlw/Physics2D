@@ -13,6 +13,8 @@ namespace Physics2D
 		}
 		void load() override
 		{
+			m_camera->setMeterToPixel(25);
+
 			floor.set(15.0f, 0.5f);
 			rectangle.set(0.5f, 0.5f);
 			brick.set(0.3f, 3.0f);
@@ -62,7 +64,7 @@ namespace Physics2D
 			{
 				Body* card = m_world->createBody();
 				card->setShape(&brick);
-				card->setMass(1.0f);
+				card->setMass(5.0f);
 				card->setFriction(0.1f);
 				card->setRestitution(0);
 				card->setType(Body::BodyType::Dynamic);
@@ -72,7 +74,7 @@ namespace Physics2D
 
 			Body* stammer = m_world->createBody();
 			stammer->setShape(&rectangle);
-			stammer->setMass(10.0f);
+			stammer->setMass(2.0f);
 			stammer->setFriction(0.1f);
 			stammer->setType(Body::BodyType::Dynamic);
 			stammer->position().set(-16.0f, 16.0f);

@@ -14,7 +14,7 @@ namespace Physics2D
 		void load() override
 		{
 			brick.set(1.5f, 0.5f);
-			
+
 			edge.set({ -100, 0 }, { 100, 0 });
 
 			Body* rect;
@@ -48,13 +48,13 @@ namespace Physics2D
 			ppm.frequency = 1000;
 			ppm.maxForce = 10000;
 			m_world->createJoint(ppm);
-			real max = 12.0f;
+			real max = 9.0f;
 			m_tree->insert(rect);
 			for (real i = 1.0f; i < max; i += 1.0f)
 			{
 				rect2 = m_world->createBody();
 				rect2->setShape(&brick);
-				rect2->position().set({ -5.0f + i * brick.width(), 0.0f });
+				rect2->position().set({ -5.0f + i * brick.width() * 1.4f, 0.0f });
 				rect2->rotation() = 0;
 				rect2->setMass(1.0f);
 				rect2->setFriction(0.01f);
@@ -63,8 +63,8 @@ namespace Physics2D
 				this->m_tree->insert(rect2);
 				revolutePrim.bodyA = rect;
 				revolutePrim.bodyB = rect2;
-				revolutePrim.localPointA.set(half, 0);
-				revolutePrim.localPointB.set(-half, 0);
+				revolutePrim.localPointA.set(half + brick.width() * 0.2f, 0);
+				revolutePrim.localPointB.set(-half - brick.width() * 0.2f, 0);
 				revolutePrim.dampingRatio = 0.8f;
 				revolutePrim.frequency = 10;
 				revolutePrim.maxForce = 10000;
