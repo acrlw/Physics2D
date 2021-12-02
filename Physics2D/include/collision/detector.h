@@ -1,11 +1,11 @@
 #ifndef PHYSICS2D_DETECTOR_H
 #define PHYSICS2D_DETECTOR_H
-#include "./collision/algorithm/gjk.h"
-#include "./collision/algorithm/sat.h"
-#include "./collision/algorithm/mpr.h"
-#include "./math/math.h"
-#include "./geometry/shape.h"
-#include "./dynamics/body.h"
+#include "../collision/algorithm/gjk.h"
+#include "../collision/algorithm/sat.h"
+#include "../collision/algorithm/mpr.h"
+#include "../math/math.h"
+#include "../geometry/shape.h"
+#include "../dynamics/body.h"
 
 namespace Physics2D
 {
