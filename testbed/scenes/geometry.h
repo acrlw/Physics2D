@@ -14,6 +14,7 @@ namespace Physics2D
 		}
 		void load() override
 		{
+
 		}
 		void render(QPainter* painter) override
 		{

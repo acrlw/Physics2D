@@ -1,48 +1,22 @@
 #ifndef PHYSICS2D_GJK_H
 #define PHYSICS2D_GJK_H
 
-
 #include "include/common/common.h"
 #include "include/geometry/shape.h"
-#include "include/geometry/algorithm/2d.h"
-#include "QVarLengthArray"
+#include "include/collision/algorithm/simplex.h"
+
+#include "include/geometry/shape/capsule.h"
+#include "include/geometry/shape/circle.h"
+#include "include/geometry/shape/curve.h"
+#include "include/geometry/shape/edge.h"
+#include "include/geometry/shape/ellipse.h"
+#include "include/geometry/shape/point.h"
+#include "include/geometry/shape/polygon.h"
+#include "include/geometry/shape/rectangle.h"
+#include "include/geometry/shape/sector.h"
+
 namespace Physics2D
 {
-	struct Minkowski
-	{
-		Minkowski() = default;
-		Minkowski(const Vector2& point_a, const Vector2& point_b);
-		inline bool operator ==(const Minkowski& rhs) const;
-		inline bool operator !=(const Minkowski& rhs) const;
-		Vector2 pointA;
-		Vector2 pointB;
-		Vector2 result;
-	};
-
-	/// <summary>
-	/// Simplex structure for gjk/epa test.
-	/// By convention:
-	///   1 points: p0 , construct a single point
-	///   2 points: p0 -> p1, construct a segment
-	/// >=4 points: p0 -> p1 -> p2 -> p0, construct a polygon
-	///	ATTENTION:
-	///	  The performance bottleneck results in std::vector. Inserting and reallocating is expensive.
-	/// </summary>
-	/// <returns></returns>
-	struct Simplex
-	{
-		std::vector<Minkowski> vertices;
-		bool isContainOrigin = false;
-		bool containOrigin(bool strict = false);
-		static bool containOrigin(const Simplex& simplex, bool strict = false);
-
-		void insert(const size_t& pos, const Minkowski& vertex);
-		bool contains(const Minkowski& minkowski);
-		bool fuzzyContains(const Minkowski& minkowski, const real& epsilon = 0.0001);
-
-		Vector2 lastVertex() const;
-	};
-
 	struct PenetrationInfo
 	{
 		Vector2 normal;
