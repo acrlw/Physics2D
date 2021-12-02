@@ -1,4 +1,4 @@
-#include "include/collision/algorithm/gjk.h"
+#include "../include/collision/algorithm/gjk.h"
 
 
 

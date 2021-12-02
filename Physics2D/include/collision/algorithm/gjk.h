@@ -1,19 +1,19 @@
 #ifndef PHYSICS2D_GJK_H
 #define PHYSICS2D_GJK_H
 
-#include "include/common/common.h"
-#include "include/geometry/shape.h"
-#include "include/collision/algorithm/simplex.h"
+#include "../include/common/common.h"
+#include "../include/geometry/shape.h"
+#include "../include/collision/algorithm/simplex.h"
 
-#include "include/geometry/shape/capsule.h"
-#include "include/geometry/shape/circle.h"
-#include "include/geometry/shape/curve.h"
-#include "include/geometry/shape/edge.h"
-#include "include/geometry/shape/ellipse.h"
-#include "include/geometry/shape/point.h"
-#include "include/geometry/shape/polygon.h"
-#include "include/geometry/shape/rectangle.h"
-#include "include/geometry/shape/sector.h"
+#include "../include/geometry/shape/capsule.h"
+#include "../include/geometry/shape/circle.h"
+#include "../include/geometry/shape/curve.h"
+#include "../include/geometry/shape/edge.h"
+#include "../include/geometry/shape/ellipse.h"
+#include "../include/geometry/shape/point.h"
+#include "../include/geometry/shape/polygon.h"
+#include "../include/geometry/shape/rectangle.h"
+#include "../include/geometry/shape/sector.h"
 
 namespace Physics2D
 {

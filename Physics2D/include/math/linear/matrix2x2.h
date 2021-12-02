@@ -1,7 +1,7 @@
 #ifndef PHYSICS2D_LINEAR_MATRIX2X2_H
 #define PHYSICS2D_LINEAR_MATRIX2X2_H
-#include "include/math/linear/vector2.h"
-#include "include/math/math.h"
+#include "../include/math/linear/vector2.h"
+#include "../include/math/math.h"
 namespace Physics2D
 {
 

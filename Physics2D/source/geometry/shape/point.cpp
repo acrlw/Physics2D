@@ -1,4 +1,4 @@
-#include "include/geometry/shape/point.h"
+#include "../include/geometry/shape/point.h"
 namespace Physics2D
 {
 	Point::Point()

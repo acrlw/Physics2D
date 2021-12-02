@@ -1,6 +1,6 @@
 #ifndef PHYSICS2D_MINKOWSKI_H
 #define PHYSICS2D_MINKOWSKI_H
-#include "include/math/linear/linear.h"
+#include "../include/math/linear/linear.h"
 namespace Physics2D
 {
 	struct Minkowski

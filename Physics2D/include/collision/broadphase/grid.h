@@ -1,6 +1,6 @@
 #ifndef PHYSICS_BROADPHASE_GRID_H
 #define PHYSICS_BROADPHASE_GRID_H
-#include "include/collision/broadphase/aabb.h"
+#include "../include/collision/broadphase/aabb.h"
 namespace Physics2D
 {
 	class UniformGrid

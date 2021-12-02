@@ -1,8 +1,8 @@
 #ifndef PHYSICS2D_BROADPHASE_AABB_H
 #define PHYSICS2D_BROADPHASE_AABB_H
 
-#include "include/math/linear/linear.h"
-#include "include/geometry/shape.h"
+#include "../include/math/linear/linear.h"
+#include "../include/geometry/shape.h"
 
 namespace Physics2D
 {

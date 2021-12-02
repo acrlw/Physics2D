@@ -1,4 +1,4 @@
-#include "include/collision/detector.h"
+#include "../include/collision/detector.h"
 namespace Physics2D
 {
 	

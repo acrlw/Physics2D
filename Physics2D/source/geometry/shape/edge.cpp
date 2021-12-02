@@ -1,5 +1,5 @@
-#include "include/geometry/shape/edge.h"
-#include "include/geometry/algorithm/2d.h"
+#include "../include/geometry/shape/edge.h"
+#include "../include/geometry/algorithm/2d.h"
 namespace Physics2D
 {
 	Edge::Edge()

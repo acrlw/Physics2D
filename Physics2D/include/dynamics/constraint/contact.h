@@ -2,9 +2,9 @@
 #define PHYSICS2D_CONSTRAINT_CONTACT_H
 #include <string>
 
-#include "include/dynamics/body.h"
-#include "include/utils/random.h"
-#include "include/collision/detector.h"
+#include "../include/dynamics/body.h"
+#include "../include/utils/random.h"
+#include "../include/collision/detector.h"
 namespace Physics2D
 {
 	using RelationID = uint64_t;

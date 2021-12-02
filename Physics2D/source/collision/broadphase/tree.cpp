@@ -1,6 +1,6 @@
-#include "include/collision/broadphase/tree.h"
+#include "../include/collision/broadphase/tree.h"
 
-#include "include/dynamics/body.h"
+#include "../include/dynamics/body.h"
 
 namespace Physics2D
 {

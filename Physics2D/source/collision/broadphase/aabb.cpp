@@ -1,9 +1,9 @@
-#include "include/collision/broadphase/aabb.h"
+#include "../include/collision/broadphase/aabb.h"
 
 
-#include "include/collision/algorithm/gjk.h"
-#include "include/dynamics/body.h"
-#include "include/geometry/algorithm/2d.h"
+#include "../include/collision/algorithm/gjk.h"
+#include "../include/dynamics/body.h"
+#include "../include/geometry/algorithm/2d.h"
 
 namespace Physics2D
 {

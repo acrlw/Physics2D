@@ -1,4 +1,4 @@
-#include "include/dynamics/constraint/contact.h"
+#include "../include/dynamics/constraint/contact.h"
 
 namespace Physics2D
 {

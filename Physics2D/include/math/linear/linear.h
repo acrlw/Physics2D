@@ -1,9 +1,9 @@
 #ifndef PHYSICS2D_LINEAR_H
 #define PHYSICS2D_LINEAR_H
-#include "include/math/linear/vector2.h"
-#include "include/math/linear/vector3.h"
-#include "include/math/linear/matrix2x2.h"
-#include "include/math/linear/matrix3x3.h"
+#include "../include/math/linear/vector2.h"
+#include "../include/math/linear/vector3.h"
+#include "../include/math/linear/matrix2x2.h"
+#include "../include/math/linear/matrix3x3.h"
 
 namespace Physics2D
 {

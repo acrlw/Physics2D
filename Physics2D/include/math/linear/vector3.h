@@ -1,7 +1,7 @@
 #ifndef PHYSICS2D_LINEAR_VECTOR3_H
 #define PHYSICS2D_LINEAR_VECTOR3_H
-#include "include/math/math.h"
-#include "include/common/common.h"
+#include "../include/math/math.h"
+#include "../include/common/common.h"
 namespace Physics2D
 {
 	struct Vector3

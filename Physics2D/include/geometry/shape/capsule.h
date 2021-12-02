@@ -1,6 +1,6 @@
 #ifndef PHYSICS2D_SHAPE_CAPSULE_H
 #define PHYSICS2D_SHAPE_CAPSULE_H
-#include "include/geometry/shape.h"
+#include "../include/geometry/shape.h"
 namespace Physics2D
 {
     class Capsule : public Shape

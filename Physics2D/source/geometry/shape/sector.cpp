@@ -1,4 +1,4 @@
-#include "include/geometry/shape/sector.h"
+#include "../include/geometry/shape/sector.h"
 namespace Physics2D
 {
 	Sector::Sector()

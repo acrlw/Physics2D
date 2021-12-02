@@ -1,4 +1,4 @@
-#include "include/geometry/shape/ellipse.h"
+#include "../include/geometry/shape/ellipse.h"
 namespace Physics2D
 {
 	Ellipse::Ellipse(const real& width, const real& height) : m_width(width), m_height(height)

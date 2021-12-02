@@ -1,6 +1,6 @@
 #ifndef PHYSICS2D_SHAPE_SECTOR_H
 #define PHYSICS2D_SHAPE_SECTOR_H
-#include "include/geometry/shape.h"
+#include "../include/geometry/shape.h"
 namespace Physics2D
 {
     class Sector : public Shape
