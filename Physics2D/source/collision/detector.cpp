@@ -1,7 +1,15 @@
 #include "../../include/collision/detector.h"
 namespace Physics2D
 {
-	
+    bool Detector::collide(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB)
+    {
+        auto [isColliding, simplex] = GJK::gjk(shapeA, shapeB);
+
+        if (shapeA.transform.fuzzyEqual(shapeB.transform) && !isColliding)
+            isColliding = simplex.containOrigin(true);
+
+        return isColliding;
+    }
 	bool Detector::collide(Body* bodyA, Body* bodyB)
 	{
 		assert(bodyA != nullptr && bodyB != nullptr);
