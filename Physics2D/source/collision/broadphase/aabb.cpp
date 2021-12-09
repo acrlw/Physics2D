@@ -159,6 +159,7 @@ namespace Physics2D
 			aabb.height = std::fabs(edge->startPoint().y - edge->endPoint().y);
 			aabb.position.set(edge->startPoint().x + edge->endPoint().x, edge->startPoint().y + edge->endPoint().y);
 			aabb.position *= 0.5f;
+			aabb.expand(0.5f);
 			break;
 		}
 		case Shape::Type::Curve:

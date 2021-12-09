@@ -55,10 +55,9 @@ namespace Physics2D
                 auto finals = CCD::earliestTOI(potentials.value());
                 if (finals.has_value())
                 {
-                    //step toi to touch collision surface
+                    //if toi still exist, just keep solving them until the sum of toi is greater than dt
                     real toi = finals.value();
                     solve(toi);
-                    //the rest of dt just can be used to solve ccd
                     real ddt = (dt - toi) / real(Constant::CCDMaxIterations);
                     for (int i = 0; i < Constant::CCDMaxIterations; i++) {
                         updateTree();

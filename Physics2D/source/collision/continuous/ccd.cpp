@@ -28,15 +28,12 @@ namespace Physics2D
 		
 		real slice = 40;
 		real step = dt / slice;
-		for(real i = dt / slice;i <= dt;)
+		for(real i = step;i <= dt; i += step)
 		{
 			body->stepPosition(step);
 			AABB aabb = AABB::fromBody(body);
 			trajectory.emplace_back(AABBShot{aabb, body->physicsAttribute(), i});
 			result.unite(aabb);
-			i += step;
-			if ((aabb.position - target).lengthSquare() >= (target - start.position).lengthSquare())
-				break;
 		}
 		body->setPhysicsAttribute(start);
 		return std::make_tuple(trajectory, result);
