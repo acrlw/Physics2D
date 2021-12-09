@@ -60,6 +60,14 @@ namespace Physics2D
 			}
 			case Body::BodyType::Bullet:
 			{
+				body->forces() += body->mass() * g;
+
+				body->velocity() += body->inverseMass() * body->forces() * dt;
+				body->angularVelocity() += body->inverseInertia() * body->torques() * dt;
+
+
+				body->velocity() *= lvd;
+				body->angularVelocity() *= avd;
 				break;
 			}
 			}
@@ -107,6 +115,11 @@ namespace Physics2D
 			}
 			case Body::BodyType::Bullet:
 			{
+				body->position() += body->velocity() * dt;
+				body->rotation() += body->angularVelocity() * dt;
+
+				body->forces().clear();
+				body->clearTorque();
 				break;
 			}
 			}
@@ -124,25 +137,7 @@ namespace Physics2D
 		m_bias = bias;
 	}
 
-	int PhysicsWorld::velocityIteration() const
-	{
-		return m_velocityIteration;
-	}
 
-	void PhysicsWorld::setVelocityIteration(const int& velocityIteration)
-	{
-		m_velocityIteration = velocityIteration;
-	}
-
-	int PhysicsWorld::positionIteration() const
-	{
-		return m_positionIteration;
-	}
-
-	void PhysicsWorld::setPositionIteration(const int& positionIteration)
-	{
-		m_positionIteration = positionIteration;
-	}
 	
 	std::vector<std::unique_ptr<Body>>& PhysicsWorld::bodyList()
 	{

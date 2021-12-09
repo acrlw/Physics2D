@@ -3,6 +3,7 @@
 #include "../../collision/detector.h"
 #include "../../collision/broadphase/dbvh.h"
 #include "../../dynamics/body.h"
+#include "../../collision/broadphase/tree.h"
 namespace Physics2D
 {
 	/// <summary>
@@ -34,10 +35,11 @@ namespace Physics2D
 		typedef std::vector<AABBShot> BroadphaseTrajectory;
 		static std::tuple<BroadphaseTrajectory, AABB> buildTrajectoryAABB(Body* body, const real& dt);
 		static std::tuple<std::vector<AABBShot>, AABB> buildTrajectoryAABB(Body* body, const Vector2& target, const real& dt);
-		static std::optional<IndexSection> findBroadphaseRoot(Body* body1, const BroadphaseTrajectory& trajectory1, Body* body2, const BroadphaseTrajectory& trajectory2, const real& dt);
-		static std::optional<real> findNarrowphaseRoot(Body* body1, const BroadphaseTrajectory& trajectory1, Body* body2, const BroadphaseTrajectory& trajectory2, const IndexSection& index, const real& dt);
+		static std::optional<IndexSection> findBroadphaseRoot(Body* staticBody, const BroadphaseTrajectory& staticTrajectory, Body* dynamicBody, const BroadphaseTrajectory& dynamicTrajectory, const real& dt);
+		static std::optional<real> findNarrowphaseRoot(Body* staticBody, const BroadphaseTrajectory& staticTrajectory, Body* dynamicBody, const BroadphaseTrajectory& dynamicTrajectory, const IndexSection& index, const real& dt);
 		static std::optional<std::vector<CCDPair>> query(DBVH::Node* root, Body* body, const real& dt);
-
+        static std::optional<std::vector<CCDPair>> query(Tree& tree, Body* body, const real& dt);
+        static std::optional<real> earliestTOI(const std::vector<CCDPair>& pairs, const real& epsilon = Constant::GeometryEpsilon);
 	};
 }
 #endif

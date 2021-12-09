@@ -19,6 +19,7 @@ namespace Physics2D
 	namespace Constant
 	{
 		constexpr unsigned int SimplexMax = 8;
+		constexpr unsigned int CCDMaxIterations = 15;
 		constexpr real Epsilon = FLT_EPSILON;
 		constexpr real Max = FLT_MAX;
 		constexpr real PositiveMin = FLT_MIN;
@@ -28,6 +29,7 @@ namespace Physics2D
 		constexpr real DoublePi = Constant::Pi * 2.0f;
 		constexpr real ReciprocalOfPi = 0.3183098861f;
 		constexpr real GeometryEpsilon = 0.00001f;
+		constexpr real CCDMinVelocity = 100.0f;
 		constexpr real MaxVelocity = 1000.0f;
 		constexpr real MaxAngularVelocity = 1000.0f;
 	}
@@ -41,10 +43,11 @@ namespace Physics2D
 		constexpr real PositiveMin = DBL_MIN;
 		constexpr real NegativeMin = -Max;
 		constexpr real Pi = 3.141592653589793238463;
-		constexpr real HalfPi = Constant::Pi / 2;
-		constexpr real DoublePi = Constant::Pi * 2;
+		constexpr real HalfPi = Constant::Pi / 2.0;
+		constexpr real DoublePi = Constant::Pi * 2.0;
 		constexpr real ReciprocalOfPi = 0.3183098861837907;
 		constexpr real GeometryEpsilon = 0.0000001;
+		constexpr real CCDMinVelocity = 100.0;
 		constexpr real MaxVelocity = 1000.0;
 		constexpr real MaxAngularVelocity = 1000.0;
 

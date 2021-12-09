@@ -10,7 +10,7 @@
 #include "common/common.h"
 #include "geometry/shape.h"
 #include "geometry/algorithm/2d.h"
-#include "dynamics/body.h"
+#include "dynamics/system.h"
 #include "math/math.h"
 #include "math/linear/linear.h"
 #include "math/integrator.h"

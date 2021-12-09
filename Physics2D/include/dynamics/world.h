@@ -13,8 +13,7 @@ namespace Physics2D
     {
 		public:
             PhysicsWorld() : m_gravity(0, -1), m_linearVelocityDamping(0.9f), m_angularVelocityDamping(0.9f), m_bias(0.8f),
-    			m_enableGravity(true), m_linearVelocityThreshold(0.02f), m_angularVelocityThreshold(0.02f), m_airFrictionCoefficient(0.7f),
-    			m_velocityIteration(1), m_positionIteration(1)
+    			m_enableGravity(true), m_linearVelocityThreshold(0.02f), m_angularVelocityThreshold(0.02f), m_airFrictionCoefficient(0.7f)
             {}
             ~PhysicsWorld();
             void prepareVelocityConstraint(const real& dt);
@@ -66,12 +65,6 @@ namespace Physics2D
             real bias() const;
             void setBias(const real &bias);
 
-            int velocityIteration() const;
-            void setVelocityIteration(const int&velocityIteration);
-
-            int positionIteration() const;
-            void setPositionIteration(const int&positionIteration);
-
             std::vector<std::unique_ptr<Body>>& bodyList();
     	
             std::vector<std::unique_ptr<Joint>>& jointList();
@@ -85,8 +78,6 @@ namespace Physics2D
             real m_airFrictionCoefficient;
 
             real m_bias;
-            int m_velocityIteration;
-            int m_positionIteration;
     		
     		bool m_enableGravity = true;
     		bool m_enableDamping = true;
