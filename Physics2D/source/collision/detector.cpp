@@ -24,19 +24,53 @@ namespace Physics2D
 		shapeB.rotation = bodyB->rotation();
 		shapeB.transform = bodyB->position();
 
+		return collide(shapeA, shapeB);
+	}
+	Collision Detector::detect(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB)
+	{
+		Collision result;
+		assert(shapeA.shape != nullptr && shapeB.shape != nullptr);
+
 		auto [isColliding, simplex] = GJK::gjk(shapeA, shapeB);
 
 		if (shapeA.transform.fuzzyEqual(shapeB.transform) && !isColliding)
 			isColliding = simplex.containOrigin(true);
 
-		return isColliding;
+		result.isColliding = isColliding;
+
+
+		if (isColliding)
+		{
+			auto oldSimplex = simplex;
+			simplex = GJK::epa(shapeA, shapeB, simplex);
+			PenetrationSource source = GJK::dumpSource(simplex);
+
+			const auto info = GJK::dumpInfo(source);
+			result.normal = info.normal;
+			result.penetration = info.penetration;
+
+			auto [clipEdgeA, clipEdgeB] = ContactGenerator::recognize(shapeA, shapeB, info.normal);
+			auto pairList = ContactGenerator::clip(clipEdgeA, clipEdgeB, info.normal);
+
+			bool pass = false;
+			for (auto& elem : pairList)
+				if (realEqual((elem.pointA - elem.pointB).lengthSquare(), result.penetration * result.penetration))
+					pass = true;
+
+			//if fail, there must be a deeper contact point, use it:
+			if (pass)
+				result.contactList = pairList;
+			else
+				result.contactList.emplace_back(GJK::dumpPoints(source));
+		}
+		assert(result.contactList.size() != 3);
+		return result;
 	}
 	Collision Detector::detect(Body* bodyA, Body* bodyB)
 	{
 		Collision result;
 
-		if (bodyA == nullptr || bodyB == nullptr)
-			return result;
+		assert(bodyA != nullptr && bodyB != nullptr);
 
 		if (bodyA == bodyB)
 			return result;
@@ -48,8 +82,6 @@ namespace Physics2D
 			bodyB = temp;
 		}
 
-		result.bodyA = bodyA;
-		result.bodyB = bodyB;
 
 		ShapePrimitive shapeA, shapeB;
 		shapeA.shape = bodyA->shape();
@@ -60,47 +92,21 @@ namespace Physics2D
 		shapeB.rotation = bodyB->rotation();
 		shapeB.transform = bodyB->position();
 
-		auto [isColliding, simplex] = GJK::gjk(shapeA, shapeB);
+		result = detect(shapeA, shapeB);
+		result.bodyA = bodyA;
+		result.bodyB = bodyB;
 
-		if (shapeA.transform.fuzzyEqual(shapeB.transform) && !isColliding)
-			isColliding = simplex.containOrigin(true);
-
-		result.isColliding = isColliding;
-
-		
-		if (isColliding)
-		{
-			auto oldSimplex = simplex;
-			simplex = GJK::epa(shapeA, shapeB, simplex);
-			PenetrationSource source = GJK::dumpSource(simplex);
-			
-			const auto info = GJK::dumpInfo(source);
-			result.normal = info.normal;
-			result.penetration = info.penetration;
-
-			auto [clipEdgeA, clipEdgeB] = ContactGenerator::recognize(shapeA, shapeB, info.normal);
-			auto pairList = ContactGenerator::clip(clipEdgeA, clipEdgeB, info.normal);
-
-			bool pass = false;
-			for(auto& elem: pairList)
-				if(realEqual((elem.pointA - elem.pointB).lengthSquare(), result.penetration * result.penetration))
-					pass = true;
-
-			//if fail, there must be a deeper contact point, use it:
-			if(pass)
-				result.contactList = pairList;
-			else 
-				result.contactList.emplace_back(GJK::dumpPoints(source));
-		}
-		assert(result.contactList.size() != 3);
 		return result;
 	}
-
+	PointPair Detector::distance(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB)
+	{
+		assert(shapeA.shape != nullptr && shapeB.shape != nullptr);
+		return GJK::distance(shapeA, shapeB);
+	}
 	PointPair Detector::distance(Body* bodyA, Body* bodyB)
 	{
 		PointPair result;
-		if (bodyA == nullptr || bodyB == nullptr)
-			return result;
+		assert(bodyA != nullptr && bodyB != nullptr);
 
 		if (bodyA == bodyB)
 			return result;

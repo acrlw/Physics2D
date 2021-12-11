@@ -200,42 +200,61 @@ namespace Physics2D
 
 	std::vector<Vector2> GeometryAlgorithm2D::grahamScan(const std::vector<Vector2>& vertices)
 	{
-		std::vector<Vector2> sort = vertices;
-		std::vector<uint16_t> stack;
-
-		std::sort(sort.begin(), sort.end(), [](const Vector2& a, const Vector2& b)
+		std::vector<Vector2> points = vertices;
+		std::vector<uint32_t> stack;
+		std::sort(points.begin(), points.end(), [](const Vector2& a, const Vector2& b)
+			{
+				if (atan2l(a.y, a.x) != atan2l(b.y, b.x))
+					return atan2l(a.y, a.x) < atan2l(b.y, b.x);
+				return a.x < b.x;
+			});
+		uint32_t targetIndex = 0;
+		real targetX = points[0].x;
+		for (int i = 1; i < points.size(); ++i)
 		{
-			if (atan2l(a.y, a.x) != atan2l(b.y, b.x))
-				return atan2l(a.y, a.x) < atan2l(b.y, b.x);
-			return a.x < b.x;
-		});
+			if (points[i].x < targetX)
+			{
+				targetIndex = i;
+				targetX = points[i].x;
+			}
+			if (realEqual(points[i].x, targetX))
+				if (points[i].y < points[targetIndex].y)
+					targetIndex = i;
 
-		uint16_t k = 2;
-		stack.emplace_back(0);
-		stack.emplace_back(1);
+		}
+
+		stack.emplace_back(targetIndex);
+		stack.emplace_back((targetIndex + 1) % points.size());
+		uint32_t k = ((targetIndex + 1) % points.size() + 1) % points.size();
 		while (true)
 		{
-			uint16_t i = stack[stack.size() - 2];
-			uint16_t j = stack[stack.size() - 1];
-			if (j == 0)
+			uint32_t i = stack[stack.size() - 2];
+			uint32_t j = stack[stack.size() - 1];
+			if (j == targetIndex)
 				break;
 
-			if (k >= sort.size())
-				k = 0;
+			k %= points.size();
 
-			Vector2 ab = sort[j] - sort[i];
-			Vector2 ac = sort[k] - sort[i];
-			if (ab.cross(ac) < 0)
+			Vector2 ab = points[j] - points[i];
+			Vector2 bc = points[k] - points[j];
+			if (ab.cross(bc) < 0) {
 				stack.pop_back();
+				if (stack.size() < 2)
+				{
+					stack.emplace_back(k);
+					k++;
+				}
+				continue;
+			}
 			stack.emplace_back(k);
 			k++;
 		}
-		std::vector<Vector2> result;
-		result.reserve(stack.size());
+		std::vector<Vector2> convex;
+		convex.reserve(stack.size());
 		for (const auto index : stack)
-			result.emplace_back(sort[index]);
+			convex.emplace_back(points[index]);
 
-		return result;
+		return convex;
 	}
 
 

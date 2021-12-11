@@ -26,7 +26,9 @@ namespace Physics2D
 		static bool collide(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB);
 		static bool collide(Body* bodyA, Body* bodyB);
 		static Collision detect(Body* bodyA, Body* bodyB);
+		static Collision detect(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB);
 		static PointPair distance(Body* bodyA, Body* bodyB);
+		static PointPair distance(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB);
 		
 	private:
 	};
