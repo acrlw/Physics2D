@@ -31,6 +31,7 @@ cmake CMakeLists.txt
       - SAH
       - Dynamic Tree & Array
       - Raycast
+    - Sweep And Prune
 - Contact Maintainer
 - Rigid Body Dynamics Simulation
 - Sequential Impulse Solver
@@ -68,7 +69,6 @@ cmake CMakeLists.txt
 # Future
 - Broadphase
   - Uniform Grid
-  - Sweep And Prune
 - Integrator
   - Verlet
   - Rk4
