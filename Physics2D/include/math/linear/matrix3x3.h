@@ -1,5 +1,5 @@
-#ifndef PHYSICS2D_LINEAR_MATRIX3X3_H
-#define PHYSICS2D_LINEAR_MATRIX3X3_H
+#ifndef MATH_LINEAR_MATRIX3X3_H
+#define MATH_LINEAR_MATRIX3X3_H
 #include "../../common/common.h"
 #include "../../math/math.h"
 #include "../../math/linear/vector2.h"

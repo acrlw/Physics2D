@@ -26,8 +26,8 @@ namespace Physics2D
 		assert(shapeB.shape->type() == Shape::Type::Edge);
 
 		SATResult result;
-		Circle* circle = dynamic_cast<Circle*>(shapeA.shape);
-		Edge* edge = dynamic_cast<Edge*>(shapeB.shape);
+		Circle* circle = static_cast<Circle*>(shapeA.shape);
+		Edge* edge = static_cast<Edge*>(shapeB.shape);
 
 		auto* pointCircle = &result.contactPair[0].pointA;
 		auto* pointEdge = &result.contactPair[0].pointB;
@@ -59,8 +59,8 @@ namespace Physics2D
 		assert(shapeB.shape->type() == Shape::Type::Circle);
 
 		SATResult result;
-		Circle* circleA = dynamic_cast<Circle*>(shapeA.shape);
-		Circle* circleB = dynamic_cast<Circle*>(shapeB.shape);
+		Circle* circleA = static_cast<Circle*>(shapeA.shape);
+		Circle* circleB = static_cast<Circle*>(shapeB.shape);
 		Vector2 ba = shapeA.transform - shapeB.transform;
 		real dp = circleA->radius() + circleB->radius();
 		real length = ba.length();
@@ -81,8 +81,8 @@ namespace Physics2D
 		assert(shapeA.shape->type() == Shape::Type::Circle);
 		assert(shapeB.shape->type() == Shape::Type::Polygon);
 
-		Circle* circleA = dynamic_cast<Circle*>(shapeA.shape);
-		Polygon* polygonB = dynamic_cast<Polygon*>(shapeB.shape);
+		Circle* circleA = static_cast<Circle*>(shapeA.shape);
+		Polygon* polygonB = static_cast<Polygon*>(shapeB.shape);
 
 		uint16_t collidingAxis = 0;
 		SATResult result;
@@ -165,15 +165,15 @@ namespace Physics2D
 		assert(shapeA.shape->type() == Shape::Type::Polygon);
 		assert(shapeB.shape->type() == Shape::Type::Polygon);
 
-		Polygon* polyA = dynamic_cast<Polygon*>(shapeA.shape);
-		Polygon* polyB = dynamic_cast<Polygon*>(shapeB.shape);
+		Polygon* polyA = static_cast<Polygon*>(shapeA.shape);
+		Polygon* polyB = static_cast<Polygon*>(shapeB.shape);
 		
 		SATResult result;
 
 		auto test = [](const ShapePrimitive& polygonA, const ShapePrimitive& polygonB)
 		{
-			Polygon* polyA = dynamic_cast<Polygon*>(polygonA.shape);
-			Polygon* polyB = dynamic_cast<Polygon*>(polygonB.shape);
+			Polygon* polyA = static_cast<Polygon*>(polygonA.shape);
+			Polygon* polyB = static_cast<Polygon*>(polygonB.shape);
 			
 			Vector2 finalNormal;
 			real minLength = Constant::Max;

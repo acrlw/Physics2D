@@ -1,4 +1,5 @@
 #include "../../../include/math/linear/vector3.h"
+#include "../../../include/math/math.h"
 
 namespace Physics2D
 {
@@ -18,6 +19,11 @@ namespace Physics2D
 	Vector3 Vector3::operator-(const Vector3& other) const
 	{
 		return Vector3(x - other.x, y - other.y, z - other.z);
+	}
+
+	Vector3 Vector3::operator-() const
+	{
+		return Vector3(-x, -y, -z);
 	}
 
 	Vector3 Vector3::operator*(const real& factor) const
@@ -94,9 +100,9 @@ namespace Physics2D
 	}
 	Vector3& Vector3::negate()
 	{
-		x *= -1;
-		y *= -1;
-		z *= -1;
+		x = -x;
+		y = -y;
+		z = -z;
 		return *this;
 	}
 

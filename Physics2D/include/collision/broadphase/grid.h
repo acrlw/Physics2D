@@ -18,4 +18,3 @@ namespace Physics2D
 }
 
 #endif // !PHYSICS_BROADPHASE_GRID_H
-#define PHYSICS_BROADPHASE_GRID_H

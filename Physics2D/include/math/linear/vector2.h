@@ -1,6 +1,5 @@
-#ifndef PHYSICS2D_LINEAR_VECTOR2_H
-#define PHYSICS2D_LINEAR_VECTOR2_H
-#include "../../math/math.h"
+#ifndef MATH_LINEAR_VECTOR2_H
+#define MATH_LINEAR_VECTOR2_H
 #include "../../common/common.h"
 namespace Physics2D
 {

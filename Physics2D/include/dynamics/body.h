@@ -21,6 +21,17 @@ namespace Physics2D
 	class Body
 	{
 	public:
+
+		struct Relation
+		{
+			using RelationID = uint64_t;
+			static RelationID generateRelationID(Body* bodyA, Body* bodyB);
+			static Relation generateRelation(Body* bodyA, Body* bodyB);
+			RelationID relationID;
+			Body* bodyA;
+			Body* bodyB;
+		};
+
 		enum class BodyType
 		{
 			Kinematic,
@@ -63,7 +74,7 @@ namespace Physics2D
 
 		real inertia() const;
 
-		AABB aabb(const real& factor = 1) const;
+		AABB aabb(const real& factor = Constant::AABBExpansionFactor) const;
 
 		real friction() const;
 		void setFriction(const real& friction);
@@ -92,6 +103,8 @@ namespace Physics2D
 
 		real restitution()const;
 		void setRestitution(const real& restitution);
+
+		
 	private:
 		void calcInertia();
 

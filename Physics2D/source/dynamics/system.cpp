@@ -59,7 +59,7 @@ namespace Physics2D
                     real toi = finals.value();
                     solve(toi);
                     real ddt = (dt - toi) / real(Constant::CCDMaxIterations);
-                    for (int i = 0; i < Constant::CCDMaxIterations; i++) {
+                    for (int i = 0; i < Constant::CCDMaxIterations; ++i) {
                         updateTree();
                         solve(ddt);
                     }

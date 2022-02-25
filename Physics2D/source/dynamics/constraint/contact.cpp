@@ -2,15 +2,7 @@
 
 namespace Physics2D
 {
-	RelationID generateRelation(Body* bodyA, Body* bodyB)
-	{
-		//Combine two 32-bit id into one 64-bit id in binary form
-		auto bodyAId = bodyA->id();
-		auto bodyBId = bodyB->id();
-		auto pair = std::pair{ bodyAId, bodyBId };
-		auto result = reinterpret_cast<uint64_t&>(pair);
-		return result;
-	}
+
 
 
 	void ContactMaintainer::clearAll()
@@ -111,7 +103,7 @@ namespace Physics2D
 	{
 		const Body* bodyA = collision.bodyA;
 		const Body* bodyB = collision.bodyB;
-		const auto relation = generateRelation(collision.bodyA, collision.bodyB);
+		const auto relation = Body::Relation::generateRelationID(collision.bodyA, collision.bodyB);
 		auto& contactList = m_contactTable[relation];
 		//assert(contactList.size() <= 2);
 
@@ -148,7 +140,7 @@ namespace Physics2D
 
 	void ContactMaintainer::clearInactivePoints()
 	{
-		std::vector<RelationID> clearList;
+		std::vector<Body::Relation::RelationID> clearList;
 		std::vector<ContactConstraintPoint*> removedList;
 		for (auto iter = m_contactTable.begin(); iter != m_contactTable.end(); ++iter)
 		{

@@ -8,26 +8,26 @@ namespace Physics2D
 		{
 		case Shape::Type::Capsule:
 		{
-			const Capsule* capsule = dynamic_cast<Capsule*>(primitive.shape);
+			const Capsule* capsule = static_cast<Capsule*>(primitive.shape);
 			vertices = capsule->boxVertices();
 			break;
 		}
 		case Shape::Type::Polygon:
 		{
-			const Polygon* polygon = dynamic_cast<Polygon*>(primitive.shape);
+			const Polygon* polygon = static_cast<Polygon*>(primitive.shape);
 			vertices = polygon->vertices();
 			break;
 		}
 		case Shape::Type::Edge:
 		{
-			const Edge* edge = dynamic_cast<Edge*>(primitive.shape);
+			const Edge* edge = static_cast<Edge*>(primitive.shape);
 			vertices.emplace_back(edge->startPoint());
 			vertices.emplace_back(edge->endPoint());
 			break;
 		}
 		case Shape::Type::Sector:
 		{
-			const Sector* sector = dynamic_cast<Sector*>(primitive.shape);
+			const Sector* sector = static_cast<Sector*>(primitive.shape);
 			vertices = sector->vertices();
 			break;
 		}
@@ -84,7 +84,7 @@ namespace Physics2D
 			edge.p1 = vertices[0];
 			edge.p2 = vertices[1];
 			if(shape.shape->type() == Shape::Type::Edge)
-				edge.normal = dynamic_cast<Edge*>(shape.shape)->normal();
+				edge.normal = static_cast<Edge*>(shape.shape)->normal();
 		}
 		else
 		{

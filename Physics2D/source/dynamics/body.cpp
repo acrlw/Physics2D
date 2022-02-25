@@ -194,14 +194,14 @@ namespace Physics2D {
         switch (m_shape->type()) {
         case Shape::Type::Circle:
         {
-            const Circle* circle = dynamic_cast<Circle*>(m_shape);
+            const Circle* circle = static_cast<Circle*>(m_shape);
 
             m_inertia = m_mass * circle->radius() * circle->radius() / 2;
             break;
         }
         case Shape::Type::Polygon:
         {
-            const Polygon* polygon = dynamic_cast<Polygon*>(m_shape);
+            const Polygon* polygon = static_cast<Polygon*>(m_shape);
 
             const Vector2 center = polygon->center();
             real sum1 = 0.0;
@@ -222,7 +222,7 @@ namespace Physics2D {
         }
         case Shape::Type::Ellipse:
         {
-            const Ellipse* ellipse = dynamic_cast<Ellipse*>(m_shape);
+            const Ellipse* ellipse = static_cast<Ellipse*>(m_shape);
 
             const real a = ellipse->A();
             const real b = ellipse->B();
@@ -232,7 +232,7 @@ namespace Physics2D {
         }
         case Shape::Type::Capsule:
         {
-            const Capsule* capsule = dynamic_cast<Capsule*>(m_shape);
+            const Capsule* capsule = static_cast<Capsule*>(m_shape);
             real r = 0, h = 0, massS = 0, inertiaS = 0, massC = 0, inertiaC = 0, volume = 0;
 
             if (capsule->width() >= capsule->height())//Horizontal
@@ -257,7 +257,7 @@ namespace Physics2D {
         }
         case Shape::Type::Sector:
         {
-            const Sector* sector = dynamic_cast<Sector*>(m_shape);
+            const Sector* sector = static_cast<Sector*>(m_shape);
             m_inertia = m_mass * (sector->spanRadian() - Math::sinx(sector->spanRadian())) * sector->radius() * sector->radius() / 4 * sector->spanRadian();
             break;
         }
@@ -269,6 +269,38 @@ namespace Physics2D {
         else
 			m_invInertia = !realEqual(m_inertia, 0) ? 1.0f / m_inertia : 0;
     }
+
+    Body::Relation::RelationID Body::Relation::generateRelationID(Body* bodyA, Body* bodyB)
+    {
+        assert(bodyA != nullptr && bodyB != nullptr);
+        //Combine two 32-bit id into one 64-bit id in binary form
+        //By Convention: bodyA.id < bodyB.id
+        auto bodyAId = bodyA->id();
+        auto bodyBId = bodyB->id();
+        if(bodyAId > bodyBId)
+            std::swap(bodyAId, bodyBId);
+        
+        auto pair = std::pair{ bodyAId, bodyBId };
+        auto result = reinterpret_cast<uint64_t&>(pair);
+        return result;
+    }
+
+    Body::Relation Body::Relation::generateRelation(Body* bodyA, Body* bodyB)
+    {
+        assert(bodyA != nullptr && bodyB != nullptr);
+        Body::Relation result;
+        auto bodyAId = bodyA->id();
+        auto bodyBId = bodyB->id();
+        if (bodyAId > bodyBId)
+            std::swap(bodyA, bodyB);
+
+        result.relationID = generateRelationID(bodyA, bodyB);
+        result.bodyA = bodyA;
+        result.bodyB = bodyB;
+        return result;
+    }
+
+
 
     void Body::PhysicsAttribute::step(const real& dt)
     {

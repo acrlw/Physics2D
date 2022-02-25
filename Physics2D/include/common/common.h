@@ -32,6 +32,7 @@ namespace Physics2D
 		constexpr real CCDMinVelocity = 100.0f;
 		constexpr real MaxVelocity = 1000.0f;
 		constexpr real MaxAngularVelocity = 1000.0f;
+		constexpr real AABBExpansionFactor = 0.1f;
 	}
 #else
 	using real = double;
@@ -50,6 +51,7 @@ namespace Physics2D
 		constexpr real CCDMinVelocity = 100.0;
 		constexpr real MaxVelocity = 1000.0;
 		constexpr real MaxAngularVelocity = 1000.0;
+		constexpr real AABBExpansionFactor = 0.1;
 
 	}
 #endif

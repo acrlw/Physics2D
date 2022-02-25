@@ -157,25 +157,25 @@ namespace Physics2D
 		{
 		case Shape::Type::Polygon:
 		{
-			const Polygon* polygon = dynamic_cast<const Polygon*>(shape.shape);
+			const Polygon* polygon = static_cast<const Polygon*>(shape.shape);
 			auto [vertex, index] = findFarthestPoint(polygon->vertices(), rot_dir);
 			target = vertex;
 			break;
 		}
 		case Shape::Type::Circle:
 		{
-			const Circle* circle = dynamic_cast<const Circle*>(shape.shape);
+			const Circle* circle = static_cast<const Circle*>(shape.shape);
 			return direction.normal() * circle->radius() + shape.transform;
 		}
 		case Shape::Type::Ellipse:
 		{
-			const Ellipse* ellipse = dynamic_cast<const Ellipse*>(shape.shape);
+			const Ellipse* ellipse = static_cast<const Ellipse*>(shape.shape);
 			target = GeometryAlgorithm2D::calculateEllipseProjectionPoint(ellipse->A(), ellipse->B(), rot_dir);
 			break;
 		}
 		case Shape::Type::Edge:
 		{
-			const Edge* edge = dynamic_cast<const Edge*>(shape.shape);
+			const Edge* edge = static_cast<const Edge*>(shape.shape);
 			real dot1 = Vector2::dotProduct(edge->startPoint(), direction);
 			real dot2 = Vector2::dotProduct(edge->endPoint(), direction);
 			target = dot1 > dot2 ? edge->startPoint() : edge->endPoint();
@@ -183,17 +183,17 @@ namespace Physics2D
 		}
 		case Shape::Type::Point:
 		{
-			return dynamic_cast<const Point*>(shape.shape)->position();
+			return static_cast<const Point*>(shape.shape)->position();
 		}
 		case Shape::Type::Capsule:
 		{
-			const Capsule* capsule = dynamic_cast<const Capsule*>(shape.shape);
+			const Capsule* capsule = static_cast<const Capsule*>(shape.shape);
 			target = GeometryAlgorithm2D::calculateCapsuleProjectionPoint(capsule->width(), capsule->height(), rot_dir);
 			break;
 		}
 		case Shape::Type::Sector:
 		{
-			const Sector* sector = dynamic_cast<const Sector*>(shape.shape);
+			const Sector* sector = static_cast<const Sector*>(shape.shape);
 			target = GeometryAlgorithm2D::calculateSectorProjectionPoint(sector->startRadian(), sector->spanRadian(), sector->radius(), rot_dir);
 			break;
 		}
