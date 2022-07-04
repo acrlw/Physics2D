@@ -34,6 +34,7 @@ namespace Physics2D
     }
     void PhysicsSystem::updateTree()
     {
+        //bvh
         for (auto& elem : m_world.bodyList())
             m_tree.update(elem.get());
     }
@@ -75,6 +76,17 @@ namespace Physics2D
     {
         m_world.stepVelocity(dt);
 
+        //Sweep And Prune
+
+        //std::vector<Body*> bodies;
+        //bodies.reserve(m_world.bodyList().size());
+        //for(auto&& elem: m_world.bodyList())
+        //    bodies.emplace_back(elem.get());
+        //
+        //auto potentialList = SweepAndPrune::generate(bodies);
+
+
+        //BVH
         auto potentialList = m_tree.generate();
         for (auto pair : potentialList)
         {

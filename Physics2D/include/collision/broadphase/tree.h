@@ -59,7 +59,7 @@ namespace Physics2D
 		size_t allocateNode();
 		int height(int targetIndex);
 
-		real m_fatExpansionFactor = 0.5;
+		real m_fatExpansionFactor = 0.5f;
 		int m_rootIndex = -1;
 		std::vector<Node> m_tree;
 		std::vector<int> m_emptyList;

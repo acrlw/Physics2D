@@ -17,24 +17,56 @@ namespace Physics2D
 		return raycast(*this, start, direction);
 	}
 
+	AABB::AABB(const Vector2& topLeft, const real& boxWidth, const real& boxHeight)
+	{
+		this->width = boxWidth;
+		this->height = boxHeight;
+		this->position = topLeft + Vector2(boxWidth * 0.5f, -boxHeight*0.5f);
+	}
+
+	AABB::AABB(const Vector2& topLeft, const Vector2& bottomRight)
+	{
+		*this = fromBox(topLeft, bottomRight);
+	}
+
 	Vector2 AABB::topLeft() const
 	{
-		return Vector2{ -width / 2 + position.x , height / 2 + position.y };
+		return Vector2{ minimumX() , maximumY() };
 	}
 
 	Vector2 AABB::topRight() const
 	{
-		return Vector2{ width / 2 + position.x , height / 2 + position.y };
+		return Vector2{ maximumX(), maximumY() };
 	}
 
 	Vector2 AABB::bottomLeft() const
 	{
-		return Vector2{ -width / 2 + position.x , -height / 2 + position.y };
+		return Vector2{ minimumX() , minimumY() };
 	}
 
 	Vector2 AABB::bottomRight() const
 	{
-		return Vector2{ width / 2 + position.x , -height / 2 + position.y };
+		return Vector2{ maximumX() , minimumY() };
+	}
+
+	real AABB::minimumX() const
+	{
+		return -width * 0.5f + position.x;
+	}
+
+	real AABB::minimumY() const
+	{
+		return -height * 0.5f + position.y;
+	}
+
+	real AABB::maximumX() const
+	{
+		return width * 0.5f + position.x;
+	}
+
+	real AABB::maximumY() const
+	{
+		return height * 0.5f + position.y;
 	}
 
 	bool AABB::collide(const AABB& other) const
@@ -195,7 +227,7 @@ namespace Physics2D
 			p4 -= shape.transform;
 			aabb.width = p1.x - p3.x;
 			aabb.height = p2.y - p4.y;
-			aabb.position.set({ (p1.x + p3.x) / 2.0f, (p2.y + p4.y) / 2.0f });
+			aabb.position.set({ (p1.x + p3.x) * 0.5f, (p2.y + p4.y) * 0.5f });
 			break;
 		}
 		}
@@ -221,7 +253,7 @@ namespace Physics2D
 		AABB result;
 		result.width = bottomRight.x - topLeft.x;
 		result.height = topLeft.y - bottomRight.y;
-		result.position = (topLeft + bottomRight) / 2.0f;
+		result.position = (topLeft + bottomRight) * 0.5f;
 		return result;
 	}
 

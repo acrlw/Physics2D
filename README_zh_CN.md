@@ -3,17 +3,15 @@
 一个简单、用于博客教学的 2D 游戏物理引擎。
 知乎专栏：[ACRL's Development](https://www.zhihu.com/column/c_1262755781494808576)
 
-# 快速构建
-本项目使用 CMake 构建。
-请使用 CMake 3.5 以上的版本进行构建。
+> 请注意: 如果要尝试效果，请前往 [Physics2D-TestBed-SFML](https://github.com/AngryAccelerated/Physics2D-TestBed-SFML) .
 
+# 快速构建
 ```
 cmake CMakeLists.txt
 ```
 
 # 编译环境
 - C++ 17
-- Qt
 
 # 功能特点
 - 基本的线性代数类
@@ -33,6 +31,9 @@ cmake CMakeLists.txt
     - 动态层次包围体树
       - 表面积启发法
       - 光线物体查询
+      - 动态树与数组
+    - 扫掠减除法
+    - 均匀网格法
 - 碰撞点维护
 - 刚体模拟
 - 连续冲力解算器
@@ -56,9 +57,6 @@ cmake CMakeLists.txt
   - 椭圆最近点查询
   
 # 计划清单
-- 粗检测阶段
-  - 均匀网格
-  - 扫掠剪除法
 - 积分器
   - 韦尔莱
   - 四阶龙格库塔法
@@ -114,7 +112,6 @@ cmake CMakeLists.txt
 - *Real-Time Collision Detection* by Christer Ericson
 - *Game Programming Gems 7* - Scott Jacobs
 - *Game Physics Cookbook* - Gabor Szauer
-
 
 
 

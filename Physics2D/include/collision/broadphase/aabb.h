@@ -11,13 +11,21 @@ namespace Physics2D
 	struct AABB
 	{
 		AABB() = default;
+		AABB(const Vector2& topLeft, const real& boxWidth, const real& boxHeight);
+		AABB(const Vector2& topLeft, const Vector2& bottomRight);
 		real width = 0;
 		real height = 0;
 		Vector2 position;
-		Vector2 topLeft()const;
-		Vector2 topRight()const;
-		Vector2 bottomLeft()const;
-		Vector2 bottomRight()const;
+		inline Vector2 topLeft()const;
+		inline Vector2 topRight()const;
+		inline Vector2 bottomLeft()const;
+		inline Vector2 bottomRight()const;
+
+		inline real minimumX()const;
+		inline real minimumY()const;
+		inline real maximumX()const;
+		inline real maximumY()const;
+
 		bool collide(const AABB& other) const;
 		void expand(const real& factor);
 		void scale(const real& factor);

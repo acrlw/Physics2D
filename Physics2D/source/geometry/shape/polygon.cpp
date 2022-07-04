@@ -40,7 +40,7 @@ namespace Physics2D
 
 	bool Polygon::contains(const Vector2& point, const real& epsilon)
 	{
-		for (size_t i = 0; i < m_vertices.size() - 2; i++)
+		for (size_t i = 0; i <= m_vertices.size() - 2; i++)
 		{
 			Vector2 p1 = m_vertices[i];
 			Vector2 p2 = m_vertices[i + 1];

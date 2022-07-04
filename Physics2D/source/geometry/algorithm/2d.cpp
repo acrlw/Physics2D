@@ -646,17 +646,14 @@ namespace Physics2D
 		real ra = (b - a).cross(-a);
 		real rb = (c - b).cross(-b);
 		real rc = (a - c).cross(-c);
-		return ra >= 0 && rb >= 0 && rc >= 0
-		|| ra <= 0 && rb <= 0 && rc <= 0;
+		return Math::sameSign(ra, rb, rc);
 	}
 	bool GeometryAlgorithm2D::isPointOnSameSide(const Vector2& edgePoint1, const Vector2& edgePoint2, const Vector2& refPoint, const Vector2 targetPoint)
 	{
 		Vector2 u = edgePoint2 - edgePoint1;
 		Vector2 v = refPoint - edgePoint1;
 		Vector2 w = targetPoint - edgePoint1;
-		real d1 = u.cross(v);
-		real d2 = u.cross(w);
 		//same side or on the edge
-		return Math::sign(d1) == Math::sign(d2) ;
+		return Math::sameSign(u.cross(v), u.cross(w));
 	}
 }

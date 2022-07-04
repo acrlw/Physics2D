@@ -73,6 +73,14 @@ namespace Physics2D
 			return std::pow(x, e);
 		}
 		//other
+		inline bool sameSign(const real& a, const real& b)
+		{
+			return a >= 0 && b >= 0 || a <= 0 && b <= 0;
+		}
+		inline bool sameSign(const real& a, const real& b, const real& c)
+		{
+			return a >= 0 && b >= 0 && c >= 0 || a <= 0 && b <= 0 && c <= 0;
+		}
 		inline int8_t sign(const real& num)
 		{
 			return num > 0 ? 1 : -1;
@@ -88,6 +96,14 @@ namespace Physics2D
 		inline real clamp(const real& num, const real& low, const real& high)
 		{
 			return std::clamp(num, low, high);
+		}
+		inline size_t clamp(const size_t& num, const size_t& low, const size_t& high)
+		{
+			if (num < low)
+				return low;
+			if (num > high)
+				return high;
+			return num;
 		}
 		inline real degreeToRadian(const real& angle)
 		{

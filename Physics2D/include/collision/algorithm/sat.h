@@ -56,12 +56,13 @@ namespace Physics2D
 		static SATResult capsuleVsSector(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB);
 
         static SATResult sectorVsSector(const ShapePrimitive& shapeA, const ShapePrimitive& shapeB);
-    private:
+
         static ProjectedSegment axisProjection(const ShapePrimitive& shape, Polygon* polygon, const Vector2& normal);
         static ProjectedSegment axisProjection(const ShapePrimitive& shape, Circle* circle, const Vector2& normal);
         static ProjectedSegment axisProjection(const ShapePrimitive& shape, Ellipse* ellipse, const Vector2& normal);
         static ProjectedSegment axisProjection(const ShapePrimitive& shape, Capsule* capsule, const Vector2& normal);
         static ProjectedSegment axisProjection(const ShapePrimitive& shape, Sector* sector, const Vector2& normal);
+
     };
     
 }

@@ -17,7 +17,6 @@ namespace Physics2D
         bool contains(const Vector2& point, const real& epsilon = Constant::GeometryEpsilon) override;
     protected:
         std::vector<Vector2> m_vertices;
-    private:
         void updateVertices();
     };
 }

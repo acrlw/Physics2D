@@ -3,7 +3,7 @@
 
 Simple 2D Physics Engine For Tutoring.
 
-> Attention: For testbed, please see [Physics2D-TestBed-SFML](https://github.com/AngryAccelerated/Physics2D-TestBed-SFML) and [Physics2D-TestBed-Qt](https://github.com/AngryAccelerated/Physics2D-TestBed-Qt) .
+> Attention: For testbed, please see [Physics2D-TestBed-SFML](https://github.com/AngryAccelerated/Physics2D-TestBed-SFML) .
 
 # Build
 
@@ -32,6 +32,7 @@ cmake CMakeLists.txt
       - Dynamic Tree & Array
       - Raycast
     - Sweep And Prune
+    - Spatial Hashing Grid
 - Contact Maintainer
 - Rigid Body Dynamics Simulation
 - Sequential Impulse Solver
@@ -67,8 +68,6 @@ cmake CMakeLists.txt
     - Nearest Point
 
 # Future
-- Broadphase
-  - Uniform Grid
 - Integrator
   - Verlet
   - Rk4
@@ -81,7 +80,7 @@ cmake CMakeLists.txt
   - Mass-Spring System
 - Rope
   - Position-Based Dynamics
- 
+
 # Reference
 - [Box2D](https://github.com/erincatto/box2d)
 - [Box2D Lite](https://github.com/erincatto/box2d-lite)

@@ -255,12 +255,6 @@ namespace Physics2D {
             m_inertia = inertiaC + inertiaS + massS * (3.0f * r + 2.0f * h) * h / 8.0f;
             break;
         }
-        case Shape::Type::Sector:
-        {
-            const Sector* sector = static_cast<Sector*>(m_shape);
-            m_inertia = m_mass * (sector->spanRadian() - Math::sinx(sector->spanRadian())) * sector->radius() * sector->radius() / 4 * sector->spanRadian();
-            break;
-        }
         default:
             break;
         }
