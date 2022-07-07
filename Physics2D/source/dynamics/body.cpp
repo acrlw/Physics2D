@@ -38,7 +38,18 @@ namespace Physics2D {
     {
         return m_torques;
     }
-
+    Vector2& Body::lastPosition()
+    {
+        return m_lastPosition;
+    }
+    real& Body::lastRotation()
+    {
+        return m_lastRotation;
+    }
+    uint32_t& Body::sleepCountdown()
+    {
+        return m_sleepCountdown;
+    }
     Shape* Body::shape() const
     {
         return m_shape;

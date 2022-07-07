@@ -45,60 +45,8 @@ namespace Physics2D
     }
     void UniformGrid::update(Body* body)
     {
-        assert(body != nullptr);
-        auto iter = m_bodiesToCells.find(body);
-        if (iter == m_bodiesToCells.end())
-            return;
-
-        //Incremental update
-        //cell list must be sorted array
-        auto oldCellList = m_bodiesToCells[body];
-        auto newCellList = queryCells(body->aabb());
-        std::sort(oldCellList.begin(), oldCellList.end(), std::less<Position>());
-        std::sort(newCellList.begin(), newCellList.end(), std::less<Position>());
-        auto changeList = compareCellList(oldCellList, newCellList);
-        for (auto&& elem : changeList)
-        {
-            switch (elem.first)
-            {
-            case Operation::Add:
-            {
-                m_bodiesToCells[body].emplace_back(elem.second);
-                m_cellsToBodies[elem.second].emplace_back(body);
-                break;
-            }
-            case Operation::Delete:
-            {
-                auto& bodyList = m_cellsToBodies[elem.second];
-                bodyList.erase(
-                    std::remove_if(bodyList.begin(), bodyList.end(),
-                        [&body](Body* target) { return body == target; }), bodyList.end());
-
-                if (bodyList.empty())
-                    m_cellsToBodies.erase(elem.second);
-
-                auto& positionList = m_bodiesToCells[body];
-                positionList.erase(
-                    std::remove_if(positionList.begin(), positionList.end(),
-                        [&elem](const Position& other) { return elem.second == other; }), positionList.end());
-
-                break;
-            }
-            }
-        }
-
-        //Full update
-        //auto cells = m_bodiesToCells[body];
-        //for (auto&& elem : cells) {
-        //    auto& list = m_cellsToBodies[elem];
-        //    auto bodyIter = std::find(list.begin(), list.end(), body);
-        //    if (bodyIter != list.end())
-        //        list.erase(bodyIter);
-        //    if (list.empty())
-        //        m_cellsToBodies.erase(elem);
-        //}
-        //m_bodiesToCells.erase(iter);
-        //insert(body);
+        //default option for update
+        incrementalUpdate(body);
     }
     void UniformGrid::insert(Body* body)
     {
@@ -181,6 +129,69 @@ namespace Physics2D
     void UniformGrid::updateBodies()
     {
 
+    }
+    void UniformGrid::fullUpdate(Body* body)
+    {
+        assert(body != nullptr);
+        auto iter = m_bodiesToCells.find(body);
+        if (iter == m_bodiesToCells.end())
+            return;
+        auto cells = m_bodiesToCells[body];
+        for (auto&& elem : cells) {
+            auto& list = m_cellsToBodies[elem];
+            auto bodyIter = std::find(list.begin(), list.end(), body);
+            if (bodyIter != list.end())
+                list.erase(bodyIter);
+            if (list.empty())
+                m_cellsToBodies.erase(elem);
+        }
+        m_bodiesToCells.erase(iter);
+        insert(body);
+    }
+    void UniformGrid::incrementalUpdate(Body* body)
+    {
+        assert(body != nullptr);
+        auto iter = m_bodiesToCells.find(body);
+        if (iter == m_bodiesToCells.end())
+            return;
+        //Incremental update
+        //cell list must be sorted array
+        auto oldCellList = m_bodiesToCells[body];
+        auto newCellList = queryCells(body->aabb());
+
+        std::sort(oldCellList.begin(), oldCellList.end(), std::less<Position>());
+        //New queryCellList has already been sorted.
+        //std::sort(newCellList.begin(), newCellList.end(), std::less<Position>());
+        auto changeList = compareCellList(oldCellList, newCellList);
+        for (auto&& elem : changeList)
+        {
+            switch (elem.first)
+            {
+            case Operation::Add:
+            {
+                m_bodiesToCells[body].emplace_back(elem.second);
+                m_cellsToBodies[elem.second].emplace_back(body);
+                break;
+            }
+            case Operation::Delete:
+            {
+                auto& bodyList = m_cellsToBodies[elem.second];
+                bodyList.erase(
+                    std::remove_if(bodyList.begin(), bodyList.end(),
+                        [&body](Body* target) { return body == target; }), bodyList.end());
+
+                if (bodyList.empty())
+                    m_cellsToBodies.erase(elem.second);
+
+                auto& positionList = m_bodiesToCells[body];
+                positionList.erase(
+                    std::remove_if(positionList.begin(), positionList.end(),
+                        [&elem](const Position& other) { return elem.second == other; }), positionList.end());
+
+                break;
+            }
+            }
+        }
     }
     std::vector<std::pair<UniformGrid::Operation, UniformGrid::Position>> UniformGrid::compareCellList(const std::vector<Position>& oldCellList, const std::vector<Position>& newCellList)
     {

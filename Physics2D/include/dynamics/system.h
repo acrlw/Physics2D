@@ -24,8 +24,8 @@ namespace Physics2D
         void updateTree();
         void solve(const real& dt);
         bool solveCCD(const real& dt);
-        int m_positionIteration = 8;
-        int m_velocityIteration = 6;
+        int m_positionIteration = 6;
+        int m_velocityIteration = 8;
 
         PhysicsWorld m_world;
         ContactMaintainer m_maintainer;

@@ -7,7 +7,7 @@ namespace Physics2D
 		m_startRadian = 0;
 		m_spanRadian = 0;
 		m_radius = 0;
-		m_samplePoints = 4;
+		m_samplePoints = 8;
 	}
 
 	real Sector::startRadian() const

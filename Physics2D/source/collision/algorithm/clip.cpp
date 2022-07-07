@@ -127,6 +127,7 @@ namespace Physics2D
 			incidentEdge = clipEdgeA;
 			swap = true;
 		}
+
 		//1. clip left region
 		Vector2 u = (referenceEdge.p2 - referenceEdge.p1).normal();
 		Vector2 refAnchor1 = u.perpendicular() + referenceEdge.p1;
@@ -134,6 +135,8 @@ namespace Physics2D
 			incidentEdge.p1 = GeometryAlgorithm2D::lineIntersection(referenceEdge.p1, refAnchor1, incidentEdge.p1, incidentEdge.p2);
 		if (!GeometryAlgorithm2D::isPointOnSameSide(referenceEdge.p1, refAnchor1, referenceEdge.p2, incidentEdge.p2))
 			incidentEdge.p2 = GeometryAlgorithm2D::lineIntersection(referenceEdge.p1, refAnchor1, incidentEdge.p1, incidentEdge.p2);
+
+
 		//2. clip right region
 		u.negate();
 		Vector2 refAnchor2 = u.perpendicular() + referenceEdge.p2;
@@ -141,6 +144,8 @@ namespace Physics2D
 			incidentEdge.p1 = GeometryAlgorithm2D::lineIntersection(referenceEdge.p2, refAnchor2, incidentEdge.p1, incidentEdge.p2);
 		if (!GeometryAlgorithm2D::isPointOnSameSide(referenceEdge.p2, refAnchor2, referenceEdge.p1, incidentEdge.p2))
 			incidentEdge.p2 = GeometryAlgorithm2D::lineIntersection(referenceEdge.p2, refAnchor2, incidentEdge.p1, incidentEdge.p2);
+
+
 		//3. clip normal region
 		Vector2 refAnchor3 = (referenceEdge.p2 + referenceEdge.p1) / 2.0f + referenceEdge.normal;
 		

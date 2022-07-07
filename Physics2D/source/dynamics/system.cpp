@@ -74,7 +74,6 @@ namespace Physics2D
     }
     void PhysicsSystem::solve(const real& dt)
     {
-        m_world.stepVelocity(dt);
 
         //Sweep And Prune
 
@@ -87,12 +86,15 @@ namespace Physics2D
 
 
         //BVH
+        m_world.stepVelocity(dt);
+
         auto potentialList = m_tree.generate();
         for (auto pair : potentialList)
         {
             auto result = Detector::detect(pair.first, pair.second);
-            if (result.isColliding)
+            if (result.isColliding) {
                 m_maintainer.add(result);
+            }
         }
         m_maintainer.clearInactivePoints();
         m_world.prepareVelocityConstraint(dt);
@@ -102,14 +104,15 @@ namespace Physics2D
             m_world.solveVelocityConstraint(dt);
             m_maintainer.solveVelocity(dt);
         }
-
-        m_world.stepPosition(dt);
-
+        //solve penetration use contact pairs from previous velocity solver settings
+        //TODO: Can generate another contact table just for position solving
         for (int i = 0; i < m_positionIteration; ++i)
         {
             m_maintainer.solvePosition(dt);
             m_world.solvePositionConstraint(dt);
         }
+        m_world.stepPosition(dt);
+
         m_maintainer.deactivateAllPoints();
     }
 }
