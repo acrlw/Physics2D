@@ -1,7 +1,7 @@
 # Physics2D
 [Chinese](README_zh_CN.md)
 
-Simple 2D Physics Engine For Tutoring.
+Simple 2D Physics Engine For Blog Tutorials.
 
 > Attention: For testbed, please see [Physics2D-TestBed-SFML](https://github.com/AngryAccelerated/Physics2D-TestBed-SFML) .
 
