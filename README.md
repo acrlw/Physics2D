@@ -7,6 +7,8 @@ Simple 2D Physics Engine For Blog Tutorials.
 
 # Build
 
+Use [XMake](https://github.com/xmake-io/xmake) to build project:
+
 ```
 xmake build
 ```
