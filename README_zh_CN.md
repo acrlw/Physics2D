@@ -7,11 +7,11 @@
 
 # 快速构建
 ```
-cmake CMakeLists.txt
+xmake build
 ```
 
 # 编译环境
-- C++ 17
+- C++ 20
 
 # 功能特点
 - 基本的线性代数类

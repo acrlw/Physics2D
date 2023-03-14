@@ -8,11 +8,11 @@ Simple 2D Physics Engine For Blog Tutorials.
 # Build
 
 ```
-cmake CMakeLists.txt
+xmake build
 ```
 
 # Requirement
-- C++ 17
+- C++ 20
 
 # Features
 - Basic Linear Algebra
