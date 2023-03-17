@@ -1,5 +1,5 @@
 # Physics2D
-[Chinese](README_zh_CN.md)
+[中文](README_zh_CN.md)
 
 Simple 2D Physics Engine For Blog Tutorials.
 

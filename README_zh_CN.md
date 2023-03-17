@@ -3,9 +3,12 @@
 一个简单、用于博客教学的 2D 游戏物理引擎。
 知乎专栏：[ACRL's Development](https://www.zhihu.com/column/c_1262755781494808576)
 
-> 请注意: 如果要尝试效果，请前往 [Physics2D-TestBed-SFML](https://github.com/AngryAccelerated/Physics2D-TestBed-SFML) .
+> 请注意: 如果要尝试效果，请前往 [Physics2D-TestBed-SFML](https://github.com/AngryAccelerated/Physics2D-TestBed-SFML) 。
 
 # 快速构建
+
+使用 [XMake](https://github.com/xmake-io/xmake) 进行项目构建:
+
 ```
 xmake build
 ```
