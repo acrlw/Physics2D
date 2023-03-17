@@ -71,26 +71,6 @@ xmake build
 - 绳子模拟
   - 基于位置的动力学
 
-# 运行截图
-
-![bitmask](./screenshots/bitmask.png)
-
-![bridge](./screenshots/bridge.png)
-
-![chain](./screenshots/chain.png)
-
-![domino](./screenshots/domino.png)
-
-![friction](./screenshots/friction.png)
-
-![newtoncradle](./screenshots/newtoncradle.png)
-
-![restitution](./screenshots/restitution.png)
-
-![stacking](./screenshots/stacking.png)
-
-![wrecking ball](./screenshots/wrecking-ball.png)
-
 # 参考
 - [Box2D](https://github.com/erincatto/box2d)
 - [Box2D Lite](https://github.com/erincatto/box2d-lite)
