@@ -96,7 +96,7 @@ xmake build
 - [Physics Constraints Series - Allen Chou](https://www.youtube.com/c/MingLunChou/videos)
 - [Soft Constraints - ODE](https://ode.org/ode-latest-userguide.html#sec_3_8_0)
 - [Gaffer's on Games](https://gafferongames.com/#posts)
-- [Randy Gaul's Blog](http://www.randygaul.net/)
+- [Randy Gaul's Blog](https://randygaul.github.io/)
 - [Winter's Dev](https://blog.winter.dev/)
 - [Primitives and Intersection Acceleration](https://www.pbr-book.org/3ed-2018/Primitives_and_Intersection_Acceleration/Bounding_Volume_Hierarchies)
 - [Real-Time Rendering Intersection](http://www.realtimerendering.com/intersections.html)
